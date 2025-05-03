@@ -1,0 +1,33 @@
+\chapter{The pro-étale topology}
+
+\section{Weakly étale morphisms of schemes}
+
+\begin{definition}[Weakly étale morphisms, {\cite[Definition 4.1.1]{proetale}}]
+    A map $f \colon Y \to X$ is \emph{weakly étale} if $f$ is flat and
+    $\Delta_f\colon Y \to Y \times_{X} Y$ is flat.
+
+    \lean{AlgebraicGeometry.WeaklyEtale}
+    \leanok
+    \label{def:weakly-etale-morphism}
+\end{definition}
+
+\begin{lemma}[Local property of weakly étale morphisms]
+    $f \colon Y \to X$ is weakly étale if and only if
+    for every affine open $U$ of $Y$ and every affine open $V$ of $X$ with $f(U) \subset V$,
+    the induced ring homomorphism $\Gamma(X, V) \to \Gamma(Y, U)$ is weakly étale.
+    \uses{def:weakly-etale-algebra, def:weakly-etale-morphism}
+    \label{lemma:weakly-etale-hasringhomprop}
+\end{lemma}
+
+\begin{lemma}[{\cite[Lemma 4.1.6]{proetale}}]
+    Weakly étale is stable under composition and base change.
+    \uses{def:weakly-etale-morphism}
+    \lean{AlgebraicGeometry.WeaklyEtale.isStableUnderComposition, AlgebraicGeometry.WeaklyEtale.isStableUnderBaseChange}
+    \leanok
+    \label{lemma:weakly-etale-stable}
+\end{lemma}
+
+\begin{proof}
+    This follows because flat is stable under composition and base change.
+    \leanok
+\end{proof}
