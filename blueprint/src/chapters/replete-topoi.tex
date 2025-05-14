@@ -1,0 +1,34 @@
+\chapter{Replete categories}
+
+Let $\mathcal{C}$ be a category.
+
+\begin{definition}[{\cite[Definition 3.1.1]{proetale}}]
+    We say $\mathcal{C}$ is \emph{replete} if epimorphisms are stable under sequential limits, i.e.,
+    if $(F_n)_{n \in \N}$ is an inverse system in $\mathcal{C}$ that admits a limit and such that
+    $F_{n+1} \to F_n$ is surjective for all $n \in \N$, then $\mathrm{lim}\; F_n \to F_n$ is
+    surjective for all $n \in \N$.
+    \label{def:replete}
+\end{definition}
+
+\begin{proposition}
+    Assume $\mathcal{C}$ has inverse limits and let $\mathcal{C}$ be replete.
+    If $(F_n)_{n \in \N}$ is an inverse system in $\mathrm{Ab}(\mathcal{C})$ with
+    epimorphic transition maps, then $\mathrm{lim} \; F_n \cong \mathrm{R}\; \mathrm{lim} \; F_n$.
+    % TODO: make this more precise
+    \label{prop:lim-exact-replete}
+\end{proposition}
+
+\begin{definition}[{\cite[Definition 3.2.1]{proetale}}]
+    An object $F$ of $\mathcal{C}$ is called \emph{weakly contractible} if every epimorphism
+    $G \to F$ has a section. We say $\mathcal{C}$ is \emph{locally weakly contractible},
+    if each $X$ in $\mathcal{C}$ admits an epimorphism from the coproduct of $Y_i$,
+    where $Y_i$ is coherent and weakly contractible.
+    % TODO: explain coherent
+    \label{def:lwc}
+\end{definition}
+
+\begin{proposition}
+    If $\mathcal{C}$ is locally weakly contractible, it is replete.
+    \uses{def:lwc, def:replete}
+    \label{prop:lwc-replete}
+\end{proposition}
