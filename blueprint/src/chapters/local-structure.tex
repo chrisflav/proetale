@@ -8,3 +8,30 @@
     $R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra via $f$.
     \label{def:weakly-etale-algebra}
 \end{definition}
+
+\begin{definition}[Ind-étale algebras, {\cite[\href{https://stacks.math.columbia.edu/tag/097I}{Tag 097I}]{stacks-project}}]
+    An $R$-algebra $S$ is \emph{ind-étale} if it is a filtered colimit of étale $R$-algebras.
+    We say a ring homomorphism $R \to S$ is \emph{ind-étale} if $S$ is ind-étale as an $R$-algebra via $f$.
+    \label{def:ind-etale-algebra}
+\end{definition}
+
+The following relation between weakly étale algebra and ind-étale algebra is the main result of this section.
+\begin{theorem}[\cite[Theorem 2.3.4]{proetale}]
+Let $f: A \to B$ be weakly étale. Then there exists a faithfully flat ind-étale morphism $g: B \to C$ such that $g \circ f: A \to C$ is ind-étale.
+    \label{thm:weakly-etale-ind-etale}
+\end{theorem}
+
+The local version of Theorem 2.3.4 follows from the following result of Olivier, \cite{Oli72}:
+
+\begin{theorem}[\cite[Theorem 2.3.5]{proetale}]
+Let $A$ be a strictly henselian local ring, and let $B$ be a weakly étale local $A$-algebra. Then $f: A \to B$ is an isomorphism.
+    \label{thm:weakly-etale-local}
+\end{theorem}
+
+
+\section{w-local spaces}
+
+\section{w-local rings}
+
+\section{w-contractible rings}
+
