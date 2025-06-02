@@ -1,5 +1,41 @@
 \chapter{Local structure}
 
+% \section{Preliminaries}
+
+% \begin{definition} [Extremally disconnected space]
+%     A topological space \(X\) is \emph{extremally disconnected} if the closure of every open subset is open.
+%     \label{def:extremally-disconnected}
+%     \lean{ExtremallyDisconnected}
+%     \leanok
+% \end{definition}
+
+% \begin{definition} [Stone-Čech compactification]
+%     Let \(X\) be a topological space. The \emph{Stone-Čech compactification} of \(X\) is the
+%     profinite space \(\beta(X)\) such that
+%     \begin{enumerate}
+%         \item \(X\) is dense in \(\beta(X)\);
+%         \item every continuous map \(f: X \to Y\) to a compact Hausdorff space \(Y\)
+%             extends uniquely to a continuous map \(\beta(f): \beta(X) \to Y\).
+%     \end{enumerate}
+%     We denote the Stone-Čech compactification of \(X\) by \(\beta(X)\).
+%     \label{def:stone-cech-compactification}
+%     \lean{StoneCech}
+%     \leanok
+% \end{definition}
+
+% \begin{theorem}[{\cite[Theorem 2.1.1]{proetale}}]
+%     Let \(X\) be a topological space. Then the Stone-Čech compactification \(\beta(X)\) is extremally disconnected.
+%     \label{thm:stone-cech-extremally-disconnected}
+%     \uses{def:extremally-disconnected, def:stone-cech-compactification}
+%     \lean{StoneCech.projective}
+% \end{theorem}
+
+% \begin{proof}
+%     Omitted.
+%     \leanok
+% \end{proof}
+
+
 \section{Weakly étale algebras}
 
 \begin{definition}[Weakly étale algebras, {\cite[Definition 2.3.1]{proetale}}]
@@ -21,6 +57,12 @@ Let $f: A \to B$ be weakly étale. Then there exists a faithfully flat ind-étal
     \label{thm:weakly-etale-ind-etale}
 \end{theorem}
 
+Check whether theorem 5.4.2 can be refactored to avoid use the above theorem by directly mimicking the proof of topological invariance of étale sites for weakly étale.
+
+Remove 5.4.1
+
+
+
 The local version of Theorem 2.3.4 follows from the following result of Olivier, \cite{Oli72}:
 
 \begin{theorem}[{\cite[Theorem 2.3.5]{proetale}}]
@@ -31,9 +73,89 @@ Let $A$ be a strictly henselian local ring, and let $B$ be a weakly étale local
 
 \section{w-local spaces}
 
+Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X\) that admits no further non-split open covers.
+
+\begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}]
+    A topological space \(X\) is \emph{w-local} if it satisfies:
+    \begin{enumerate}
+        \item \(X\) is spectral;
+        \item All open covers split, i.e., for every open cover \(\{U_i\}_{i \in I}\) of \(X\), the map \(\coprod_{i \in I} U_i \to X\) has a section;
+        \item The subspace \(X^c\) of closed points is closed.
+    \end{enumerate}
+    \label{def:w-local-space}
+\end{definition}
+
+\begin{definition}[w-local morphisms, {\cite[Definition 2.1.1]{proetale}}]
+    Let \(X\) and \(Y\) be w-local spaces. A morphism \(f: X \to Y\) is \emph{w-local} if it is spectral and the image of closed points \(f(X^c) \subseteq Y^c\).
+    \label{def:w-local-morphism}
+    \uses{def:w-local-space}
+\end{definition}
+
+\begin{definition}
+    The category of w-local spaces is denoted by \(\S^{wl}\). The objects are w-local spaces, and the morphisms are w-local morphisms.
+    \label{def:w-local-space-category}
+    \uses{def:w-local-space, def:w-local-morphism}
+\end{definition}
+
+% TBA: S: category of spectral spaces, i : \(\S^{wl}\) is the full subcategory of \(\S\) consisting of w-local spaces.
+
+
 \section{w-local rings}
+
+\begin{definition}[w-local rings, {\cite[Definition 2.2.1(i)]{proetale}}]
+    A ring \(A\) is \emph{w-local} if Spec(A) is w-local.
+    \label{def:w-local-ring}
+    \uses{def:w-local-space}
+\end{definition}
+
+\begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
+    A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every faithfully flat \'etale map \(A \to B\) has a section.
+    \label{def:w-strictly-local-ring}
+    \uses{def:w-local-ring}
+\end{definition}
+
+\begin{definition}[w-local ring maps, {\cite[Definition 2.2.1(iii)]{proetale}}]
+    A ring map \(f: A \to B\) between w-local rings is \emph{w-local} if the induced map of w-local spaces \(\Spec(f) : \Spec(B) \to \Spec(A)\) is w-local.
+    \label{def:w-local-ring-map}
+    \uses{def:w-local-ring, def:w-local-space, def:w-local-morphism}
+\end{definition}
 
 \section{w-contractible rings}
 
-The last theorem in this section used before proposition 5.6.2 is theorem 2.4.9
+\begin{definition}[w-contractible rings, {\cite[Definition 2.4.1]{proetale}}]
+A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \(A \to B\) has a section.
+    \label{def:w-contractible-ring}
+\end{definition}
+
+The last theorem in this section used before \cite[Theorem 5.6.2]{proetale} is the following \cref{thm:ind-etale-w-contractible}
+
+\begin{lemma}[{\cite[Theorem 2.4.9]{proetale}}]
+For any ring $A$, there is an ind-\'etale faithfully flat $A$-algebra $A_0$ with $A_0$ w-contractible.
+    \label{thm:ind-etale-w-contractible-cover-exists}
+    \uses{def:w-contractible-ring}
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+\item Choose an ind-\'etale faithfully flat $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$-algebra $A'_0$ with $A'_0$ w-strictly local and $\Spec(A'_0)$ an extremally disconnected profinite set; this is possible by
+    \begin{enumerate}
+    \item Since $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$ is absolutely flat (Lemma 2.2.3), we can find an ind-\'etale faithfully flat $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$-algebra \(\bar{A}\) by Lemma 2.2.7
+    \item Choose a extremally disconnected profinite set $Y$ covers \(X = (\Spec \bar{A})^c\) (We can choose \(Y\) to be \(\beta(X)\), the Stone-\v{C}ech compactification of \(X\));
+    \item By the functor \(S \mapsto S\times_(\pi_0(X)) X\) from \(\ProFin_{/\pi_0(X)} \to \Aff_{/X}\) in Lemma 2.2.8, we get a ind-(Zariski localization) ring map \(f: \bar{A} \to A'_0 \), such that \((\Spec A'_0)^c = S\). The construction \(A'_0\) and the map \(f\) is w-local as mentioned in Lemma 2.1.14 (by Lemma 2.1.9 limit of w-local (along w-local map) is w-local). By the construction, the local ring of \(A'_0\) at every closed point is isomorphic to the local ring of its image in \(\bar{A}\), thus this \(f\) preserves w-strict locality by Lem 2.2.9(check closed point). {\color{red} State this as a lemma: Construction \(f\) preserves w-locality and w-strict locality.}
+    \item As ind-(Zariski localization) is ind-\'etale faithfully flat (A new lemma here), so the composition ring map $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$ is ind-\'etale faithfully flat.
+    \end{enumerate}
+
+\item Let $A_0 = \operatorname{Hens}_{A^{\mathbb{Z}}}(A'_0)$. 
+    \begin{enumerate}
+    \item By Lemma 2.4.8, $A'_0$ is w-contractible.
+    \item Since \(\operatorname{Hens}_{A^{\mathbb{Z}}}(-) \otimes A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}} \simeq Id \) (Lemma 2.2.12), we have \(A_0 \otimes_{A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}} A^{\mathbb{Z}} \simeq A'_0\).
+    {\color{red} One more lemma show that \(A_0\) is Henselian along \(I_{A^{\mathbb{Z}}} A_0\), why is this not in the paper?} Thus by Lemma 2.4.3, $A_0$ is w-contractible if and only if $ A_0 / I_{A^{\mathbb{Z}}} A_0 \simeq A'_0 $ is. Indeed, $A_0$ is w-contractible.
+    \item The map $A \to A_0$ is faithfully flat and ind-\'etale since both $A \to A^{\mathbb{Z}}$ (Lemma 2.2.4) and $A^{\mathbb{Z}} \to A_0$ ({\color{red} flat since colim of etale maps, faithfully flat since \(I_{A^{\mathbb{Z}}} \) is the Jacobson ideal, maximal points unchanged when quotient by it. State this as a lemma.}) are so individually.
+    \end{enumerate}
+
+    \uses{thm:stone-cech-extremally-disconnected}
+\end{enumerate}
+
+
+\end{proof}
 
