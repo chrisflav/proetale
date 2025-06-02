@@ -1,31 +1,92 @@
 \chapter{Replete categories}
 
-Let $\mathcal{C}$ be a category.
+Let $\mathcal{C}$ be a category with limits. By
+$\mathrm{Ab}(\mathcal{C})$ we denote its abelian group objects.
 
 \begin{definition}[{\cite[Definition 3.1.1]{proetale}}]
     We say $\mathcal{C}$ is \emph{replete} if epimorphisms are stable under sequential limits, i.e.,
-    if $(F_n)_{n \in \N}$ is an inverse system in $\mathcal{C}$ that admits a limit and such that
-    $F_{n+1} \to F_n$ is surjective for all $n \in \N$, then $\mathrm{lim}\; F_n \to F_n$ is
-    surjective for all $n \in \N$.
+    if $(F_n)_{n \in \N}$ is an inverse system in $\mathcal{C}$ such that
+    $F_{n+1} \to F_n$ is an epimorphism for all $n \in \N$, then $\mathrm{lim}\; F_n \to F_n$ is
+    an epimorphism for all $n \in \N$.
     \label{def:replete}
 \end{definition}
 
-\begin{proposition}
-    Assume $\mathcal{C}$ has inverse limits and let $\mathcal{C}$ be replete.
+The following examples are all not needed later, but are useful to gain some intuition for
+\ref{def:replete}. The motivating example is:
+
+\begin{example}[{\cite[Example 3.1.4]{proetale}}]
+    The category of sets is replete.
+    \label{ex:replete-sets}
+\end{example}
+
+The category of étale sheaves is rarely replete as the following example shows.
+
+\begin{example}[{\cite[Example 3.1.5]{proetale}}]
+    Let $k$ be a field and $\bar k$ a separable closure of $k$. Then $\shv{\et{\spec{k}}}$ is replete
+    if and only if $\bar k$ is a finite extension of $k$.
+    \label{ex:replete-etale-site}
+\end{example}
+
+\begin{example}[{\cite[Example 3.1.7]{proetale}}]
+    The category of fpqc sheaves, i.e., sheaves on the big fpqc site, is replete.
+    \label{ex:replete-fpqc-site}
+\end{example}
+
+\begin{lemma}[{\cite[Lemma 3.1.8]{proetale}}]
+    Let $\mathcal{C}$ be replete and let $(F_n)_{n \in \N} \to (G_n)_{n \in \N}$ be a morphism
+    of inverse systems in $\mathcal{C}$. If
+    $F_n \to G_n$ and $F_{n+1} \to F_{n} \times_{G_n} G_{n+1}$ are epimorphisms for each $n \in \N$, then
+    $\lim F_n \to \lim G_n$ is an epimorphism.
+    \uses{def:replete}
+    \label{lemma:replete-lim-lim-epi}
+\end{lemma}
+
+\begin{proposition}[{\cite[Proposition 3.1.9]{proetale}}]
+    If $\mathcal{C}$ is replete, countable products are exact.
+    \uses{lemma:replete-lim-lim-epi}
+    \label{prop:replete-products-exact}
+\end{proposition}
+
+\begin{proposition}[{\cite[Proposition 3.1.10]{proetale}}]
+    Let $\mathcal{C}$ be replete.
     If $(F_n)_{n \in \N}$ is an inverse system in $\mathrm{Ab}(\mathcal{C})$ with
     epimorphic transition maps, then $\mathrm{lim} \; F_n \cong \mathrm{R}\; \mathrm{lim} \; F_n$.
     % TODO: make this more precise
+    \uses{prop:replete-products-exact, lemma:replete-lim-lim-epi}
     \label{prop:lim-exact-replete}
 \end{proposition}
+
+\section{Coherent objects}
+
+\begin{definition}[\cite{nlab:coherent_object}]
+    An object $X$ of $\mathcal{C}$ is \emph{compact} if the top element of the poset
+    of subobjects of $X$ is a \emph{compact element}.
+\end{definition}
+
+\begin{definition}[\cite{nlab:coherent_object}]
+    An object $X$ of $\mathcal{C}$ is \emph{stable} if for all compact $Y$ and morphisms $Y \to X$,
+    the fiber product $Y \times_{X} Y$ is compact.
+\end{definition}
+
+\begin{definition}[\cite{nlab:coherent_object}]
+    An object $X$ of $\mathcal{C}$ is \emph{coherent} if it is compact and stable.
+    \label{def:coherent-object}
+\end{definition}
+
+\section{Weakly contractible categories}
 
 \begin{definition}[{\cite[Definition 3.2.1]{proetale}}]
     An object $F$ of $\mathcal{C}$ is called \emph{weakly contractible} if every epimorphism
     $G \to F$ has a section. We say $\mathcal{C}$ is \emph{locally weakly contractible},
     if each $X$ in $\mathcal{C}$ admits an epimorphism from the coproduct of $Y_i$,
     where $Y_i$ is coherent and weakly contractible.
-    % TODO: explain coherent
+    \uses{def:coherent-object}
     \label{def:lwc}
 \end{definition}
+
+\begin{example}
+    The category of sets is locally weakly contractible.
+\end{example}
 
 \begin{proposition}
     If $\mathcal{C}$ is locally weakly contractible, it is replete.
