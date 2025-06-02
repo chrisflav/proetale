@@ -61,15 +61,18 @@ The category of étale sheaves is rarely replete as the following example shows.
 \begin{definition}[\cite{nlab:coherent_object}]
     An object $X$ of $\mathcal{C}$ is \emph{compact} if the top element of the poset
     of subobjects of $X$ is a \emph{compact element}.
+    \label{def:compact-object}
 \end{definition}
 
 \begin{definition}[\cite{nlab:coherent_object}]
     An object $X$ of $\mathcal{C}$ is \emph{stable} if for all compact $Y$ and morphisms $Y \to X$,
     the fiber product $Y \times_{X} Y$ is compact.
+    \label{def:stable-object}
 \end{definition}
 
 \begin{definition}[\cite{nlab:coherent_object}]
     An object $X$ of $\mathcal{C}$ is \emph{coherent} if it is compact and stable.
+    \uses{def:stable-object, def:compact-object}
     \label{def:coherent-object}
 \end{definition}
 

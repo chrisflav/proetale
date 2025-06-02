@@ -19,6 +19,12 @@
     \label{lemma:weakly-etale-hasringhomprop}
 \end{lemma}
 
+\begin{lemma}
+    Etale morphisms are weakly étale.
+    \uses{def:weakly-etale-morphism}
+    \label{lemma:etale-weakly-etale}
+\end{lemma}
+
 \begin{lemma}[{\cite[Lemma 4.1.6]{proetale}}]
     Weakly étale is stable under composition and base change.
     \uses{def:weakly-etale-morphism}
@@ -31,6 +37,8 @@
     This follows because flat is stable under composition and base change.
     \leanok
 \end{proof}
+
+\section{The site}
 
 \begin{definition}[Quasi-compact cover]
     A jointly surjective family $(f_i \colon Y_i \to X)_{i \in I}$ of morphisms of schemes is
@@ -95,3 +103,35 @@ The central property of the pro-étale site is the following:
     \uses{prop:proet-lwc, prop:lwc-replete}
     \label{prop:proet-replete}
 \end{corollary}
+
+\section{Comparison with étale cohomology}
+
+Let $X$ be a scheme. Since an étale map is also weakly étale by \ref{lemma:etale-weakly-etale} we may
+define:
+
+\begin{definition}
+    We denote by $\nu = \nu_X$ the canonical functor $\shv{\proet{X}} \to \shv{\et{X}}$.
+    \uses{lemma:etale-weakly-etale}
+    \label{def:forget-proet}
+\end{definition}
+
+\begin{definition}[{\cite[\S3]{jannsen}}]
+    Denote by $\gammacont(X, -)\colon \mathrm{Ab}(\et{X})^{\N} \to \mathrm{Ab}$ the functor
+    $$\left( F_n \right)_{n \in \N} \mapsto \Gamma\left(X, \lim F_n\right).$$ For an inverse
+    system $(F_n)_{n \in \N}$, we call the cohomology groups
+    $H^i \mathrm{R} \gammacont\left(X, -\right)\left( \left( F_{n} \right)_{n \in \N} \right) $,
+    denoted by $H^i_{\mathrm{cont}}(\et{X}, (F_{n})_{n \in \N})$,
+    the \emph{continuous étale cohomology} of $X$ with coefficients in $\left( F_n \right)_{n \in \N}$.
+
+    \label{def:continuous-etale-cohomology}
+\end{definition}
+
+\begin{theorem}[{\cite[Proposition 5.6.2]{proetale}}]
+    Let $(F_n)_{n \in \N}$ be an inverse system of abelian sheaves on $\et{X}$ with
+    epimorphic transition maps. Then there exists a canonical identification
+    \[
+        H^i_{\mathrm{cont}}(\et{X}, (F_n)_n) \cong H^i(\proet{X}, \lim \nu^* F_n)
+    .\]
+    \uses{def:continuous-etale-cohomology, prop:proet-replete, def:forget-proet, prop:lim-exact-replete}
+    \label{thm:comparison-continuous}
+\end{theorem}
