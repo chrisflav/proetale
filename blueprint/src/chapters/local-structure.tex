@@ -37,9 +37,46 @@ Let $A$ be a strictly henselian local ring, and let $B$ be a weakly étale local
 
 \section{w-local spaces}
 
+Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X\) that admits no further non-split open covers.
+
+
 \section{w-local rings}
 
 \section{w-contractible rings}
 
-The last theorem in this section used before proposition 5.6.2 is theorem 2.4.9
+\begin{definition}[w-contractible rings, {\cite[Definition 2.4.1]{proetale}}]
+A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \(A \to B\) has a section.
+    \label{def:w-contractible}
+\end{definition}
+
+The last theorem in this section used before \cite[Theorem 5.6.2]{proetale} is the following theorem \cref{thm:ind-etale-w-contractible}
+
+\begin{lemma}[{\cite[Theorem 2.4.9]{proetale}}]
+For any ring $A$, there is an ind-\'etale faithfully flat $A$-algebra $A_0$ with $A_0$ w-contractible.
+    \label{thm:ind-etale-w-contractible}
+    \uses{def:w-contractible}
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+\item Choose an ind-\'etale faithfully flat $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$-algebra $A'_0$ with $A'_0$ w-strictly local and $\Spec(A'_0)$ an extremally disconnected profinite set; this is possible by
+    \begin{enumerate}
+    \item Since $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$ is absolutely flat (Lemma 2.2.3), we can ind an ind-\'etale faithfully flat $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$-algebra \(\bar{A}\) by Lemma 2.2.7
+    \item Choose a extremally disconnected profinite set $Y$ covers \(X = (\Spec \bar{A})^c\) (We can choose \(Y = \beta(X)\) by Example 2.4.6);
+    \item By the functor \(S \mapsto S\times_(\pi_0(X)) X\) from \(\ProFin_{/\pi_0(X)} \to \Aff_{/X}\) in Lemma 2.2.8, we get a ind-(Zariski localization) ring map \(f: \bar{A} \to A'_0 \), such that \((\Spec A'_0)^c = S\). The construction \(A'_0\) and the map \(f\) is w-local as mentioned in Lemma 2.1.14 (by Lemma 2.1.9 limit of w-local (along w-local map) is w-local). By the construction, the local ring of \(A'_0\) at every closed point is isomorphic to the local ring of its image in \(\bar{A}\), thus this \(f\) preserves w-strict locality by Lem 2.2.9(check closed point). {\color{red} State this as a lemma: Construction \(f\) preserves w-locality and w-strict locality.}
+    \item As ind-(Zariski localization) is ind-\'etale faithfully flat (A new lemma here), so the composition ring map $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$ is ind-\'etale faithfully flat.
+    \end{enumerate}
+
+\item Let $A_0 = \operatorname{Hens}_{A^{\mathbb{Z}}}(A'_0)$. 
+    \begin{enumerate}
+    \item By Lemma 2.4.8, $A'_0$ is w-contractible.
+    \item Since \(\operatorname{Hens}_{A^{\mathbb{Z}}}(-) \otimes A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}} \simeq Id \) (Lemma 2.2.12), we have \(A_0 \otimes_{A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}} A^{\mathbb{Z}} \simeq A'_0\).
+    {\color{red} One more lemma show that \(A_0\) is Henselian along \(I_{A^{\mathbb{Z}}} A_0\), why is this not in the paper?} Thus by Lemma 2.4.3, $A_0$ is w-contractible if and only if $ A_0 / I_{A^{\mathbb{Z}}} A_0 \simeq A'_0 $ is. Indeed, $A_0$ is w-contractible.
+    \item The map $A \to A_0$ is faithfully flat and ind-\'etale since both $A \to A^{\mathbb{Z}}$ (Lemma 2.2.4) and $A^{\mathbb{Z}} \to A_0$ ({\color{red} flat since colim of etale maps, faithfully flat since \(I_{A^{\mathbb{Z}}} \) is the Jacobson ideal, maximal points unchanged when quotient by it. State this as a lemma.}) are so individually.
+    \end{enumerate}
+
+\end{enumerate}
+
+
+\end{proof}
 
