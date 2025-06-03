@@ -78,21 +78,68 @@ The category of étale sheaves is rarely replete as the following example shows.
 
 \section{Weakly contractible categories}
 
+From now on, we assume that pullbacks in $\mathcal{C}$ preserve epimorphisms. For example
+this holds in abelian categories and (pre)topoi.
+
 \begin{definition}[{\cite[Definition 3.2.1]{proetale}}]
     An object $F$ of $\mathcal{C}$ is called \emph{weakly contractible} if every epimorphism
-    $G \to F$ has a section. We say $\mathcal{C}$ is \emph{locally weakly contractible},
+    $G \to F$ has a section. We say $\mathcal{C}$ has \emph{enough weakly contractible objects},
+    if every object admits an epimorphism from a weakly contractible one.
+    \label{def:weakly-contractible}
+    \lean{CategoryTheory.WeaklyContractible}
+    \leanok
+\end{definition}
+
+\begin{remark}
+    Under our assumptions on $\mathcal{C}$, an object $F$ is weakly contractible if and only
+    if it is projective.
+    \lean{CategoryTheory.Projective.iff_forall_isSplitEpi_of_hasPullbacks}
+    \leanok
+\end{remark}
+
+\begin{definition}[{\cite[Definition 3.2.1]{proetale}}]
+    We say $\mathcal{C}$ is \emph{locally weakly contractible},
     if each $X$ in $\mathcal{C}$ admits an epimorphism from the coproduct of $Y_i$,
     where $Y_i$ is coherent and weakly contractible.
     \uses{def:coherent-object}
     \label{def:lwc}
 \end{definition}
 
+\begin{remark}
+    If $\mathcal{C}$ is locally weakly contractible, it has enough contractible objects. Indeed,
+    the coproduct of projective objects is projective.
+\end{remark}
+
 \begin{example}
     The category of sets is locally weakly contractible.
 \end{example}
 
+\begin{lemma}
+    Let $\mathcal{C}$ have enough weakly contractible objects and $F \to G$ be a morphism.
+    Then $F \to G$ is an epimorphism if and only if for every
+    weakly contractible $Y$ in $\mathcal{C}$, the induced map
+    $F(Y) = \mathrm{Hom}(Y, F) \to \mathrm{Hom}(Y, G) = G(Y)$ is
+    surjective.
+    \uses{def:weakly-contractible}
+    \label{lemma:wc-epi-criterion}
+    \lean{CategoryTheory.EnoughProjectives.epi_iff_forall_projective}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    Choose an epimorphism $e \colon P \to G$ where $P$ is weakly contractible
+    and lift that to $P \to F$.
+    \leanok
+\end{proof}
+
 \begin{proposition}
-    If $\mathcal{C}$ is locally weakly contractible, it is replete.
-    \uses{def:lwc, def:replete}
-    \label{prop:lwc-replete}
+    If $\mathcal{C}$ has enough weakly contractible objects, it is replete.
+    \uses{def:weakly-contractible, def:replete}
+    \label{prop:wc-replete}
 \end{proposition}
+
+\begin{proof}
+    This follows from \ref{lemma:wc-epi-criterion}, the fact that $\mathrm{Hom}(Y, -)$ commutes with
+    limits and the corresponding statement in the category of sets.
+    \uses{lemma:wc-epi-criterion}
+\end{proof}

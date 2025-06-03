@@ -55,12 +55,13 @@
     The \emph{small $\mathcal{P}$-site of $X$} is the category of $X$-schemes with
     structure morphism satisfying $\mathcal{P}$ and with covers given by quasi-compact,
     jointly surjective families of morphisms satisfying $\mathcal{P}$.
+    \label{def:small-P-site}
 \end{definition}
 
 \begin{definition}[The fpqc site]
     Let $X$ be a scheme. The \emph{fqpc site of $X$}, denoted by $\fpqc{X}$, is the
     $\mathcal{P}$-site of $X$ with $\mathcal{P} = \text{flat}$.
-
+    \uses{def:small-P-site}
     \label{def:fpqc-site}
 \end{definition}
 
@@ -69,18 +70,25 @@
     fpqc topology if and only if it is a sheaf in the Zariski topology and satisfies
     the sheaf property for $\{V \to U\}$ with $V$, $U$ affine
     and $V \to U$ faithfully flat.
+    \uses{def:fpqc-site}
+    \label{prop:fpqc-sheaf-iff}
 \end{proposition}
 
 \begin{theorem}
     The fpqc site is subcanonical, i.e., every representable presheaf is a sheaf.
+    \uses{def:fpqc-site}
     \label{thm:fpqc-subcanonical}
 \end{theorem}
+
+\begin{proof}
+    TBA. \uses{prop:fqpc-sheaf-iff}
+\end{proof}
 
 \begin{definition}[The pro-étale site, {\cite[Definition 4.1.1]{proetale}}]
     Let $X$ be a scheme. The \emph{pro-étale site of $X$}, denoted by $\proet{X}$, is the
     $\mathcal{P}$-site of $X$ with $\mathcal{P} = \text{weakly étale}$.
 
-    \uses{def:qc-cover, def:weakly-etale-morphism}
+    \uses{def:qc-cover, def:weakly-etale-morphism, def:small-P-site}
     \label{def:proetale-site}
 \end{definition}
 
@@ -93,14 +101,14 @@
 The central property of the pro-étale site is the following:
 
 \begin{proposition}
-    The category of sheaves on $\proet{X}$ is locally weakly contractible.
-    \uses{def:lwc, def:proetale-site}
-    \label{prop:proet-lwc}
+    The category of sheaves on $\proet{X}$ has enough weakly contractible objects.
+    \uses{def:weakly-contractible, def:proetale-site}
+    \label{prop:proet-wc}
 \end{proposition}
 
 \begin{corollary}
     The category of sheaves on $\proet{X}$ is replete.
-    \uses{prop:proet-lwc, prop:lwc-replete}
+    \uses{prop:proet-wc, prop:wc-replete}
     \label{prop:proet-replete}
 \end{corollary}
 
