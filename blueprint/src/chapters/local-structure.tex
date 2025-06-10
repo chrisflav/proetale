@@ -23,12 +23,12 @@
 %     \leanok
 % \end{definition}
 
-% \begin{theorem}[{\cite[Theorem 2.1.1]{proetale}}]
-%     Let \(X\) be a topological space. Then the Stone-Čech compactification \(\beta(X)\) is extremally disconnected.
-%     \label{thm:stone-cech-extremally-disconnected}
-%     \uses{def:extremally-disconnected, def:stone-cech-compactification}
-%     \lean{StoneCech.projective}
-% \end{theorem}
+\begin{theorem}
+    Let \(X\) be a topological space. Then the Stone-Čech compactification \(\beta(X)\) is extremally disconnected.
+    \label{thm:stone-cech-extremally-disconnected}
+    % \uses{def:extremally-disconnected, def:stone-cech-compactification}
+    \lean{StoneCech.projective}
+\end{theorem}
 
 % \begin{proof}
 %     Omitted.
@@ -136,24 +136,24 @@ For any ring $A$, there is an ind-\'etale faithfully flat $A$-algebra $A_0$ with
 \end{lemma}
 
 \begin{proof}
+    \uses{thm:stone-cech-extremally-disconnected}
+
 \begin{enumerate}
-\item Choose an ind-\'etale faithfully flat $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$-algebra $A'_0$ with $A'_0$ w-strictly local and $\Spec(A'_0)$ an extremally disconnected profinite set; this is possible by
+\item Choose an ind-\'etale faithfully flat $A^{Z}/I_{A^{Z}}$-algebra $A'_0$ with $A'_0$ w-strictly local and $\Spec(A'_0)$ an extremally disconnected profinite set; this is possible by
     \begin{enumerate}
-    \item Since $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$ is absolutely flat (Lemma 2.2.3), we can find an ind-\'etale faithfully flat $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$-algebra \(\bar{A}\) by Lemma 2.2.7
+    \item Since $A^{Z}/I_{A^{Z}}$ is absolutely flat (Lemma 2.2.3), we can find an ind-\'etale faithfully flat $A^{Z}/I_{A^{Z}}$-algebra \(\bar{A}\) by Lemma 2.2.7
     \item Choose a extremally disconnected profinite set $Y$ covers \(X = (\Spec \bar{A})^c\) (We can choose \(Y\) to be \(\beta(X)\), the Stone-\v{C}ech compactification of \(X\));
     \item By the functor \(S \mapsto S\times_{\pi_0(X)} X\) from \(\ProFin_{/\pi_0(X)} \to \Aff_{/X}\) in Lemma 2.2.8, we get a ind-(Zariski localization) ring map \(f: \bar{A} \to A'_0 \), such that \((\Spec A'_0)^c = S\). The construction \(A'_0\) and the map \(f\) is w-local as mentioned in Lemma 2.1.14 (by Lemma 2.1.9 limit of w-local (along w-local map) is w-local). By the construction, the local ring of \(A'_0\) at every closed point is isomorphic to the local ring of its image in \(\bar{A}\), thus this \(f\) preserves w-strict locality by Lem 2.2.9(check closed point). {\color{red} State this as a lemma: Construction \(f\) preserves w-locality and w-strict locality.}
-    \item As ind-(Zariski localization) is ind-\'etale faithfully flat (A new lemma here), so the composition ring map $A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}$ is ind-\'etale faithfully flat.
+    \item As ind-(Zariski localization) is ind-\'etale faithfully flat (A new lemma here), so the composition ring map $A^{Z}/I_{A^{Z}}$ is ind-\'etale faithfully flat.
     \end{enumerate}
 
-\item Let $A_0 = \operatorname{Hens}_{A^{\mathbb{Z}}}(A'_0)$. 
+\item Let $A_0 = \operatorname{Hens}_{A^{Z}}(A'_0)$. 
     \begin{enumerate}
     \item By Lemma 2.4.8, $A'_0$ is w-contractible.
-    \item Since \(\operatorname{Hens}_{A^{\mathbb{Z}}}(-) \otimes A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}} \simeq Id \) (Lemma 2.2.12), we have \(A_0 \otimes_{A^{\mathbb{Z}}/I_{A^{\mathbb{Z}}}} A^{\mathbb{Z}} \simeq A'_0\).
-    {\color{red} One more lemma show that \(A_0\) is Henselian along \(I_{A^{\mathbb{Z}}} A_0\), why is this not in the paper?} Thus by Lemma 2.4.3, $A_0$ is w-contractible if and only if $ A_0 / I_{A^{\mathbb{Z}}} A_0 \simeq A'_0 $ is. Indeed, $A_0$ is w-contractible.
-    \item The map $A \to A_0$ is faithfully flat and ind-\'etale since both $A \to A^{\mathbb{Z}}$ (Lemma 2.2.4) and $A^{\mathbb{Z}} \to A_0$ ({\color{red} flat since colim of etale maps, faithfully flat since \(I_{A^{\mathbb{Z}}} \) is the Jacobson ideal, maximal points unchanged when quotient by it. State this as a lemma.}) are so individually.
+    \item Since \(\operatorname{Hens}_{A^{Z}}(-) \otimes A^{Z}/I_{A^{Z}} \simeq Id \) (Lemma 2.2.12), we have \(A_0 \otimes_{A^{Z}/I_{A^{Z}}} A^{Z} \simeq A'_0\).
+    {\color{red} One more lemma show that \(A_0\) is Henselian along \(I_{A^{Z}} A_0\), why is this not in the paper?} Thus by Lemma 2.4.3, $A_0$ is w-contractible if and only if $ A_0 / I_{A^{Z}} A_0 \simeq A'_0 $ is. Indeed, $A_0$ is w-contractible.
+    \item The map $A \to A_0$ is faithfully flat and ind-\'etale since both $A \to A^{Z}$ (Lemma 2.2.4) and $A^{Z} \to A_0$ ({\color{red} flat since colim of etale maps, faithfully flat since \(I_{A^{Z}} \) is the Jacobson ideal, maximal points unchanged when quotient by it. State this as a lemma.}) are so individually.
     \end{enumerate}
-
-    \uses{thm:stone-cech-extremally-disconnected}
 \end{enumerate}
 
 
