@@ -6,3 +6,4 @@ import Proetale.Morphisms.WeaklyEtale
 import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Topology.Flat.QuasiCompactCover
+import Proetale.Topology.Flat.Sheaf
