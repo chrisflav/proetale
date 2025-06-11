@@ -306,4 +306,11 @@ lemma of_comp [∀ i, PrespectralSpace (X i)] [TopologicalSpace S]
   rw [← heq, ← hcomp, Set.image_comp]
   exact subset_trans (Set.image_mono hVK) (by simp)
 
+lemma comp {σ : ι → Type*} {Y : ∀ (i : ι) (k : σ i), Type*}
+    (g : ∀ (i : ι) (k : σ i), Y i k → X i)
+    [∀ i k, TopologicalSpace (Y i k)]
+    {U : Set S} (hU : IsCompactOpenCovered f U) :
+    IsCompactOpenCovered (fun (p : Σ (i : ι), σ i) ↦ f p.1 ∘ g p.1 p.2) U :=
+  sorry
+
 end IsCompactOpenCovered

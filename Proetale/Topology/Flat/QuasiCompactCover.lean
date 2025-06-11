@@ -134,6 +134,10 @@ instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover P) [𝒰.QuasiCompact] {T :
     obtain ⟨z, hzl, hzr⟩ := Pullback.exists_preimage_pullback x y heq.symm
     refine ⟨i, hi, z, ⟨by simpa [hzl], by simpa [hzr]⟩, hzl⟩
 
+instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover P) [𝒰.QuasiCompact] {T : Scheme.{u}} (f : T ⟶ S) :
+    (𝒰.pullbackCover' f).QuasiCompact := by
+  sorry
+
 /-- If `𝒱` is a refinement of `𝒰` such that `𝒱` is quasicompact, also `𝒰` is quasicompact. -/
 @[stacks 03L8]
 lemma of_hom [P.IsMultiplicative] {𝒰 𝒱 : S.Cover P} (f : 𝒱 ⟶ 𝒰) [𝒱.QuasiCompact] :
@@ -164,5 +168,24 @@ lemma iff_sigma {𝒰 : Cover.{u} P S} [IsLocalAtSource P] :
     refine ⟨⟨(sigmaMk 𝒰.obj).symm '' V.1, by simpa using V.2⟩, by simpa, ?_⟩
     simp only [sigma_J, PUnit.default_eq_unit, sigma_obj, carrier_eq_coe, ← Set.image_comp]
     convert hU
+
+instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} {f : X ⟶ Y} [IsIso f] :
+    (coverOfIsIso (P := P) f).QuasiCompact :=
+  of_isOpenMap (fun _ ↦ f.homeomorph.isOpenMap)
+
+instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} P X) [𝒰.QuasiCompact]
+    (f : ∀ (x : 𝒰.J), (𝒰.obj x).Cover P) [∀ x, (f x).QuasiCompact] :
+    QuasiCompact (𝒰.bind f) := by
+  constructor
+  intro U hU
+  obtain ⟨s, hs, V, hcV, hU⟩ := hU.isCompactOpenCovered 𝒰
+  have (i hi) : IsCompactOpenCovered (fun k ↦ ((f i).map k).base) (V i hi) :=
+    (f i).isCompactOpenCovered_of_isCompact (hcV i hi)
+  choose t ht W hcW hV using this
+  have : Finite s := hs
+  have (i hi) : Finite (t i hi) := ht i hi
+  refine .of_finite (κ := Σ (i : s), t i.1 i.2) (fun p ↦ ⟨p.1, p.2⟩) (fun p ↦ W _ p.1.2 _ p.2.2)
+    (fun p ↦ hcW ..) ?_
+  simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using hU
 
 end AlgebraicGeometry.Scheme.Cover.QuasiCompact
