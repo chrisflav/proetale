@@ -1,5 +1,7 @@
 \chapter{Local structure}
 
+\section{Henselization}
+
 % \section{Preliminaries}
 
 % \begin{definition} [Extremally disconnected space]
@@ -130,30 +132,47 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \
 The last theorem in this section used before \cite[Theorem 5.6.2]{proetale} is the following \cref{thm:ind-etale-w-contractible}
 
 \begin{lemma}[{\cite[Theorem 2.4.9]{proetale}}]
-For any ring $A$, there is an ind-\'etale faithfully flat $A$-algebra $A_0$ with $A_0$ w-contractible.
+    For any ring $A$, there exists an ind-étale faithfully flat $A$-algebra $A_0$ with $A_0$ w-contractible.
     \label{thm:ind-etale-w-contractible-cover-exists}
     \uses{def:w-contractible-ring}
 \end{lemma}
 
 \begin{proof}
     \uses{thm:stone-cech-extremally-disconnected}
+    
+    We construct $A_0$ in two steps: first building a w-strictly local cover of $A^Z/I_{A^Z}$, then lifting it to $A$.
 
-\begin{enumerate}
-\item Choose an ind-\'etale faithfully flat $A^{Z}/I_{A^{Z}}$-algebra $A'_0$ with $A'_0$ w-strictly local and $\Spec(A'_0)$ an extremally disconnected profinite set; this is possible by
     \begin{enumerate}
-    \item Since $A^{Z}/I_{A^{Z}}$ is absolutely flat (Lemma 2.2.3), we can find an ind-\'etale faithfully flat $A^{Z}/I_{A^{Z}}$-algebra \(\bar{A}\) by Lemma 2.2.7
-    \item Choose a extremally disconnected profinite set $Y$ covers \(X = (\Spec \bar{A})^c\) (We can choose \(Y\) to be \(\beta(X)\), the Stone-\v{C}ech compactification of \(X\));
-    \item By the functor \(S \mapsto S\times_{\pi_0(X)} X\) from \(\ProFin_{/\pi_0(X)} \to \Aff_{/X}\) in Lemma 2.2.8, we get a ind-(Zariski localization) ring map \(f: \bar{A} \to A'_0 \), such that \((\Spec A'_0)^c = S\). The construction \(A'_0\) and the map \(f\) is w-local as mentioned in Lemma 2.1.14 (by Lemma 2.1.9 limit of w-local (along w-local map) is w-local). By the construction, the local ring of \(A'_0\) at every closed point is isomorphic to the local ring of its image in \(\bar{A}\), thus this \(f\) preserves w-strict locality by Lem 2.2.9(check closed point). {\color{red} State this as a lemma: Construction \(f\) preserves w-locality and w-strict locality.}
-    \item As ind-(Zariski localization) is ind-\'etale faithfully flat (A new lemma here), so the composition ring map $A^{Z}/I_{A^{Z}}$ is ind-\'etale faithfully flat.
-    \end{enumerate}
+        \item \textbf{Construction of w-strictly local cover of $A^Z/I_{A^Z}$:} 
+        We construct an ind-étale faithfully flat $A^Z/I_{A^Z}$-algebra $A_0'$ that is w-strictly local with extremally disconnected profinite set of connected components.
 
-\item Let $A_0 = \operatorname{Hens}_{A^{Z}}(A'_0)$. 
-    \begin{enumerate}
-    \item By Lemma 2.4.8, $A'_0$ is w-contractible.
-    \item Since \(\operatorname{Hens}_{A^{Z}}(-) \otimes A^{Z}/I_{A^{Z}} \simeq Id \) (Lemma 2.2.12), we have \(A_0 \otimes_{A^{Z}/I_{A^{Z}}} A^{Z} \simeq A'_0\).
-    {\color{red} One more lemma show that \(A_0\) is Henselian along \(I_{A^{Z}} A_0\), why is this not in the paper?} Thus by Lemma 2.4.3, $A_0$ is w-contractible if and only if $ A_0 / I_{A^{Z}} A_0 \simeq A'_0 $ is. Indeed, $A_0$ is w-contractible.
-    \item The map $A \to A_0$ is faithfully flat and ind-\'etale since both $A \to A^{Z}$ (Lemma 2.2.4) and $A^{Z} \to A_0$ ({\color{red} flat since colim of etale maps, faithfully flat since \(I_{A^{Z}} \) is the Jacobson ideal, maximal points unchanged when quotient by it. State this as a lemma.}) are so individually.
-    \end{enumerate}
+        \begin{enumerate}
+            \item Since $A^Z/I_{A^Z}$ is absolutely flat (Lemma 2.2.3), Lemma 2.2.7 gives an ind-étale faithfully flat $A^Z/I_{A^Z}$-algebra $\overline{A}$ that is w-strictly local and absolutely flat.
+
+            \item Let $X = \Spec \overline{A}$. By Lemma 2.1.4, we have $X^c \simeq \pi_0(X)$. Take $Y_0 = \beta(X^c)$, the Stone-Čech compactification of $X^c$, which is extremally disconnected (\cref{thm:stone-cech-extremally-disconnected}).
+
+            \item Applying the functor $S \mapsto S \times_{\pi_0(X)} X$ from $\ProFin_{/\pi_0(X)}$ to $\AffSch_{/X}$ (Lemma 2.2.8) to $Y_0$ yields an ind-(Zariski localization) map $f: \overline{A} \to A_0'$ with $(\Spec A_0')^c \cong Y_0$. By Lemma 2.1.14 (using Lemma 2.1.9 for preservation of w-locality under limits with w-local maps), this construction is w-local.
+
+            The local rings of $A_0'$ at closed points are isomorphic to those of $\overline{A}$ at their images, so Lemma 2.2.9 shows $A_0'$ is w-strictly local (since $\overline{A}$ is strictly local and the construction preserves the local rings). {\red Could be a separated lemma: If $A$ is w-strictly local, $B$ is an ind-Zariski localization of $A$, and $B$ is w-local, then $B$ is w-strictly local.}
+
+            \item Since both maps \(A^Z/I_{A^Z} \to \bar{A} \to A_0'\) are ind-étale and faithfully flat {(\red A new lemma here, ind-Zariski localizations is ind etale flat.)}, the composition $A^Z/I_{A^Z} \to A_0'$ is ind-étale faithfully flat.
+        \end{enumerate}
+        
+        By Lemma 2.4.8, $A_0'$ is w-contractible.
+
+        \item \textbf{Lifting to $A$:} 
+        Define $A_0 = \operatorname{Hens}_{A^Z}(A_0')$, the Henselization of $A_0'$ relative to $A^Z$.
+        
+        \begin{enumerate}
+            \item By Lemma 2.2.12, we have $A_0 \otimes_{A^Z} (A^Z/I_{A^Z}) \cong A_0'$. {\red add lemma: (relative) Henselization is Henselian.}
+            Since $A_0$ is Henselian along $I_{A^Z}A_0$, Lemma 2.4.3 implies $A_0$ is w-contractible as $A_0'$ is w-contractible.
+
+            \item The map $A \to A_0$ is faithfully flat and ind-étale because:
+            \begin{itemize}
+                \item $A \to A^Z$ is ind-étale faithfully flat (Lemma 2.2.4)
+                \item $A^Z \to A_0$ is ind-étale (as a colimit of ind-étale maps {\red lemma here}) and faithfully flat {\red(quotient by Jacobson \(I^Z\) leaves maximal ideals unchanged. faithfully flat can be checked locally at maximal ideal of \(A^Z\). Remains to show (relative) Henselization of f.f. local ring hom is faithfully flat, and Henselization repect localization. Should develop a whole section of Henselization...)}
+            \end{itemize}
+        \end{enumerate}
 \end{enumerate}
 
 
