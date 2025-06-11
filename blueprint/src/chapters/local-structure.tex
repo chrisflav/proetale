@@ -43,7 +43,9 @@ The following definitions are already formalized in Mathlib.
 
 1. Ofer Gabber \(K\)-theory of Henselian local rings and Henselian pairs.
 
-2. \url{https://arxiv.org/pdf/2112.13552}
+2. \url{https://stacks.math.columbia.edu/tag/0EM7}
+
+3. \url{https://arxiv.org/pdf/2112.13552} If \((A,I)\) is a Zariski pair (contained in Jacobson ideal, the only open set containing \(V(I)\) is \(\Spec A\), then the Henselization is faithfully flay over \(A\). The only input should be Tag 00HR A flat local ring homomorphism of local rings is faithfully flat.
 
 Unify the definition of 2.2.10 with the definition of Henselization in Gabber's paper.
 
@@ -74,9 +76,11 @@ Unify the definition of 2.2.10 with the definition of Henselization in Gabber's 
     For surjective maps $A \to A/I$, the functor $\Hens_A(-)$ is fully faithful, so $\Hens_A(-) \otimes_A A/I \simeq \mathrm{id}$ as functors on $\mathrm{Ind}(\et{(A/I)})$.
 \end{lemma}
 
+\begin{lemma}[{\cite[Lemma 2.2.13]{proetale}}]
+
 \section{Weakly étale algebras}
 
-\begin{definition}[ind-(Zariski localizations), {\cite[Definition 2.2.1(iv)]{proetale}}]
+\begin{definition}[Ind-(Zariski localizations), {\cite[Definition 2.2.1(iv)]{proetale}}]
     \label{def:ind-zariski-localization}
 
     An $R$-algebra $S$ is called a \textit{Zariski localization} if $S \simeq \prod_{i=1}^n R[f_i^{-1}]$ for some $f_1,\dots,f_n \in R$. An \textit{ind-(Zariski localization)} is a filtered colimit of Zariski localizations. A ring homomorphism $f : R \to S$ is called a \textit{Zariski localization} (resp. \emph{ind-(Zariski localization)}) if $S$ is Zariski localization (resp. ind-(Zariski localization)) as an $R$-algebra via $f$.
@@ -158,12 +162,18 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
 
 % TBA: S: category of spectral spaces, i : \(\S^{wl}\) is the full subcategory of \(\S\) consisting of w-local spaces.
 
-\begin{lemma}[{\cite[2.1.4, second part]{proetale}}]
+\begin{lemma}[{\cite[Lemma 2.1.4, second part]{proetale}}]
     \label{lem:w-local-space-connected-components}
     \uses{def:w-local-space}
 
     Let $X$ be a w-local spectral space. The composition $X^c \to X \to \pi_0(X)$ is a homeomorphism.
 \end{lemma}
+
+\begin{definition}[{\cite[Lemma 2.1.10]{proetale}}]
+    \label{def:w-localization-space}
+    \uses{def:w-local-space, def:w-local-space-category}
+    The inclusion $i : \mathcal{S}^{wl} \to \mathcal{S}$ admits a right adjoint $X \mapsto X^Z$. The counit $X^Z \to X$ is a pro-(open cover) for all $X$, and the composite $(X^Z)^c \to X$ is a homeomorphism for the constructible topology on $X$.
+\end{definition}
 
 \section{w-local rings}
 
@@ -177,6 +187,12 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
     A ring map \(f: A \to B\) between w-local rings is \emph{w-local} if the induced map of w-local spaces \(\Spec(f) : \Spec(B) \to \Spec(A)\) is w-local.
     \label{def:w-local-ring-map}
     \uses{def:w-local-ring, def:w-local-space, def:w-local-morphism}
+\end{definition}
+
+\begin{definition}[{\cite[Lemma 2.2.4]{proetale}}]
+    \label{def:w-localization-ring}
+    \uses{def:w-localization-space}
+    The inclusion of the category of w-local rings and maps inside all rings admits a left adjoint $A \mapsto A^Z$. The unit $A \to A^Z$ is a faithfully flat ind-(Zariski localization), and $\Spec(A)^Z = \Spec(A^Z)$ over $\Spec(A)$.
 \end{definition}
 
 \begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
@@ -260,7 +276,7 @@ The last theorem in this section used before \cite[Theorem 5.6.2]{proetale} is t
 \begin{proof}
     \uses{thm:stone-cech-extremally-disconnected,lem:w-local-quotient-Jacobson-absolute-flat,lem:absolute-flat-exists-ind-etale-w-strictly-local,lem:w-local-space-connected-components,lem:decouple-topology-from-algebra,lem:w-local-space-preserves-limits,lem:w-strictly-local-ind-Zariski-localization,
     lem:w-strictly-local-pi0-extremally-disconnected,lem:ind-etale-flat-of-ind-Zariski,
-    lem:henselization-fully-faithful,lem:w-contractible-henselian}
+    lem:henselization-fully-faithful,lem:w-contractible-henselian,def:w-localization-ring}
     
     We construct $A_0$ in two steps: first building a w-strictly local cover of $A^Z/I_{A^Z}$, then lifting it to $A$.
 
@@ -290,8 +306,8 @@ The last theorem in this section used before \cite[Theorem 5.6.2]{proetale} is t
 
             \item The map $A \to A_0$ is faithfully flat and ind-étale because:
             \begin{itemize}
-                \item $A \to A^Z$ is ind-étale faithfully flat (Lemma 2.2.4)
-                \item $A^Z \to A_0$ is ind-étale (as a colimit of ind-étale maps {\red lemma here}) and faithfully flat {\red(quotient by Jacobson \(I^Z\) leaves maximal ideals unchanged. faithfully flat can be checked locally at maximal ideal of \(A^Z\). Remains to show (relative) Henselization of f.f. local ring hom is faithfully flat, and Henselization repect localization. Should develop a whole section of Henselization...)}
+                \item $A \to A^Z$ is ind-étale faithfully flat (\Cref{def:w-localization-ring});
+                \item $A^Z \to A_0$ is ind-étale (as a colimit of ind-étale maps) and faithfully flat {\red(quotient by Jacobson \(I^Z\) leaves maximal ideals unchanged. faithfully flat can be checked locally at maximal ideal of \(A^Z\). Remains to show (relative) Henselization of f.f. local ring hom is faithfully flat, and Henselization repect localization. Should develop a whole section of Henselization...)}
             \end{itemize}
         \end{enumerate}
 \end{enumerate}
