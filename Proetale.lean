@@ -1,6 +1,5 @@
 import Proetale.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
-import Proetale.Mathlib.AlgebraicGeometry.Cover.Sigma
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Proetale.Mathlib.AlgebraicGeometry.Limits
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic

@@ -35,60 +35,6 @@ instance {C : Type*} [Category C] : (⊤ : MorphismProperty C).IsStableUnderBase
 
 variable {C : Type*} [Category C] {X : C}
 
-def Limits.Fork.isLimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
-    (c : Fork f g)
-    {f' g' : X' ⟶ Y'} (c' : Fork f' g')
-    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) :
-    IsLimit c ≃ IsLimit c' :=
-  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
-  IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)
-
-@[reassoc (attr := simp)]
-lemma Limits.opCoproductIsoProduct'_hom_comp_π {α : Type*} {Z : α → C} {c : Cofan Z}
-    {f : Fan fun i ↦ op (Z i)} (hc : IsColimit c) (hf : IsLimit f) (i : α) :
-    (opCoproductIsoProduct' hc hf).hom ≫ f.proj i = (c.inj i).op := by
-  simp [opCoproductIsoProduct', Fan.proj]
-
-@[reassoc (attr := simp)]
-lemma Limits.opCoproductIsoProduct_hom_comp_π {α : Type*} (Z : α → C) [HasCoproduct Z] (i : α) :
-    (opCoproductIsoProduct Z).hom ≫ Pi.π _ i = (Sigma.ι _ i).op :=
-  Limits.opCoproductIsoProduct'_hom_comp_π ..
-
-@[reassoc (attr := simp)]
-lemma Limits.ConeMorphism.hom_inv_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F}
-    (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
-  simp [← Cone.category_comp_hom]
-
-@[reassoc (attr := simp)]
-lemma Limits.ConeMorphism.inv_hom_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F}
-    (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
-  simp [← Cone.category_comp_hom]
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F} (f : c ≅ d) :
-    IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F} (f : c ≅ d) :
-    IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
-
-@[reassoc (attr := simp)]
-lemma Limits.CoconeMorphism.hom_inv_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F}
-    (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
-  simp [← Cocone.category_comp_hom]
-
-@[reassoc (attr := simp)]
-lemma Limits.CoconeMorphism.inv_hom_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F}
-    (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
-  simp [← Cocone.category_comp_hom]
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F} (f : c ≅ d) :
-    IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F} (f : c ≅ d) :
-    IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
-
 def CoproductDisjoint.of_binaryCofan_of_pullbackCone {X Y : C}
     (c : BinaryCofan X Y) (hc : IsColimit c)
     (d : PullbackCone c.inl c.inr) (hd : IsLimit d)
@@ -233,69 +179,6 @@ lemma Presieve.isSheafFor_ofArrows_comp {F : Cᵒᵖ ⥤ Type*} {ι : Type*} {Y 
     sorry
   rw [Presieve.isSheafFor_iff_generate, ← Sieve.ofArrows, this]
   sorry
-
-@[ext]
-lemma Presieve.FamilyOfElements.ext {F : Cᵒᵖ ⥤ Type*} {X : C} {R : Presieve X}
-    (x y : R.FamilyOfElements F) (H : ∀ {Y : C} (f : Y ⟶ X) (hf : R f), x f hf = y f hf) :
-    x = y := by
-  funext Z f hf
-  exact H f hf
-
-/-- A family of elements on `{ f : X ⟶ Y }` is an element of `F(X)`. -/
-@[simps apply, simps -isSimp symm_apply]
-def Presieve.FamilyOfElements.singletonEquiv (F : Cᵒᵖ ⥤ Type*) {X Y : C} (f : X ⟶ Y) :
-    (singleton f).FamilyOfElements F ≃ F.obj (op X) where
-  toFun x := x f (by simp)
-  invFun x Z g hg := F.map (eqToHom <| by cases hg; rfl).op x
-  left_inv x := by ext _ _ ⟨rfl⟩; simp
-  right_inv x := by simp
-
-@[simp]
-lemma Presieve.FamilyOfElements.singletonEquiv_symm_apply_self (F : Cᵒᵖ ⥤ Type*) {X Y : C}
-    (f : X ⟶ Y) (x : F.obj (op X)) :
-    (singletonEquiv F f).symm x f ⟨⟩ = x := by
-  simp [singletonEquiv_symm_apply]
-
-lemma Presieve.FamilyOfElements.Compatible.singleton_iff
-    (F : Cᵒᵖ ⥤ Type*) {X Y : C} (f : X ⟶ Y) (x : (singleton f).FamilyOfElements F) :
-    x.Compatible ↔ ∀ {Z : C} (p₁ p₂ : Z ⟶ X), p₁ ≫ f = p₂ ≫ f →
-      F.map p₁.op (x f (by simp)) = F.map p₂.op (x f (by simp)) := by
-  rw [Compatible]
-  refine ⟨fun H Z p₁ p₂ h ↦ H _ _ _ _ h, fun H Y₁ Y₂ Z g₁ g₂ f₁ f₂ ↦ ?_⟩
-  rintro ⟨rfl⟩ ⟨rfl⟩ h
-  exact H _ _ h
-
-lemma Presieve.FamilyOfElements.IsAmalgamation.singleton_iff
-    (F : Cᵒᵖ ⥤ Type*) {X Y : C} (f : X ⟶ Y) (x : (singleton f).FamilyOfElements F) (y : F.obj (op Y)) :
-    x.IsAmalgamation y ↔ F.map f.op y = x f ⟨⟩ := by
-  rw [IsAmalgamation]
-  refine ⟨fun H ↦ H _ _, ?_⟩
-  rintro H Y g ⟨rfl⟩
-  exact H
-
-lemma Presieve.isSheafFor_singleton {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y} :
-    Presieve.IsSheafFor F (.singleton f) ↔
-      ∀ (x : F.obj (op X)),
-        (∀ {Z : C} (p₁ p₂ : Z ⟶ X), p₁ ≫ f = p₂ ≫ f → F.map p₁.op x = F.map p₂.op x) →
-        ∃! y, F.map f.op y = x := by
-  rw [IsSheafFor, Equiv.forall_congr_left (Presieve.FamilyOfElements.singletonEquiv F f)]
-  simp_rw [FamilyOfElements.Compatible.singleton_iff,
-    FamilyOfElements.IsAmalgamation.singleton_iff, FamilyOfElements.singletonEquiv_symm_apply_self]
-
-/-- The sheaf condition for a single morphism is the same as the canonical fork diagram being limiting. -/
-lemma Equalizer.Presieve.isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
-    (c : PullbackCone f f) (hc : IsLimit c) :
-    Presieve.IsSheafFor F (.singleton f) ↔
-      Nonempty
-        (IsLimit (Fork.ofι (F.map f.op) (f := F.map c.fst.op) (g := F.map c.snd.op)
-          (by simp [← Functor.map_comp, ← op_comp, c.condition]))) := by
-  have h (x : F.obj (op X)) :(∀ {Z : C} (p₁ p₂ : Z ⟶ X), p₁ ≫ f = p₂ ≫ f → F.map p₁.op x = F.map p₂.op x) ↔
-      F.map c.fst.op x = F.map c.snd.op x := by
-    refine ⟨fun H ↦ H _ _ c.condition, fun H Z p₁ p₂ h ↦ ?_⟩
-    rw [← PullbackCone.IsLimit.lift_fst hc _ _ h, op_comp, FunctorToTypes.map_comp_apply, H]
-    simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [Types.type_equalizer_iff_unique, Presieve.isSheafFor_singleton]
-  simp_rw [h]
 
 /--
 If
@@ -467,25 +350,6 @@ lemma bot_mem_grothendieckTopology (X : Scheme.{u}) [IsEmpty X] :
   rw [← this]
   exact 𝒰.generate_ofArrows_mem_grothendieckTopology
 
-instance : IsEmpty (⊥_ Scheme) := by
-  rw [← isInitial_iff_isEmpty]
-  exact ⟨initialIsInitial⟩
-
-lemma isEmpty_of_commSq_sigmaι_of_ne {ι : Type u} {X : ι → Scheme.{u}}
-    {i j : ι} {Z : Scheme.{u}} {f : Z ⟶ X i} {g : Z ⟶ X j}
-    (h : CommSq f g (Sigma.ι X i) (Sigma.ι X j)) (hij : i ≠ j) :
-    IsEmpty Z := by
-  refine ⟨fun z ↦ ?_⟩
-  fapply eq_bot_iff.mp <| disjoint_iff.mp <| disjoint_opensRange_sigmaι X i j hij
-  · exact (f ≫ Sigma.ι X i).base z
-  · refine ⟨⟨f.base z, rfl⟩, ⟨g.base z, ?_⟩⟩
-    rw [← Scheme.comp_base_apply, h.w]
-
-lemma isEmpty_pullback_sigmaι_of_ne {ι : Type u} (X : ι → Scheme.{u})
-    {i j : ι} (hij : i ≠ j) :
-    IsEmpty ↑(pullback (Sigma.ι X i) (Sigma.ι X j)) :=
-  isEmpty_of_commSq_sigmaι_of_ne ⟨pullback.condition⟩ hij
-
 -- universe restrictions can be removed again, after #25764 is merged
 lemma preservesFiniteProducts_of_isSheaf_zariskiTopology {F : Scheme.{0}ᵒᵖ ⥤ Type*}
     (hF : Presieve.IsSheaf Scheme.zariskiTopology F) :
@@ -522,7 +386,7 @@ lemma preservesFiniteProducts_of_isSheaf_zariskiTopology {F : Scheme.{0}ᵒᵖ �
         have : IsEmpty s.pt := isEmpty_of_commSq_sigmaι_of_ne ⟨s.condition⟩ hij
         intro x y
         apply isInitialOfIsEmpty.hom_ext
-  · exact hF.isSheafFor _ _ (sigmaOpenCover X').generate_ofArrows_mem_grothendieckTopology
+  · exact hF.isSheafFor _ _ (sigmaOpenCover' X').generate_ofArrows_mem_grothendieckTopology
 
 lemma Scheme.Cover.isSheafFor_sigma_iff' {F : Scheme.{u}ᵒᵖ ⥤ Type (max u (u + 1))} [IsLocalAtSource P]
     (hF : Presieve.IsSheaf Scheme.zariskiTopology F)
@@ -541,7 +405,7 @@ lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type*} [IsLoca
       Presieve.IsSheafFor F (.ofArrows 𝒰.obj 𝒰.map) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · intro x hx
-    let 𝒱 : OpenCover (∐ 𝒰.obj) := sigmaOpenCover _
+    let 𝒱 : OpenCover (∐ 𝒰.obj) := sigmaOpenCover' _
     let P : Presieve (∐ 𝒰.obj) := Presieve.ofArrows _ 𝒱.map
     let fam : P.FamilyOfElements F := sorry
     let z : F.obj (op <| ∐ 𝒰.obj) :=

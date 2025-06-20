@@ -6,9 +6,10 @@ Authors: Christian Merten
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.AlgebraicGeometry.Cover.Sigma
 import Proetale.Topology.Flat.CompactOpenCovered
-import Proetale.Mathlib.AlgebraicGeometry.Cover.Sigma
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 
 /-!
 # Quasi-compact covers
@@ -90,7 +91,7 @@ lemma exists_isAffineOpen_of_isCompact [𝒰.QuasiCompact] {U : S.Opens} (hU : I
     ∃ (n : ℕ) (f : Fin n → 𝒰.J) (V : ∀ i, (𝒰.obj (f i)).Opens),
       (∀ i, IsAffineOpen (V i)) ∧
       ⋃ i, (𝒰.map (f i)).base '' (V i) = U := by
-  obtain ⟨n, a, V, ha, _, heq⟩ := (𝒰.isCompactOpenCovered_of_isCompact hU).exists_mem_of_isBasis
+  obtain ⟨n, a, V, ha, heq⟩ := (𝒰.isCompactOpenCovered_of_isCompact hU).exists_mem_of_isBasis
     (fun i ↦ isBasis_affine_open (𝒰.obj i)) (fun _ _ h ↦ h.isCompact)
   exact ⟨n, a, V, ha, heq⟩
 
@@ -101,7 +102,6 @@ for (weakly)-étale and open covers. -/
 lemma of_isOpenMap (h : ∀ i, IsOpenMap (𝒰.map i).base) :
     QuasiCompact 𝒰 where
   isCompactOpenCovered_of_isAffineOpen {U} hU := .of_isOpenMap
-    (fun i ↦ isBasis_affine_open (𝒰.obj i)) (fun _ _ h ↦ h.isCompact)
     (fun i ↦ (𝒰.map i).continuous) h (fun x _ ↦ ⟨𝒰.f x, 𝒰.covers x⟩) U.2 hU.isCompact
 
 instance (𝒰 : S.OpenCover) : 𝒰.QuasiCompact :=
