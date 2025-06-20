@@ -1,9 +1,16 @@
 import Proetale.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Cover.Sigma
+import Proetale.Mathlib.AlgebraicGeometry.Extensive
+import Proetale.Mathlib.AlgebraicGeometry.Limits
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
+import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Proetale.Mathlib.CategoryTheory.Sites.Canonical
+import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Topology.Flat.QuasiCompactCover
 import Proetale.Topology.Flat.Sheaf
+import Proetale.Topology.SpectralSpace.WLocal

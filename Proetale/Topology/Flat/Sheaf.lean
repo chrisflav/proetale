@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Proetale.Topology.Flat.QuasiCompactCover
+import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
+import Proetale.Mathlib.AlgebraicGeometry.Limits
+import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
@@ -109,14 +113,6 @@ def CoproductDisjoint.of_binaryCofan_of_pullbackCone {X Y : C}
   mono_inr B p q h := by
     rw [show q = c.inr ≫ (h.uniqueUpToIso hc).inv.hom by simp]
     infer_instance
-
-instance GrothendieckTopology.preservesLimitsOfShape_yoneda (J : GrothendieckTopology C)
-    [J.Subcanonical] {I : Type*} [Category I] :
-    PreservesLimitsOfShape I J.yoneda :=
-  have : PreservesLimitsOfShape I (J.yoneda ⋙ sheafToPresheaf J _) :=
-    inferInstanceAs <| PreservesLimitsOfShape I CategoryTheory.yoneda
-  CategoryTheory.Limits.preservesLimitsOfShape_of_reflects_of_preserves _
-    (sheafToPresheaf J _)
 
 lemma Limits.preservesFiniteProducts_of_preservesLimitsOfShape {D : Type*} [Category D] (F : C ⥤ D)
     (H : ∀ (ι : Type v) [Finite ι], PreservesLimitsOfShape (Discrete ι) F) :
@@ -226,12 +222,6 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback' (F : Cᵒᵖ ⥤ Type*) {X : C
   · assumption
   · assumption
 
-@[simp]
-lemma Sieve.generate_bot {X : C} : Sieve.generate (⊥ : Presieve X) = ⊥ := by
-  rw [eq_bot_iff]
-  rintro Y f ⟨Z, g, u, hg, rfl⟩
-  exact hg
-
 -- this needs more assumptions, but the proof will show which the correct ones are
 lemma Presieve.isSheafFor_ofArrows_comp {F : Cᵒᵖ ⥤ Type*} {ι : Type*} {Y Z : ι → C}
     (f : ∀ i, Y i ⟶ X) (g : ∀ i, Z i ⟶ X)
@@ -320,16 +310,18 @@ if and only if it is a presieve for `{ fᵢ : Yᵢ ⟶ X }ᵢ`.
 lemma Presieve.isSheafFor_sigmaDesc_iff {F : Cᵒᵖ ⥤ Type*} {X : C} {ι : Type} {Y : ι → C}
     (f : ∀ i, Y i ⟶ X) [(ofArrows Y f).hasPullbacks]
     [HasCoproduct Y] [HasCoproduct fun (ij : ι × ι) ↦ pullback (f ij.1) (f ij.2)]
-    [HasPullback (Sigma.desc f) (Sigma.desc f)]
+    [HasPullback (Limits.Sigma.desc f) (Limits.Sigma.desc f)]
     [PreservesLimit (Discrete.functor <| fun i ↦ op (Y i)) F]
     [PreservesLimit (Discrete.functor fun (ij : ι × ι) ↦ op (pullback (f ij.1) (f ij.2))) F]
-    [IsIso (Sigma.desc fun (ij : ι × ι) ↦ pullback.map (f ij.fst) (f ij.snd)
-      (Sigma.desc f) (Sigma.desc f) (Sigma.ι _ _) (Sigma.ι _ _) (𝟙 X) (by simp) (by simp))] :
-    Presieve.IsSheafFor F (.singleton <| Sigma.desc f) ↔
+    [IsIso (Limits.Sigma.desc fun (ij : ι × ι) ↦ Limits.pullback.map (f ij.fst) (f ij.snd)
+      (Limits.Sigma.desc f) (Limits.Sigma.desc f) (Limits.Sigma.ι _ _) (Limits.Sigma.ι _ _) (𝟙 X)
+      (by simp) (by simp))] :
+    Presieve.IsSheafFor F (.singleton <| Limits.Sigma.desc f) ↔
       Presieve.IsSheafFor F (.ofArrows Y f) := by
   let e : (∐ fun (ij : ι × ι) ↦ pullback (f ij.1) (f ij.2)) ⟶
-      pullback (Sigma.desc f) (Sigma.desc f) :=
-    Sigma.desc fun ij ↦ pullback.map _ _ _ _ (Sigma.ι _ _) (Sigma.ι _ _) (𝟙 X) (by simp) (by simp)
+      pullback (Limits.Sigma.desc f) (Limits.Sigma.desc f) :=
+    Limits.Sigma.desc fun ij ↦
+    pullback.map _ _ _ _ (Limits.Sigma.ι _ _) (Limits.Sigma.ι _ _) (𝟙 X) (by simp) (by simp)
   rw [Equalizer.Presieve.isSheafFor_singleton_iff (pullback.cone _ _) (pullback.isLimit _ _),
     Equalizer.Presieve.Arrows.sheaf_condition]
   refine (Fork.isLimitEquivOfIsos _ _ ?_ ?_ ?_ ?_ ?_ ?_).nonempty_congr
@@ -364,21 +356,6 @@ end CategoryTheory
 namespace AlgebraicGeometry
 
 variable {P : MorphismProperty Scheme.{u}}
-
-@[simp]
-lemma Scheme.Cover.pullbackArrows_ofArrows [P.IsStableUnderBaseChange] {X S : Scheme.{u}}
-    (𝒰 : S.Cover P) (f : X ⟶ S) :
-    (Presieve.ofArrows 𝒰.obj 𝒰.map).pullbackArrows f =
-      .ofArrows (𝒰.pullbackCover' f).obj (𝒰.pullbackCover' f).map := by
-  rw [← Presieve.ofArrows_pullback]
-  rfl
-
-@[simp]
-lemma Scheme.Cover.generate_ofArrows_mem_grothendieckTopology [P.IsMultiplicative]
-    [P.IsStableUnderBaseChange] {S : Scheme.{u}} (𝒰 : Cover.{u} P S) :
-    .generate (.ofArrows 𝒰.obj 𝒰.map) ∈ Scheme.grothendieckTopology P S := by
-  rw [grothendieckTopology, Pretopology.mem_toGrothendieck]
-  exact ⟨.ofArrows 𝒰.obj 𝒰.map, ⟨𝒰, rfl⟩, Sieve.le_generate _⟩
 
 open Scheme
 
@@ -473,10 +450,6 @@ lemma Scheme.Cover.Hom.isSheafFor {F : Scheme.{u}ᵒᵖ ⥤ Type*} {S : Scheme.{
     rw [← Presieve.ofArrows_pullback]
     apply H₂
 
-lemma isInitial_iff_isEmpty {X : Scheme.{u}} : Nonempty (IsInitial X) ↔ IsEmpty X :=
-  ⟨fun ⟨h⟩ ↦ (h.uniqueUpToIso specPunitIsInitial).hom.homeomorph.isEmpty,
-    fun _ ↦ ⟨isInitialOfIsEmpty⟩⟩
-
 lemma bot_mem_grothendieckTopology (X : Scheme.{u}) [IsEmpty X] :
     ⊥ ∈ Scheme.grothendieckTopology P X := by
   rw [← Sieve.generate_bot]
@@ -498,40 +471,6 @@ instance : IsEmpty (⊥_ Scheme) := by
   rw [← isInitial_iff_isEmpty]
   exact ⟨initialIsInitial⟩
 
-instance : HasFiniteCoproducts Scheme.{u} where
-  out := inferInstance
-
-instance : FinitaryExtensive Scheme.{u} := by
-  let c : BinaryCofan (Spec (.of <| ULift.{u} ℤ)) (Spec (.of <| ULift.{u} ℤ)) :=
-    .mk (P := Spec (.of <| ULift.{u} ℤ × ULift.{u} ℤ))
-      (Spec.map <| CommRingCat.ofHom <| RingHom.fst _ _)
-      (Spec.map <| CommRingCat.ofHom <| RingHom.snd _ _)
-  have hc : IsColimit c := sorry
-  rw [finitaryExtensive_iff_of_isTerminal _ _ specULiftZIsTerminal c hc]
-  refine BinaryCofan.isVanKampen_mk c (fun X Y ↦ Sigma.cocone _) ?_ ?_ ?_ ?_ ?_
-  · exact fun X Y ↦ coproductIsCoproduct' (pair X Y)
-  · exact fun {X Y Z} f g ↦ pullback.cone f g
-  · exact fun {X Y Z} f g ↦ pullback.isLimit f g
-  · intro X Y f g h hf hg
-    refine ⟨?_, ?_⟩
-    · dsimp at h
-      dsimp
-      sorry
-    · sorry
-  · intro Z f
-    dsimp
-    refine ⟨?_, ?_, ?_⟩
-    · intro s
-      dsimp
-      sorry
-    · sorry
-    · sorry
-
-instance : FinitaryExtensive AffineScheme.{u} := by
-  let F : AffineScheme.{u} ⥤ Scheme.{u} := AffineScheme.forgetToScheme
-  have : PreservesColimitsOfShape (Discrete WalkingPair) F := sorry
-  apply finitaryExtensive_of_preserves_and_reflects F
-
 lemma isEmpty_of_commSq_sigmaι_of_ne {ι : Type u} {X : ι → Scheme.{u}}
     {i j : ι} {Z : Scheme.{u}} {f : Z ⟶ X i} {g : Z ⟶ X j}
     (h : CommSq f g (Sigma.ι X i) (Sigma.ι X j)) (hij : i ≠ j) :
@@ -546,17 +485,6 @@ lemma isEmpty_pullback_sigmaι_of_ne {ι : Type u} (X : ι → Scheme.{u})
     {i j : ι} (hij : i ≠ j) :
     IsEmpty ↑(pullback (Sigma.ι X i) (Sigma.ι X j)) :=
   isEmpty_of_commSq_sigmaι_of_ne ⟨pullback.condition⟩ hij
-
-noncomputable
-instance : CoproductsDisjoint Scheme.{u} where
-  CoproductDisjoint X Y := by
-    let c : BinaryCofan X Y := Sigma.cocone (pair X Y)
-    have : Mono (BinaryCofan.inr (Sigma.cocone (pair X Y))) := sorry
-    have : Mono (BinaryCofan.inl (Sigma.cocone (pair X Y))) := sorry
-    fapply CoproductDisjoint.of_binaryCofan_of_pullbackCone (Sigma.cocone (pair X Y))
-      (coproductIsCoproduct' (pair X Y)) (pullback.cone _ _)
-      (pullback.isLimit _ _)
-    sorry
 
 -- universe restrictions can be removed again, after #25764 is merged
 lemma preservesFiniteProducts_of_isSheaf_zariskiTopology {F : Scheme.{0}ᵒᵖ ⥤ Type*}
@@ -617,7 +545,7 @@ lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type*} [IsLoca
     let P : Presieve (∐ 𝒰.obj) := Presieve.ofArrows _ 𝒱.map
     let fam : P.FamilyOfElements F := sorry
     let z : F.obj (op <| ∐ 𝒰.obj) :=
-      (hF.isSheafFor _ _ (generate_ofArrows_mem_grothendieckTopology _)).amalgamate fam
+      (hF.isSheafFor _ _ (generate_ofArrows_mem_grothendieckTopology _ _)).amalgamate fam
         sorry
     let y : Presieve.FamilyOfElements F (Presieve.ofArrows 𝒰.sigma.obj 𝒰.sigma.map) :=
       sorry
@@ -672,7 +600,7 @@ nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtS
         use .ofArrows (pullback (𝒱.map i) (𝒱.map j)).affineCover.obj
           (pullback (𝒱.map i) (𝒱.map j)).affineCover.map
         refine ⟨(hzar.isSheafFor _ _ <|
-            Cover.generate_ofArrows_mem_grothendieckTopology _).isSeparatedFor, ?_⟩
+            Cover.generate_ofArrows_mem_grothendieckTopology _ _).isSeparatedFor, ?_⟩
         · rintro - - ⟨k⟩
           rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate]
           apply Presieve.IsSheafFor.isSeparatedFor
@@ -697,7 +625,7 @@ nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtS
         · rintro - - - - ⟨i⟩ ⟨j⟩
           refine ⟨.ofArrows _ (pullback (𝒰V.map i) (𝒰V.map j)).affineCover.map, ?_, ?_⟩
           · exact hzar.isSheafFor _ _
-              (Cover.generate_ofArrows_mem_grothendieckTopology _) |>.isSeparatedFor
+              (Cover.generate_ofArrows_mem_grothendieckTopology _ _) |>.isSeparatedFor
           · rintro - - ⟨k⟩
             rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
               ← Presieve.isSeparatedFor_iff_generate]
