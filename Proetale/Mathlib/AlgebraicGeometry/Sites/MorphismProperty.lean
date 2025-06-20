@@ -8,7 +8,7 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry.Scheme
 
-variable (P : MorphismProperty Scheme.{u}) [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
+variable {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
 
 @[simp]
 lemma Cover.pullbackArrows_ofArrows {X S : Scheme.{u}}
@@ -42,5 +42,9 @@ lemma bot_mem_grothendieckTopology (X : Scheme.{u}) [IsEmpty X] :
     exact i.elim
   rw [← this]
   exact 𝒰.generate_ofArrows_mem_grothendieckTopology
+
+lemma Cover.ofArrows_of_unique {S : Scheme.{u}} (𝒰 : S.Cover P) [Unique 𝒰.J] :
+    Presieve.ofArrows 𝒰.obj 𝒰.map = Presieve.singleton (𝒰.map default) :=
+  sorry
 
 end AlgebraicGeometry.Scheme

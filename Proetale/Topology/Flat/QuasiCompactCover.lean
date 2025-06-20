@@ -10,6 +10,7 @@ import Mathlib.AlgebraicGeometry.Cover.Sigma
 import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
+import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 # Quasi-compact covers
@@ -187,5 +188,18 @@ instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} P X) [�
   refine .of_finite (κ := Σ (i : s), t i.1 i.2) (fun p ↦ ⟨p.1, p.2⟩) (fun p ↦ W _ p.1.2 _ p.2.2)
     (fun p ↦ hcW ..) ?_
   simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using hU
+
+instance {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] [AlgebraicGeometry.QuasiCompact f] :
+    (f.cover hf).QuasiCompact :=
+  sorry
+
+lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover P)
+    [CompactSpace S] [𝒰.QuasiCompact] :
+    ∃ (𝒱 : S.AffineCover P) (f : 𝒱.cover ⟶ 𝒰), Finite 𝒱.J ∧ ∀ j, IsOpenImmersion (f.app j) :=
+  sorry
+
+instance {S : Scheme.{u}} [IsAffine S] (𝒰 : S.AffineCover P) [Finite 𝒰.J] :
+    𝒰.cover.QuasiCompact :=
+  sorry
 
 end AlgebraicGeometry.Scheme.Cover.QuasiCompact
