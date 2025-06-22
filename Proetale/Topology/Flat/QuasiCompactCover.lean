@@ -6,9 +6,11 @@ Authors: Christian Merten
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.AlgebraicGeometry.Cover.Sigma
 import Proetale.Topology.Flat.CompactOpenCovered
-import Proetale.Mathlib.AlgebraicGeometry.Cover.Sigma
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
+import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 # Quasi-compact covers
@@ -90,7 +92,7 @@ lemma exists_isAffineOpen_of_isCompact [𝒰.QuasiCompact] {U : S.Opens} (hU : I
     ∃ (n : ℕ) (f : Fin n → 𝒰.J) (V : ∀ i, (𝒰.obj (f i)).Opens),
       (∀ i, IsAffineOpen (V i)) ∧
       ⋃ i, (𝒰.map (f i)).base '' (V i) = U := by
-  obtain ⟨n, a, V, ha, _, heq⟩ := (𝒰.isCompactOpenCovered_of_isCompact hU).exists_mem_of_isBasis
+  obtain ⟨n, a, V, ha, heq⟩ := (𝒰.isCompactOpenCovered_of_isCompact hU).exists_mem_of_isBasis
     (fun i ↦ isBasis_affine_open (𝒰.obj i)) (fun _ _ h ↦ h.isCompact)
   exact ⟨n, a, V, ha, heq⟩
 
@@ -101,7 +103,6 @@ for (weakly)-étale and open covers. -/
 lemma of_isOpenMap (h : ∀ i, IsOpenMap (𝒰.map i).base) :
     QuasiCompact 𝒰 where
   isCompactOpenCovered_of_isAffineOpen {U} hU := .of_isOpenMap
-    (fun i ↦ isBasis_affine_open (𝒰.obj i)) (fun _ _ h ↦ h.isCompact)
     (fun i ↦ (𝒰.map i).continuous) h (fun x _ ↦ ⟨𝒰.f x, 𝒰.covers x⟩) U.2 hU.isCompact
 
 instance (𝒰 : S.OpenCover) : 𝒰.QuasiCompact :=
@@ -187,5 +188,18 @@ instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} P X) [�
   refine .of_finite (κ := Σ (i : s), t i.1 i.2) (fun p ↦ ⟨p.1, p.2⟩) (fun p ↦ W _ p.1.2 _ p.2.2)
     (fun p ↦ hcW ..) ?_
   simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using hU
+
+instance {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] [AlgebraicGeometry.QuasiCompact f] :
+    (f.cover hf).QuasiCompact :=
+  sorry
+
+lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover P)
+    [CompactSpace S] [𝒰.QuasiCompact] :
+    ∃ (𝒱 : S.AffineCover P) (f : 𝒱.cover ⟶ 𝒰), Finite 𝒱.J ∧ ∀ j, IsOpenImmersion (f.app j) :=
+  sorry
+
+instance {S : Scheme.{u}} [IsAffine S] (𝒰 : S.AffineCover P) [Finite 𝒰.J] :
+    𝒰.cover.QuasiCompact :=
+  sorry
 
 end AlgebraicGeometry.Scheme.Cover.QuasiCompact
