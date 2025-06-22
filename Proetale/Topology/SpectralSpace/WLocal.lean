@@ -13,8 +13,8 @@ class WLocalSpace (X : Type u) [TopologicalSpace X] : Prop where
   open_cover_splits {I : Type u} {U : I → Set X} (ho : ∀ (i : I), IsOpen (U i)) (hU : ⋃ (i : I), U i = Set.univ) : ∃ s : C(X, (i : I) × U i), ∀ (i : I) (u : U i), s u = ⟨i, u⟩
   isClosed_closedPoints : IsClosed (closedPoints X)
 
-structure WLocalMap (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] extends SpectralMap X Y where
-  image_closedPoints' : toFun '' (closedPoints X) ⊆ closedPoints Y
+structure IsWLocal {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) : Prop extends IsSpectralMap f where
+  image_closedPoints' : f '' (closedPoints X) ⊆ closedPoints Y
 
 -- WLocalMapClass
 
