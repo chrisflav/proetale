@@ -41,6 +41,14 @@ The following definitions are already formalized in Mathlib.
 
 \section{Henselization}
 
+\begin{definition}[Strictly Henselian local ring, {\cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}}]
+    \label{def:strictly-henselian-local-ring}
+    \lean{IsStrictlyHenselianLocalRing}
+    \leanok
+
+    A local ring \(A\) is \emph{strictly henselian} if it is henselian and the residue field of \(A\) is separably closed.
+\end{definition}
+
 1. Ofer Gabber \(K\)-theory of Henselian local rings and Henselian pairs.
 
 2. \url{https://stacks.math.columbia.edu/tag/0EM7}
@@ -107,7 +115,7 @@ Unify the definition of 2.2.10 with the definition of Henselization in Gabber's 
     \label{lem:ind-etale-flat-of-ind-Zariski}
     \uses{def:ind-zariski-localization, def:ind-etale-algebra}
 
-    If \(S\) is an ind-(Zariski localization) \(R\)-algebra, then \(S\)ind-étale and flat over \(R\).
+    If \(S\) is an ind-(Zariski localization) \(R\)-algebra, then \(S\) is ind-étale and flat over \(R\).
 \end{lemma}
 
 The following relation between weakly étale algebra and ind-étale algebra is the main result of this section.
@@ -136,6 +144,9 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
 
 \begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}]
     \label{def:w-local-space}
+    \lean{WLocalSpace}
+    \leanok
+
     A topological space \(X\) is \emph{w-local} if it satisfies:
     \begin{enumerate}
         \item \(X\) is spectral;
@@ -148,13 +159,15 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
     Let \(X\) and \(Y\) be w-local spaces. A morphism \(f: X \to Y\) is \emph{w-local} if it is spectral and the image of closed points \(f(X^c) \subseteq Y^c\).
     \label{def:w-local-morphism}
     \uses{def:w-local-space}
+    \lean{IsWLocalMap}
+    \leanok
 \end{definition}
 
 \begin{definition}
     \label{def:w-local-space-category}
     \uses{def:w-local-space, def:w-local-morphism}
 
-    Let \(S\) denote the category of spectral spaces. The category of w-local spaces is denoted by \(\S^{wl}\). The objects are w-local spaces, and the morphisms are w-local morphisms. The inclusion functor is denoted by \(i: \S^{wl} \to \S\).
+    Let \(S\) denote the category of spectral spaces. The category of w-local spaces is denoted by \(\mathcal{S}^{wl}\). The objects are w-local spaces, and the morphisms are w-local morphisms. The inclusion functor is denoted by \(i: \mathcal{S}^{wl} \to \mathcal{S}\).
 \end{definition}
 
 \begin{lemma}[{\cite[Lemma 2.1.9]{proetale}}]
@@ -169,6 +182,7 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
 \begin{lemma}[{\cite[Lemma 2.1.4, second part]{proetale}}]
     \label{lem:w-local-space-connected-components}
     \uses{def:w-local-space}
+    \lean{WLocalSpace.closedPointsHomeomorph}
 
     Let $X$ be a w-local spectral space. The composition $X^c \to X \to \pi_0(X)$ is a homeomorphism.
 \end{lemma}
@@ -185,12 +199,16 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
     A ring \(A\) is \emph{w-local} if Spec(A) is w-local.
     \label{def:w-local-ring}
     \uses{def:w-local-space}
+    \lean{WLocalRing}
+    \leanok
 \end{definition}
 
 \begin{definition}[w-local ring maps, {\cite[Definition 2.2.1(iii)]{proetale}}]
     A ring map \(f: A \to B\) between w-local rings is \emph{w-local} if the induced map of w-local spaces \(\Spec(f) : \Spec(B) \to \Spec(A)\) is w-local.
     \label{def:w-local-ring-map}
     \uses{def:w-local-ring, def:w-local-space, def:w-local-morphism}
+    \lean{IsWLocalRingMap}
+    \leanok
 \end{definition}
 
 \begin{definition}[{\cite[Lemma 2.2.4]{proetale}}]
@@ -203,11 +221,14 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
     A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every faithfully flat \'etale map \(A \to B\) has a section.
     \label{def:w-strictly-local-ring}
     \uses{def:w-local-ring}
+    \lean{WStrictlyLocalRing}
+    \leanok
 \end{definition}
 
 \begin{lemma}[{\cite[Lemma 2.2.9]{proetale}}]
     \label{lem:w-strictly-local-closed-points}
-    \uses{def:w-strictly-local-ring, def:w-local-ring}
+    \uses{def:w-strictly-local-ring,def:w-local-ring,def:strictly-henselian-local-ring}
+    \lean{WStrictlyLocalRing.isStrictlyHenselianLocalRing_of_isMaximal,wStrictlyLocalRing_of_isStrictlyHenselianLocalRing_atPrime}
 
     A w-local ring $A$ is w-strictly local if and only if all local rings of $A$ at closed points are strictly henselian.
 \end{lemma}
