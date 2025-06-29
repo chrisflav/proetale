@@ -1,3 +1,7 @@
+import Proetale.Algebra.Ind
+import Proetale.Algebra.WContractible
+import Proetale.Algebra.WLocal
+import Proetale.Algebra.WeaklyEtale
 import Proetale.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
@@ -15,6 +19,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.Sheaf
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
+import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Flat.CompactOpenCovered
