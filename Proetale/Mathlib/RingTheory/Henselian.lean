@@ -10,54 +10,112 @@ instance (R : Type*) [CommRing R] [IsStrictlyHenselianLocalRing R] :
     IsSepClosed (IsLocalRing.ResidueField R) :=
   IsStrictlyHenselianLocalRing.isSepClosed_residueField
 
-universe u
+universe u v
 
-open Polynomial Ideal Quotient
+noncomputable section
+open Polynomial Ideal Quotient Algebra
 
-def one_add_I (R : Type u) [CommRing R] (I : Ideal R) (f : R[X]) (a₀ : R ⧸ I) :
-    Submonoid (R[X] ⧸ Ideal.span {f}) where
-  carrier := {a : R[X]⧸span {f} | ∃ i ∈ span (I.map (algebraMap R (R[X]⧸Ideal.span {f}))) ⊔ span {mk (span {f}) (X - C (Quotient.out a₀) : R[X])}, a = 1 + i}
-  mul_mem' := by
-    intro a b ha hb
-    rcases ha with ⟨i, hi1, hi2⟩
-    rcases hb with ⟨j, hj1, hj2⟩
-    use i + j + i * j
-    constructor
-    · apply Ideal.add_mem
-      · apply Ideal.add_mem
-        assumption
-        assumption
-      · apply Ideal.mul_mem_left
-        assumption
-    · rw [hi2, hj2]
-      ring
-  one_mem' := by
-    use 0
-    simp
+variable {R : Type u} [CommRing R] (f : R[X])
 
-def s_prime (R : Type u) [CommRing R] (I : Ideal R) (f : R[X]) (a₀ : R ⧸ I) : Type u :=
-  Localization (one_add_I R I f a₀)
+-- f(X), f'(X)Y - 1
+private def idealJ (f : R[X]) : Ideal (MvPolynomial (Fin 2) R) :=
+  (span {toMvPolynomial (0 : Fin 2) f, (toMvPolynomial (0 : Fin 2) f.derivative) * MvPolynomial.X 1 - 1})
 
-noncomputable
-instance (R : Type u) [CommRing R] (I : Ideal R) (f : R[X]) (a₀ : R ⧸ I) :
-  CommRing (s_prime R I f a₀) := inferInstanceAs (CommRing (Localization (one_add_I R I f a₀)))
+private def S : Type u := MvPolynomial (Fin 2) R ⧸ (idealJ f)
 
-noncomputable
-instance (R : Type u) [CommRing R] (I : Ideal R) (f : R[X]) (a₀ : R ⧸ I) :
-  Algebra R (s_prime R I f a₀) := inferInstanceAs (Algebra R (Localization (one_add_I R I f a₀)))
+private instance : CommRing (S f) := by
+  unfold S
+  infer_instance
 
-instance (R : Type u) [CommRing R] (I : Ideal R) (f : R[X]) (a₀ : R ⧸ I) :
-  Algebra.Etale R (s_prime R I f a₀) := sorry
+private instance : Algebra R (S f) := by
+  unfold S
+  infer_instance
+
+private def presentationS : Presentation R (S f) (Fin 2) (Fin 2) := sorry -- naive presentation will be in Mathlib
+
+private def preSubmersivePresentationS : PreSubmersivePresentation R (S f) (Fin 2) (Fin 2) := {
+  toPresentation := presentationS f
+  map := id
+  map_inj _ _ h := h
+}
+
+private def submersivePresentationS (f : R[X]) : SubmersivePresentation R (S f) (Fin 2) (Fin 2) := {
+  toPreSubmersivePresentation := preSubmersivePresentationS f
+  jacobian_isUnit := sorry
+}
+
+private instance : IsStandardSmoothOfRelativeDimension 0 R (S f) := by
+  unfold S
+  constructor
+  use (Fin 2), (Fin 2), inferInstance, inferInstance, (submersivePresentationS f)
+  simp [Presentation.dimension]
+
+private theorem aeval_zero_of_mem_span {I : Ideal R} {f : R[X]} {a₀ : R} (e : Polynomial.eval a₀ f ∈ I)
+    (u : IsUnit ((Ideal.Quotient.mk I) (Polynomial.eval a₀ (derivative f)))) :
+    ∀ a ∈ idealJ f,
+    (MvPolynomial.aeval
+    ![(Ideal.Quotient.mk I) a₀, (Ideal.Quotient.mk I) ((aeval a₀) (derivative f))]) a = 0 := by
+  sorry
+
+private def g {I : Ideal R} {f : R[X]} {a₀ : R} (e : Polynomial.eval a₀ f ∈ I)
+    (u : IsUnit ((Ideal.Quotient.mk I) (Polynomial.eval a₀ (derivative f)))) : S f →ₐ[R] R ⧸ I :=
+  Ideal.Quotient.liftₐ (idealJ f) (MvPolynomial.aeval ![a₀, f.derivative.aeval a₀]) (aeval_zero_of_mem_span e u)
 
 theorem henselian_if_exists_section (R : Type u)
     [CommRing R] (I : Ideal R) (hI : I ≤ Ring.jacobson R)
     (h : ∀ (S : Type u) [CommRing S] [Algebra R S] [Algebra.Etale R S] (g : S →ₐ[R] R ⧸ I),
-    ∃ σ : S →+* R, σ.comp (algebraMap R S) = RingHom.id R) :
-    HenselianRing R I := sorry
+    ∃ σ : S →+* R, (Ideal.Quotient.mk I).comp σ = g) :
+    HenselianRing R I where
+      jac := Ideal.jacobson_bot (R := R) ▸ hI
+      is_henselian := by
+          intro f monic a₀ e u
+          obtain ⟨σ, hσ⟩ := h (S f) (g e u)
+          use σ (mk _ (MvPolynomial.X 0))
+          constructor
+          · sorry -- f (X_0) = 0 since kernel contains f(X_0)
+          · sorry -- σ (X_0) = a₀ since σ is a section of the quotient map (hσ)
 
-theorem exsits_section_if_henselian (R S : Type u)
-    [CommRing R] (I : Ideal R) [HenselianRing R I]
-    [CommRing S] [Algebra R S] [Algebra.Etale R S]
-    (g : S →ₐ[R] R ⧸ I) :
-    ∃ σ : S →+* R,
-    σ.comp (algebraMap R S) = RingHom.id R := sorry
+-- Success
+
+open CategoryTheory CommAlgCat
+
+variable (Q : MorphismProperty CommRingCat) (R : CommRingCat.{u})
+
+noncomputable
+def CommRingCat.Under.inclusion :
+    MorphismProperty.Under Q ⊤ R ⥤ CommAlgCat R :=
+  MorphismProperty.Under.forget _ _ _ ⋙ (commAlgCatEquivUnder R).inverse
+
+def RingHom.Etale : MorphismProperty CommRingCat := sorry -- after Mathlib PR, redefine this using RingHom.Etale.
+
+instance (R : Type u) [CommRing R] : (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R)).HasPointwiseLeftKanExtension
+    (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R)) := sorry -- Would be in Mathlib
+
+def henselizationFunctor (R : Type u) [CommRing R] : (CommAlgCat R) ⥤ CommAlgCat R := (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R)).leftKanExtension (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R))
+
+variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+
+def Henselization : Type u := (henselizationFunctor R).obj (of R S)
+
+instance : CommRing (Henselization R S) := by
+  unfold Henselization
+  infer_instance
+
+instance : Algebra R (Henselization R S) := by
+  unfold Henselization
+  infer_instance
+
+def henselization_isom_colim : CommAlgCat.of R (Henselization R S) ≅
+    Limits.colimit ((CostructuredArrow.proj (CommRingCat.Under.inclusion
+    RingHom.Etale (CommRingCat.of R)) (CommAlgCat.of R S)).comp (CommRingCat.Under.inclusion
+    RingHom.Etale (CommRingCat.of R))) :=
+  CategoryTheory.Functor.leftKanExtensionObjIsoColimit _ _ _
+
+theorem henselization_of_quotient_is_henselian {R : Type*} [CommRing R] (I: Ideal R) (hI : I ≤ Ring.jacobson R) :
+    HenselianRing (Henselization R (R ⧸ I)) (I.map (algebraMap R _)) := by
+  apply henselian_if_exists_section
+  · sorry -- I * Hens_R ()
+  · intro S _ _ _ g
+    sorry -- any such (S, g) should already appear in the colimit.
+
+-- Even more success
