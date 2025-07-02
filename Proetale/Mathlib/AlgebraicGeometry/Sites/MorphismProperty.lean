@@ -2,7 +2,7 @@ import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Limits
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 
-universe u
+universe v u
 
 open CategoryTheory Limits
 
@@ -21,10 +21,16 @@ lemma Cover.pullbackArrows_ofArrows {X S : Scheme.{u}}
 variable [P.IsMultiplicative]
 
 @[simp]
-lemma Cover.generate_ofArrows_mem_grothendieckTopology {S : Scheme.{u}} (𝒰 : Cover.{u} P S) :
+lemma Cover.generate_ofArrows_mem_grothendieckTopology {S : Scheme.{u}} (𝒰 : Cover.{v} P S) :
     .generate (.ofArrows 𝒰.obj 𝒰.map) ∈ Scheme.grothendieckTopology P S := by
-  rw [grothendieckTopology, Pretopology.mem_toGrothendieck]
-  exact ⟨.ofArrows 𝒰.obj 𝒰.map, ⟨𝒰, rfl⟩, Sieve.le_generate _⟩
+  let 𝒱 : Cover.{u} P S := 𝒰.ulift
+  apply GrothendieckTopology.superset_covering _ (S := Sieve.ofArrows _ 𝒱.map) _
+  · rw [grothendieckTopology, Pretopology.mem_toGrothendieck]
+    exact ⟨.ofArrows 𝒱.obj 𝒱.map, ⟨𝒱, rfl⟩, Sieve.le_generate _⟩
+  · rw [Sieve.ofArrows]
+    apply Sieve.generate_mono
+    rintro - - ⟨i⟩
+    use 𝒰.f i
 
 lemma bot_mem_grothendieckTopology (X : Scheme.{u}) [IsEmpty X] :
     ⊥ ∈ Scheme.grothendieckTopology P X := by

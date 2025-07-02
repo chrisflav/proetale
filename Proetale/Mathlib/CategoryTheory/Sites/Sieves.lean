@@ -10,4 +10,13 @@ lemma Sieve.generate_bot {X : C} : Sieve.generate (⊥ : Presieve X) = ⊥ := by
   rintro Y f ⟨Z, g, u, hg, rfl⟩
   exact hg
 
+lemma Sieve.generate_mono {X : C} {R₁ R₂ : Presieve X} (h : R₁ ≤ R₂) :
+    Sieve.generate R₁ ≤ Sieve.generate R₂ :=
+  Sieve.giGenerate.gc.monotone_l h
+
+lemma Presieve.monotone_functorPullback {D : Type*} [Category D] (F : C ⥤ D) (X : C) :
+    Monotone (Presieve.functorPullback F (X := X)) := by
+  intro R₁ R₂ hle Y f hf
+  exact hle _ hf
+
 end CategoryTheory

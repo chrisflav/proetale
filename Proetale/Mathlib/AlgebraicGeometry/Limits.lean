@@ -1,6 +1,6 @@
 import Mathlib.AlgebraicGeometry.Limits
 
-universe u
+universe v u
 
 open CategoryTheory Limits
 
@@ -17,7 +17,7 @@ instance : IsEmpty (⊥_ Scheme) := by
   rw [← isInitial_iff_isEmpty]
   exact ⟨initialIsInitial⟩
 
-lemma isEmpty_of_commSq_sigmaι_of_ne {ι : Type u} {X : ι → Scheme.{u}}
+private lemma isEmpty_of_commSq_sigmaι_of_ne_aux {ι : Type u} {X : ι → Scheme.{u}}
     {i j : ι} {Z : Scheme.{u}} {f : Z ⟶ X i} {g : Z ⟶ X j}
     (h : CommSq f g (Sigma.ι X i) (Sigma.ι X j)) (hij : i ≠ j) :
     IsEmpty Z := by
@@ -26,6 +26,15 @@ lemma isEmpty_of_commSq_sigmaι_of_ne {ι : Type u} {X : ι → Scheme.{u}}
   · exact (f ≫ Sigma.ι X i).base z
   · refine ⟨⟨f.base z, rfl⟩, ⟨g.base z, ?_⟩⟩
     rw [← Scheme.comp_base_apply, h.w]
+
+lemma isEmpty_of_commSq_sigmaι_of_ne {ι : Type v} [Small.{u} ι] {X : ι → Scheme.{u}}
+    {i j : ι} {Z : Scheme.{u}} {f : Z ⟶ X i} {g : Z ⟶ X j}
+    (h : CommSq f g (Sigma.ι X i) (Sigma.ι X j)) (hij : i ≠ j) :
+    IsEmpty Z := by
+  let e := equivShrink ι
+  refine isEmpty_of_commSq_sigmaι_of_ne_aux (X := X ∘ e.symm) (i := e i) (j := e j)
+    (f := f ≫ eqToHom (by simp)) (g := g ≫ eqToHom (by simp)) ⟨?_⟩ (by simp [hij])
+  simp [← Sigma.ι_reindex_inv, h.1]
 
 lemma isEmpty_pullback_sigmaι_of_ne {ι : Type u} (X : ι → Scheme.{u})
     {i j : ι} (hij : i ≠ j) :
