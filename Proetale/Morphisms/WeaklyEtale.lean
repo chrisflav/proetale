@@ -3,6 +3,7 @@ Copyright (c) 2025 Jiang Jiedong, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiang Jiedong, Christian Merten
 -/
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
 
@@ -47,6 +48,12 @@ instance isStableUnderBaseChange : IsStableUnderBaseChange @WeaklyEtale := by
 instance : IsLocalAtTarget @WeaklyEtale := by
   rw [eq_inf]
   infer_instance
+
+instance : ContainsIdentities @WeaklyEtale := by
+  rw [eq_inf]
+  infer_instance
+
+instance : IsMultiplicative @WeaklyEtale where
 
 -- this is done in `Pi1`, but needs to be upstreamed to `mathlib`
 instance (priority := 900) of_isEtale [IsEtale f] : WeaklyEtale f :=

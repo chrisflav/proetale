@@ -26,4 +26,5 @@ import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Topology.Flat.QuasiCompactCover
 import Proetale.Topology.Flat.QuasiCompactTopology
 import Proetale.Topology.Flat.Sheaf
+import Proetale.Topology.Proetale.Basic
 import Proetale.Topology.SpectralSpace.WLocal
