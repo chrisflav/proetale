@@ -17,8 +17,23 @@ open Polynomial Ideal Quotient
 def one_add_I (R : Type u) [CommRing R] (I : Ideal R) (f : R[X]) (a₀ : R ⧸ I) :
     Submonoid (R[X] ⧸ Ideal.span {f}) where
   carrier := {a : R[X]⧸span {f} | ∃ i ∈ span (I.map (algebraMap R (R[X]⧸Ideal.span {f}))) ⊔ span {mk (span {f}) (X - C (Quotient.out a₀) : R[X])}, a = 1 + i}
-  mul_mem' := sorry
-  one_mem' := sorry
+  mul_mem' := by
+    intro a b ha hb
+    rcases ha with ⟨i, hi1, hi2⟩
+    rcases hb with ⟨j, hj1, hj2⟩
+    use i + j + i * j
+    constructor
+    · apply Ideal.add_mem
+      · apply Ideal.add_mem
+        assumption
+        assumption
+      · apply Ideal.mul_mem_left
+        assumption
+    · rw [hi2, hj2]
+      ring
+  one_mem' := by
+    use 0
+    simp
 
 def s_prime (R : Type u) [CommRing R] (I : Ideal R) (f : R[X]) (a₀ : R ⧸ I) : Type u :=
   Localization (one_add_I R I f a₀)
