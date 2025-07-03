@@ -62,22 +62,21 @@ theorem pderiv_toMvPolynomial_eq_toMvPolynomial_pderiv (n : ℕ) (i : Fin n) :
   | monomial n a _ => simp
 
 lemma preSubmersivePresentationS_jacobiMatrix_00 :
-    (preSubmersivePresentationS f).jacobiMatrix 0 0 = (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative)) := by
+    (preSubmersivePresentationS f).jacobiMatrix 0 0 =
+    (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative)) := by
   rw [Algebra.PreSubmersivePresentation.jacobiMatrix_apply]
-  dsimp [preSubmersivePresentationS, presentationS]
-  simp
+  simp [preSubmersivePresentationS, presentationS]
 
 lemma preSubmersivePresentationS_jacobiMatrix_11 :
-    (preSubmersivePresentationS f).jacobiMatrix 1 1 = (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative)) := by
+    (preSubmersivePresentationS f).jacobiMatrix 1 1 =
+    (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative)) := by
   rw [Algebra.PreSubmersivePresentation.jacobiMatrix_apply]
-  dsimp [preSubmersivePresentationS, presentationS]
-  simp
+  simp [preSubmersivePresentationS, presentationS]
 
 lemma preSubmersivePresentationS_jacobiMatrix_01 :
     (preSubmersivePresentationS f).jacobiMatrix 1 0 = 0 := by
   rw [Algebra.PreSubmersivePresentation.jacobiMatrix_apply]
-  dsimp [preSubmersivePresentationS, presentationS]
-  simp
+  simp [preSubmersivePresentationS, presentationS]
 
 private def submersivePresentationS (f : R[X]) : SubmersivePresentation R (S f) (Fin 2) (Fin 2) := {
   toPreSubmersivePresentation := preSubmersivePresentationS f
@@ -91,7 +90,8 @@ private def submersivePresentationS (f : R[X]) : SubmersivePresentation R (S f) 
     have : (preSubmersivePresentationS f).jacobian = f' * f' := by
       rw [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
       rw [Matrix.det_fin_two]
-      have (x : (MvPolynomial (Fin 2) R)) : (algebraMap (preSubmersivePresentationS f).Ring (S f)) x = mk (idealJ f) x := by rfl
+      have (x : (MvPolynomial (Fin 2) R)) :
+          (algebraMap (preSubmersivePresentationS f).Ring (S f)) x = mk (idealJ f) x := by rfl
       rw [this]
       simp
       rw [preSubmersivePresentationS_jacobiMatrix_00]
