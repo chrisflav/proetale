@@ -65,7 +65,7 @@ private def g {I : Ideal R} {f : R[X]} {a₀ : R} (e : Polynomial.eval a₀ f �
 theorem henselian_if_exists_section (R : Type u)
     [CommRing R] (I : Ideal R) (hI : I ≤ Ring.jacobson R)
     (h : ∀ (S : Type u) [CommRing S] [Algebra R S] [Algebra.Etale R S] (g : S →ₐ[R] R ⧸ I),
-    ∃ σ : S →+* R, (Ideal.Quotient.mk I).comp σ = g) :
+    ∃ σ : S →ₐ[R] R, (Ideal.Quotient.mk I).comp (σ : S →+* R) = g) :
     HenselianRing R I where
       jac := Ideal.jacobson_bot (R := R) ▸ hI
       is_henselian := by
@@ -73,8 +73,32 @@ theorem henselian_if_exists_section (R : Type u)
           obtain ⟨σ, hσ⟩ := h (S f) (g e u)
           use σ (mk _ (X 0))
           constructor
-          · sorry -- f (X_0) = 0 since kernel contains f(X_0)
-          · sorry -- σ (X_0) = a₀ since σ is a section of the quotient map (hσ)
+          · rw [IsRoot]
+            suffices hs : Polynomial.aeval (mk (idealJ f) (X 0)) f = 0 by
+              calc
+                _ = aeval (σ ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0))) f := rfl
+                _ = σ (aeval ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0)) f) := Polynomial.aeval_algHom_apply _ _ _
+                _ = 0 := by rw [hs]; simp
+            suffices ht : Ideal.Quotient.mk (idealJ f) (Polynomial.aeval (X 0) f) = 0 by
+              rw [← Ideal.Quotient.mkₐ_eq_mk R, Polynomial.aeval_algHom_apply, Ideal.Quotient.mkₐ_eq_mk R, ht]
+            apply Ideal.Quotient.eq_zero_iff_mem.mpr
+            simp [idealJ]
+            suffices this : (Polynomial.aeval (MvPolynomial.X (0 : Fin 2))) f = (toMvPolynomial 0) f by
+              rw [this]
+              apply Ideal.subset_span
+              simp
+            rfl
+          · suffices hq : (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0)) - a₀) = 0 by
+              apply Ideal.Quotient.eq_zero_iff_mem.mp hq
+            calc
+              _ = (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0))) - (Ideal.Quotient.mk I) a₀ := by simp
+              _ = ((Ideal.Quotient.mk I).comp σ.toRingHom) ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp
+              _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
+              _ = 0 := by simp [Ideal.Quotient.mk_comp_mk]
+
+
+
+
 
 -- Success
 
