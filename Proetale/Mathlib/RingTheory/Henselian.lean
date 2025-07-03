@@ -90,6 +90,9 @@ private theorem aeval_zero_of_mem_span {I : Ideal R} {f : R[X]} {a₀ : R} (e : 
     exact hJ ha
   simp only [idealJ, Nat.succ_eq_add_one, Nat.reduceAdd, span_le]
   intro a ha
+  simp only [Fin.isValue, Matrix.range_cons, Matrix.range_empty, Set.union_empty,
+    Set.union_singleton, Set.mem_insert_iff, Set.mem_singleton_iff] at ha
+  symm at ha
   cases ha with
   | inl ha =>
     rw [ha]
@@ -114,7 +117,7 @@ private def g {I : Ideal R} {f : R[X]} {a₀ : R} (e : Polynomial.eval a₀ f �
 theorem henselian_if_exists_section (R : Type u)
     [CommRing R] (I : Ideal R) (hI : I ≤ Ring.jacobson R)
     (h : ∀ (S : Type u) [CommRing S] [Algebra R S] [Algebra.Etale R S] (g : S →ₐ[R] R ⧸ I),
-    ∃ σ : S →ₐ[R] R, (Ideal.Quotient.mk I).comp σ = g) :
+    ∃ σ : S →ₐ[R] R, (Ideal.Quotient.mk I).comp (σ : S →+* R) = g) :
     HenselianRing R I where
       jac := Ideal.jacobson_bot (R := R) ▸ hI
       is_henselian := by
