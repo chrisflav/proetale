@@ -66,10 +66,13 @@ class IsDirectLimit (G : Type*) (g : ∀ i, F i → G) : Prop where
   eq_iff {i j : ι} (x : F i) (y : F j) : g i x = g j y ↔ ∃ (k : ι) (hik : i ≤ k) (hjk : j ≤ k),
     f hik x = f hjk y
 
+variable (G : Type*) (g : ∀ i, F i → G)
+
 /--
 An ind-presentation of `S` over `R` is a directed system of `R`-algebras, whose
 colimit is `S`.
 -/
+@[ext]
 structure Algebra.IndPresentation (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] (ι : Type*) [Preorder ι] where
   [isDirected : IsDirected ι (fun i j : ι ↦ i ≤ j)]
   F : ι → Type v
@@ -80,8 +83,25 @@ structure Algebra.IndPresentation (R : Type u) (S : Type v) [CommRing R] [CommRi
   [directedSystem : DirectedSystem F (fun _ _ hij ↦ ⇑(f hij))]
   [isDirectLimit : IsDirectLimit F (fun _ _ hij ↦ ⇑(f hij)) S (fun i ↦ ⇑(g i))]
 
-attribute [instance] Algebra.IndPresentation.commRing Algebra.IndPresentation.algebra
-  Algebra.IndPresentation.directedSystem
+namespace Algebra.IndPresentation
+
+attribute [instance] commRing algebra directedSystem
+
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
+
+@[simps]
+def Algebra.IndPresentation.self : IndPresentation R S Unit where
+  isDirected := by
+    constructor
+    intro _ _
+    use ()
+  F _ := S
+  f _ _ _ := AlgHom.id _ _
+  g i := AlgHom.id _ _
+  directedSystem := by constructor <;> simp
+  isDirectLimit := by constructor <;> simp
+
+end Algebra.IndPresentation
 
 /-- An algebra is ind-étale if it can be written as the directed colimit of étale
 algebras. -/
