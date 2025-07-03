@@ -35,13 +35,9 @@ private instance : Algebra R (S f) := by
 private def presentationS : Presentation R (S f) (Fin 2) (Fin 2) := by
   let s : (S f) → (MvPolynomial (Fin 2) R) :=
     Function.surjInv (f := (Ideal.Quotient.mk (idealJ f))) Ideal.Quotient.mk_surjective
-  have hs : ∀ (x : S f), mk _ (s x) = x := by
-    intro x
-    unfold s
+  have hs (x : S f) : mk _ (s x) = x := by
     rw [Function.surjInv_eq (f := (Ideal.Quotient.mk (idealJ f)))]
   apply Presentation.naive s hs
-
-    -- naive presentation will be in Mathlib
 
 private def preSubmersivePresentationS : PreSubmersivePresentation R (S f) (Fin 2) (Fin 2) := {
   toPresentation := presentationS f
@@ -49,31 +45,73 @@ private def preSubmersivePresentationS : PreSubmersivePresentation R (S f) (Fin 
   map_inj _ _ h := h
 }
 
+theorem pderiv_toMvPolynomial_eq_zero_of_ne (n : ℕ) (i j : Fin n) (h : i ≠ j) :
+    (pderiv i) ((toMvPolynomial j) f) = 0 := by
+  induction f using Polynomial.induction_on with
+  | C a => simp
+  | add p q _ _ => simp_all
+  | monomial n a _ => simp [Pi.single_eq_of_ne h.symm]
+
+theorem pderiv_toMvPolynomial_eq_toMvPolynomial_pderiv (n : ℕ) (i : Fin n) :
+    (pderiv i) ((toMvPolynomial i) f) = (toMvPolynomial i) f.derivative := by
+  induction f using Polynomial.induction_on with
+  | C a => simp
+  | add p q _ _ => simp_all
+  | monomial n a _ => simp
+
 private def submersivePresentationS (f : R[X]) : SubmersivePresentation R (S f) (Fin 2) (Fin 2) := {
   toPreSubmersivePresentation := preSubmersivePresentationS f
   jacobian_isUnit := by
-    -- have : IsUnit (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative)) := by
-    --   rw [isUnit_iff_exists]
-    --   use (mk (idealJ f) (X 1))
-    --   constructor
-    --   · rw [← map_mul]
-    --     have : 1 = (Ideal.Quotient.mk (idealJ f)) 1 := by simp
-    --     rw [this]
-    --     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-    --     unfold idealJ
-    --     rw [Ideal.mem_span_pair]
-    --     use 0, 1
-    --     simp
-    --   · rw [← map_mul]
-    --     have : 1 = (Ideal.Quotient.mk (idealJ f)) 1 := by simp
-    --     rw [this]
-    --     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-    --     unfold idealJ
-    --     rw [Ideal.mem_span_pair]
-    --     use 0, 1
-    --     simp
-    --     ring
-    sorry
+    let f' := (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative))
+    have unit_f' : IsUnit f' := by
+      rw [isUnit_iff_exists]
+      use (mk (idealJ f) (X 1))
+      constructor
+      · rw [← map_mul, ← map_one (Ideal.Quotient.mk _), mk_eq_mk_iff_sub_mem]
+        apply Ideal.subset_span
+        simp
+      · rw [← map_mul, ← map_one (Ideal.Quotient.mk _), mk_eq_mk_iff_sub_mem]
+        apply Ideal.subset_span
+        use 1
+        simp
+        ring
+    let P := preSubmersivePresentationS f
+    have : P.jacobian = f' * f' := by
+      rw [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
+      rw [Matrix.det_fin_two]
+      have hP₀ : P.map 0 = 0 := rfl
+      have hP₁ : P.map 1 = 1 := rfl
+      have hR₀ : P.relation 0 = toMvPolynomial (0 : Fin 2) f := rfl
+      have hR₁ : P.relation 1 = (toMvPolynomial (0 : Fin 2) f.derivative) * X 1 - 1 := rfl
+      have hd10 : (pderiv (P.map 1)) (P.relation 0) = 0 := by
+        rw [hP₁, hR₀]
+        apply pderiv_toMvPolynomial_eq_zero_of_ne
+        simp
+      have h01 : P.jacobiMatrix 1 0 = 0 := by
+        rw [Algebra.PreSubmersivePresentation.jacobiMatrix_apply]
+        rw [hd10]
+      have h00 : P.jacobiMatrix 0 0 = (toMvPolynomial (0 : Fin 2) f.derivative) := by
+        rw [Algebra.PreSubmersivePresentation.jacobiMatrix_apply]
+        rw [hP₀, hR₀]
+        apply pderiv_toMvPolynomial_eq_toMvPolynomial_pderiv
+      have h11 : P.jacobiMatrix 1 1 = (toMvPolynomial (0 : Fin 2) f.derivative) := by
+        rw [Algebra.PreSubmersivePresentation.jacobiMatrix_apply]
+        rw [hP₁, hR₁]
+        simp
+        apply pderiv_toMvPolynomial_eq_zero_of_ne
+        simp
+      rw [h01, h00, h11]
+      simp
+      have : (Polynomial.aeval (P.val 0)) (derivative f) = f' := by
+        have : P.val 0 = Ideal.Quotient.mk _ (X 0) := rfl
+        rw [this]
+        sorry
+        -- have : (Polynomial.aeval ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0))) = (Ideal.Quotient.mk (idealJ f)) (Polynomial.aeval (MvPolynomial.X 0)) := by sorry
+        -- rw [Polynomial.aeval_algHom]
+      rw [this]
+    rw [this]
+    simp
+    exact unit_f'
 }
 
 private instance : IsStandardSmoothOfRelativeDimension 0 R (S f) := by
