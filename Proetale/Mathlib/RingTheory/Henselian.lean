@@ -20,7 +20,7 @@ variable {R : Type u} [CommRing R] (f : R[X])
 
 -- f(X), f'(X)Y - 1
 private def idealJ (f : R[X]) : Ideal (MvPolynomial (Fin 2) R) :=
-  (span {toMvPolynomial (0 : Fin 2) f, (toMvPolynomial (0 : Fin 2) f.derivative) * X 1 - 1})
+  (span (Set.range ![toMvPolynomial (0 : Fin 2) f, (toMvPolynomial (0 : Fin 2) f.derivative) * X 1 - 1]))
 
 private def S : Type u := MvPolynomial (Fin 2) R ⧸ (idealJ f)
 
@@ -32,7 +32,16 @@ private instance : Algebra R (S f) := by
   unfold S
   infer_instance
 
-private def presentationS : Presentation R (S f) (Fin 2) (Fin 2) := sorry -- naive presentation will be in Mathlib
+private def presentationS : Presentation R (S f) (Fin 2) (Fin 2) := by
+  let s : (S f) → (MvPolynomial (Fin 2) R) :=
+    Function.surjInv (f := (Ideal.Quotient.mk (idealJ f))) Ideal.Quotient.mk_surjective
+  have hs : ∀ (x : S f), mk _ (s x) = x := by
+    intro x
+    unfold s
+    rw [Function.surjInv_eq (f := (Ideal.Quotient.mk (idealJ f)))]
+  apply Presentation.naive s hs
+
+    -- naive presentation will be in Mathlib
 
 private def preSubmersivePresentationS : PreSubmersivePresentation R (S f) (Fin 2) (Fin 2) := {
   toPresentation := presentationS f
@@ -42,7 +51,29 @@ private def preSubmersivePresentationS : PreSubmersivePresentation R (S f) (Fin 
 
 private def submersivePresentationS (f : R[X]) : SubmersivePresentation R (S f) (Fin 2) (Fin 2) := {
   toPreSubmersivePresentation := preSubmersivePresentationS f
-  jacobian_isUnit := sorry
+  jacobian_isUnit := by
+    -- have : IsUnit (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative)) := by
+    --   rw [isUnit_iff_exists]
+    --   use (mk (idealJ f) (X 1))
+    --   constructor
+    --   · rw [← map_mul]
+    --     have : 1 = (Ideal.Quotient.mk (idealJ f)) 1 := by simp
+    --     rw [this]
+    --     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    --     unfold idealJ
+    --     rw [Ideal.mem_span_pair]
+    --     use 0, 1
+    --     simp
+    --   · rw [← map_mul]
+    --     have : 1 = (Ideal.Quotient.mk (idealJ f)) 1 := by simp
+    --     rw [this]
+    --     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    --     unfold idealJ
+    --     rw [Ideal.mem_span_pair]
+    --     use 0, 1
+    --     simp
+    --     ring
+    sorry
 }
 
 private instance : IsStandardSmoothOfRelativeDimension 0 R (S f) := by
