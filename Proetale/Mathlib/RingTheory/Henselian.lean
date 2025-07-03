@@ -89,7 +89,7 @@ def CommRingCat.Under.inclusion :
 def CategoryTheory.CommRingCat.Etale : MorphismProperty CommRingCat := fun _ _ f ↦ f.hom.Etale
 
 instance (R : Type u) [CommRing R] : (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).HasPointwiseLeftKanExtension
-    (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)) := inferInstance -- Would be in Mathlib
+    (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)) := sorry-- Would be in Mathlib
 
 def henselizationFunctor (R : Type u) [CommRing R] : (CommAlgCat R) ⥤ CommAlgCat R := (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).leftKanExtension (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R))
 
