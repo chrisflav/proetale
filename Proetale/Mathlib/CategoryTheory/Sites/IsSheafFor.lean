@@ -61,7 +61,7 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback
     haveI := hasPullbacks.has_pullbacks hf hg
     obtain ⟨R, hR, h⟩ := H' f g hf hg
     refine hR.ext fun W w hw ↦ (h w hw).ext fun U u hu ↦ ?_
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp, Category.assoc]
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
     dsimp only [FamilyOfElements.IsAmalgamation, FamilyOfElements.pullback] at hs
     rw [hs f hf (u ≫ w ≫ pullback.fst f g) (by simpa),
       hs g hg (u ≫ w ≫ pullback.snd f g) (by simpa [← pullback.condition])]

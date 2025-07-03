@@ -180,11 +180,11 @@ instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} P X) [�
   constructor
   intro U hU
   obtain ⟨s, hs, V, hcV, hU⟩ := hU.isCompactOpenCovered 𝒰
-  have (i hi) : IsCompactOpenCovered (fun k ↦ ((f i).map k).base) (V i hi) :=
+  have (i) (hi) : IsCompactOpenCovered (fun k ↦ ((f i).map k).base) (V i hi) :=
     (f i).isCompactOpenCovered_of_isCompact (hcV i hi)
   choose t ht W hcW hV using this
   have : Finite s := hs
-  have (i hi) : Finite (t i hi) := ht i hi
+  have (i) (hi) : Finite (t i hi) := ht i hi
   refine .of_finite (κ := Σ (i : s), t i.1 i.2) (fun p ↦ ⟨p.1, p.2⟩) (fun p ↦ W _ p.1.2 _ p.2.2)
     (fun p ↦ hcW ..) ?_
   simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using hU
