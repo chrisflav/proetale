@@ -86,12 +86,12 @@ def CommRingCat.Under.inclusion :
     MorphismProperty.Under Q ⊤ R ⥤ CommAlgCat R :=
   MorphismProperty.Under.forget _ _ _ ⋙ (commAlgCatEquivUnder R).inverse
 
-def RingHom.Etale : MorphismProperty CommRingCat := sorry -- after Mathlib PR, redefine this using RingHom.Etale.
+def CategoryTheory.CommRingCat.Etale : MorphismProperty CommRingCat := fun _ _ f ↦ f.hom.Etale
 
-instance (R : Type u) [CommRing R] : (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R)).HasPointwiseLeftKanExtension
-    (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R)) := sorry -- Would be in Mathlib
+instance (R : Type u) [CommRing R] : (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).HasPointwiseLeftKanExtension
+    (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)) := inferInstance -- Would be in Mathlib
 
-def henselizationFunctor (R : Type u) [CommRing R] : (CommAlgCat R) ⥤ CommAlgCat R := (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R)).leftKanExtension (CommRingCat.Under.inclusion RingHom.Etale (CommRingCat.of R))
+def henselizationFunctor (R : Type u) [CommRing R] : (CommAlgCat R) ⥤ CommAlgCat R := (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).leftKanExtension (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R))
 
 variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
 
@@ -107,8 +107,8 @@ instance : Algebra R (Henselization R S) := by
 
 def henselization_isom_colim : CommAlgCat.of R (Henselization R S) ≅
     Limits.colimit ((CostructuredArrow.proj (CommRingCat.Under.inclusion
-    RingHom.Etale (CommRingCat.of R)) (CommAlgCat.of R S)).comp (CommRingCat.Under.inclusion
-    RingHom.Etale (CommRingCat.of R))) :=
+    CommRingCat.Etale (CommRingCat.of R)) (CommAlgCat.of R S)).comp (CommRingCat.Under.inclusion
+    CommRingCat.Etale (CommRingCat.of R))) :=
   CategoryTheory.Functor.leftKanExtensionObjIsoColimit _ _ _
 
 theorem henselization_of_quotient_is_henselian {R : Type*} [CommRing R] (I: Ideal R) (hI : I ≤ Ring.jacobson R) :
