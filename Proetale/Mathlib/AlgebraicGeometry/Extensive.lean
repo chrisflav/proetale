@@ -25,7 +25,7 @@ instance (K : Type*) [Category K] [PreservesLimitsOfShape K F] [HasLimitsOfShape
     PreservesLimitsOfShape K (sheafCompose J F) :=
   have : PreservesLimitsOfShape K (sheafCompose J F ⋙ sheafToPresheaf J B) :=
     inferInstanceAs <| PreservesLimitsOfShape K
-      (sheafToPresheaf J A ⋙ (whiskeringRight Cᵒᵖ A B).obj F)
+      (sheafToPresheaf J A ⋙ (Functor.whiskeringRight Cᵒᵖ A B).obj F)
   CategoryTheory.Limits.preservesLimitsOfShape_of_reflects_of_preserves _
     (sheafToPresheaf J B)
 
@@ -111,7 +111,7 @@ instance : FinitaryExtensive Scheme.{u} := by
   have : PreservesColimitsOfShape (Discrete WalkingPair) F := by
     apply J.preservesColimitsOfShape_yoneda_of_ofArrows_inj_mem
     · intro X c hc
-      simp only [Functor.mem_inducedTopology_sieves_iff, C]
+      simp only [C]
       have : Sieve.ofArrows _ (e.inverse.mapCocone c).ι.app ∈
           Scheme.zariskiTopology (e.inverse.mapCocone c).pt :=
         ofArrows_ι_mem_zariskiTopology_of_isColimit _ (isColimitOfPreserves e.inverse hc)
@@ -129,7 +129,7 @@ instance : FinitaryExtensive Scheme.{u} := by
       let X' : WalkingPair → Scheme.{u} := X
       let iso : colimit (Discrete.functor X' ⋙ e.functor) ≅ c.pt :=
         IsColimit.coconePointsIsoOfNatIso (colimit.isColimit _) hc Discrete.natIsoFunctor
-      have (i) : e.functor.map (Sigma.ι X' i) = c.inj i ≫ iso.inv ≫
+      have this (i) : e.functor.map (Sigma.ι X' i) = c.inj i ≫ iso.inv ≫
           (preservesColimitIso e.functor (Discrete.functor X)).inv := by
         simp only [Cofan.inj, IsColimit.coconePointsIsoOfNatIso_inv, IsColimit.ι_map_assoc,
           Discrete.functor_obj_eq_as, Functor.comp_obj, Discrete.natIsoFunctor_inv_app,

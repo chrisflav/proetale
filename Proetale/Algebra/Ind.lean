@@ -8,9 +8,8 @@ import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib
 
 open CategoryTheory
+
 variable {R : Type*} [CommRing R]
--- #synth Limits.HasColimits (AlgCat R) -- tensor product
-#synth Limits.HasLimits (AlgCat R)
 
 universe u v w w'
 
@@ -18,13 +17,10 @@ open CategoryTheory Limits
 
 instance : Limits.HasColimits (AlgCat R) := sorry
 
-
---
-
 -- `Question: Why Algebra.Etale is preferred over RingHom.IsEtale?`
 
--- `Ind P Q` for fixed universe. And IndEtale IndZariski,... for different universes.
-
+-- I dont want to use this one!
+--
 -- universe
 
 -- 2 versions of Ind Category:
@@ -75,4 +71,60 @@ class Algebra.IsInd (P : ∀ (R : Type u) [CommRing R] (S : Type u) [CommRing S]
 
 open Algebra
 variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
-#check IsInd Etale R S
+
+section
+
+variable {ι : Type*} [Preorder ι] (F : ι → Type*) (f : ∀ ⦃i j : ι⦄, i ≤ j → F i → F j)
+  [DirectedSystem F f]
+
+/-- A characterization of a type being the direct colimit of a directed system. -/
+class IsDirectLimit (G : Type*) (g : ∀ i, F i → G) : Prop where
+  comp_eq {i j : ι} (hij : i ≤ j) : g j ∘ f hij = g i
+  jointly_surjective (x : G) : ∃ i, x ∈ Set.range (g i)
+  eq_iff {i j : ι} (x : F i) (y : F j) : g i x = g j y ↔ ∃ (k : ι) (hik : i ≤ k) (hjk : j ≤ k),
+    f hik x = f hjk y
+
+variable (G : Type*) (g : ∀ i, F i → G)
+
+/--
+An ind-presentation of `S` over `R` is a directed system of `R`-algebras, whose
+colimit is `S`.
+-/
+@[ext]
+structure Algebra.IndPresentation (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] (ι : Type*) [Preorder ι] where
+  [isDirected : IsDirected ι (fun i j : ι ↦ i ≤ j)]
+  F : ι → Type v
+  [commRing : ∀ i, CommRing (F i)]
+  [algebra : ∀ i, Algebra R (F i)]
+  f : ∀ ⦃i j : ι⦄, i ≤ j → F i →ₐ[R] F j
+  g : ∀ i, F i →ₐ[R] S
+  [directedSystem : DirectedSystem F (fun _ _ hij ↦ ⇑(f hij))]
+  [isDirectLimit : IsDirectLimit F (fun _ _ hij ↦ ⇑(f hij)) S (fun i ↦ ⇑(g i))]
+
+namespace Algebra.IndPresentation
+
+attribute [instance] commRing algebra directedSystem
+
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
+
+@[simps]
+def Algebra.IndPresentation.self : IndPresentation R S Unit where
+  isDirected := by
+    constructor
+    intro _ _
+    use ()
+  F _ := S
+  f _ _ _ := AlgHom.id _ _
+  g i := AlgHom.id _ _
+  directedSystem := by constructor <;> simp
+  isDirectLimit := by constructor <;> simp
+
+end Algebra.IndPresentation
+
+/-- An algebra is ind-étale if it can be written as the directed colimit of étale
+algebras. -/
+class Algebra.IndEtale (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] : Prop where
+  out : ∃ (ι : Type u) (_ : Preorder ι) (P : Algebra.IndPresentation R S ι),
+    ∀ (i : ι), Algebra.Etale R (P.F i)
+
+end
