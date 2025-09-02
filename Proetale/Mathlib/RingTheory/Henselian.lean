@@ -138,45 +138,43 @@ private theorem aeval_zero_of_mem_span {I : Ideal R} {f : R[X]} {a₀ : R} (e : 
 
 private def g {I : Ideal R} {f : R[X]} {a₀ : R} (e : Polynomial.eval a₀ f ∈ I)
     (u : IsUnit ((Ideal.Quotient.mk I) (Polynomial.eval a₀ (derivative f)))) : S f →ₐ[R] R ⧸ I :=
-  Ideal.Quotient.liftₐ (idealJ f) (MvPolynomial.aeval ![(mk I) a₀, u.unit.inv]) (fun _ ↦ aeval_zero_of_mem_span e u)
+  Ideal.Quotient.liftₐ (idealJ f)
+    (MvPolynomial.aeval ![(mk I) a₀, u.unit.inv])
+    (fun _ ↦ aeval_zero_of_mem_span e u)
 
 theorem henselian_if_exists_section (R : Type u)
     [CommRing R] (I : Ideal R) (hI : I ≤ Ring.jacobson R)
     (h : ∀ (S : Type u) [CommRing S] [Algebra R S] [Algebra.Etale R S] (g : S →ₐ[R] R ⧸ I),
     ∃ σ : S →ₐ[R] R, (Ideal.Quotient.mk I).comp (σ : S →+* R) = g) :
     HenselianRing R I where
-      jac := Ideal.jacobson_bot (R := R) ▸ hI
-      is_henselian := by
-          intro f monic a₀ e u
-          obtain ⟨σ, hσ⟩ := h (S f) (g e u)
-          use σ (mk _ (X 0))
-          constructor
-          · rw [IsRoot]
-            suffices hs : Polynomial.aeval (mk (idealJ f) (X 0)) f = 0 by
-              calc
-                _ = aeval (σ ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0))) f := rfl
-                _ = σ (aeval ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0)) f) := Polynomial.aeval_algHom_apply _ _ _
-                _ = 0 := by rw [hs]; simp
-            suffices ht : Ideal.Quotient.mk (idealJ f) (Polynomial.aeval (X 0) f) = 0 by
-              rw [← Ideal.Quotient.mkₐ_eq_mk R, Polynomial.aeval_algHom_apply, Ideal.Quotient.mkₐ_eq_mk R, ht]
-            apply Ideal.Quotient.eq_zero_iff_mem.mpr
-            simp [idealJ]
-            suffices this : (Polynomial.aeval (MvPolynomial.X (0 : Fin 2))) f = (toMvPolynomial 0) f by
-              rw [this]
-              apply Ideal.subset_span
-              simp
-            rfl
-          · suffices hq : (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0)) - a₀) = 0 by
-              apply Ideal.Quotient.eq_zero_iff_mem.mp hq
-            calc
-              _ = (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0))) - (Ideal.Quotient.mk I) a₀ := by simp
-              _ = ((Ideal.Quotient.mk I).comp σ.toRingHom) ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp
-              _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
-              _ = 0 := by simp [Ideal.Quotient.mk_comp_mk]
-
-
-
-
+  jac := Ideal.jacobson_bot (R := R) ▸ hI
+  is_henselian := by
+    intro f monic a₀ e u
+    obtain ⟨σ, hσ⟩ := h (S f) (g e u)
+    use σ (mk _ (X 0))
+    constructor
+    · rw [IsRoot]
+      suffices hs : Polynomial.aeval (mk (idealJ f) (X 0)) f = 0 by
+        calc
+          _ = aeval (σ ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0))) f := rfl
+          _ = σ (aeval ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0)) f) := Polynomial.aeval_algHom_apply _ _ _
+          _ = 0 := by rw [hs]; simp
+      suffices ht : Ideal.Quotient.mk (idealJ f) (Polynomial.aeval (X 0) f) = 0 by
+        rw [← Ideal.Quotient.mkₐ_eq_mk R, Polynomial.aeval_algHom_apply, Ideal.Quotient.mkₐ_eq_mk R, ht]
+      apply Ideal.Quotient.eq_zero_iff_mem.mpr
+      simp [idealJ]
+      suffices this : (Polynomial.aeval (MvPolynomial.X (0 : Fin 2))) f = (toMvPolynomial 0) f by
+        rw [this]
+        apply Ideal.subset_span
+        simp
+      rfl
+    · suffices hq : (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0)) - a₀) = 0 by
+        apply Ideal.Quotient.eq_zero_iff_mem.mp hq
+      calc
+        _ = (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0))) - (Ideal.Quotient.mk I) a₀ := by simp
+        _ = ((Ideal.Quotient.mk I).comp σ.toRingHom) ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp
+        _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
+        _ = 0 := sorry
 
 -- Success
 
@@ -191,7 +189,8 @@ def CommRingCat.Under.inclusion :
     MorphismProperty.Under Q ⊤ R ⥤ CommAlgCat R :=
   MorphismProperty.Under.forget _ _ _ ⋙ (commAlgCatEquivUnder R).inverse
 
-abbrev CategoryTheory.CommRingCat.Etale : MorphismProperty CommRingCat := RingHom.toMorphismProperty RingHom.Etale
+abbrev CategoryTheory.CommRingCat.Etale : MorphismProperty CommRingCat :=
+  RingHom.toMorphismProperty RingHom.Etale
 
 instance {C : Type*} [Category C] [HasColimits C] (X : C) : HasColimits (Under X) := by
   constructor
@@ -230,13 +229,13 @@ instance foo [EssentiallySmall.{w} C] [∀ (X : C), Small.{w} (S.obj X ⟶ T)] :
   have := essentiallySmall_of_small_of_locallySmall (CostructuredArrow (e.inverse ⋙ S) T)
   apply essentiallySmall_of_fully_faithful.{w} (eq.asEquivalence.inverse)
 
-
 instance : EssentiallySmall.{u, u, u + 1} (CommRingCat.Etale.Under ⊤ R) := by
   apply essentiallySmall_of_le
   intro X Y f hf
   exact .of_finitePresentation hf.2
 
-instance (R : Type u) [CommRing R] : (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).HasPointwiseLeftKanExtension
+instance (R : Type u) [CommRing R] :
+    (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).HasPointwiseLeftKanExtension
     (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)) := by
   dsimp [Functor.HasPointwiseLeftKanExtension]
   rintro _
@@ -244,7 +243,10 @@ instance (R : Type u) [CommRing R] : (CommRingCat.Under.inclusion CommRingCat.Et
   apply (config := {allowSynthFailures := true}) Limits.HasColimitsOfShape.has_colimit
   apply hasColimitsOfShape_of_essentiallySmall
 
-def henselizationFunctor (R : Type u) [CommRing R] : (CommAlgCat R) ⥤ CommAlgCat R := (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).leftKanExtension (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R))
+def henselizationFunctor (R : Type u) [CommRing R] :
+    (CommAlgCat R) ⥤ CommAlgCat R :=
+  (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R)).leftKanExtension
+    (CommRingCat.Under.inclusion CommRingCat.Etale (CommRingCat.of R))
 
 variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
 
@@ -264,11 +266,10 @@ def henselization_isom_colim : CommAlgCat.of R (Henselization R S) ≅
     CommRingCat.Etale (CommRingCat.of R))) :=
   CategoryTheory.Functor.leftKanExtensionObjIsoColimit _ _ _
 
-theorem henselization_of_quotient_is_henselian {R : Type*} [CommRing R] (I: Ideal R) (hI : I ≤ Ring.jacobson R) :
+theorem henselization_of_quotient_is_henselian {R : Type*} [CommRing R] (I : Ideal R)
+    (hI : I ≤ Ring.jacobson R) :
     HenselianRing (Henselization R (R ⧸ I)) (I.map (algebraMap R _)) := by
   apply henselian_if_exists_section
   · sorry -- I * Hens_R ()
   · intro S _ _ _ g
     sorry -- any such (S, g) should already appear in the colimit.
-
--- Even more success
