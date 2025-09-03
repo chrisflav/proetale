@@ -24,16 +24,33 @@ variable {C : Type u} [Category.{v} C] (P : MorphismProperty C)
 if `f = colim fᵢ` where `fᵢ : X ⟶ Yᵢ` satisfies `P`. -/
 def Ind : MorphismProperty C :=
   fun X Y f ↦ ∃ (J : Type u) (_ : SmallCategory J) (_ : IsFiltered J)
-    (D : J ⥤ C) (t : (Functor.const J).obj X ⟶ D) (s : D ⟶ (Functor.const J).obj Y)
+    -- `Dᵢ`
+    (D : J ⥤ C)
+    -- `tᵢ : X ⟶ Dᵢ`
+    (t : (Functor.const J).obj X ⟶ D)
+    -- `sᵢ : Dᵢ ⟶ Y = colim Dᵢ`
+    (s : D ⟶ (Functor.const J).obj Y)
+    -- `Y = colim Dᵢ`
     (_ : IsColimit (Cocone.mk _ s)),
     ∀ j, P (t.app j) ∧ t.app j ≫ s.app j = f
 
 class IndSpreads : Prop where
   exists_isPushout : ∀ {J : Type (max u v)} [Category.{v} J] [IsFiltered J] {D : J ⥤ C}
-    (c : Cocone D) (_ : IsColimit c) (T : C) (f : c.pt ⟶ T)
-    (_ : P f),
+    (c : Cocone D) (_ : IsColimit c)
+    (T : C) (f : c.pt ⟶ T) (_ : P f),
     ∃ (j : J) (T' : C) (f' : D.obj j ⟶ T') (g : T' ⟶ T),
       IsPushout (c.ι.app j) f' f g ∧ P f'
+  -- should be modified to "given a presentation as here, there exists a larger index such that
+  -- map comes from components"
+  exists_isPushout_of_hom : ∀ {J : Type (max u v)} [Category.{v} J] [IsFiltered J] {D : J ⥤ C}
+    (c : Cocone D) (_ : IsColimit c)
+    {S T : Under c.pt} (_ : P S.hom) (_ : P T.hom) (f : S ⟶ T),
+    ∃ (j : J) (S' T' : Under (D.obj j)) (_ : P S'.hom) (_ : P T'.hom)
+      (iS : S'.right ⟶ S.right) (iT : T'.right ⟶ T.right)
+      (f' : S' ⟶ T'),
+        IsPushout (c.ι.app j) S'.hom S.hom iS ∧
+        IsPushout (c.ι.app j) T'.hom T.hom iT ∧
+        iS ≫ f.right = f'.right ≫ iT
 
 alias exists_isPushout := IndSpreads.exists_isPushout
 
@@ -180,6 +197,36 @@ lemma ι_fromIndContraction (S : Under X)
 lemma property_indContraction_hom (S : Under X) : P.Ind ((indContraction P X).obj S).hom :=
   sorry
 
+lemma exists_costructuredArrow_aux [HasPushouts C] [IndSpreads P]
+    {S : Under X} (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
+      ∃ (s : T ⟶ S), g ≫ s = 𝟙 S)
+    [P.IsMultiplicative] [P.IsStableUnderCobaseChange] [Q.IsStableUnderCobaseChange]
+    {T : Under X}
+    (f : (indContraction P X).obj S ⟶ T)
+    (hPf : P f.right)
+    (hQf : Q f.right)
+    (j : CostructuredArrow (Under.forget P ⊤ X) S)
+    (T' : C)
+    (f' : ((CostructuredArrow.proj _ _ ⋙ Under.forget P ⊤ X) ⋙ CategoryTheory.Under.forget X).obj j ⟶ T')
+    (g : T' ⟶ T.right)
+    (h : IsPushout ((indContractionCocone P S).ι.app j).right f' f.right g)
+    (hf' : P f') :
+    ∃ (T'' : CostructuredArrow (Under.forget P ⊤ X) S), T''.left.right = T' := by
+  let c := ((CategoryTheory.Under.forget X).mapCocone (indContractionCocone P S))
+  let Pt : Under X :=
+    CategoryTheory.Under.mk (T.hom ≫ pushout.inl f.right (fromIndContraction P S).right)
+  let gu : S ⟶ Pt := CategoryTheory.Under.homMk (pushout.inr _ _)
+    (by
+      rw [← CategoryTheory.Under.w (fromIndContraction P S), Category.assoc]
+      simp [← pushout.condition, Pt])
+  obtain ⟨su, hsu⟩ := hS gu (P.pushout_inr _ _ hPf) (Q.pushout_inr _ _ hQf)
+  let T'' : CostructuredArrow (Under.forget P ⊤ X) S :=
+      ⟨MorphismProperty.Under.mk ⊤ (j.1.hom ≫ f') (P.comp_mem _ _ j.1.2 hf'), ⟨⟨⟩⟩,
+      CategoryTheory.Under.homMk g (by simp [← h.w]) ≫
+        CategoryTheory.Under.homMk (pushout.inl _ _) rfl ≫ su⟩
+  use T''
+  rfl
+
 /--
 Think: `P = étale` and `Q = surjective on Spec`. Assume that for every `X : C`
 there exists `S : C` and `X ⟶ S` satisfying `Q` that is contractible
@@ -188,7 +235,8 @@ wrt. `P ⊓ Q`-covers (i.e. étale, faithfully flat).
 Then also the ind-contraction is contractible wrt. `P ⊓ Q`-covers.
 -/
 lemma exists_comp_eq_id [HasPushouts C]
-    [IndSpreads P] {S : Under X}
+    [IndSpreads P]
+    {S : Under X}
     (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
       ∃ (s : T ⟶ S), g ≫ s = 𝟙 S)
     [IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S)]
@@ -280,10 +328,21 @@ lemma exists_comp_eq_id_of_ind
     ι.app := g
     ι.naturality {i j} u := by
       simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
-      have := t.naturality u
-      dsimp at this
-      rw [← hg j, Category.assoc] at this
-      sorry
+      let c := ((CategoryTheory.Under.forget X).mapCocone (indContractionCocone P S))
+      obtain ⟨k, S', T', hPS', hPT', iS, iT, f', hSpush, hTpush, heq⟩ :=
+        IndSpreads.exists_isPushout_of_hom (P := P) (J := (CostructuredArrow (Under.forget P ⊤ X) S))
+        (D := (CostructuredArrow.proj ((Under.forget P ⊤ X)) S ⋙
+          ((Under.forget P ⊤ X))) ⋙ CategoryTheory.Under.forget X) c
+        (isColimitOfPreserves _ <| isColimitIndContractionCocone P S)
+        (S := CategoryTheory.Under.mk (t.app i))
+        (T := CategoryTheory.Under.mk (t.app j)) (h i).1 (h j).1
+        (CategoryTheory.Under.homMk (D.map u) (by simp [← t.naturality]))
+      simp at heq
+      apply hSpush.hom_ext
+      · simp [← t.naturality_assoc, hg]
+      · simp [reassoc_of% heq]
+        -- this is probably wrong
+        sorry
     }
   have hsection : f.right ≫ hc.desc st = 𝟙 ((indContraction P X).obj S).right := by
     dsimp only [Under.comp_right, Under.homMk_right, Under.id_right]
