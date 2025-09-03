@@ -1,3 +1,4 @@
+import Proetale.Algebra.Contraction
 import Proetale.Algebra.Ind
 import Proetale.Algebra.WContractible
 import Proetale.Algebra.WLocal
