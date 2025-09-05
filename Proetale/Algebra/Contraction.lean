@@ -90,6 +90,10 @@ def Hom.comp {U V W : Cov K X} (f : U.Hom V) (g : V.Hom W) : U.Hom W where
   iso _ := f.iso _ ≫ g.iso _
   w := by simp
 
+open Limits
+
+variable [∀ (X : C), ∀ (U : Cov K X), HasWidePullback _ U.1.X U.1.f]
+
 variable (X P) in
 @[simps! id_σ id_iso comp_σ comp_iso]
 instance : Category (Cov K X) where
@@ -100,12 +104,10 @@ instance : Category (Cov K X) where
   comp_id := by intros; ext <;> simp; ext; simp
   assoc := by intros; ext <;> simp; ext; simp
 
-open Limits
-
 variable (K) in
 @[simps -isSimp]
 noncomputable
-def diag (X : C) [∀ (U : Cov K X), HasWidePullback _ U.1.X U.1.f] : Cov.{w} K X ⥤ C where
+def diag (X : C) : Cov.{w} K X ⥤ C where
   obj U := widePullback X U.1.X U.1.f
   map {U V} f := WidePullback.lift (WidePullback.base _)
     (fun j ↦ WidePullback.π _ (f.σ j) ≫ (f.iso j)) (by simp)
@@ -128,15 +130,37 @@ def diag (X : C) [∀ (U : Cov K X), HasWidePullback _ U.1.X U.1.f] : Cov.{w} K 
 instance [K.HasIsos] : Nonempty (Cov K X) :=
   ⟨⟨Precoverage.ZeroHypercover.singleton K (𝟙 X) (K.mem_coverings_of_isIso _)⟩⟩
 
-instance [K.HasIsos] [K.IsStableUnderSup] : IsCofiltered (Cov K X) where
+def Hom.Rel (U V : Cov K X) (f g : U.Hom V) : Prop :=
+  ∀ i : V.1.I₀, WidePullback.π U.1.f (f.σ i) ≫ f.iso i = WidePullback.π U.1.f (g.σ i) ≫ g.iso i
+
+def Hom.Rel.equivalence (U V : Cov K X) : _root_.Equivalence (Rel U V) where
+  refl f i := rfl
+  symm h i := by rw [h]
+  trans h₁ h₂ i := by rw [h₁, h₂]
+
+def Hom.setoid (U V : Cov K X) : Setoid (U.Hom V) where
+  r := Hom.Rel U V
+  iseqv := Hom.Rel.equivalence U V
+
+variable (K X) in
+def HomRel : HomRel (Cov K X) :=
+  fun {U V} f g ↦
+    ∀ i : V.1.I₀, WidePullback.π U.1.f (f.σ i) ≫ f.iso i = WidePullback.π U.1.f (g.σ i) ≫ g.iso i
+
+variable (K X) in
+abbrev HCov := Quotient (HomRel K X)
+
+instance [K.HasIsos] : Nonempty (HCov K X) := ⟨⟨Nonempty.some inferInstance⟩⟩
+
+instance [K.HasIsos] [K.IsStableUnderSup] : IsCofiltered (HCov K X) where
   cone_objs U V := by
-    refine ⟨⟨U.1.sum V.1⟩, ?_, ?_, trivial⟩
-    · exact {
+    refine ⟨⟨⟨U.1.1.sum V.1.1⟩⟩, ?_, ?_, trivial⟩
+    · exact Quot.mk _ {
         σ i := Sum.inl i
         iso i := 𝟙 _
         w := by simp
       }
-    · exact {
+    · exact Quot.mk _ {
         σ i := Sum.inr i
         iso i := 𝟙 _
         w := by simp
@@ -148,7 +172,7 @@ instance [K.HasIsos] [K.IsStableUnderSup] : IsCofiltered (Cov K X) where
     · exact fun _ ↦ X
     · sorry
     · sorry
-    · exact {
+    · exact Quot.mk _ {
         σ i := ⟨⟩
         iso i := by
           dsimp
@@ -156,10 +180,7 @@ instance [K.HasIsos] [K.IsStableUnderSup] : IsCofiltered (Cov K X) where
         w := sorry
       }
     · dsimp
-      apply Hom.ext (by rfl)
-      simp
-      ext i
-      simp
+      --apply Quot.sound
       sorry
 
 end Cov
@@ -366,7 +387,6 @@ alias _root_.CategoryTheory.MorphismProperty.exists_isPullback :=
 
 alias _root_.CategoryTheory.MorphismProperty.exists_isPullback_of_hom :=
   MorphismProperty.ProSpreads.exists_isPullback_of_hom
-
 
 variable [MorphismProperty.ProSpreads.{0, 0} P]
 
