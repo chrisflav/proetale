@@ -1,5 +1,5 @@
 import Mathlib
-import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 
 /-!
 # Another attempt at pro-contractions.
@@ -346,59 +346,18 @@ lemma contraction.naturality_of_le_of_isPullback [K.IsStableUnderBaseChange]
 
 variable (P : MorphismProperty C)
 
-def _root_.CategoryTheory.MorphismProperty.Pro : MorphismProperty C :=
-  fun X Y f ↦ ∃ (J : Type u) (_ : SmallCategory J) (_ : IsCofiltered J)
-    -- `Dᵢ`
-    (D : J ⥤ C)
-    -- `tᵢ : Dᵢ ⟶ X`
-    (t : D ⟶ (Functor.const J).obj Y)
-    -- `sᵢ : Y = lim Dᵢ ⟶ Dᵢ`
-    (s : (Functor.const J).obj X ⟶ D)
-    -- `Y = colim Dᵢ`
-    (_ : IsLimit (Cone.mk _ s)),
-    ∀ j, P (t.app j) ∧ s.app j ≫ t.app j = f
-
-class _root_.CategoryTheory.MorphismProperty.ProSpreads : Prop where
-  exists_isPullback : ∀ {J : Type t} [Category.{s} J] [IsCofiltered J] {D : J ⥤ C}
-    (c : Cone D) (_ : IsLimit c)
-    (T : C) (f : T ⟶ c.pt) (_ : P f),
-    ∃ (j : J) (T' : C) (f' : T' ⟶ D.obj j) (g : T ⟶ T'),
-      IsPullback f g (c.π.app j) f' ∧ P f'
-  exists_isPullback_of_hom : ∀ {J : Type t} [Category.{s} J] [IsCofiltered J] {D : J ⥤ C}
-    (c : Cone D) (_ : IsLimit c)
-    {A B A' B' : C} (f : A ⟶ B) (pA : A ⟶ c.pt) (pB : B ⟶ c.pt) (_hf : f ≫ pB = pA)
-    {jA jB : J}
-    (qA : A ⟶ A') (qB : B ⟶ B') (gA : A' ⟶ D.obj jA) (gB : B' ⟶ D.obj jB)
-    (hA : IsPullback pA qA (c.π.app jA) gA)
-    (hB : IsPullback pB qB (c.π.app jB) gB),
-    P gA → P gB →
-    ∃ (j : J) (tA : j ⟶ jA) (tB : j ⟶ jB) (PA PB : C)
-      (PA₁ : PA ⟶ D.obj j) (PA₂ : PA ⟶ A')
-      (PB₁ : PB ⟶ D.obj j) (PB₂ : PB ⟶ B')
-      (hPA : IsPullback PA₁ PA₂ (D.map tA) gA)
-      (hPB : IsPullback PB₁ PB₂ (D.map tB) gB)
-      (f' : PA ⟶ PB),
-      f' ≫ PB₁ = PA₁ ∧
-      f ≫ hPB.lift (pB ≫ c.π.app j) qB (by simp [hB.w]) =
-        hPA.lift (pA ≫ c.π.app j) qA (by simp [hA.w]) ≫ f'
-
-alias _root_.CategoryTheory.MorphismProperty.exists_isPullback :=
-  MorphismProperty.ProSpreads.exists_isPullback
-
-alias _root_.CategoryTheory.MorphismProperty.exists_isPullback_of_hom :=
-  MorphismProperty.ProSpreads.exists_isPullback_of_hom
-
 variable [MorphismProperty.ProSpreads.{0, 0} P]
 
 lemma foo [HasPullbacks C] [K.IsStableUnderBaseChange] [P.IsStableUnderBaseChange]
     (HK : ∀ {A B : C} (f : A ⟶ B), P f → Presieve.singleton f ∈ K B)
-    {Y : C} (f : Y ⟶ K.contraction X) (hf : P.Pro f) :
+    {Y : C} (f : Y ⟶ K.contraction X) (hf : P.pro f) :
     ∃ (g : K.contraction X ⟶ Y), g ≫ f = 𝟙 (K.contraction X) := by
   obtain ⟨J, _, _, D, t, s, hs, hst⟩ := hf
   have (j : J) : ∃ (n : ℕ) (D' : C) (u : D' ⟶ Construction.obj K X n) (v : D.obj j ⟶ D'),
       IsPullback (t.app j) v (contraction.π K X n) u ∧ P u := by
-    obtain ⟨⟨n⟩, D', f', g, h, hf'⟩ := P.exists_isPullback (J := ℕᵒᵖ) (D := Construction.diag K X)
-      (limit.cone _) (limit.isLimit _) _ (t.app j) (hst j).1
+    obtain ⟨⟨n⟩, D', f', g, h, hf'⟩ := P.exists_isPullback_of_isCofiltered
+      (J := ℕᵒᵖ) (D := Construction.diag K X)
+      (limit.cone _) (limit.isLimit _) (t.app j) (hst j).1
     use n, D', f', g, h
   choose n D' u v hv hu using this
   let l (j : J) : K.contraction X ⟶ D.obj j := by
@@ -417,7 +376,7 @@ lemma foo [HasPullbacks C] [K.IsStableUnderBaseChange] [P.IsStableUnderBaseChang
       · simp [l]
       · simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp, Category.assoc]
         obtain ⟨⟨m⟩, hmi, hmj, PA, PB, PA₁, PA₂, PB₁, PB₂, hPA, hPB, f', hf', hff'⟩ :=
-          P.exists_isPullback_of_hom (D := Construction.diag K X)
+          P.exists_isPullback_of_isCofiltered_of_hom (D := Construction.diag K X)
             (limit.cone _) (limit.isLimit _) (D.map a) (t.app i) (t.app j)
             (by simp)
             (v i) (v j) (u i) (u j) (hv i) (hv j) (hu i) (hu j)

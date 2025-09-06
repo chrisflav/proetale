@@ -1,4 +1,5 @@
-import Proetale.Algebra.Contraction
+import Proetale.Algebra.Contraction.Covers
+import Proetale.Algebra.Contraction.IndContraction
 import Proetale.Algebra.Ind
 import Proetale.Algebra.WContractible
 import Proetale.Algebra.WLocal
@@ -15,6 +16,7 @@ import Proetale.Mathlib.CategoryTheory.Extensive
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
