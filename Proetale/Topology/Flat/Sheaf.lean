@@ -68,9 +68,16 @@ instance : fpqcTopology.Subcanonical := by
     exact effectiveEpi_of_flat _ hf hs
 
 /-- A quasi-compact flat cover is an effective epimorphism family. -/
-lemma Scheme.Cover.effectiveEpiFamily_of_quasiCompact {X : Scheme.{u}} (𝒰 : X.Cover @Flat)
-    [𝒰.QuasiCompact] : EffectiveEpiFamily 𝒰.obj 𝒰.map :=
-  -- immediate consequence of fqpc subcanonical
-  sorry
+lemma Scheme.Cover.effectiveEpiFamily_of_quasiCompact {X : Scheme.{u}} (𝒰 : Cover.{u} @Flat X)
+    [𝒰.QuasiCompact] : EffectiveEpiFamily 𝒰.obj 𝒰.map := by
+  rw [← Sieve.effectiveEpimorphic_family]
+  refine .of_subcanonical fpqcTopology _ ?_
+  exact 𝒰.generate_ofArrows_mem_qcTopology
+
+/-- Any surjective, quasi-compact and flat morphism is an effective epimorphism. -/
+instance {X Y : Scheme} (f : X ⟶ Y) [QuasiCompact f] [Surjective f] [Flat f] : EffectiveEpi f := by
+  rw [← Sieve.effectiveEpimorphic_singleton]
+  refine .of_subcanonical fpqcTopology _ ?_
+  exact f.generate_singleton_mem_qcTopology ‹_›
 
 end AlgebraicGeometry

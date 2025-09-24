@@ -80,6 +80,21 @@ abbrev qcTopology (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative]
     [P.IsStableUnderBaseChange] : GrothendieckTopology Scheme.{u} := (qcPretopology P).toGrothendieck
 
 @[simp]
+lemma Scheme.Hom.singleton_mem_qcPretopology [P.IsMultiplicative] [P.IsStableUnderBaseChange]
+    {X Y : Scheme.{u}} {f : X ⟶ Y} (hf : P f) [Surjective f] [QuasiCompact f] :
+    Presieve.singleton f ∈ qcPretopology P Y := by
+  refine ⟨f.cover hf, inferInstance, ?_⟩
+  rw [ofArrows_homCover]
+
+@[simp]
+lemma Scheme.Hom.generate_singleton_mem_qcTopology [P.IsMultiplicative] [P.IsStableUnderBaseChange]
+    {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : P f) [Surjective f] [QuasiCompact f] :
+    Sieve.generate (Presieve.singleton f) ∈ qcTopology P Y := by
+  refine ⟨Presieve.singleton f, ?_, ?_⟩
+  · exact f.singleton_mem_qcPretopology hf
+  · exact Sieve.le_generate _
+
+@[simp]
 lemma Scheme.Cover.generate_ofArrows_mem_qcTopology [P.IsMultiplicative]
     [P.IsStableUnderBaseChange] {S : Scheme.{u}} (𝒰 : Cover.{u} P S) [𝒰.QuasiCompact] :
     .generate (.ofArrows 𝒰.obj 𝒰.map) ∈ qcTopology P S := by
