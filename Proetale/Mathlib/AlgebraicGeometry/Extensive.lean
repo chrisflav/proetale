@@ -91,7 +91,7 @@ instance : MonoCoprod Scheme.{u} := by
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- One possible proof is to embed into the category of Zariski sheaves. -/
-instance : FinitaryExtensive Scheme.{u} := by
+instance Scheme.finitaryExtensive : FinitaryExtensive Scheme.{u} := by
   let C := ULiftHom.{u + 1, u + 1} Scheme
   let e : Scheme.{u} ≌ C := ULiftHom.equiv
   let J : GrothendieckTopology C :=

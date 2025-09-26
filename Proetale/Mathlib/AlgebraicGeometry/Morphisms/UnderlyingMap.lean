@@ -17,4 +17,7 @@ lemma ofArrows_homCover {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective 
     Presieve.ofArrows (f.cover hf).obj (f.cover hf).map = Presieve.singleton f :=
   sorry
 
+instance {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] : Unique (f.cover hf).J :=
+  inferInstanceAs <| Unique PUnit
+
 end AlgebraicGeometry

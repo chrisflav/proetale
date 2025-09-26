@@ -61,9 +61,53 @@ Recall the following definition:
 \end{definition}
 
 \begin{lemma}
+    A morphism $f\colon X \to Y$ in $\et{S}$ is an effective epimorphism if and only if
+    it is surjective.
+    \label{lemma:et-effective-epi}
+    \lean{AlgebraicGeometry.Scheme.Etale.effectiveEpi_of_surjective, AlgebraicGeometry.Scheme.Etale.surjective_of_epi}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    \lean{AlgebraicGeometry.subcanonical_fpqcTopology}
+    \uses{thm:fpqc-subcanonical}
+    One direction follows from the fact that the fpqc topology is subcanonical. The converse
+    holds, because étale morphisms are open: If $f\colon X \to Y$ is an étale morphism
+    we may glue two copies of $Y$ along the inclusion of the image of $f$. If $f$ is not surjective,
+    the two inclusions of $Y$ into the amalgamated sum are different, but by construction
+    they agree on the image of $f$. Hence $f$ is not an epimorphism.
+\end{proof}
+
+\begin{lemma}
+    The category of schemes is finitary extensive.
+    \lean{AlgebraicGeometry.Scheme.finitaryExtensive}
+    \leanok
+    \label{lemma:scheme-finitaryextensive}
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    Since the Zariski topology is subcanonical, the category of schemes embeds
+    into the big Zariski topos, which is finitary extensive. Since
+    the Yoneda embedding preserves finite coproducts, the claim follows.
+\end{proof}
+
+\begin{lemma}
     The category $\et{X}$ is precoherent.
     \label{lemma:et-precoherent}
+    \lean{AlgebraicGeometry.Scheme.Etale.precoherent}
+    \leanok
 \end{lemma}
+
+\begin{proof}
+    \leanok
+    \uses{lemma:et-effective-epi, lemma:scheme-finitaryextensive}
+    The category of schemes is finitary extensive, so the same holds
+    for $\et{X}$. By \ref{lemma:et-effective-epi} the effective epimorphisms
+    in $\et{X}$ are the surjective morphisms, hence being an effective epimorphism
+    is stable under base change. Thus $\et{X}$ is preregular and therefore precoherent.
+\end{proof}
 
 \begin{proposition}
     If $\mathcal{C}$ is precoherent, also $\pro{\mathcal{C}}$ is precoherent.

@@ -7,6 +7,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.Cover.Sigma
+import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
