@@ -14,6 +14,8 @@ import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Extensive
+import Proetale.Mathlib.CategoryTheory.Limits.Comma
+import Proetale.Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
@@ -28,6 +30,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Replete.WeaklyContractible
+import Proetale.Topology.Coherent.Affine
 import Proetale.Topology.Coherent.Etale
 import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Topology.Flat.QuasiCompactCover

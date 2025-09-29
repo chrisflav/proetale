@@ -435,7 +435,7 @@ lemma Scheme.Etale.epi_iff_surjective {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y)
     Epi f ↔ Surjective f.left :=
   ⟨fun _ ↦ Over.surjective_of_epi_of_isOpenMap f.left.isOpenMap, fun _ ↦ inferInstance⟩
 
-/-- The small étale site of a scheme is precoherent. -/
+/-- The small étale site of a scheme is preregular. -/
 instance Scheme.Etale.preregular (S : Scheme.{u}) : Preregular S.Etale := by
   apply Preregular.of_hasPullbacks_of_effectiveEpi_fst
   intro X Y Z f g hg
