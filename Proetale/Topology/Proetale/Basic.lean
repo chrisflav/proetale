@@ -23,4 +23,16 @@ def ProEt (X : Scheme.{u}) := MorphismProperty.Over @WeaklyEtale ⊤ X
 def proetaleTopology : GrothendieckTopology Scheme.{u} :=
   qcTopology @WeaklyEtale
 
+namespace ProEt
+
+variable (X : Scheme.{u})
+
+instance : Category (ProEt X) :=
+  inferInstanceAs <| Category (MorphismProperty.Over _ _ _)
+
+def topology : GrothendieckTopology (ProEt X) :=
+  smallGrothendieckTopology @WeaklyEtale
+
+end ProEt
+
 end AlgebraicGeometry.Scheme
