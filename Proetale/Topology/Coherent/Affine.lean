@@ -118,7 +118,7 @@ instance isCoverDense_toOver_Spec (P : MorphismProperty Scheme.{u}) [P.IsMultipl
     rw [Scheme.mem_smallGrothendieckTopology]
     let 𝒰 : Cover.{u} P U.left := U.left.affineCover.changeProp _
       (fun _ ↦ IsLocalAtSource.of_isOpenImmersion _)
-    let _ (i : 𝒰.J) : (𝒰.obj i).Over S := ⟨𝒰.map i ≫ U.hom⟩
+    let _ (i : 𝒰.I₀) : (𝒰.X i).Over S := ⟨𝒰.f i ≫ U.hom⟩
     refine ⟨𝒰, ?_, ?_, ?_⟩
     · exact ⟨fun i ↦ inferInstance, fun i ↦ ⟨rfl⟩⟩
     · intro i
@@ -127,10 +127,10 @@ instance isCoverDense_toOver_Spec (P : MorphismProperty Scheme.{u}) [P.IsMultipl
       exact U.prop
     · rintro X f ⟨i⟩
       simp only [Sieve.coverByImage]
-      refine ⟨⟨affineOverMk (𝒰.map i ≫ U.hom) (P.comp_mem _ _ (𝒰.map_prop i) U.prop), ?_, ?_, ?_⟩⟩
+      refine ⟨⟨affineOverMk (𝒰.f i ≫ U.hom) (P.comp_mem _ _ (𝒰.map_prop i) U.prop), ?_, ?_, ?_⟩⟩
       · exact MorphismProperty.CostructuredArrow.homMk (𝟙 _) ⟨⟩ rfl
       · dsimp
-        exact MorphismProperty.Over.homMk (𝒰.map i) (by simp) trivial
+        exact MorphismProperty.Over.homMk (𝒰.f i) (by simp) trivial
       · ext
         simp
 
@@ -169,14 +169,14 @@ end
 
 noncomputable
 def Cover.etaleAffineRefinement (𝒰 : S.Cover @IsEtale) : S.AffineCover @IsEtale where
-  J := (𝒰.bind fun j ↦ (𝒰.obj j).affineCover.changeProp _ (fun _ ↦ inferInstance)).J
-  obj _ := _
-  map := (𝒰.bind fun j => (𝒰.obj j).affineCover.changeProp _ fun _ ↦ inferInstance).map
-  f := (𝒰.bind fun j => (𝒰.obj j).affineCover.changeProp _ fun _ ↦ inferInstance).f
-  covers := (𝒰.bind fun j => (𝒰.obj j).affineCover.changeProp _ fun _ ↦ inferInstance).covers
+  I₀ := (𝒰.bind fun j ↦ (𝒰.X j).affineCover.changeProp _ (fun _ ↦ inferInstance)).I₀
+  X _ := _
+  f := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp _ fun _ ↦ inferInstance).f
+  idx := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp _ fun _ ↦ inferInstance).idx
+  covers := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp _ fun _ ↦ inferInstance).covers
   map_prop j := by
     simp [Cover.changeProp]
-    have : IsEtale (𝒰.map j.fst) := 𝒰.map_prop _
+    have : IsEtale (𝒰.f j.fst) := 𝒰.map_prop _
     infer_instance
 
 def AffineEtale (S : Scheme.{u}) : Type (u + 1) :=

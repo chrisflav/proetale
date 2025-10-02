@@ -15,45 +15,6 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (K : Precoverage C)
 
-@[simps]
-def PreZeroHypercover.sum {X : C} (E : PreZeroHypercover.{w} X) (F : PreZeroHypercover.{w'} X) :
-    PreZeroHypercover.{max w w'} X where
-  I₀ := E.I₀ ⊕ F.I₀
-  X := Sum.elim E.X F.X
-  f i := match i with
-    | .inl i => E.f i
-    | .inr i => F.f i
-
-@[simp]
-lemma PreZeroHypercover.presieve₀_sum {X : C} (E : PreZeroHypercover.{w} X)
-    (F : PreZeroHypercover.{w'} X) :
-    (E.sum F).presieve₀ = E.presieve₀ ⊔ F.presieve₀ := by
-  rw [presieve₀, presieve₀, presieve₀]
-  apply le_antisymm
-  · intro Z g ⟨i⟩
-    cases i
-    · exact Or.inl (.mk _)
-    · exact Or.inr (.mk _)
-  · rintro Z g (⟨⟨i⟩⟩|⟨⟨i⟩⟩)
-    · exact ⟨Sum.inl i⟩
-    · exact ⟨Sum.inr i⟩
-
-class Precoverage.IsStableUnderSup (K : Precoverage C) where
-  sup_mem_coverings {X : C} {R S : Presieve X} (hR : R ∈ K X) (hS : S ∈ K X) :
-    R ⊔ S ∈ K X
-
-alias Precoverage.sup_mem_coverings := Precoverage.IsStableUnderSup.sup_mem_coverings
-
-variable {K} in
-@[simps toPreZeroHypercover]
-def Precoverage.ZeroHypercover.sum [K.IsStableUnderSup] {X : C} (E : ZeroHypercover.{w} K X)
-    (F : ZeroHypercover.{w'} K X) :
-    ZeroHypercover.{max w w'} K X where
-  __ := E.toPreZeroHypercover.sum F.toPreZeroHypercover
-  mem₀ := by
-    rw [PreZeroHypercover.presieve₀_sum]
-    exact K.sup_mem_coverings E.mem₀ F.mem₀
-
 lemma Precoverage.mem_coverings_singleton_of_isPullback [K.IsStableUnderBaseChange]
     {X Y Z P : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z)
     (h : IsPullback fst snd f g) (hg : Presieve.singleton g ∈ K Z) :
@@ -128,7 +89,7 @@ def diag (X : C) : Cov.{w} K X ⥤ C where
     simp
 
 instance [K.HasIsos] : Nonempty (Cov K X) :=
-  ⟨⟨Precoverage.ZeroHypercover.singleton K (𝟙 X) (K.mem_coverings_of_isIso _)⟩⟩
+  ⟨⟨Precoverage.ZeroHypercover.singleton (𝟙 X) (K.mem_coverings_of_isIso _)⟩⟩
 
 def Hom.Rel (U V : Cov K X) (f g : U.Hom V) : Prop :=
   ∀ i : V.1.I₀, WidePullback.π U.1.f (f.σ i) ≫ f.iso i = WidePullback.π U.1.f (g.σ i) ≫ g.iso i
@@ -203,12 +164,12 @@ variable (X : C) [HasLimitsOfShape (Cov.{w} K X) C] [HasIsos K]
 variable (K) in
 noncomputable
 def Precontraction.π {Y : C} (f : Y ⟶ X) (h : Presieve.singleton f ∈ K X) : K.precontraction X ⟶ Y :=
-  limit.π (Cov.diag.{w} K X) ⟨ZeroHypercover.singleton K f h⟩ ≫ WidePullback.π _ ⟨⟩
+  limit.π (Cov.diag.{w} K X) ⟨ZeroHypercover.singleton f h⟩ ≫ WidePullback.π _ ⟨⟩
 
 variable (K) in
 noncomputable
 def Precontraction.base : K.precontraction X ⟶ X :=
-  limit.π (Cov.diag.{w} K X) ⟨ZeroHypercover.singleton K (𝟙 X) <| mem_coverings_of_isIso (𝟙 X)⟩ ≫
+  limit.π (Cov.diag.{w} K X) ⟨ZeroHypercover.singleton (𝟙 X) <| mem_coverings_of_isIso (𝟙 X)⟩ ≫
     (WidePullback.base _)
 
 omit [∀ (X : C),
@@ -218,8 +179,8 @@ lemma Precontraction.naturality {Y Z : C} (f : Z ⟶ Y) (g : Y ⟶ X)
     Precontraction.π K X (f ≫ g) hfg ≫ f = Precontraction.π K X g hg := by
   simp only [π, ZeroHypercover.singleton_toPreZeroHypercover, PreZeroHypercover.singleton_I₀,
     Category.assoc]
-  let U : Cov.{w} K X := ⟨ZeroHypercover.singleton K _ hfg⟩
-  let V : Cov.{w} K X := ⟨ZeroHypercover.singleton K _ hg⟩
+  let U : Cov.{w} K X := ⟨ZeroHypercover.singleton _ hfg⟩
+  let V : Cov.{w} K X := ⟨ZeroHypercover.singleton _ hg⟩
   let f : U ⟶ V := {
     σ i := i
     iso i := f
@@ -242,7 +203,7 @@ lemma Precontraction.π_arrow {Y : C} (f : Y ⟶ X) (h : Presieve.singleton f �
   rw [this]
   simp only [π, base]
   congr 1
-  rw [← Category.comp_id (WidePullback.π (ZeroHypercover.singleton K (𝟙 X) _).f PUnit.unit)]
+  rw [← Category.comp_id (WidePullback.π (ZeroHypercover.singleton (𝟙 X) _).f PUnit.unit)]
   apply WidePullback.π_arrow
 
 variable [HasLimitsOfShape (Cov K (K.precontraction X)) C]
@@ -298,7 +259,7 @@ lemma contraction.w (n m : ℕ) (hmn : n ≤ m) :
   limit.w _ _
 
 lemma contraction.naturality_of_le_of_isPullback [K.IsStableUnderBaseChange]
-    [HasPullbacks C] (n m : ℕ) (hnm : n ≤ m) {Y P : C}
+    [Limits.HasPullbacks C] (n m : ℕ) (hnm : n ≤ m) {Y P : C}
     (f : Y ⟶ Construction.obj K X n)
     (hf : Presieve.singleton f ∈ K.coverings (Construction.obj K X n))
     (fst : P ⟶ Construction.obj K X m) (snd : P ⟶ Y)
@@ -326,9 +287,6 @@ lemma contraction.naturality_of_le_of_isPullback [K.IsStableUnderBaseChange]
           (snd := pullback.lift (fst ≫ Precontraction.base K _) snd _)]
     congr 1
     simp only [homOfLE_leOfHom, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-    · apply Precoverage.mem_coverings_singleton_of_isPullback
-      apply IsPullback.of_hasPullback
-      exact hf
     · refine (IsPullback.of_right ?_ ?_ (IsPullback.of_hasPullback _ _).flip).flip
       · apply IsPullback.flip
         convert h
@@ -336,6 +294,9 @@ lemma contraction.naturality_of_le_of_isPullback [K.IsStableUnderBaseChange]
         · rw [← Construction.diag_map_le_succ _ _ (by omega)]
           rw [← Functor.map_comp, ← op_comp, homOfLE_comp]
       · simp
+    · apply Precoverage.mem_coverings_singleton_of_isPullback
+      apply h
+      exact hf
     · intro
       simp only [Nat.add_eq, homOfLE_leOfHom, Category.assoc]
       rw [← h.w]
@@ -343,12 +304,15 @@ lemma contraction.naturality_of_le_of_isPullback [K.IsStableUnderBaseChange]
       rw [← Functor.map_comp, ← op_comp, homOfLE_comp]
     · omega
     · exact IsPullback.of_hasPullback _ _
+    · apply Precoverage.mem_coverings_singleton_of_isPullback
+      apply IsPullback.of_hasPullback
+      exact hf
 
 variable (P : MorphismProperty C)
 
 variable [MorphismProperty.ProSpreads.{0, 0} P]
 
-lemma foo [HasPullbacks C] [K.IsStableUnderBaseChange] [P.IsStableUnderBaseChange]
+lemma foo [Limits.HasPullbacks C] [K.IsStableUnderBaseChange] [P.IsStableUnderBaseChange]
     (HK : ∀ {A B : C} (f : A ⟶ B), P f → Presieve.singleton f ∈ K B)
     {Y : C} (f : Y ⟶ K.contraction X) (hf : P.pro f) :
     ∃ (g : K.contraction X ⟶ Y), g ≫ f = 𝟙 (K.contraction X) := by

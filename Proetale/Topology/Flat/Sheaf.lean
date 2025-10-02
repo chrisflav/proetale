@@ -87,7 +87,7 @@ instance subcanonical_fpqcTopology : fpqcTopology.Subcanonical := by
 
 /-- A quasi-compact flat cover is an effective epimorphism family. -/
 lemma Scheme.Cover.effectiveEpiFamily_of_quasiCompact {X : Scheme.{u}} (𝒰 : Cover.{u} @Flat X)
-    [𝒰.QuasiCompact] : EffectiveEpiFamily 𝒰.obj 𝒰.map := by
+    [𝒰.QuasiCompact] : EffectiveEpiFamily 𝒰.X 𝒰.f := by
   rw [← Sieve.effectiveEpimorphic_family]
   refine .of_subcanonical fpqcTopology _ ?_
   exact 𝒰.generate_ofArrows_mem_qcTopology
