@@ -1,0 +1,129 @@
+\chapter{Local structure}
+
+This chapter serves for the commutative algebra preparation of the remaining part of the paper. The key result is \Cref{thm:ind-etale-w-contractible-cover} expressing that every affine scheme has a w-contractible cover in the proetale site.
+
+% Question: Can we avoid using weakly etale algebra, only use ind-etale algebra? This would need a modification of theorem 5.4.2, by directly mimicking the proof of topological invariance of étale sites for weakly étale.
+% If so, we can remove theorem ??? and every dependency of it. 
+\section{Preliminaries}
+
+\begin{definition}[Extremally disconnected space]
+  \label{def:extremally-disconnected}
+  \lean{ExtremallyDisconnected}
+  \mathlibok
+
+  A topological space \(X\) is \emph{extremally disconnected} if the closure of every open subset is open.
+\end{definition}
+
+\begin{definition} [Stone-Čech compactification]
+  \label{def:stone-cech-compactification}
+  \lean{StoneCech}
+  \mathlibok
+
+  Let \(X\) be a topological space. The \emph{Stone-Čech compactification} of \(X\) is the
+  profinite space \(\beta(X)\) such that
+  \begin{enumerate}
+    \item \(X\) is dense in \(\beta(X)\);
+    \item every continuous map \(f: X \to Y\) to a compact Hausdorff space \(Y\)
+        extends uniquely to a continuous map \(\beta(f): \beta(X) \to Y\).
+  \end{enumerate}
+  We denote the Stone-Čech compactification of \(X\) by \(\beta(X)\).
+\end{definition}
+
+\begin{theorem}
+    Let \(X\) be a topological space. Then the Stone-Čech compactification \(\beta(X)\) is extremally disconnected.
+    \label{thm:stone-cech-extremally-disconnected}
+    \uses{def:extremally-disconnected, def:stone-cech-compactification}
+    \lean{StoneCech.projective}
+    \mathlibok
+\end{theorem}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/090D}{Tag 090D}]{stacks-project}}]
+  Let $X$ be a quasi-compact Hausdorff space. There exists a continuous surjection $X' \to X$ with $X'$ quasi-compact, Hausdorff, and extremally disconnected.
+  \label{thm:extremally-disconnected-cover}
+  \uses{def:extremally-disconnected, def:stone-cech-compactification}
+\end{proposition}
+
+\begin{proof}
+  \uses{thm:stone-cech-extremally-disconnected}
+  Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$. 
+\end{proof}
+
+
+\section{Ind-etale and weakly etale ring maps}
+
+\begin{definition}[Ind-étale algebras, {\cite[\href{https://stacks.math.columbia.edu/tag/097I}{Tag 097I}]{stacks-project}}]
+    An $R$-algebra $S$ is \emph{ind-étale} if it is a filtered colimit of étale $R$-algebras.
+    We say a ring homomorphism $R \to S$ is \emph{ind-étale} if $S$ is ind-étale as an $R$-algebra via $f$.
+    \label{def:ind-etale}
+\end{definition}
+
+\section{w-local spaces}
+
+\section{w-local rings}
+
+\begin{definition}[w-local rings, {\cite[Definition 2.2.1(i)]{proetale}}]
+    A ring \(A\) is \emph{w-local} if Spec(A) is w-local.
+    \label{def:w-local-ring}
+    \uses{def:w-local-space}
+    \lean{WLocalRing}
+    \leanok
+\end{definition}
+
+\begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
+    A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every local ring of \(A\) at a maximal ideal is strictly henselian.
+    % TODO: every faithfully flat \'etale map \(A \to B\) has a retraction. this should be a property.
+    \label{def:w-strictly-local-ring}
+    \uses{def:w-local-ring}
+    % refactor WStrictlyLocalRing, using the definition of strict henselian.
+    % \lean{WStrictlyLocalRing}
+    % \leanok
+\end{definition}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
+  For any ring \(A\), there exists an ind-étale faithfully flat \(A\)-algebra \(C\) with \(C\) w-strictly local.
+  \label{thm:ind-etale-w-strictly-local-cover}
+  \uses{def:w-strictly-local-ring,def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+  TBA
+\end{proof}
+
+\section{w-contractible rings}
+
+\begin{definition}[w-contractible rings, {\cite[Definition 2.4.1]{proetale}}]
+A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \(A \to B\) has a retraction.
+  \label{def:w-contractible-ring}
+\end{definition}
+
+\begin{lemma}
+  If a ring \(C\) is w-strictly local, then there exists an ind-étale faithfully flat \(C\)-algebra \(D\) with \(D\) w-contractible.
+  \label{thm:ind-etale-w-contractible-cover-of-w-strictly-local}
+  \uses{def:w-contractible-ring,def:w-strictly-local-ring,def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+  % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
+  \uses{thm:extremally-disconnected-cover}
+  Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. Note that $T$ is profinite. More TBA.
+  % Apply Lemma \ref{lemma:097D} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\operatorname{Spec}(D)) \to \pi_0(\operatorname{Spec}(C))$ realizes $T \to \pi_0(\operatorname{Spec}(C))$ and such that
+  % \[
+  % \begin{tikzcd}
+  % \operatorname{Spec}(D) \arrow[r] \arrow[d] & \pi_0(\operatorname{Spec}(D)) \arrow[d] \\
+  % \operatorname{Spec}(C) \arrow[r] & \pi_0(\operatorname{Spec}(C))
+  % \end{tikzcd}
+  % \]
+  % is cartesian in the category of topological spaces. Note that $\operatorname{Spec}(D)$ is w-local, that $\operatorname{Spec}(D) \to \operatorname{Spec}(C)$ is w-local, and that the set of closed points of $\operatorname{Spec}(D)$ is the inverse image of the set of closed points of $\operatorname{Spec}(C)$, see Lemma \ref{lemma:096C}. Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$). It follows from Lemma \ref{lemma:0982} that $D$ is w-contractible.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem 2.4.9]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/0983}{Tag 0983}]{stacks-project}}]
+  For any ring $A$, there exists an ind-étale faithfully flat $A$-algebra $D$ with $D$ w-contractible.
+
+  \label{thm:ind-etale-w-contractible-cover-exists}
+  \uses{def:w-contractible-ring,def:ind-etale}
+\end{theorem}
+
+\begin{proof}
+  \uses{thm:ind-etale-w-strictly-local-cover,thm:ind-etale-w-contractible-cover-of-w-strictly-local}
+  This is a combination of \Cref{thm:ind-etale-w-strictly-local-cover} and \Cref{thm:ind-etale-w-contractible-cover-of-w-strictly-local}.
+\end{proof}

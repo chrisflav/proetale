@@ -17,6 +17,7 @@ class WLocalRing (R : Type*) [CommRing R] : Prop where
 structure RingHom.IsWLocal {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
   isWLocalMap_comap : IsWLocalMap (PrimeSpectrum.comap f)
 
+-- refactor this, using the definition of strict henselian.
 /--
 -- To avoid universe issues, we use [BS15, Lemma 2.2.9] as the definition of a `WStrictlyLocalRing`.
 The definition of `Algebra.Etale R A` requires `R` and `A` to be in the same universe.
