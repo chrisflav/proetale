@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiang Jiedong, Christian Merten
 -/
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
+import Proetale.FromPi1.Etale
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
 
@@ -55,13 +56,15 @@ instance : ContainsIdentities @WeaklyEtale := by
 
 instance : IsMultiplicative @WeaklyEtale where
 
--- this is done in `Pi1`, but needs to be upstreamed to `mathlib`
-instance (priority := 900) of_isEtale [IsEtale f] : WeaklyEtale f :=
-  sorry
+instance (priority := 900) of_isEtale [IsEtale f] : WeaklyEtale f where
+  flat_diagonal := inferInstance
 
 instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f] : IsEtale f :=
   sorry
 
 end WeaklyEtale
+
+lemma isEtale_le_weaklyEtale : @IsEtale ≤ @WeaklyEtale :=
+  fun _ _ _ _ ↦ inferInstance
 
 end AlgebraicGeometry

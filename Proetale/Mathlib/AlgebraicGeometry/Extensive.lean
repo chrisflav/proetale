@@ -65,22 +65,21 @@ end CategoryTheory
 namespace AlgebraicGeometry
 
 noncomputable
-instance : CoproductsDisjoint Scheme.{u} where
-  CoproductDisjoint X Y := by
-    have : Mono (BinaryCofan.mk (coprod.inl (X := X) (Y := Y)) coprod.inr).inl := by
-      dsimp
-      infer_instance
-    have : Mono (BinaryCofan.mk (coprod.inl (X := X) (Y := Y)) coprod.inr).inr := by
-      dsimp
-      infer_instance
-    refine CoproductDisjoint.of_binaryCofan_of_pullbackCone (.mk coprod.inl coprod.inr) ?_ ?_ ?_ ?_
-    · exact coprodIsCoprod X Y
-    · exact pullback.cone _ _
-    · exact pullback.isLimit _ _
-    · apply Nonempty.some
-      rw [isInitial_iff_isEmpty]
-      exact isEmpty_of_commSq_sigmaι_of_ne.{0, u} (ι := WalkingPair) (X := fun j ↦ j.casesOn X Y)
-        (i := .left) (j := .right) ⟨pullback.condition⟩ (by simp)
+instance : BinaryCoproductsDisjoint Scheme.{u} := by
+  refine .mk fun X Y ↦ ?_
+  have : Mono (BinaryCofan.mk (coprod.inl (X := X) (Y := Y)) coprod.inr).inl := by
+    dsimp
+    infer_instance
+  have : Mono (BinaryCofan.mk (coprod.inl (X := X) (Y := Y)) coprod.inr).inr := by
+    dsimp
+    infer_instance
+  refine BinaryCoproductDisjoint.of_binaryCofan (c := .mk coprod.inl coprod.inr) ?_
+      (pullback.isLimit _ _) ?_
+  · exact coprodIsCoprod X Y
+  · apply Nonempty.some
+    rw [isInitial_iff_isEmpty]
+    exact isEmpty_of_commSq_sigmaι_of_ne.{0, u} (ι := WalkingPair) (X := fun j ↦ j.casesOn X Y)
+      (i := .left) (j := .right) ⟨pullback.condition⟩ (by simp)
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : HasSheafify Scheme.zariskiTopology.{u} (Type (u + 1)) := inferInstance
@@ -92,7 +91,7 @@ instance : MonoCoprod Scheme.{u} := by
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- One possible proof is to embed into the category of Zariski sheaves. -/
-instance : FinitaryExtensive Scheme.{u} := by
+instance Scheme.finitaryExtensive : FinitaryExtensive Scheme.{u} := by
   let C := ULiftHom.{u + 1, u + 1} Scheme
   let e : Scheme.{u} ≌ C := ULiftHom.equiv
   let J : GrothendieckTopology C :=

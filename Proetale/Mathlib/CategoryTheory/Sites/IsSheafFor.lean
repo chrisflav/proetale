@@ -42,11 +42,11 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback'' (F : Cᵒᵖ ⥤ Type*) {X : 
 
 lemma Presieve.IsSheafFor.of_isSheafFor_pullback
     (F : Cᵒᵖ ⥤ Type*) {X : C}
-    (S : Presieve X) (T : Sieve X) [S.hasPullbacks]
+    (S : Presieve X) (T : Sieve X) [S.HasPairwisePullbacks]
     (hF : Presieve.IsSheafFor F S)
     (hF' : ∀ {Y : C} (f : Y ⟶ X), Presieve.IsSeparatedFor F ((Sieve.generate S).pullback f).arrows)
     (H' : ∀ {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ X) (hf : S f) (hg : S g),
-      haveI := hasPullbacks.has_pullbacks hf hg
+      haveI := HasPairwisePullbacks.has_pullbacks hf hg
       ∃ (R : Presieve (pullback f g)), Presieve.IsSeparatedFor F R ∧
         ∀ {W : C} (w : W ⟶ pullback f g),
           R w → Presieve.IsSeparatedFor F (T.pullback (w ≫ pullback.fst f g ≫ f)).arrows)
@@ -58,7 +58,7 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback
   have hr : FamilyOfElements.Compatible s := by
     rw [pullbackCompatible_iff]
     intro Y Z f g hf hg
-    haveI := hasPullbacks.has_pullbacks hf hg
+    haveI := HasPairwisePullbacks.has_pullbacks hf hg
     obtain ⟨R, hR, h⟩ := H' f g hf hg
     refine hR.ext fun W w hw ↦ (h w hw).ext fun U u hu ↦ ?_
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -82,11 +82,11 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback
     simp [Presieve.FamilyOfElements.pullback, ← hy _ hg]
 
 lemma Presieve.IsSheafFor.of_isSheafFor_pullback' (F : Cᵒᵖ ⥤ Type*) {X : C}
-    (S T : Presieve X) [S.hasPullbacks]
+    (S T : Presieve X) [S.HasPairwisePullbacks]
     (hF : Presieve.IsSheafFor F S)
     (hF' : ∀ {Y : C} (f : Y ⟶ X), Presieve.IsSeparatedFor F ((Sieve.generate S).pullback f).arrows)
     (H' : ∀ {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ X) (hf : S f) (hg : S g),
-      haveI := hasPullbacks.has_pullbacks hf hg
+      haveI := HasPairwisePullbacks.has_pullbacks hf hg
       ∃ (R : Presieve (pullback f g)), Presieve.IsSeparatedFor F R ∧
         ∀ {W : C} (w : W ⟶ pullback f g),
           R w → Presieve.IsSeparatedFor F ((Sieve.generate T).pullback (w ≫ pullback.fst f g ≫ f)).arrows)

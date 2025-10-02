@@ -21,7 +21,7 @@ Note: The second two conditions are satisfied if `C` is (finitary) extensive.
 -/
 lemma Presieve.isSheafFor_sigmaDesc_iff {F : Cᵒᵖ ⥤ Type v} {X : C} {ι : Type*} [Small.{v} ι]
     {Y : ι → C}
-    (f : ∀ i, Y i ⟶ X) [(ofArrows Y f).hasPullbacks]
+    (f : ∀ i, Y i ⟶ X) [(ofArrows Y f).HasPairwisePullbacks]
     [HasCoproduct Y] [HasCoproduct fun (ij : ι × ι) ↦ pullback (f ij.1) (f ij.2)]
     [HasPullback (Limits.Sigma.desc f) (Limits.Sigma.desc f)]
     [PreservesLimit (Discrete.functor <| fun i ↦ op (Y i)) F]
