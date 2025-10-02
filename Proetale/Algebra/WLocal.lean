@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Jiedong Jiang. All rights reserved.
+Copyright (c) 2025 Jiang Jiedong, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jiedong Jiang
+Authors: Jiang Jiedong, Christian Merten
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Etale.Basic
@@ -35,5 +35,3 @@ theorem WStrictlyLocalRing.isStrictlyHenselianLocalRing_of_isMaximal {R : Type u
 
 theorem wStrictlyLocalRing_of_isStrictlyHenselianLocalRing_atPrime {R : Type u} [CommRing R]
     (h : ∀ (m : Ideal R) [m.IsMaximal], IsStrictlyHenselianLocalRing (Localization.AtPrime m)) : WStrictlyLocalRing R := sorry
-
-
