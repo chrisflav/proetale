@@ -1,9 +1,13 @@
 \chapter{Local structure}
 
-This chapter serves for the commutative algebra preparation of the remaining part of the paper. The key result is \Cref{thm:ind-etale-w-contractible-cover} expressing that every affine scheme has a w-contractible cover in the proetale site.
+This chapter serves for the commutative algebra preparation of the remaining part of the paper. The key results are
+\begin{enumerate}
+  \item \Cref{thm:ind-etale-w-contractible-cover} expressing that every affine scheme has a w-contractible cover in the proetale site.
+  \item \Cref{thm:weakly-etale-ind-etale} expressing that every weakly etale map can be covered by ind-etale maps.
+\end{enumerate}
 
 % Question: Can we avoid using weakly etale algebra, only use ind-etale algebra? This would need a modification of theorem 5.4.2, by directly mimicking the proof of topological invariance of étale sites for weakly étale.
-% If so, we can remove theorem ??? and every dependency of it. 
+% If so, we can remove theorem \Cref{thm:weakly-etale-ind-etale} and every dependency of it. 
 \section{Preliminaries}
 
 \begin{definition}[Extremally disconnected space]
@@ -48,6 +52,12 @@ This chapter serves for the commutative algebra preparation of the remaining par
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$. 
 \end{proof}
 
+% Move this to a better place.
+\begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E}]{stacks-project}}]
+  \label{def:local-isomorphism}
+
+  We say $A \to B$ is a \emph{local isomorphism} if for every prime $\mathfrak{q} \subset B$ there exists a $g \in B$, $g \notin \mathfrak{q}$ such that $A \to B_g$ induces an open immersion $\Spec (B_g) \to \Spec (A)$.
+\end{definition}
 
 \section{Ind-etale and weakly etale ring maps}
 
@@ -58,6 +68,28 @@ This chapter serves for the commutative algebra preparation of the remaining par
 \end{definition}
 
 \section{w-local spaces}
+
+\begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
+    \label{def:w-local-space}
+    \lean{WLocalSpace}
+    \leanok
+    % Stacks uses another definition, split is a property. Every point of X specializes to a unique closed point. This is better.
+    % To be modified.
+    A topological space \(X\) is \emph{w-local} if it satisfies:
+    \begin{enumerate}
+        \item \(X\) is spectral;
+        \item All open covers split, i.e., for every open cover \(\{U_i\}_{i \in I}\) of \(X\), the map \(\coprod_{i \in I} U_i \to X\) has a section;
+        \item The subspace \(X^c\) of closed points is closed.
+    \end{enumerate}
+\end{definition}
+
+\begin{definition}[w-local morphisms, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
+    Let \(X\) and \(Y\) be w-local spaces. A morphism \(f: X \to Y\) is \emph{w-local} if it is spectral and the image of closed points \(f(X^c) \subseteq Y^c\).
+    \label{def:w-local-space-map}
+    \uses{def:w-local-space}
+    \lean{IsWLocalMap}
+    \leanok
+\end{definition}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}]{stacks-project}}]
 Let $X$ be a spectral space. Let
@@ -72,6 +104,10 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \uses{def:w-local-space,def:w-local-space-map}
 \end{lemma}
 
+\begin{proof}
+  TBA.
+\end{proof}
+
 \section{w-local rings}
 
 \begin{definition}[w-local rings, {\cite[Definition 2.2.1(i)]{proetale}}]
@@ -81,6 +117,40 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
     \lean{WLocalRing}
     \leanok
 \end{definition}
+
+\begin{definition}[w-local ring maps, {\cite[Definition 2.2.1(iii)]{proetale}}]
+    A ring map \(f: A \to B\) between w-local rings is \emph{w-local} if the induced map of w-local spaces \(\Spec(f) : \Spec(B) \to \Spec(A)\) is w-local.
+    % Spectral is automatic, only sending closed pts to closed pts matters.
+
+    \label{def:w-local-ring-map}
+    \uses{def:w-local-ring, def:w-local-space, def:w-local-space-map}
+    %\lean{IsWLocalRingMap}
+    %\leanok
+\end{definition}
+
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}]
+\label{thm:closed-points-isom-w-local}
+\uses{def:w-local,def:w-local-ring-map,def:ind-Zariski}
+
+Let $A$ be a w-local ring. Let $I \subset A$ be the radical ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$. Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes. Then
+\begin{enumerate}
+    \item every point of $Z = V(IB)$ is a closed point of $\Spec (B)$,
+    \item there exists an ind-Zariski ring map $B \to C$ such that
+    \begin{enumerate}
+        \item $B/IB \to C/IC$ is an isomorphism,
+        \item $C$ is w-local,
+        \item the induced map $p: Y \to X$ is w-local, and
+        \item $p^{-1}(X^c)$ is the set of closed points of $Y = \Spec (C)$, where $p : Y \to X$ is the induced map of $A \to B \to C$.
+    \end{enumerate}
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  TBA.
+\end{proof}
+
+
 
 \begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
     A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every local ring of \(A\) at a maximal ideal is strictly henselian.
@@ -153,19 +223,30 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0982}{Tag 0982}]{stacks-project}}]
 \label{thm:w-contractible-iff}
 \uses{def:w-contractible-ring,def:w-strictly-local-ring,def:extremally-disconnected}
+
 Let $A$ be a ring. The following are equivalent:
 \begin{enumerate}
     \item $A$ is w-contractible, and
     \item $A$ satisfies
     \begin{enumerate}
-        \item $A$ is w-strictly local, and
-        \item $\pi_0(\Spec (A))$ is extremally disconnected.
+        \item[a] $A$ is w-strictly local, and
+        \item[b] $\pi_0(\Spec (A))$ is extremally disconnected.
     \end{enumerate}
 \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-  TBA.
+  \uses{thm:closed-points-isom-w-local}
+
+  Assume 2a and 2b. Let $A \to B$ be faithfully flat and ind-\'etale. 
+  % We will use without further mention the fact that a flat map $A \to B$ is faithfully flat if and only if every closed point of $\operatorname{Spec}(A)$ is in the image of $\operatorname{Spec}(B) \to \operatorname{Spec}(A)$. 
+  We will show that $A \to B$ has a retraction.
+
+  Let $I \subset A$ be an ideal such that $V(I) \subset \Spec (A)$ is the set of closed points of $\Spec (A)$. We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. Thus we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$. 
+  % In this case $A \to B$ identifies local rings by condition (3)(c) as it suffices to check this at maximal ideals of $B$ which lie over maximal ideals of $A$. % This uses ind-etale/field is algebraic extension. ind-etale is preserved under base change and ind-Zariski is ind-etale, composition of ind-etale is ind-etale.
+  % Thus $A \to B$ has a retraction by Lemma \ref{lemma:09AZ}.
+
+  % Assume (1) or equivalently (2). We have (3)(c) by Lemma \ref{lemma:097V}. Properties (3)(a) and (3)(b) follow from Lemma \ref{lemma:09AZ}.
 \end{proof}
   
 
