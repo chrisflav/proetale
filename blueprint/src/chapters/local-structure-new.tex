@@ -59,6 +59,19 @@ This chapter serves for the commutative algebra preparation of the remaining par
 
 \section{w-local spaces}
 
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}]{stacks-project}}]
+Let $X$ be a spectral space. Let
+\[
+\begin{tikzcd}
+Y \arrow[r] \arrow[d] & T \arrow[d] \\
+X \arrow[r] & \pi_0(X)
+\end{tikzcd}
+\]
+be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $Y$ is spectral and $T = \pi_0(Y)$. If moreover $X$ is w-local, then $Y$ is w-local, $Y \to X$ is w-local, and the set of closed points of $Y$ is the inverse image of the set of closed points of $X$.
+\label{thm:cartesian-w-local}
+\uses{def:w-local-space,def:w-local-space-map}
+\end{lemma}
+
 \section{w-local rings}
 
 \begin{definition}[w-local rings, {\cite[Definition 2.2.1(i)]{proetale}}]
@@ -89,12 +102,72 @@ This chapter serves for the commutative algebra preparation of the remaining par
   TBA
 \end{proof}
 
+\section{ind-Zariski maps}
+
+\begin{definition}[Ind-(Zariski localizations), {\cite[\href{https://stacks.math.columbia.edu/tag/096N}{Tag 096N}]{stacks-project}}]
+    \label{def:ind-zariski}
+
+    An $R$-algebra $S$ is called a \emph{ind-Zariski} if $S$ can be written as a filtered colimit $S \simeq \colim S_i$ with each $R \to S_i$ a local isomorphism. A ring homomorphism $f : R \to S$ is called a \emph{ind-Zariski localization} if $S$ is ind-Zariski localization as an $R$-algebra via $f$.
+
+    \uses{def:local-isomorphism}
+\end{definition}
+
+\begin{remark}
+  The definition of ind-Zariski is slightly more general from \cite[Definition 2.2.1(iv)]{proetale}, where they defined as a filtered colimit of finite products of principal localizations. 
+\end{remark}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096T}{Tag 096T}]{stacks-project}}]
+  Let $A \to B$ be an ind-Zariski ring map. Then it identifies local rings, i.e. for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
+  \label{ind-Zariski-identifies-local-rings}
+  \uses{def:ind-zariski}
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
+Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. There exists an ind-Zariski ring map $A \to B$ such that with $Y = \Spec (B)$ the diagram
+\[
+\begin{tikzcd}
+Y \arrow[r] \arrow[d] & \pi_0(Y) \arrow[d] \\
+X \arrow[r] & \pi_0(X)
+\end{tikzcd}
+\]
+is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ as spaces over $\pi_0(X)$.
+\label{exists-ind-zariski-cartesian}
+\uses{def:ind-zariski}
+\end{lemma}
+
+\begin{proof}
+  TBA
+\end{proof}
+
 \section{w-contractible rings}
 
 \begin{definition}[w-contractible rings, {\cite[Definition 2.4.1]{proetale}}]
 A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \(A \to B\) has a retraction.
   \label{def:w-contractible-ring}
 \end{definition}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0982}{Tag 0982}]{stacks-project}}]
+\label{thm:w-contractible-iff}
+\uses{def:w-contractible-ring,def:w-strictly-local-ring,def:extremally-disconnected}
+Let $A$ be a ring. The following are equivalent:
+\begin{enumerate}
+    \item $A$ is w-contractible, and
+    \item $A$ satisfies
+    \begin{enumerate}
+        \item $A$ is w-strictly local, and
+        \item $\pi_0(\Spec (A))$ is extremally disconnected.
+    \end{enumerate}
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  TBA.
+\end{proof}
+  
 
 \begin{lemma}
   If a ring \(C\) is w-strictly local, then there exists an ind-étale faithfully flat \(C\)-algebra \(D\) with \(D\) w-contractible.
@@ -104,16 +177,21 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \
 
 \begin{proof}
   % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
-  \uses{thm:extremally-disconnected-cover}
-  Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. Note that $T$ is profinite. More TBA.
-  % Apply Lemma \ref{lemma:097D} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\operatorname{Spec}(D)) \to \pi_0(\operatorname{Spec}(C))$ realizes $T \to \pi_0(\operatorname{Spec}(C))$ and such that
-  % \[
-  % \begin{tikzcd}
-  % \operatorname{Spec}(D) \arrow[r] \arrow[d] & \pi_0(\operatorname{Spec}(D)) \arrow[d] \\
-  % \operatorname{Spec}(C) \arrow[r] & \pi_0(\operatorname{Spec}(C))
-  % \end{tikzcd}
-  % \]
-  % is cartesian in the category of topological spaces. Note that $\operatorname{Spec}(D)$ is w-local, that $\operatorname{Spec}(D) \to \operatorname{Spec}(C)$ is w-local, and that the set of closed points of $\operatorname{Spec}(D)$ is the inverse image of the set of closed points of $\operatorname{Spec}(C)$, see Lemma \ref{lemma:096C}. Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$). It follows from Lemma \ref{lemma:0982} that $D$ is w-contractible.
+  \uses{thm:extremally-disconnected-cover,exists-ind-zariski-cartesian,thm:cartesian-w-local,ind-Zariski-identifies-local-rings,thm:w-contractible-iff}
+
+  Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. Note that $T$ is profinite.
+  Apply \Cref{exists-ind-zariski-cartesian} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
+  \[
+  \begin{tikzcd}
+  \operatorname{Spec}(D) \arrow[r] \arrow[d] & \pi_0(\operatorname{Spec}(D)) \arrow[d] \\
+  \operatorname{Spec}(C) \arrow[r] & \pi_0(\operatorname{Spec}(C))
+  \end{tikzcd}
+  \]
+  is cartesian in the category of topological spaces.
+
+  Following \Cref{thm:cartesian-w-local}, we note that $\Spec (D)$ is w-local, that $\Spec (D) \to \Spec (C)$ is w-local, and that the set of closed points of $\Spec (D)$ is the inverse image of the set of closed points of $\Spec (C)$.
+
+  Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$ by \Cref{ind-Zariski-identifies-local-rings}). It follows from \Cref{thm:w-contractible-iff} that $D$ is w-contractible.
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 2.4.9]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/0983}{Tag 0983}]{stacks-project}}]
