@@ -2,7 +2,7 @@
 
 This chapter serves for the commutative algebra preparation of the remaining part of the paper. The key results are
 \begin{enumerate}
-  \item \Cref{thm:ind-etale-w-contractible-cover} expressing that every affine scheme has a w-contractible cover in the proetale site.
+  \item \Cref{thm:ind-etale-w-contractible-cover-exists} expressing that every affine scheme has a w-contractible cover in the proetale site.
   \item \Cref{thm:weakly-etale-ind-etale} expressing that every weakly etale map can be covered by ind-etale maps.
 \end{enumerate}
 
@@ -52,6 +52,13 @@ This chapter serves for the commutative algebra preparation of the remaining par
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$. 
 \end{proof}
 
+\begin{definition}[Strictly Henselian local ring, {\cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}}]
+    \label{def:strictly-henselian-local-ring}
+    % \lean{IsStrictlyHenselianLocalRing}
+    % \leanok
+    A local ring \(A\) is \emph{strictly henselian} if it is henselian and the residue field of \(A\) is separably closed.
+\end{definition}
+
 % Move this to a better place.
 \begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E}]{stacks-project}}]
   \label{def:local-isomorphism}
@@ -66,6 +73,26 @@ This chapter serves for the commutative algebra preparation of the remaining par
     We say a ring homomorphism $R \to S$ is \emph{ind-étale} if $S$ is ind-étale as an $R$-algebra via $f$.
     \label{def:ind-etale}
 \end{definition}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0BSI}{Tag 0BSI}]{stacks-project}}]
+  \label{thm:ind-etale-comp}
+  \uses{def:ind-etale}
+  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale, then $A \to C$ is ind-étale.
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0BSH}{Tag 0BSH}]{stacks-project}}]
+  \label{thm:ind-etale-base-change}
+  \uses{def:ind-etale}
+  Let $A \to B$ be an ind-étale ring map. For any ring map $A \to C$, the base change $C \to B \otimes_A C$ is ind-étale.
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
 
 \section{w-local spaces}
 
@@ -121,27 +148,35 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \begin{definition}[w-local ring maps, {\cite[Definition 2.2.1(iii)]{proetale}}]
     A ring map \(f: A \to B\) between w-local rings is \emph{w-local} if the induced map of w-local spaces \(\Spec(f) : \Spec(B) \to \Spec(A)\) is w-local.
     % Spectral is automatic, only sending closed pts to closed pts matters.
-
     \label{def:w-local-ring-map}
     \uses{def:w-local-ring, def:w-local-space, def:w-local-space-map}
     %\lean{IsWLocalRingMap}
     %\leanok
 \end{definition}
 
+\begin{lemma}% To be modified.
+  \label{thm:w-local-jacobson-radical}
+  \uses{def:w-local-ring}
+  Let $A$ be a w-local ring. The Jacobson radical \(I\) of \(A\) cuts out the closed points \(\Spec(A)^c\) of \(\Spec(A)\).
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}]
 \label{thm:closed-points-isom-w-local}
-\uses{def:w-local,def:w-local-ring-map,def:ind-Zariski}
-
-Let $A$ be a w-local ring. Let $I \subset A$ be the radical ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$. Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes. Then
+\uses{def:w-local-ring,def:w-local-ring-map,def:ind-Zariski}
+Let $A$ be a w-local ring. Let $I \subset A$ be the radical ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
+Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes. Then
 \begin{enumerate}
     \item every point of $Z = V(IB)$ is a closed point of $\Spec (B)$,
     \item there exists an ind-Zariski ring map $B \to C$ such that
     \begin{enumerate}
-        \item $B/IB \to C/IC$ is an isomorphism,
-        \item $C$ is w-local,
-        \item the induced map $p: Y \to X$ is w-local, and
-        \item $p^{-1}(X^c)$ is the set of closed points of $Y = \Spec (C)$, where $p : Y \to X$ is the induced map of $A \to B \to C$.
+        \item $B/IB \to C/IC$ is an isomorphism, \label{item:quotinet-isom-closed-points-isom-w-local} % thus surjective on closed points
+        \item $C$ is w-local, \label{item:w-local-closed-points-isom-w-local}
+        \item the map $p: Y = \Spec (C) \to X$ induced by the ring map $A \to B \to C$ is w-local, and % this is not needed?
+        \item $p^{-1}(X^c)$ is the set of closed points of $Y$. \label{item:inverse-image-closed-points-isom-w-local}
     \end{enumerate}
 \end{enumerate}
 \end{lemma}
@@ -151,22 +186,31 @@ Let $A$ be a w-local ring. Let $I \subset A$ be the radical ideal cutting out th
 \end{proof}
 
 
-
 \begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
     A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every local ring of \(A\) at a maximal ideal is strictly henselian.
     % TODO: every faithfully flat \'etale map \(A \to B\) has a retraction. this should be a property.
     \label{def:w-strictly-local-ring}
-    \uses{def:w-local-ring}
-    % refactor WStrictlyLocalRing, using the definition of strict henselian.
+    \uses{def:w-local-ring,def:strictly-henselian-local-ring}
+    % refactor WStrictlyLocalRing, using the definition of strictly henselian
     % \lean{WStrictlyLocalRing}
     % \leanok
 \end{definition}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
+\begin{lemma}
+  \label{thm:ind-etale-strictly-henselian-identifies-local-rings}
+  \uses{def:ind-etale,def:strictly-henselian-local-ring}
+  Let \(A\) be a strictly henselian local ring. Let \(A \to B\) be an ind-étale ring map. Then \(A \to B\) identifies local rings, i.e., for every prime \(\mathfrak{q} \subset B\) the canonical map \(A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}\) is an isomorphism.
+\end{lemma}
+
+\begin{proof}
+  TBA.
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
   For any ring \(A\), there exists an ind-étale faithfully flat \(A\)-algebra \(C\) with \(C\) w-strictly local.
   \label{thm:ind-etale-w-strictly-local-cover}
   \uses{def:w-strictly-local-ring,def:ind-etale}
-\end{lemma}
+\end{proposition}
 
 \begin{proof}
   TBA
@@ -175,7 +219,7 @@ Let $A$ be a w-local ring. Let $I \subset A$ be the radical ideal cutting out th
 \section{ind-Zariski maps}
 
 \begin{definition}[Ind-(Zariski localizations), {\cite[\href{https://stacks.math.columbia.edu/tag/096N}{Tag 096N}]{stacks-project}}]
-    \label{def:ind-zariski}
+    \label{def:ind-Zariski}
 
     An $R$-algebra $S$ is called a \emph{ind-Zariski} if $S$ can be written as a filtered colimit $S \simeq \colim S_i$ with each $R \to S_i$ a local isomorphism. A ring homomorphism $f : R \to S$ is called a \emph{ind-Zariski localization} if $S$ is ind-Zariski localization as an $R$-algebra via $f$.
 
@@ -188,12 +232,22 @@ Let $A$ be a w-local ring. Let $I \subset A$ be the radical ideal cutting out th
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096T}{Tag 096T}]{stacks-project}}]
   Let $A \to B$ be an ind-Zariski ring map. Then it identifies local rings, i.e. for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
-  \label{ind-Zariski-identifies-local-rings}
-  \uses{def:ind-zariski}
+  \label{thm:ind-Zariski-identifies-local-rings}
+  \uses{def:ind-Zariski}
 \end{lemma}
 
 \begin{proof}
   Omitted.
+\end{proof}
+
+\begin{lemma}
+  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat and ind-étale.
+  \label{thm:ind-Zariski-is-flat-ind-etale}
+  \uses{def:ind-Zariski,def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat and étale.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
@@ -205,47 +259,82 @@ X \arrow[r] & \pi_0(X)
 \end{tikzcd}
 \]
 is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ as spaces over $\pi_0(X)$.
-\label{exists-ind-zariski-cartesian}
-\uses{def:ind-zariski}
+\label{thm:exists-ind-Zariski-cartesian}
+\uses{def:ind-Zariski}
 \end{lemma}
 
 \begin{proof}
   TBA
 \end{proof}
 
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/09AZ}{Tag 09AZ}, (3) $\implies$ (1)]{stacks-project}}]
+  \label{thm:ff-identifies-local-rings-has-retraction-if}
+  \uses{def:w-local-ring,def:extremally-disconnected}
+  Let $A$ be a ring. If the following two conditions hold:
+  \begin{enumerate}
+    \item $A$ is w-local, and
+    \item $\pi_0(\operatorname{Spec}(A))$ is extremally disconnected.
+  \end{enumerate}
+  Then every faithfully flat ring map $A \to B$ identifying local rings has a retraction.
+\end{proposition}
+
+\begin{proof}
+  TBA.
+\end{proof}
+
 \section{w-contractible rings}
 
 \begin{definition}[w-contractible rings, {\cite[Definition 2.4.1]{proetale}}]
-A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \(A \to B\) has a retraction.
+A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(A \to B\) has a retraction.
   \label{def:w-contractible-ring}
 \end{definition}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0982}{Tag 0982}]{stacks-project}}]
-\label{thm:w-contractible-iff}
-\uses{def:w-contractible-ring,def:w-strictly-local-ring,def:extremally-disconnected}
-
-Let $A$ be a ring. The following are equivalent:
-\begin{enumerate}
-    \item $A$ is w-contractible, and
-    \item $A$ satisfies
-    \begin{enumerate}
-        \item[a] $A$ is w-strictly local, and
-        \item[b] $\pi_0(\Spec (A))$ is extremally disconnected.
-    \end{enumerate}
-\end{enumerate}
+\begin{lemma}
+  \label{thm:w-contractible-if-ind-etale-plus-c-has-retraction}
+  \uses{def:w-local-ring,def:ind-etale,def:w-contractible-ring}
+  Let \(A\) be a w-local ring and $I \subset A$ the Jacobson radical cutting out the set $X^c$ of closed points in $X = \Spec (A)$. If every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction, then \(A\) is w-strictly contractible.
 \end{lemma}
 
 \begin{proof}
-  \uses{thm:closed-points-isom-w-local}
-
-  Assume 2a and 2b. Let $A \to B$ be faithfully flat and ind-\'etale. 
+  \uses{thm:closed-points-isom-w-local,thm:ind-Zariski-is-flat-ind-etale,thm:ind-etale-comp}
+  Let $A \to B$ be faithfully flat and ind-étale. 
   % We will use without further mention the fact that a flat map $A \to B$ is faithfully flat if and only if every closed point of $\operatorname{Spec}(A)$ is in the image of $\operatorname{Spec}(B) \to \operatorname{Spec}(A)$. 
   We will show that $A \to B$ has a retraction.
 
-  Let $I \subset A$ be an ideal such that $V(I) \subset \Spec (A)$ is the set of closed points of $\Spec (A)$. We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. Thus we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$. 
-  % In this case $A \to B$ identifies local rings by condition (3)(c) as it suffices to check this at maximal ideals of $B$ which lie over maximal ideals of $A$. % This uses ind-etale/field is algebraic extension. ind-etale is preserved under base change and ind-Zariski is ind-etale, composition of ind-etale is ind-etale.
-  % Thus $A \to B$ has a retraction by Lemma \ref{lemma:09AZ}.
+  We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. To justify this, note that by \Cref{thm:ind-Zariski-is-flat-ind-etale}, the map \( B \to C \) is flat and ind-étale. It is faithfully flat by \Cref{item:quotinet-isom-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}, since the closed points of \( \Spec(B) \) lie in the image of \( \Spec(C) \to \Spec(B) \). Therefore, by \Cref{thm:ind-etale-comp}, the composition \( A \to C \) is also faithfully flat and ind-étale. Hence, we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
+\end{proof}
 
+\begin{lemma}
+  \label{thm:ind-etale-plus-c-has-retraction-if}
+  \uses{def:w-strictly-local-ring,def:extremally-disconnected,def:ind-etale}
+  Let $A$ be a ring. If the following two conditions hold:
+  \begin{enumerate}
+    \item $A$ is w-strictly local, and \label{item:w-strictly-local-ind-etale-plus-c-has-retraction-if}
+    \item $\pi_0(\Spec (A))$ is extremally disconnected. \label{item:extremally-disconnected-ind-etale-plus-c-has-retraction-if}
+  \end{enumerate}
+  then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction. Here $I \subset A$ is the Jacobson radical of $A$ cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:ind-etale-base-change,thm:ind-etale-strictly-henselian-identifies-local-rings,thm:ff-identifies-local-rings-has-retraction-if}
+  Let \(A \to B\) be a faithfully flat ind-étale map with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\). In this case $A \to B$ identifies local rings, it suffices to check this at maximal ideals of $B$ which lie over maximal ideals of $A$. By \Cref{item:w-strictly-local-ind-etale-plus-c-has-retraction-if}, we know that the local rings of $A$ at its maximal ideal $\m$ are strictly henselian. By \Cref{thm:ind-etale-base-change} and \Cref{thm:ind-etale-strictly-henselian-identifies-local-rings}.
+  Thus $A \to B$ has a retraction by \Cref{thm:ff-identifies-local-rings-has-retraction-if}.
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/0982}{Tag 0982}, (3) $\implies$ (2)]{stacks-project}}] % actually iff, but we only need this direction
+  \label{thm:w-contractible-if}
+  \uses{def:w-contractible-ring,def:w-strictly-local-ring,def:extremally-disconnected}
+  Let $A$ be a ring. If the following two conditions hold:
+  \begin{enumerate}
+    \item $A$ is w-strictly local, and
+    \item $\pi_0(\Spec (A))$ is extremally disconnected.
+  \end{enumerate}
+  then $A$ is w-contractible.
+\end{proposition}
+
+\begin{proof}
+  \uses{thm:w-contractible-if-ind-etale-plus-c-has-retraction,thm:ind-etale-plus-c-has-retraction-if}
+  This is \Cref{thm:ind-etale-plus-c-has-retraction-if} with \Cref{thm:w-contractible-if-ind-etale-plus-c-has-retraction}.
   % Assume (1) or equivalently (2). We have (3)(c) by Lemma \ref{lemma:097V}. Properties (3)(a) and (3)(b) follow from Lemma \ref{lemma:09AZ}.
 \end{proof}
   
@@ -258,10 +347,9 @@ Let $A$ be a ring. The following are equivalent:
 
 \begin{proof}
   % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
-  \uses{thm:extremally-disconnected-cover,exists-ind-zariski-cartesian,thm:cartesian-w-local,ind-Zariski-identifies-local-rings,thm:w-contractible-iff}
-
+  \uses{thm:extremally-disconnected-cover,thm:exists-ind-Zariski-cartesian,thm:cartesian-w-local,thm:ind-Zariski-identifies-local-rings,thm:w-contractible-if}
   Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. Note that $T$ is profinite.
-  Apply \Cref{exists-ind-zariski-cartesian} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
+  Apply \Cref{thm:exists-ind-Zariski-cartesian} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
   \[
   \begin{tikzcd}
   \operatorname{Spec}(D) \arrow[r] \arrow[d] & \pi_0(\operatorname{Spec}(D)) \arrow[d] \\
@@ -272,7 +360,7 @@ Let $A$ be a ring. The following are equivalent:
 
   Following \Cref{thm:cartesian-w-local}, we note that $\Spec (D)$ is w-local, that $\Spec (D) \to \Spec (C)$ is w-local, and that the set of closed points of $\Spec (D)$ is the inverse image of the set of closed points of $\Spec (C)$.
 
-  Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$ by \Cref{ind-Zariski-identifies-local-rings}). It follows from \Cref{thm:w-contractible-iff} that $D$ is w-contractible.
+  Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$ by \Cref{thm:ind-Zariski-identifies-local-rings}). It follows from \Cref{thm:w-contractible-if} that $D$ is w-contractible.
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 2.4.9]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/0983}{Tag 0983}]{stacks-project}}]
