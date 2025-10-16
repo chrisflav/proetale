@@ -52,13 +52,20 @@ This chapter serves for the commutative algebra preparation of the remaining par
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
 
+% Move this to a better place.
+\begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E}]{stacks-project}}]
+  \label{def:local-isomorphism}
+
+  We say $A \to B$ is a \emph{local isomorphism} if for every prime $\mathfrak{q} \subset B$ there exists a $g \in B$, $g \notin \mathfrak{q}$ such that $A \to B_g$ induces an open immersion $\Spec (B_g) \to \Spec (A)$.
+\end{definition}
+
 \section{Henselian objects and Henselisation}
 
 In this section we define a generalisation of the notion of a Henselian ring to an arbitrary category. Let $\mathcal{C}$ be a category
 and $P$ a property of morphisms.
 
 \begin{definition}[Henselian]
-    A morphism $f\colon X \to Y$ is $P$-Henselian, if for every factorisation
+    A morphism $f\colon X \to Y$ is $P$-\emph{Henselian}, if for every factorisation
     \[
     \begin{tikzcd}
         X \arrow{r}{u} \arrow[swap]{dr}{f} & Z \arrow{d}{v} \\
@@ -92,25 +99,20 @@ and $P$ a property of morphisms.
     of $R \to \kappa$. Thus $R \to S$ has a retraction.
 \end{proof}
 
-\begin{example}
-    A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if the composition $R \to \kappa \to \kappa^\mathrm{sep}$ is
-    étale-Henselian for a separable closure $\kappa^{\mathrm{sep}}$ of $\kappa$.
-\end{example}
+% TODO: add definition of Henselisation if needed
 
-\begin{definition}[Strictly Henselian local ring, {\cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}}]
+\begin{definition}[Strictly Henselian local ring]
     \label{def:strictly-henselian-local-ring}
-    % \lean{IsStrictlyHenselianLocalRing}
-    % \leanok
-    A local ring \(A\) is \emph{strictly henselian} if it is henselian and the residue field of \(A\) is
-    separably closed.
+    A local ring $(R, \mathfrak{m}, \kappa)$ is \emph{strictly henselian} if the composition $R \to \kappa \to \kappa^{\mathrm{sep}}$ is étale-Henselian
+    for a separable closure $\kappa^{\mathrm{sep}}$.
 \end{definition}
 
-% Move this to a better place.
-\begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E}]{stacks-project}}]
-  \label{def:local-isomorphism}
+The following example shows that our definition agrees with the one in
+\cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}.
 
-  We say $A \to B$ is a \emph{local isomorphism} if for every prime $\mathfrak{q} \subset B$ there exists a $g \in B$, $g \notin \mathfrak{q}$ such that $A \to B_g$ induces an open immersion $\Spec (B_g) \to \Spec (A)$.
-\end{definition}
+\begin{example}
+    A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
+\end{example}
 
 \section{Ind-etale and weakly etale ring maps}
 
