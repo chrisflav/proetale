@@ -265,6 +265,8 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
     %\leanok
 \end{definition}
 
+The goal of this section is to show that for every ring $A$, there exists a faithfully flat, ind-Zariski $A$-algebra $A_{w}$ with $A_w$ w-local.
+
 \begin{lemma}% To be modified.
   \label{thm:w-local-jacobson-radical}
   \uses{def:w-local-ring}
@@ -273,6 +275,35 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 
 \begin{proof}
   Omitted.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096V}{Tag 096V}]{stacks-project}}]
+    Let $A$ be a ring and $Z \subseteq \spec{A}$ a locally closed subscheme of the form
+    $D(f) \cap V(I)$ for some $f \in A$ and ideal $I \subseteq A$. Then
+    \begin{enumerate}
+        \item there exists a multiplicative subset $S \subseteq A$ such that $\spec{S^{-1} A} \to \spec{A}$ induces
+            a homeomorphism onto the set of points of $\spec{A}$ specializing to $Z$.
+        \item the $A$-algebra $A_{\tilde{Z}} = S^{-1} A$ depends only on the underlying subset $Z \subseteq X$, and
+        \item $Z$ is a closed subscheme of $\spec{A_{\tilde{Z}}}$.
+    \end{enumerate}
+    If $A \to A'$ is a ring map and $Z' \subseteq \spec{A'}$ a locally closed subscheme of the same form
+    which maps into $Z$, then there is a unique $A$-algebra map $A_{\tilde{Z}} \to A'_{\tilde{Z}}$.
+    \label{lemma:locally-closed-specializations}
+\end{lemma}
+
+\begin{proof}
+    TBA
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096U}{Tag 096U}]{stacks-project}}]
+    Let $A$ be a ring. There exists a faithfully flat, ind-Zariski map $A \to A_{w}$ such
+    that $A_w$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
+    \label{prop:exists-ind-zariski-w-local}
+\end{proposition}
+
+\begin{proof}
+    \uses{lemma:locally-closed-specializations}
+    TBA
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}]
@@ -293,9 +324,11 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 \end{lemma}
 
 \begin{proof}
-  TBA.
+    \uses{prop:exists-ind-zariski-w-local}
+    TBA.
 \end{proof}
 
+\section{w-strictly-local Rings}
 
 \begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
     A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every local ring of \(A\) at a maximal ideal is strictly henselian.
@@ -307,6 +340,8 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
     % \leanok
 \end{definition}
 
+The goal of this section is to show that every ring $A$ admits a faithfully flat, ind-étale algebra $B$ that is $w$-strictly-local.
+
 \begin{lemma}
   \label{thm:ind-etale-strictly-henselian-identifies-local-rings}
   \uses{def:ind-etale,def:strictly-henselian-local-ring,def:identify-local-rings}
@@ -317,16 +352,6 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
   % \uses{thm:etale-over-strictly-henselian-splits}
   % Let $\m$ be a maximal ideal of $B$ and $B = \colim_i A_i$ a presentation of $B$ with each $A_i$ \'etale over $A$. Since $B_q = \colim_i (A_i)_{q_i}$ where $q_i$ is the inverse image of $q$ in $A_i$, we may assume $B$ is \'etale. The it follows from \Cref{thm:etale-over-strictly-henselian-splits}. 
   WRONG, TBA.
-\end{proof}
-
-\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096U}{Tag 096U}]{stacks-project}}]
-    Let $A$ be a ring. There exists a faithfully flat, ind-Zariski map $A \to A_{w}$ such
-    that $A_w$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
-    \label{prop:exists-ind-zariski-w-local}
-\end{proposition}
-
-\begin{proof}
-    TBA
 \end{proof}
 
 \begin{lemma}
