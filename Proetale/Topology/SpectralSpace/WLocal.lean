@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 
 universe u
 
+-- To be modified
 class WLocalSpace (X : Type u) [TopologicalSpace X] : Prop where
   open_cover_splits {I : Type u} {U : I → Set X} (ho : ∀ (i : I), IsOpen (U i)) (hU : ⋃ (i : I), U i = Set.univ) : ∃ s : C(X, (i : I) × U i), ∀ (i : I) (u : U i), s u = ⟨i, u⟩
   isClosed_closedPoints : IsClosed (closedPoints X)

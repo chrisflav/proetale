@@ -52,9 +52,8 @@ This chapter serves for the commutative algebra preparation of the remaining par
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
 
-\begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E}]{stacks-project}}]
+\begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E} (1)]{stacks-project}}]
   \label{def:local-isomorphism}
-
   We say $A \to B$ is a \emph{local isomorphism} if for every prime $\mathfrak{q} \subset B$ there exists a $g \in B$, $g \notin \mathfrak{q}$ such that $A \to B_g$ induces an open immersion $\Spec (B_g) \to \Spec (A)$.
 \end{definition}
 
@@ -151,26 +150,44 @@ The following example shows that our definition agrees with the one in
     TBA
 \end{proof}
 
-% \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GH}{Tag 04GH}]{stacks-project}}]
-%     \label{thm:finite-etale-over-strictly-henselian-splits}
-%     \uses{def:strictly-henselian-local-ring}
-%     Let \(A\) be a strictly henselian local ring. Then every étale ring map \(A \to B\) splits as \(B \cong A \times \cdots \times A\) for finitely many copies of \(A\).
-% \end{proposition}
+\begin{proposition}
+    \label{thm:strictly-henselian-good-retraction}
+    \uses{def:strictly-henselian-local-ring}
+    Let \(A, \m\) be a strictly henselian local ring. Let \(f : A \to B\) a \'etale ring map with \(\n\) a maximal ideal of \(B\) lying over \(\m\). Then there exists a retraction \(s : B \to A\) of \(A \to B\) such that \(\n = s^{-1}(\m)\).
+\end{proposition}
 
-% \begin{proof}
-%   Let $\m$ be the maximal ideal of $A$. Now $B/\m B$ is an \'etale algebra over the separably closed field $k = A/\m$. Since étale algebras over separably closed fields split, we have $B/\m B \cong k \times \cdots \times k$ for finitely many copies of $k$. Lifting this decomposition to $B$, we obtain $B \cong A \times \cdots \times A$ for finitely many copies of $A$. TBA.
-% \end{proof}
+\begin{proof}
+  Since \(B/\m B\) is an étale algebra over the residue field \(k = A/\m\), it splits as \(B/\m B \cong k_1 \times \cdots \times k_n\) for finitely many finite separable extensions \(k_i\) of \(k\). Thus \(B/\n\), as a quotient of \(B/\m B\), is also a finite separable extension of \(k\). Choose an inclusion \(B/\n \hookrightarrow k^{\sep}\). Then we have a commutative diagram
+  \[
+  \begin{tikzcd}
+    A \arrow{r} \arrow{d} & B \arrow{d}\arrow{rd} & \\
+    k \arrow{r} & B/\n \arrow{r} & k^{\sep}.
+  \end{tikzcd}
+  \]
+  Since \(A \to k^{\sep}\) is étale-Henselian, there exists a retraction \(r : B \to A\) of \(A \to B\). But this retraction may not satisfy \(\n = r^{-1}(\m)\). 
+  
+  To solve this, notice that there are only finitely many prime ideals \(\n_0 = \n, \n_1, \cdots, \n_k\) of \(B\) lying over \(\m\) and they are all maximal ideals. (directly by the fact that \(B/\m B \cong k_1 \times \cdots \times k_n\)). Since \(\bigcap_{i \ne 0} \n_i \nsubseteq \n\) (otherwise one of \(\n_i \subseteq \n\) which is impossible), we can find element \(b \in \n_i\) for every \(i \ne 0\) that does not fall in $\n$. We may replace \((B, \n)\) by \((B_b, \n B_b)\), then \(B\) is still étale over \(A\) and \(\n\) is the only prime ideal of \(B\) lying over \(\m\). Then the section \(s_b : B_b \to A\) given by the previous paragraph satisfies \(\n B_b = s_b^{-1}(\m)\). Composition with the localization map \(B \to B_b\) gives the desired section \(s : B \to A\).
+\end{proof}
 
-% \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GH}{Tag 04GH}]{stacks-project}}]
-%     \label{thm:etale-over-strictly-henselian-splits}
-%     \uses{def:strictly-henselian-local-ring}
-%     Let \(A\) be a strictly henselian local ring. Then every étale ring map \(A \to B\) splits as \(B \cong A \times \cdots \times A\) for finitely many copies of \(A\).
-% \end{proposition}
+\begin{proposition}
+    \label{thm:etale-over-strictly-henselian-localization-isom}
+    \uses{def:strictly-henselian-local-ring}
+    Let \(A\) be a strictly Henselian local ring and \(f : A \to B\) an étale ring map. Suppose \(\n\) is a maximal ideal of \(B\) lying over the maximal ideal \(\m\) of \(A\). Then the induced map \(A \to B_\n\) is an isomorphism.
+\end{proposition}
 
-% \begin{proof}
-%   \uses{thm:finite-etale-over-strictly-henselian-splits}
-%   Let $\m$ be the maximal ideal of $A$. Now $B/\m B$ is an \'etale algebra over the separably closed field $k = A/\m$. Since étale algebras over separably closed fields split, we have $B/\m B \cong k \times \cdots \times k$ for finitely many copies of $k$. Lifting this decomposition to $B$, we obtain $B \cong A \times \cdots \times A$ for finitely many copies of $A$. TBA.
-% \end{proof}
+\begin{proof}
+  \uses{thm:strictly-henselian-good-retraction}
+  Let \(s: B \to A\) be the section given by \Cref{thm:strictly-henselian-good-retraction} for the pair \((B, \n)\). Localizing at \(\m\), we obtain the following diagram:
+  \[
+  \begin{tikzcd}
+    A = A_\m \arrow[r, "f_\m"]\arrow[dr, "f'"'] & B_\m \arrow[d] \arrow[r, "s_\m"] & A \\
+    & B_\n \arrow[ur, dotted, "s'"'] &
+  \end{tikzcd}
+  \]
+  The dotted arrow \(s'\) exists by the universal property of localization, since \(\n = s^{-1}(\m)\). Moreover, \(s'\) is a section of \(f'\).
+
+  Since \(f_\m\) is étale and \(s_\m\) is a section of \(f_\m\), it follows that \(s_\m\) is also étale by the cancellation property of étale maps. Thus \(s'\), being a composition of a localization and an étale map, is flat. As a flat local ring homomorphism, \(s'\) is faithfully flat and hence injective. Since \(s'\) is also a section of \(f'\), it is surjective. Therefore, \(s'\) is an isomorphism, and the composition \(A \to B_\n\) is an isomorphism.
+\end{proof}
 
 \section{Ind-etale and weakly etale ring maps}
 
@@ -204,10 +221,8 @@ The following example shows that our definition agrees with the one in
 
 \begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
     \label{def:w-local-space}
-    \lean{WLocalSpace}
-    \leanok
-    % Stacks uses another definition, split is a property. Every point of X specializes to a unique closed point. This is better.
-    % To be modified.
+    % \lean{WLocalSpace}
+    % \leanok % To be modified
     A topological space \(X\) is \emph{w-local} if it satisfies:
     \begin{enumerate}
         \item \(X\) is spectral,
@@ -343,15 +358,14 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 The goal of this section is to show that every ring $A$ admits a faithfully flat, ind-étale algebra $B$ that is $w$-strictly-local.
 
 \begin{lemma}
-  \label{thm:ind-etale-strictly-henselian-identifies-local-rings}
+  \label{thm:ind-etale-strictly-henselian-localization-isom}
   \uses{def:ind-etale,def:strictly-henselian-local-ring,def:identify-local-rings}
-  Let \(A\) be a strictly henselian local ring. Let \(A \to B\) be an ind-étale ring map. Then \(A \to B\) identifies local rings, i.e., for every prime \(\mathfrak{q} \subset B\) the canonical map \(A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}\) is an isomorphism.
+  Let \(A\) be a strictly henselian local ring. Let \(A \to B\) be an ind-étale ring map. Let $\n$ be an maximal ideal of $B$ lying over the maximal ideal $\m$ of $A$. Then the map $A \to B_\n$ is isomorphism.
 \end{lemma}
 
 \begin{proof}
-  % \uses{thm:etale-over-strictly-henselian-splits}
-  % Let $\m$ be a maximal ideal of $B$ and $B = \colim_i A_i$ a presentation of $B$ with each $A_i$ \'etale over $A$. Since $B_q = \colim_i (A_i)_{q_i}$ where $q_i$ is the inverse image of $q$ in $A_i$, we may assume $B$ is \'etale. The it follows from \Cref{thm:etale-over-strictly-henselian-splits}. 
-  WRONG, TBA.
+  \uses{thm:etale-over-strictly-henselian-localization-isom} 
+  Write $B = \colim_i B_i$ as a filtered colimit of étale $A$-algebras $B_i$. Since localization commutes with colimits, we have $B_\n = \colim_i (B_i)_{\n_i}$ where $\n_i$ is the restriction of $\n$ to $B_i$. Then use \Cref{thm:etale-over-strictly-henselian-localization-isom} to conclude each $B_i$ is isomorphic to $A$.
 \end{proof}
 
 \begin{lemma}
@@ -491,10 +505,8 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
 \begin{definition}[Ind-(Zariski localizations), {\cite[\href{https://stacks.math.columbia.edu/tag/096N}{Tag 096N}]{stacks-project}}]
     \label{def:ind-Zariski}
-
-    An $R$-algebra $S$ is called a \emph{ind-Zariski} if $S$ can be written as a filtered colimit $S \simeq \colim S_i$ with each $R \to S_i$ a local isomorphism. A ring homomorphism $f : R \to S$ is called a \emph{ind-Zariski localization} if $S$ is ind-Zariski localization as an $R$-algebra via $f$.
-
     \uses{def:local-isomorphism}
+    An $R$-algebra $S$ is called a \emph{ind-Zariski} if $S$ can be written as a filtered colimit $S \simeq \colim S_i$ with each $R \to S_i$ a local isomorphism. A ring homomorphism $f : R \to S$ is called a \emph{ind-Zariski} if $S$ is ind-Zariski as an $R$-algebra via $f$.
 \end{definition}
 
 \begin{remark}
@@ -587,9 +599,12 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
 \end{lemma}
 
 \begin{proof}
-  \uses{thm:ind-etale-base-change,thm:ind-etale-strictly-henselian-identifies-local-rings,thm:ff-identifies-local-rings-has-retraction-if}
-  Let \(A \to B\) be a faithfully flat ind-étale map with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\). In this case $A \to B$ identifies local rings, it suffices to check this at maximal ideals of $B$ which lie over maximal ideals of $A$. By \Cref{item:w-strictly-local-ind-etale-plus-c-has-retraction-if}, we know that the local rings of $A$ at its maximal ideal $\m$ are strictly henselian. By \Cref{thm:ind-etale-base-change} and \Cref{thm:ind-etale-strictly-henselian-identifies-local-rings}.
-  Thus $A \to B$ has a retraction by \Cref{thm:ff-identifies-local-rings-has-retraction-if}.
+  \uses{thm:ind-etale-base-change,thm:ind-etale-strictly-henselian-localization-isom,thm:ff-identifies-local-rings-has-retraction-if}
+  Let \(A \to B\) be a faithfully flat ind-étale map with \(B\) w-local and such that the closed points of \(\Spec(B)\) are exactly \(V(IB)\). In this case, \(A \to B\) identifies local rings. To justify this, it suffices to check the condition at the maximal ideals of \(B\), which lie over maximal ideals of \(A\) since they map to \(V(I) = (\Spec(A))^c\). Since \(A\) is w-strictly local, the local rings of \(A\) at its maximal ideals are strictly Henselian.
+
+  Now fix a maximal ideal \(\mathfrak{n}\) of \(B\) and let \(\mathfrak{m} = \mathfrak{n} \cap A\) be its preimage in \(A\), which is a maximal ideal. By base change to \(A_{\mathfrak{m}}\) and applying \Cref{thm:ind-etale-base-change}, we reduce to the case where \(B\) is ind-étale over a strictly Henselian local ring \(A\), with a maximal ideal \(\mathfrak{n}\) lying over the maximal ideal \(\mathfrak{m}\) of \(A\). We then want to show \(B_{\mathfrak{n}} \cong A\). This follows from \Cref{thm:ind-etale-strictly-henselian-localization-isom}.
+
+  Having established that \(A \to B\) identifies local rings, we conclude by \Cref{thm:ff-identifies-local-rings-has-retraction-if} that it admits a retraction.
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/0982}{Tag 0982}, (3) $\implies$ (2)]{stacks-project}}] % actually iff, but we only need this direction
@@ -608,7 +623,6 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
   This is \Cref{thm:ind-etale-plus-c-has-retraction-if} with \Cref{thm:w-contractible-if-ind-etale-plus-c-has-retraction}.
   % Assume (1) or equivalently (2). We have (3)(c) by Lemma \ref{lemma:097V}. Properties (3)(a) and (3)(b) follow from Lemma \ref{lemma:09AZ}.
 \end{proof}
-  
 
 \begin{lemma}
   If a ring \(C\) is w-strictly local, then there exists an ind-étale faithfully flat \(C\)-algebra \(D\) with \(D\) w-contractible.
