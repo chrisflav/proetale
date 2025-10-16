@@ -52,11 +52,15 @@ This chapter serves for the commutative algebra preparation of the remaining par
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
 
-% Move this to a better place.
 \begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E}]{stacks-project}}]
   \label{def:local-isomorphism}
 
   We say $A \to B$ is a \emph{local isomorphism} if for every prime $\mathfrak{q} \subset B$ there exists a $g \in B$, $g \notin \mathfrak{q}$ such that $A \to B_g$ induces an open immersion $\Spec (B_g) \to \Spec (A)$.
+\end{definition}
+
+\begin{definition}[Identify local rings, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E} (2)]{stacks-project}}]
+  A ring map $A \to B$ \emph{identifies local rings} if for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
+  \label{def:identify-local-rings}
 \end{definition}
 
 \section{Henselian objects and Henselisation}
@@ -113,6 +117,27 @@ The following example shows that our definition agrees with the one in
 \begin{example}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
 \end{example}
+
+% \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GH}{Tag 04GH}]{stacks-project}}]
+%     \label{thm:finite-etale-over-strictly-henselian-splits}
+%     \uses{def:strictly-henselian-local-ring}
+%     Let \(A\) be a strictly henselian local ring. Then every étale ring map \(A \to B\) splits as \(B \cong A \times \cdots \times A\) for finitely many copies of \(A\).
+% \end{proposition}
+
+% \begin{proof}
+%   Let $\m$ be the maximal ideal of $A$. Now $B/\m B$ is an \'etale algebra over the separably closed field $k = A/\m$. Since étale algebras over separably closed fields split, we have $B/\m B \cong k \times \cdots \times k$ for finitely many copies of $k$. Lifting this decomposition to $B$, we obtain $B \cong A \times \cdots \times A$ for finitely many copies of $A$. TBA.
+% \end{proof}
+
+% \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GH}{Tag 04GH}]{stacks-project}}]
+%     \label{thm:etale-over-strictly-henselian-splits}
+%     \uses{def:strictly-henselian-local-ring}
+%     Let \(A\) be a strictly henselian local ring. Then every étale ring map \(A \to B\) splits as \(B \cong A \times \cdots \times A\) for finitely many copies of \(A\).
+% \end{proposition}
+
+% \begin{proof}
+%   \uses{thm:finite-etale-over-strictly-henselian-splits}
+%   Let $\m$ be the maximal ideal of $A$. Now $B/\m B$ is an \'etale algebra over the separably closed field $k = A/\m$. Since étale algebras over separably closed fields split, we have $B/\m B \cong k \times \cdots \times k$ for finitely many copies of $k$. Lifting this decomposition to $B$, we obtain $B \cong A \times \cdots \times A$ for finitely many copies of $A$. TBA.
+% \end{proof}
 
 \section{Ind-etale and weakly etale ring maps}
 
@@ -251,12 +276,14 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 
 \begin{lemma}
   \label{thm:ind-etale-strictly-henselian-identifies-local-rings}
-  \uses{def:ind-etale,def:strictly-henselian-local-ring}
+  \uses{def:ind-etale,def:strictly-henselian-local-ring,def:identify-local-rings}
   Let \(A\) be a strictly henselian local ring. Let \(A \to B\) be an ind-étale ring map. Then \(A \to B\) identifies local rings, i.e., for every prime \(\mathfrak{q} \subset B\) the canonical map \(A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}\) is an isomorphism.
 \end{lemma}
 
 \begin{proof}
-  TBA.
+  % \uses{thm:etale-over-strictly-henselian-splits}
+  % Let $\m$ be a maximal ideal of $B$ and $B = \colim_i A_i$ a presentation of $B$ with each $A_i$ \'etale over $A$. Since $B_q = \colim_i (A_i)_{q_i}$ where $q_i$ is the inverse image of $q$ in $A_i$, we may assume $B$ is \'etale. The it follows from \Cref{thm:etale-over-strictly-henselian-splits}. 
+  WRONG, TBA.
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096U}{Tag 096U}]{stacks-project}}]
@@ -373,7 +400,7 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096T}{Tag 096T}]{stacks-project}}]
   Let $A \to B$ be an ind-Zariski ring map. Then it identifies local rings, i.e. for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
   \label{thm:ind-Zariski-identifies-local-rings}
-  \uses{def:ind-Zariski}
+  \uses{def:ind-Zariski,def:identify-local-rings}
 \end{lemma}
 
 \begin{proof}
@@ -409,7 +436,7 @@ is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ 
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/09AZ}{Tag 09AZ}, (3) $\implies$ (1)]{stacks-project}}]
   \label{thm:ff-identifies-local-rings-has-retraction-if}
-  \uses{def:w-local-ring,def:extremally-disconnected}
+  \uses{def:w-local-ring,def:extremally-disconnected,def:identify-local-rings}
   Let $A$ be a ring. If the following two conditions hold:
   \begin{enumerate}
     \item $A$ is w-local, and
