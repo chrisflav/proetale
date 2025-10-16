@@ -63,6 +63,23 @@ This chapter serves for the commutative algebra preparation of the remaining par
   \label{def:identify-local-rings}
 \end{definition}
 
+\begin{lemma}
+    Let $A = \colim_i A_i$ be a filtered colimit of $A$-algebras and let $B$ be an étale $A$-algebra. Then
+    there exists an $i$ and an étale $A_i$-algebra $B'$ such that
+    \[
+    \begin{tikzcd}
+        A_i \arrow{r} \arrow{d} & B' \arrow{d} \\
+        A \arrow{r} & B
+    \end{tikzcd}
+    \] is a pushout diagram.
+    \label{lemma:etale-ind-spreads}
+\end{lemma}
+
+\begin{proof}
+    This follows because every étale algebra is of finite presentation and by possibly enlarging $i$ we can ensure
+    that $B'$ is étale over $A_i$.
+\end{proof}
+
 \section{Henselian objects and Henselisation}
 
 In this section we define a generalisation of the notion of a Henselian ring to an arbitrary category. Let $\mathcal{C}$ be a category
@@ -87,7 +104,7 @@ and $P$ a property of morphisms.
     for any étale ring map $R \to S$ and prime $\mathfrak{q}$ of $S$ lying over $\mathfrak{m}$ with $\kappa = \kappa(\mathfrak{q})$,
     there exists a retraction $S \to R$ of $R \to S$.
 
-    Suppose $R$ is Henselian and let $R \to S \to \kappa$ be a factorisation of $R \to \kappa$. Then
+    Suppose $R$ is Henselian and let $R \to S \to \kappa$ be a factorisation of $R \to \kappa$ with $R \to S$ étale. Then
     $\mathfrak{q} = \mathrm{ker}(S \to \kappa)$ is a prime ideal of $S$ lying above $\mathfrak{m}$. Hence we obtain a commutative
     diagram
     \[
@@ -117,6 +134,22 @@ The following example shows that our definition agrees with the one in
 \begin{example}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
 \end{example}
+
+\begin{lemma}
+    Let $A$ be a ring and $\mathfrak{m}$ a maximal ideal of $A$. Suppose for every étale $A$-algebra $B$ and
+    prime ideal $\mathfrak{q} \subseteq B$ lying over $\mathfrak{m}$, the induced map
+    $A_{\mathfrak{m}} \to B_{\mathfrak{q}}$ is an isomorphism.
+    Then $A_{\mathfrak{m}}$ is strictly Henselian.
+    \label{lemma:localization-strictly-Henselian}
+\end{lemma}
+
+\begin{proof}
+    Denote $\kappa = A / \mathfrak{m}$ and let $\kappa^{\mathrm{sep}}$ be a separable closure of $\kappa$.
+    Let $A_{\mathfrak{m}} \to S \to \kappa^{\mathrm{sep}}$ be a factorisation of $A_{\mathfrak{m}} \to \kappa \to \kappa^{\mathrm{sep}}$
+    with $A_{\mathfrak{m}} \to S$ étale.
+
+    TBA
+\end{proof}
 
 % \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GH}{Tag 04GH}]{stacks-project}}]
 %     \label{thm:finite-etale-over-strictly-henselian-splits}
@@ -303,7 +336,40 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 \end{lemma}
 
 \begin{proof}
-    TBA
+    Let $\mathfrak{m}$ be a maximal ideal of $A$, denote by $\kappa$ the residue field $\kappa(\mathfrak{m})$
+    and by $\kappa^{\mathrm{sep}}$ a separable closure of $\kappa$. Let
+    $A_{\mathfrak{m}} \to B \to \kappa^{\mathrm{sep}}$ be a factorisation of $A_{\mathfrak{m}} \to \kappa^{\mathrm{sep}}$
+    where $A_{\mathfrak{m}} \to B$ is étale. Since $A_{\mathfrak{m}} = \colim_{f \not\in \mathfrak{m}} A_f$,
+    by \ref{lemma:etale-ind-spreads} there exists $f \not\in \mathfrak{m}$ and an étale $A_f$-algebra $B'$
+    such that $B = A_{\mathfrak{m}} \otimes_{A_f} B'$.
+    %Denote by $\mathfrak{q}$ the kernel of
+    %the composition $B' \to B \to \kappa^{\mathrm{sep}}$.
+    %Then $\mathfrak{q}$ lies over $\mathfrak{m}$ in $A$.
+    Because $A \to A_f \to B'$ is étale,
+    there are finitely many prime ideals $\mathfrak{q}_1, \ldots, \mathfrak{q}_n$ of $B'$ lying over $\mathfrak{m}$.
+    Since the kernel of the composition $B' \to B \to \kappa^{\mathrm{sep}}$ lies over $\mathfrak{m}$
+    (the kernel of $A \to \kappa_{\mathrm{sep}}$ is $\mathfrak{m}$), we have $n \ge 1$.
+    Set $\mathfrak{q} = \mathfrak{q}_1$. By prime avoidance, there exists $g \in B'$ such that
+    $g \in \mathfrak{q}_i$ for all $i \ge 2$ and $g \not\in \mathfrak{q}$. Hence
+    $\mathfrak{q}$ is the unique prime ideal of $B'_g$ lying over $\mathfrak{m}$.
+
+    Let $U$ be the image of the induced map $\spec{B'_g} \to \spec{A}$. Since $A \to B'$ is étale, $U$ is open.
+    Since $\{\mathfrak{m}\}$ is closed in $\spec{A}$, there exist $a_i$ such that
+    \[
+        \spec{A} \setminus \{\mathfrak{m}\} = \bigcup_{i} D(a_i)
+    .\] The complement of $U$ is closed and quasicompact, and contained in $\spec{A} \setminus \{\mathfrak{m}\}$, hence
+    there exist $a_1, \ldots, a_r$ such that
+    \[
+        \spec{A} = U \cup \bigcup_{i=1}^r D(a_i)
+    .\] Hence the map $A \to B'_g \times \prod_{i=1}^{r} A_{a_i}$ is étale and faithfully flat. By assumption,
+    it therefore has a retraction $\sigma$. Since $\mathfrak{q}$ is the unique prime ideal of $B'_g \times \prod_{i=1}^{r} A_{a_i}$
+    lying over $\mathfrak{m}$, we have $\sigma^{-1}(\mathfrak{m}) = \mathfrak{q}$. In particular,
+    we obtain a retraction
+    \[
+        B'_{\mathfrak{q}} = \left(B'_g \times \prod_{i=1}^{r} A_{a_i}\right)_{\mathfrak{q}} \to A_{\mathfrak{m}}
+    \] of the map $A_{\mathfrak{m}} \to B'_{\mathfrak{q}}$. Precomposing with $B' \to B'_{\mathfrak{q}}$ we obtain
+    a map $B' \to A_{\mathfrak{m}}$ and hence a map
+    $B = B' \otimes_{A_f} A_{\mathfrak{m}} \to A_{\mathfrak{m}}$ that is a retraction of $A_{\mathfrak{m}} \to B$.
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097R}{Tag 097R}]{stacks-project}}]
@@ -313,7 +379,20 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 \end{proposition}
 
 \begin{proof}
-    TBA
+    For any ring $A$, one first constructs $T(A) = \colim_{E} \bigotimes_{B \in E} B$ where
+    the colimit runs over finite subsets of faithfully flat étale $A$-algebras. Note that for every faithfully flat étale
+    $A$-algebra $B$, there exists a map $B \to T(A)$.
+
+    Now set $T^{n+1}(A) \coloneqq T(T^n(A))$
+    and let $T^{\infty}(A) = \colim_n T^n(A)$. Let $B$ be a faithfully flat étale $T^{\infty}(A)$-algebra. Then
+    by \ref{lemma:etale-ind-spreads}
+    there exists $n \in \N$ and a faithfully flat, étale $T^n(A)$-algebra $B'$ such that
+    $B = T^{\infty}(A) \otimes_{T^n(A)} B'$. By the earlier remark, there exists a map
+    $B' \to T^{n+1}(A)$. The identity of $T^{\infty}(A)$ and the composition
+    $B' \to T^{n+1}(A) \to T^{\infty}(A)$ now induce a retraction
+    \[
+    B = T^{\infty}(A) \otimes_{T^n(A)} B' \to T^{\infty}(A)
+    .\]
 \end{proof}
 
 \begin{lemma}
@@ -328,7 +407,7 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
     we obtain $A = A_{\mathfrak{m}} = \colim_i (A_i)_{\mathfrak{m}_i}$ where
     $\mathfrak{m}_i$ is the restriction of $\mathfrak{m}$ to $A_i$. Since $A_i$ is étale over $k$,
     it is a finite product of finite separable extensions of $k$, hence $(A_i)_{\mathfrak{m}_i}$
-    is a finite separable extension of $k$. Since a colimit of finite separable
+    is a finite separable extension of $k$. Since a filtered colimit of finite separable
     extensions is an algebraic separable extension, we conclude.
 \end{proof}
 
