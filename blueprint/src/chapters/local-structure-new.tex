@@ -7,7 +7,7 @@ This chapter serves for the commutative algebra preparation of the remaining par
 \end{enumerate}
 
 % Question: Can we avoid using weakly etale algebra, only use ind-etale algebra? This would need a modification of theorem 5.4.2, by directly mimicking the proof of topological invariance of étale sites for weakly étale.
-% If so, we can remove theorem \Cref{thm:weakly-etale-ind-etale} and every dependency of it. 
+% If so, we can remove theorem \Cref{thm:weakly-etale-ind-etale} and every dependency of it.
 \section{Preliminaries}
 
 \begin{definition}[Extremally disconnected space]
@@ -49,14 +49,60 @@ This chapter serves for the commutative algebra preparation of the remaining par
 
 \begin{proof}
   \uses{thm:stone-cech-extremally-disconnected}
-  Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$. 
+  Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
+
+\section{Henselian objects and Henselisation}
+
+In this section we define a generalisation of the notion of a Henselian ring to an arbitrary category. Let $\mathcal{C}$ be a category
+and $P$ a property of morphisms.
+
+\begin{definition}[Henselian]
+    A morphism $f\colon X \to Y$ is $P$-Henselian, if for every factorisation
+    \[
+    \begin{tikzcd}
+        X \arrow{r}{u} \arrow[swap]{dr}{f} & Z \arrow{d}{v} \\
+                    & Y,
+    \end{tikzcd}
+    \] with $u$ satisfying $P$, there exists a retraction of $u$.
+\end{definition}
+
+\begin{example}
+    A local ring $(R, \mathfrak{m}, \kappa)$ is Henselian if and only if the projection $R \to \kappa$ is étale-Henselian.
+\end{example}
+
+\begin{proof}
+    By {\cite[\href{https://stacks.math.columbia.edu/tag/04GG}{Tag 04GG}]{stacks-project}}, $R$ is Henselian if and only if
+    for any étale ring map $R \to S$ and prime $\mathfrak{q}$ of $S$ lying over $\mathfrak{m}$ with $\kappa = \kappa(\mathfrak{q})$,
+    there exists a retraction $S \to R$ of $R \to S$.
+
+    Suppose $R$ is Henselian and let $R \to S \to \kappa$ be a factorisation of $R \to \kappa$. Then
+    $\mathfrak{q} = \mathrm{ker}(S \to \kappa)$ is a prime ideal of $S$ lying above $\mathfrak{m}$. Hence we obtain a commutative
+    diagram
+    \[
+        \begin{tikzcd}
+        R \arrow{r} \arrow{d} & S \arrow{r} \arrow{d} & \kappa \\
+        \kappa \arrow[dashed]{r} & \kappa(\mathfrak{q}) \arrow[dashed]{ur},
+        \end{tikzcd}
+    \] where the composition of the dashed arrows is the identity of $\kappa$. Hence $\kappa(\mathfrak{q}) = \kappa$ and by assumption,
+    $R \to S$ has a retraction.
+
+    Now assume that $R \to \kappa$ is étale-Henselian and let $R \to S$ be étale and $\mathfrak{q}$ be a prime ideal of $S$ with
+    $\kappa(\mathfrak{q}) = \kappa$. Hence the composition $R \to S \to \kappa(\mathfrak{q}) = \kappa$ is a factorisation
+    of $R \to \kappa$. Thus $R \to S$ has a retraction.
+\end{proof}
+
+\begin{example}
+    A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if the composition $R \to \kappa \to \kappa^\mathrm{sep}$ is
+    étale-Henselian for a separable closure $\kappa^{\mathrm{sep}}$ of $\kappa$.
+\end{example}
 
 \begin{definition}[Strictly Henselian local ring, {\cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}}]
     \label{def:strictly-henselian-local-ring}
     % \lean{IsStrictlyHenselianLocalRing}
     % \leanok
-    A local ring \(A\) is \emph{strictly henselian} if it is henselian and the residue field of \(A\) is separably closed.
+    A local ring \(A\) is \emph{strictly henselian} if it is henselian and the residue field of \(A\) is
+    separably closed.
 \end{definition}
 
 % Move this to a better place.
@@ -104,11 +150,16 @@ This chapter serves for the commutative algebra preparation of the remaining par
     % To be modified.
     A topological space \(X\) is \emph{w-local} if it satisfies:
     \begin{enumerate}
-        \item \(X\) is spectral;
-        \item All open covers split, i.e., for every open cover \(\{U_i\}_{i \in I}\) of \(X\), the map \(\coprod_{i \in I} U_i \to X\) has a section;
-        \item The subspace \(X^c\) of closed points is closed.
+        \item \(X\) is spectral,
+        \item every point specializes to a unique closed point,
+        \item the subspace \(X^c\) of closed points is closed.
     \end{enumerate}
 \end{definition}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0968}{Tag 0968}]{stacks-project}}]
+    Let $X$ be w-local. Then every open covering of $X$ can be refined
+    by a finite disjoint union decomposition $X = \coprod U_i$ with $U_i$ open and closed in $X$.
+\end{lemma}
 
 \begin{definition}[w-local morphisms, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
     Let \(X\) and \(Y\) be w-local spaces. A morphism \(f: X \to Y\) is \emph{w-local} if it is spectral and the image of closed points \(f(X^c) \subseteq Y^c\).
@@ -206,14 +257,101 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
   TBA.
 \end{proof}
 
-\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
-  For any ring \(A\), there exists an ind-étale faithfully flat \(A\)-algebra \(C\) with \(C\) w-strictly local.
-  \label{thm:ind-etale-w-strictly-local-cover}
-  \uses{def:w-strictly-local-ring,def:ind-etale}
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096U}{Tag 096U}]{stacks-project}}]
+    Let $A$ be a ring. There exists a faithfully flat, ind-Zariski map $A \to A_{w}$ such
+    that $A_w$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
+    \label{prop:exists-ind-zariski-w-local}
 \end{proposition}
 
 \begin{proof}
-  TBA
+    TBA
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be a ring such that every faithfully flat étale ring map $A \to B$ has
+    a retraction. Then every local ring of $A$ at a maximal ideal is strictly henselian.
+    \label{lemma:retractions-strictly-henselian}
+\end{lemma}
+
+\begin{proof}
+    TBA
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097R}{Tag 097R}]{stacks-project}}]
+    Let $A$ be a ring. Then there exists an ind-étale faithfully flat $A$-algebra $B$ such that
+    every faithfully flat étale ring map $B \to C$ has a retraction.
+    \label{prop:exists-ind-etale-retraction-etale}
+\end{proposition}
+
+\begin{proof}
+    TBA
+\end{proof}
+
+\begin{lemma}
+    Let $k$ be a field and $A$ an ind-étale, local $k$-algebra. Then $A$ is
+    a separable algebraic field extension of $k$.
+    \label{lemma:field-local-indetale}
+\end{lemma}
+
+\begin{proof}
+    Let $A = \colim_i A_i$ such that $A_i$ is an étale $k$-algebra for all $i$.
+    Let $\mathfrak{m}$ be the maximal ideal of $A$. Since localization commutes with colimits,
+    we obtain $A = A_{\mathfrak{m}} = \colim_i (A_i)_{\mathfrak{m}_i}$ where
+    $\mathfrak{m}_i$ is the restriction of $\mathfrak{m}$ to $A_i$. Since $A_i$ is étale over $k$,
+    it is a finite product of finite separable extensions of $k$, hence $(A_i)_{\mathfrak{m}_i}$
+    is a finite separable extension of $k$. Since a colimit of finite separable
+    extensions is an algebraic separable extension, we conclude.
+\end{proof}
+
+\begin{proposition}
+    Let $f\colon A \to B$ be ind-étale. Then $f$ induces separable algebraic extensions on residue fields.
+    \label{prop:ind-etale-residue-fields}
+\end{proposition}
+
+\begin{proof}
+    Let $\mathfrak{p}$ be a prime ideal of $B$. After base change along $A \to \kappa(\mathfrak{p}^c)$,
+    we may assume $A = k$ is a field. After postcomposing with the ind-étale map $B \to B_{\mathfrak{p}}$,
+    we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-indetale}.
+\end{proof}
+
+\begin{lemma}
+    Let $A \to B$ be a faithfully flat ring map and $I \subseteq A$ an ideal.
+    Then $V(IB)$ surjects onto $V(I)$.
+    \label{lemma:faithfully-flat-surject-closed}
+\end{lemma}
+
+\begin{proof}
+    We have $B / I B \cong A / I \otimes_A B$. Since faithfully flat is stable under base change,
+    $A / I \to B / IB$ is faithfully flat. Hence $\spec{B / IB} \to \spec{A / I}$ is surjective
+    and the claim follows.
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
+    For any ring \(A\), there exists an ind-étale faithfully flat \(A\)-algebra \(B\) with \(B\) w-strictly local.
+    \label{thm:ind-etale-w-strictly-local-cover}
+    \uses{def:w-strictly-local-ring,def:ind-etale, prop:exists-ind-zariski-w-local}
+\end{proposition}
+
+\begin{proof}
+    By \ref{prop:exists-ind-zariski-w-local}, there exists a faithfully flat, ind-Zariski map
+    $A \to A'$ such that $A'$ is w-local and the set of closed points of $\spec{A'}$ surjects
+    onto $\spec{A}$. Since $A'$ is w-local, the set of closed points of $\spec{A'}$ is closed.
+    Let $I$ be the radical ideal of $A'$ such that $V(I)$ is the set of closed points of $\spec{A'}$.
+    Choose an ind-étale and faithfully flat ring map $A' \to B'$ as in
+    \ref{prop:exists-ind-etale-retraction-etale}. By
+    \ref{lemma:retractions-strictly-henselian}, the local ring $B'_{\mathfrak{m}'}$ is
+    strictly henselian for every maximal ideal $\mathfrak{m}'$ of $B'$.
+    The map $A \to A'$ induces algebraic extensions on residue fields at primes by
+    \ref{prop:ind-etale-residue-fields},
+    so applying \ref{thm:closed-points-isom-w-local} to $A' \to B'$, we obtain
+    an ind-Zariski ring map $B' \to B$ such that $B'/IB' \to B/IB$ is an isomorphism,
+    $V(IB)$ is the set of closed points of $\spec{B}$ and $B$ is w-local.
+
+    It remains to verify that the composition $A \to A' \to B' \to B$ is ind-étale and faithfully flat.
+    The first one follows because being ind-étale is stable under composition. For the second
+    one it suffices to show that $\spec{B} \to \spec{B'} \to \spec{A'} \to \spec{A}$ is surjective.
+    Since the closed points of $\spec{A'}$ surject onto $\spec{A}$ and $B' / IB' \cong B / I B$, it
+    suffices to check that $V(IB')$ surjects onto $V(I)$. This is \ref{lemma:faithfully-flat-surject-closed}.
 \end{proof}
 
 \section{ind-Zariski maps}
