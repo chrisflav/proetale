@@ -62,10 +62,25 @@ The reason that we are interested in extremally disconnected space is the follow
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
 
-The following pure topological lemma will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}
+The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL} (b)\(\implies\)(a)]{stacks-project}}]
-  \label{thm:intersection-closed-open-iff}
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/005F}{Tag 005F}]{stacks-project}}]
+  \label{thm:connected-component-intersection-closed-open}
+  Let $X$ be a topological space. Assume
+  \begin{enumerate}
+    \item $X$ is quasi-compact,
+    \item $X$ has a basis for the topology consisting of quasi-compact opens, and
+    \item the intersection of two quasi-compact opens is quasi-compact.
+  \end{enumerate}
+  For any $x \in X$ the connected component of $X$ containing $x$ is the intersection of all open and closed subsets of $X$ containing $x$.
+\end{lemma}
+
+\begin{proof}
+  Let $T$ be the connected component containing $x$. Let $S = \bigcap_{\alpha \in A} Z_\alpha$ be the intersection of all open and closed subsets $Z_\alpha$ of $X$ containing $x$. Note that $S$ is closed in $X$. Note that any finite intersection of $Z_\alpha$'s is a $Z_\alpha$. Because $T$ is connected and $x \in T$ we have $T \subset Z_\alpha$ for every \(Z_\alpha\), thus \(T \subset S\). It suffices to show that $S$ is connected. If not, then there exists a disjoint union decomposition $S = B \amalg C$ with $B$ and $C$ open and closed in $S$. In particular, $B$ and $C$ are closed in $X$, and so quasi-compact by assumption (1). By assumption (2) there exist quasi-compact opens $U, V \subset X$ with $B = S \cap U$ and $C = S \cap V$. Then $U \cap V \cap S = \emptyset$. Hence $\bigcap_\alpha U \cap V \cap Z_\alpha = \emptyset$. By assumption (3) the intersection $U \cap V$ is quasi-compact. Hence for some $\alpha' \in A$ we have $U \cap V \cap Z_{\alpha'} = \emptyset$. Since $X \setminus (U \cup V)$ is disjoint from $S$ and closed in $X$ hence quasi-compact, we can use the same argument to see that $Z_{\alpha''} \subset U \cup V$ for some $\alpha'' \in A$. Then $Z_\alpha = Z_{\alpha'} \cap Z_{\alpha''}$ is contained in $U \cup V$ and disjoint from $U \cap V$. Hence $Z_\alpha = U \cap Z_\alpha \amalg V \cap Z_\alpha$ is a decomposition into two open pieces, hence $U \cap Z_\alpha$ and $V \cap Z_\alpha$ are open and closed in $X$. Thus, if $x \in B$ say, then we see that $S \subset U \cap Z_\alpha$ and we conclude that $C = \emptyset$.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL}]{stacks-project}}]
+  \label{thm:intersection-closed-open-iff} % This is spectral minus sober, we only need X spectral version.
   Let $X$ be a topological space. Assume
   \begin{enumerate}
     \item $X$ is quasi-compact,
@@ -80,7 +95,8 @@ The following pure topological lemma will be used in \Cref{thm:colim-open-closed
 \end{lemma}
 
 \begin{proof}
-  It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. TBA. % By Lemma 005F we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space (see Lemma 005C) we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$, see Lemma 005D. For this $\alpha$ we see that $U_\alpha = X \setminus V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
+  \uses{thm:connected-component-intersection-closed-open}
+  It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X \setminus V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
 \end{proof}
 
 \begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E} (1)]{stacks-project}}]
@@ -326,7 +342,7 @@ The following example shows that our definition agrees with the one in
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096B}{Tag 096B}]{stacks-project}}]
   \label{thm:closed-subspace-w-local}
-  \uses{def:w-local-space}
+  \uses{def:w-local-space,def:w-local-space-map}
   Let \(X\) be a w-local space. Then every closed subspace \(Y \subseteq X\) is w-local. Moreover, the inclusion map \(Y \to X\) is w-local.
 \end{lemma}
 
@@ -906,9 +922,10 @@ is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ 
 
   % Let $I \subset A$ be the radical ideal such that $V(I) \subset \Spec(A)$ is the set of closed points of $\Spec (A)$. We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. The map \(B \to C\) is faithfully flat and ind-Zariski, thus identifies local rings by \Cref{thm:ind-Zariski-identifies-local-rings}. Thus we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
 
-  Choose a continuous section to the surjective continuous map $V(IB) \to V(I)$. This is possible as $V(I) = \Spec (A)^c \cong \pi_0(\Spec (A))$ (by \Cref{thm:closed-points-isom-pi0}) is extremally disconnected and use \Cref{thm:extremally-disconnected-projective}. The image is a closed subspace $T \subset \pi_0(\Spec (B)) \cong V(IB)$ (as it is the continuous image of \(V(B)\), a closed subset of a compact topological space) mapping homeomorphically onto $\pi_0(\Spec (A))$. Since the ring map \(B \to B_T\) constructed in 
-  \Cref{def:colim-open-closed-localizations} is surjective, ind-Zariski and inducing homeomorphism $\pi_0(\Spec (B_T)) \cong \pi_0(\Spec (A))$ by
-  \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}.By \Cref{thm:surjective-w-local-ring}, \(B_T\) is w-local as a quotient of \(B\) and the map \(B \to B_T\) is also w-local. We know that \(B \to B_T\) identifies local rings by \Cref{thm:ind-Zariski-identifies-local-rings}. If we post compose the ring map \(A \to B\) with \(B \to B_T\), then it is still w-local by \Cref{thm:w-local-map-composition} and identifies local rings by \Cref{thm:identifies-local-rings-composition}. At this point $A \to B$ is an isomorphism by \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}.
+  Choose a continuous section to the surjective continuous map $V(IB) \to V(I)$. This is possible because $V(I) = \Spec(A)^c \cong \pi_0(\Spec(A))$ (by \Cref{thm:closed-points-isom-pi0}) is extremally disconnected, see \Cref{thm:extremally-disconnected-projective}. The image is a closed subspace $T \subset \pi_0(\Spec(B)) \cong V(IB)$ (being the continuous image of the compact space $V(I)$) that maps homeomorphically onto $\pi_0(\Spec(A))$. 
+  
+  Let $B \to B_T$ be the ring map from \Cref{def:colim-open-closed-localizations}, which is surjective and ind-Zariski by \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}. It also induces a homeomorphism $\pi_0(\Spec(B_T)) \cong T \cong \pi_0(\Spec(A))$.
+  Moreover, by \Cref{thm:surjective-w-local-ring}, $B_T$ is w-local and $B \to B_T$ is w-local. Since ind-Zariski maps identify local rings (\Cref{thm:ind-Zariski-identifies-local-rings}), the composition $A \to B \to B_T$ remains w-local (\Cref{thm:w-local-map-composition}) and identifies local rings (\Cref{thm:identifies-local-rings-composition}). Therefore, by \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}, $A \to B_T$ is an isomorphism.
 \end{proof}
 
 \section{w-contractible rings}
