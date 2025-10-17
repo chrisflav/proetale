@@ -52,6 +52,13 @@ This chapter serves for the commutative algebra preparation of the remaining par
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
 
+\begin{lemma}
+    Let $X = \lim_i X_i$ be a cofiltered limit of topological spaces and let
+    $x \in X$ be an element. Denote by $x_i$ the image of $x$ in $X_i$. Then
+    $\overline{\{x\}} = \lim_i \overline{\{x_i\}}$.
+    \label{lemma:closure-limit}
+\end{lemma}
+
 \begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E} (1)]{stacks-project}}]
   \label{def:local-isomorphism}
   We say $A \to B$ is a \emph{local isomorphism} if for every prime $\mathfrak{q} \subset B$ there exists a $g \in B$, $g \notin \mathfrak{q}$ such that $A \to B_g$ induces an open immersion $\Spec (B_g) \to \Spec (A)$.
@@ -185,22 +192,6 @@ The following example shows that our definition agrees with the one in
 \begin{example}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
 \end{example}
-
-\begin{lemma}
-    Let $A$ be a ring and $\mathfrak{m}$ a maximal ideal of $A$. Suppose for every étale $A$-algebra $B$ and
-    prime ideal $\mathfrak{q} \subseteq B$ lying over $\mathfrak{m}$, the induced map
-    $A_{\mathfrak{m}} \to B_{\mathfrak{q}}$ is an isomorphism.
-    Then $A_{\mathfrak{m}}$ is strictly Henselian.
-    \label{lemma:localization-strictly-Henselian}
-\end{lemma}
-
-\begin{proof}
-    Denote $\kappa = A / \mathfrak{m}$ and let $\kappa^{\mathrm{sep}}$ be a separable closure of $\kappa$.
-    Let $A_{\mathfrak{m}} \to S \to \kappa^{\mathrm{sep}}$ be a factorisation of $A_{\mathfrak{m}} \to \kappa \to \kappa^{\mathrm{sep}}$
-    with $A_{\mathfrak{m}} \to S$ étale.
-
-    TBA
-\end{proof}
 
 \begin{proposition}
     \label{thm:strictly-henselian-good-retraction}
@@ -371,8 +362,9 @@ on the choice of $f$ and $I$ \stacksproject{096V}.
             onto $D(f) \cap V(I)$.
         \item If $A'$ is a ring with an element $f' \in A$ and ideal $I' \subseteq A'$ and
             $A \to A'$ is a ring map that maps
-            $D(f') \cap V(f')$ into $D(f) \cap V(f)$, then there is a unique $A$-algebra map
-            $\tildering{A}{I}{f} \to \tildering{A'}{I'}{f'}$.
+            $D(f') \cap V(I')$ into $D(f) \cap V(I)$, then there is a unique $A$-algebra map
+            $\tildering{A}{I}{f} \to \tildering{A'}{I'}{f'}$ making the obvious
+            diagram with $A \to A'$ commute.
     \end{enumerate}
     In particular, every
     point in $\spec{\tildering{A}{I}{f}}$ specializes to a point in $V(\tildeideal{I}{f})$.
@@ -380,7 +372,28 @@ on the choice of $f$ and $I$ \stacksproject{096V}.
 \end{lemma}
 
 \begin{proof}
-    TBA
+    Let $S = S_{f, I}$, $Z = D(f) \cap V(I)$ and $J = \tildeideal{I}{f}$.
+
+    Note that $Z$ is homeomorphic to $\spec{(A/I)_f}$.
+    Since the map $\spec{S^{-1}A} \to \spec{A}$ is a homeomorphism onto its image, to show (1)
+    it suffices to show that the image is the set of points of $\spec{A}$ specializing to $D(f) \cap V(I)$.
+    Let $\mathfrak{p}$ be a prime of $A$ specializing to a $\mathfrak{q}$ in $Z$,
+    so $I \subseteq \mathfrak{q}$ and $f \not\in \mathfrak{q}$. In particular, the image
+    of every element of $\mathfrak{p}$ in $(A / I)_f$ is contained in $\mathfrak{q}$ and
+    is therefore not invertible.
+    Conversely, let $\mathfrak{p}$ be a prime of $A$ which does not specialize to a point in
+    $Z$, hence
+    the image of $\mathfrak{p}$ in $(A/I)_f$ contains the unit element. So there exists
+    $g \in \mathfrak{p}$ that becomes invertible in $(A / I)_f$, so $g \in S$ and
+    $\mathfrak{p}$ is not in the image of $\spec{S^{-1} A}$.
+
+    By construction, the induced map $S^{-1}A \to (A / I)_f$ is surjective and hence
+    induces an isomorphism $S^{-1}A / J \to (A / I)_f$. This shows (2).
+
+    Let $g \in A$. Suppose the image of $g$ in $(A' / I')_{f'}$ is not invertible.
+    Then there exists a prime ideal $\mathfrak{p}$ of $(A' / I')_{f'}$ that contains the image of $g$.
+    Hence $g$ is in the preimage of $\mathfrak{p}$ under $A \to A'$, which lies in $Z$ by assumption. Thus
+    $g$ is not invertible in $(A / I)_f$, which shows $g \not\in S$.
 \end{proof}
 
 In view of \ref{lemma:locally-closed-specializations}, given $Z = D(f) \cap V(I)$ we may
@@ -479,18 +492,18 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
 \end{proof}
 
 \begin{lemma}
-    Let $E \subseteq A$ be a finite subset. Then $V(I_E)$ contains
-    all closed points of $\spec{A_E}$.%
+    Let $E \subseteq A$ be a finite subset. Then every point of $\spec{A_E}$ specializes
+    to a point in $V(I_E)$. In particular, $V(I_E)$ contains all closed points of $\spec{A_E}$.%
     \uses{def:finite-stratification-ring}
     \label{lemma:finite-stratification-closed-points}
 \end{lemma}
 
 \begin{proof}
-    Let $x \in \spec{A_E}$ be a closed point. Then $x$ is a closed point
-    in $\spec{A_{\widetilde{Z(E', E'')}}}$ for some $E = E' \coprod E''$. By
+    Let $x \in \spec{A_E}$. Then $x$ is in $\spec{A_{\widetilde{Z(E', E'')}}}$ for some
+    $E = E' \coprod E''$. By
     \ref{lemma:locally-closed-specializations}, $x$ specializes to a point
-    in $Z(E', E'') \subseteq \spec{A_{\widetilde{Z(E', E'')}}}$. But
-    $x$ is closed, so $x \in Z(E', E'') \subseteq V(I_E)$.
+    in $Z(E', E'') \subseteq V(I_E)$.
+    If $x$ is closed, then $x$ specializes to itself, so $x \in V(I_E)$.
 \end{proof}
 
 Let $A$ be a ring. Given finite subsets $E_1, E_2 \subseteq A$ with $E_1 \subseteq E_2$, there is a
@@ -500,6 +513,13 @@ $E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$. By \ref{lemma:subset-stratu
 we obtain $Z(E_2', E_2'') \subseteq Z(E_1', E_1'')$ and hence
 by \ref{lemma:locally-closed-specializations} a unique $A$-algebra map
 $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
+
+\begin{lemma}
+    Let $E_1, E_2 \subseteq A$ be finite subsets with $E_1 \subseteq E_2$.
+    The induced map $\spec{A_{E_2}} \to \spec{A_{E_1}}$ maps
+    $V(I_{E_2})$ into $V(I_{E_1})$.
+    \label{lemma:finite-stratification-map-closed}
+\end{lemma}
 
 \begin{definition}
     Let $I(A)$ be the partially ordered set of all finite subsets of $A$. We define the
@@ -512,6 +532,9 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     \uses{def:finite-stratification-ring, lemma:subset-stratum-mono}
     \label{def:w-localization}
 \end{definition}
+
+Note that, since $I_w$ is the colimit of the ideals $I_E$, the closed subset
+$V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
 
 \begin{lemma}
     The $A$-algebra $A_{w}$ is ind-Zariski.
@@ -531,8 +554,8 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     Let $A$ be a ring.
     \begin{enumerate}
         \item The composition $V(I_w) \to \spec{A_w} \to \spec{A}$ is a bijection.
-        \item $V(I_w)$ is the set of closed points of $\spec{A_w}$.
         \item Every point of $\spec{A_w}$ specializes to a unique point of $V(I_w)$.
+        \item $V(I_w)$ is the set of closed points of $\spec{A_w}$.
     \end{enumerate}
     In particular, $\spec{A_w}$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
     \uses{def:w-localization}
@@ -541,8 +564,35 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
 
 \begin{proof}
     \uses{lemma:finite-stratification-ideal-bijection}
-    By definition of $I_w$, the set $V(I_w)$ is the intersection of the preimages
-    of the $V(I_E)$ in $\spec{A_w}$.
+    Since $V(I_w) = \lim_{E} V(I_E)$ and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
+    bijective for all $E$ by \ref{lemma:finite-stratification-ideal-bijection}, the
+    first claim holds.
+
+    We first show that every point of $\spec{A_w}$ specializes to a point in $V(I_w)$.
+    For this let $y \in \spec{A_w}$. For all $E \subseteq A$ finite, denote by
+    $T_E$ the closure of the image of $y$ in $\spec{A_E}$. By
+    \ref{lemma:finite-stratification-closed-points}, the intersection $T_E \cap V(I_E)$ is
+    non-empty. Since both $T_E$ and $V(I_E)$ are closed, the intersection is closed
+    and hence quasi-compact. Thus $(\lim_E T_E) \cap V(I_w) = \lim_E (T_E \cap V(I_E))$ is non-empty.
+    By \ref{lemma:closure-limit}, the subset $\lim_E T_E$ is the closure of $y$ in $\spec{A_w}$. Hence
+    $y$ specializes to a point in $V(I_E)$.
+
+    For uniqueness, suppose $y \in \spec{A_w}$ specializes to $z, z' \in V(I_w)$ with
+    $z \neq z'$. Denote the images of $z, z'$ in $\spec{A}$ by $x, x'$.
+    Because $V(I_w) \to \spec{A_w} \to \spec{A}$ is injective, $x$ and $x'$ are distinct. Hence we may
+    assume there exists $f \in A$ such that $x \in D(f)$ and $x' \in V(f)$. Set
+    $E = \{f\}$. Then
+    \[
+        \spec{A_E} = \spec{\tildering{A}{0}{f}} \coprod \spec{\tildering{A}{(f)}{1}}
+    .\]
+    Denote the images of $y, z, z'$ in $\spec{A_E}$ by $y_E, x_E, x'_E$. Since
+    $x_E$ maps to $x \in D(f)$ and $x_E'$ maps to $x' \in V(f)$, they lie
+    in different components of the disjoint union decomposition above. But
+    since $\spec{A_w} \to \spec{A}$ is continuous, $y_E$ specializes to both $x_E$ and $x'_E$
+    which is not possible.
+
+    Finally, every closed point specializes to itself and is hence contained in $V(I_{w})$. Conversely,
+    every point in $V(I_{w})$ specializes only to itself, so it is closed.
 \end{proof}
 
 \begin{lemma}
@@ -557,6 +607,25 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     $V(I_w)$ surjects onto $\spec{A}$ by \ref{lemma:w-localization-closed-points},
     in particular $\spec{A_w} \to \spec{A}$ is surjective, hence
     $A \to A_w$ is faithfully flat.
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be w-local and $I \subseteq A$ an ideal. Then
+    $A_{\widetilde{V(I)}}$ is w-local and the set of closed points is $V(IA_{\widetilde{V(I)}})$.
+\end{lemma}
+
+\begin{lemma}
+    Let $I \subseteq A$ be an ideal such that $V(I) \subseteq A$ is a profinite topological space.
+    Set $B = (A_w)_{\widetilde{V(IA_{w})}}$. Then
+    \begin{enumerate}
+        \item $B$ is w-local,
+        \item the set of closed points of $B$ is $V(IB)$, and
+        \item the map $A / I \to B / I B$ is an isomorphism.
+    \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+    TBA.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}]
@@ -602,7 +671,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
-  \uses{thm:etale-over-strictly-henselian-localization-isom} 
+  \uses{thm:etale-over-strictly-henselian-localization-isom}
   Write $B = \colim_i B_i$ as a filtered colimit of étale $A$-algebras $B_i$. Since localization commutes with colimits, we have $B_\n = \colim_i (B_i)_{\n_i}$ where $\n_i$ is the restriction of $\n$ to $B_i$. Then use \Cref{thm:etale-over-strictly-henselian-localization-isom} to conclude each $B_i$ is isomorphic to $A$.
 \end{proof}
 
@@ -721,14 +790,14 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     \uses{prop:exists-ind-etale-retraction-etale,
       lemma:retractions-strictly-henselian, prop:ind-etale-residue-fields, thm:closed-points-isom-w-local,
       lemma:w-localization-closed-points}
-    By \ref{prop:w-localization-closed-points}, the ring $A_w$ is w-local, so the set of closed points
+    By \ref{lemma:w-localization-closed-points}, the ring $A_w$ is w-local, so the set of closed points
     of $\spec{A_w}$ is closed.
     Let $I$ be the radical ideal of $A_w$ such that $V(I)$ is the set of closed points of $\spec{A_w}$.
     Choose an ind-étale and faithfully flat ring map $A_w \to B'$ as in
     \ref{prop:exists-ind-etale-retraction-etale}. By
     \ref{lemma:retractions-strictly-henselian}, the local ring $B'_{\mathfrak{m}'}$ is
     strictly henselian for every maximal ideal $\mathfrak{m}'$ of $B'$.
-    The map $A \to A_w$ induces algebraic extensions on residue fields at primes by
+    The map $A_w \to B'$ induces algebraic extensions on residue fields at primes by
     \ref{prop:ind-etale-residue-fields},
     so applying \ref{thm:closed-points-isom-w-local} to $A_w \to B'$, we obtain
     an ind-Zariski ring map $B' \to B$ such that $B'/IB' \to B/IB$ is an isomorphism,
