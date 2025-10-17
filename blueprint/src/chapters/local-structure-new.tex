@@ -120,6 +120,58 @@ The following pure topological lemma will be used in \Cref{thm:colim-open-closed
     that $B'$ is étale over $A_i$.
 \end{proof}
 
+\section{ind-Zariski maps}
+
+\begin{definition}[Ind-Zariski, {\cite[\href{https://stacks.math.columbia.edu/tag/096N}{Tag 096N}]{stacks-project}}]
+    \label{def:ind-Zariski}
+    \uses{def:local-isomorphism}
+    An $R$-algebra $S$ is called a \emph{ind-Zariski} if $S$ can be written as a filtered colimit $S \simeq \colim S_i$ with each $R \to S_i$ a local isomorphism. A ring homomorphism $f : R \to S$ is called a \emph{ind-Zariski} if $S$ is ind-Zariski as an $R$-algebra via $f$.
+\end{definition}
+
+\begin{remark}
+  The definition of ind-Zariski is slightly more general from \cite[Definition 2.2.1(iv)]{proetale}, where they defined as a filtered colimit of finite products of principal localizations.
+\end{remark}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096T}{Tag 096T}]{stacks-project}}]
+  Let $A \to B$ be an ind-Zariski ring map. Then it identifies local rings, i.e. for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
+  \label{thm:ind-Zariski-identifies-local-rings}
+  \uses{def:ind-Zariski,def:identify-local-rings}
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}
+  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat and ind-étale.
+  \label{thm:ind-Zariski-is-flat-ind-etale}
+  \uses{def:ind-Zariski,def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat and étale.
+\end{proof}
+
+\begin{lemma}
+    A filtered colimit of ind-Zariski algebras is ind-Zariski.
+    \label{lemma:ind-ind-Zariski}
+  \uses{def:ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+    This follows from general theory, because local isomorphisms are of finite presentation.
+\end{proof}
+
+\begin{lemma}
+    A finite product of ind-Zariski algebras is ind-Zariski.
+    \label{lemma:ind-Zariski-products}
+    \uses{def:ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
 \section{Henselian objects and Henselisation}
 
 In this section we define a generalisation of the notion of a Henselian ring to an arbitrary category. Let $\mathcal{C}$ be a category
@@ -393,17 +445,37 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 The goal of the remaining part of this section is to show that for every ring $A$, there exists a faithfully flat, ind-Zariski
 $A$-algebra $A_{w}$ with $A_w$ w-local. Let $A$ be a ring.
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096V}{Tag 096V}]{stacks-project}}]
-    Let $Z \subseteq \spec{A}$ be a locally closed subscheme of the form
-    $D(f) \cap V(I)$ for some $f \in A$ and ideal $I \subseteq A$. Then
+\begin{definition}
+    Let $f \in A$ be an element and $I \subseteq A$ an ideal.
+    Let $S_{f, I} \subseteq A$ be the multiplicative subset of elements which map to invertible
+    elements of $(A/I)_{f}$.
+    We define $\tildering{A}{I}{f}$ to be the $A$-algebra $S_{f, I}^{-1}$
+    and $\tildeideal{I}{f} \subseteq \tildering{A}{I}{f}$ to be the kernel of
+    the induced map $\tildering{A}{I}{f} \to (A / I)_{f}$.
+    \label{def:tilde-locclosed}
+\end{definition}
+
+If $Z \subseteq \spec{A}$ is a locally closed subscheme of the form $D(f) \cap V(I)$, we
+also write $A_{\widetilde{Z}}$ instead of $\tildering{A}{I}{f}$.
+In the following, when we use the notation $A_{\widetilde{Z}}$ there is always a canonical
+choice of $I$ and $f$ for $Z$.
+In general this notation is justified by the fact that, up to isomorphism, the ring $A_{\widetilde{Z}}$ does not depend
+on the choice of $f$ and $I$ \stacksproject{096V}.
+
+\begin{lemma}[{\stacksproject{096V}}]
+    Let $f \in A$ be an element and $I \subseteq A$ an ideal.
     \begin{enumerate}
-        \item there exists a multiplicative subset $S \subseteq A$ such that $\spec{S^{-1} A} \to \spec{A}$ induces
-            a homeomorphism onto the set of points of $\spec{A}$ specializing to $Z$.
-        \item the $A$-algebra $A_{\tilde{Z}} = S^{-1} A$ depends only on the underlying subset $Z \subseteq X$, and
-        \item $Z$ is a closed subscheme of $\spec{A_{\tilde{Z}}}$.
+        \item The map $\spec{\tildering{A}{I}{f}} \to \spec{A}$ induces
+            a homeomorphism onto the set of points of $\spec{A}$ specializing to $D(f) \cap V(I)$.
+        \item The closed subscheme $V(\tildeideal{I}{f})$ induces a homeomorphism
+            onto $D(f) \cap V(I)$.
+        \item If $A'$ is a ring with an element $f' \in A$ and ideal $I' \subseteq A'$ and
+            $A \to A'$ is a ring map that maps
+            $D(f') \cap V(f')$ into $D(f) \cap V(f)$, then there is a unique $A$-algebra map
+            $\tildering{A}{I}{f} \to \tildering{A'}{I'}{f'}$.
     \end{enumerate}
-    If $A \to A'$ is a ring map and $Z' \subseteq \spec{A'}$ a locally closed subscheme of the same form
-    which maps into $Z$, then there is a unique $A$-algebra map $A_{\tilde{Z}} \to A'_{\tilde{Z}}$.
+    In particular, every
+    point in $\spec{\tildering{A}{I}{f}}$ specializes to a point in $V(\tildeideal{I}{f})$.
     \label{lemma:locally-closed-specializations}
 \end{lemma}
 
@@ -411,23 +483,19 @@ $A$-algebra $A_{w}$ with $A_w$ w-local. Let $A$ be a ring.
     TBA
 \end{proof}
 
-\begin{definition}
-    Let $Z \subseteq \spec{A}$ be a locally closed subset of the form $D(f) \cap V(I)$.
-    We denote the $A$-algebra $S^{-1}A$ constructed in \ref{lemma:locally-closed-specializations} by
-    $A_{\tilde{Z}}$.
-    \uses{lemma:locally-closed-specializations}
-    \label{def:tilde-locclosed}
-\end{definition}
+In view of \ref{lemma:locally-closed-specializations}, given $Z = D(f) \cap V(I)$ we may
+view $Z$ as a closed subscheme of $\spec{A_{\widetilde{Z}}}$ defined by the ideal
+$V( \tildeideal{I}{f})$.
 
 \begin{lemma}
-    Let $Z \subseteq \spec{A}$ be a locally closed subset of the form $D(f) \cap V(I)$. Then
-    $A_{\tilde{Z}}$ is ind-Zariski over $A$.
+    Let $f \in A$ be an element and $I \subseteq A$ an ideal. Then
+    $\tildering{A}{I}{f}$ is ind-Zariski over $A$.
     \uses{def:tilde-locclosed}
     \label{lemma:tilde-locclosed-ind-zariski}
 \end{lemma}
 
 \begin{proof}
-    $A_{\tilde{Z}} = S^{-1} A$ for some multiplicative subset $A$.
+    $\tildering{A}{I}{f} = S^{-1} A$ for some multiplicative subset $A$.
 \end{proof}
 
 \begin{definition}[Stratification by subsets]
@@ -480,10 +548,12 @@ $A$-algebra $A_{w}$ with $A_w$ w-local. Let $A$ be a ring.
 \end{proof}
 
 \begin{definition}
-    Let $A$ be a ring and $E \subseteq A$ a subset. Let
+    Let $A$ be a ring and $E \subseteq A$ a finite subset. Let
     \[
     A_{E} = \prod_{E = E' \coprod E''} A_{\widetilde{Z(E', E'')}}
     .\]
+    Further, we set $I_E \subseteq A$ to be the product of the ideals
+    defining $Z(E', E'')$ in $\spec{A_{\widetilde{Z(E', E'')}}}$.
     \uses{def:subset-stratum, def:tilde-locclosed}
     \label{def:finite-stratification-ring}
 \end{definition}
@@ -491,6 +561,37 @@ $A$-algebra $A_{w}$ with $A_w$ w-local. Let $A$ be a ring.
 Note that \ref{def:finite-stratification-ring} is well-defined, because for finite
 subsets $E', E''$ of $A$, the locally closed subset $Z(E', E'')$ is always
 of the right form by \ref{lemma:subset-stratum-equals-inter}.
+
+\begin{lemma}
+    Let $E \subseteq A$ be a finite subset. Then
+    $V(I_E) = \coprod_{E = E' \coprod E''} Z(E', E'')$. In particular,
+    the map $\spec{A_E} \to \spec{A}$ induces a bijection $V(I_E) \to \spec{A}$.
+    \label{lemma:finite-stratification-ideal-bijection}
+    \uses{def:finite-stratification-ring}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:subset-stratification}
+    By definition $I_E$ is the product of the ideals defining $Z(E', E'')$ in
+    $\spec{A_{\widetilde{Z(E', E'')}}}$. Hence the first claim. The second
+    follows from the first, because $\spec{A} = \coprod_{E = E' \coprod E''} Z(E', E'')$ by
+    \ref{lemma:subset-stratification}.
+\end{proof}
+
+\begin{lemma}
+    Let $E \subseteq A$ be a finite subset. Then $V(I_E)$ contains
+    all closed points of $\spec{A_E}$.%
+    \uses{def:finite-stratification-ring}
+    \label{lemma:finite-stratification-closed-points}
+\end{lemma}
+
+\begin{proof}
+    Let $x \in \spec{A_E}$ be a closed point. Then $x$ is a closed point
+    in $\spec{A_{\widetilde{Z(E', E'')}}}$ for some $E = E' \coprod E''$. By
+    \ref{lemma:locally-closed-specializations}, $x$ specializes to a point
+    in $Z(E', E'') \subseteq \spec{A_{\widetilde{Z(E', E'')}}}$. But
+    $x$ is closed, so $x \in Z(E', E'') \subseteq V(I_E)$.
+\end{proof}
 
 Let $A$ be a ring. Given finite subsets $E_1, E_2 \subseteq A$ with $E_1 \subseteq E_2$, there is a
 canonical transition map $A_{E_1} \to A_{E_2}$ of $A$-algebras: For
@@ -506,6 +607,8 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     \[
     A_w = \colim_{E \in I(A)} A_E
     .\]
+    We denote by $I_w \subseteq A_w$ the colimit of the ideals $I_E$, i.e.,
+    the union of the images of the $I_E$ in $A_w$.%
     \uses{def:finite-stratification-ring, lemma:subset-stratum-mono}
     \label{def:w-localization}
 \end{definition}
@@ -517,9 +620,29 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:ind-Zariski-products, lemma:ind-ind-Zariski}
     For $E \subseteq A$ a finite subset, the $A$-algebra $A_E$ is ind-Zariski
-    as a finite product of ind-Zariski algebras. Thus $A_w$ is
-    a filtered colimit of ind-Zariski algebras, hence ind-Zariski.
+    as a finite product of ind-Zariski algebras by \ref{lemma:ind-Zariski-products}.
+    Thus $A_w$ is a filtered colimit of ind-Zariski algebras, hence ind-Zariski
+    by \ref{lemma:ind-ind-Zariski}.
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be a ring.
+    \begin{enumerate}
+        \item The composition $V(I_w) \to \spec{A_w} \to \spec{A}$ is a bijection.
+        \item $V(I_w)$ is the set of closed points of $\spec{A_w}$.
+        \item Every point of $\spec{A_w}$ specializes to a unique point of $V(I_w)$.
+    \end{enumerate}
+    In particular, $\spec{A_w}$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
+    \uses{def:w-localization}
+    \label{lemma:w-localization-closed-points}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:finite-stratification-ideal-bijection}
+    By definition of $I_w$, the set $V(I_w)$ is the intersection of the preimages
+    of the $V(I_E)$ in $\spec{A_w}$.
 \end{proof}
 
 \begin{lemma}
@@ -529,39 +652,11 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
 \end{lemma}
 
 \begin{proof}
-    TBA
-\end{proof}
-
-\begin{lemma}
-    The closed points of $\spec{A_w}$ surject onto $\spec{A}$.
-    \uses{def:w-localization}
-    \label{lemma:w-localization-closed-points}
-\end{lemma}
-
-\begin{proof}
-    TBA
-\end{proof}
-
-\begin{proposition}
-    The ring $A_w$ is $w$-local.
-    \uses{def:w-localization}
-    \label{prop:w-localization-w-local}
-\end{proposition}
-
-\begin{proof}
-    \uses{lemma:w-localization-closed-points}
-    TBA
-\end{proof}
-
-\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096U}{Tag 096U}]{stacks-project}}]
-    Let $A$ be a ring. There exists a faithfully flat, ind-Zariski map $A \to A_{w}$ such
-    that $A_w$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
-    \label{prop:exists-ind-zariski-w-local}
-\end{proposition}
-
-\begin{proof}
-    \uses{lemma:locally-closed-specializations}
-    TBA
+    \uses{lemma:w-localization-closed-points, lemma:w-localization-ind-Zariski}
+    By \ref{lemma:w-localization-ind-Zariski}, $A \to A_w$ is flat. Because
+    $V(I_w)$ surjects onto $\spec{A}$ by \ref{lemma:w-localization-closed-points},
+    in particular $\spec{A_w} \to \spec{A}$ is surjective, hence
+    $A \to A_w$ is faithfully flat.
 \end{proof}
 
 \section{w-strictly-local Rings}
@@ -697,11 +792,14 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
     For any ring \(A\), there exists an ind-étale faithfully flat \(A\)-algebra \(B\) with \(B\) w-strictly local.
     \label{thm:ind-etale-w-strictly-local-cover}
-    \uses{def:w-strictly-local-ring,def:ind-etale, prop:exists-ind-zariski-w-local}
+    \uses{def:w-strictly-local-ring,def:ind-etale, lemma:faithfully-flat-surject-closed}
 \end{proposition}
 
 \begin{proof}
-    By \ref{prop:w-localization-w-local}, the ring $A_w$ is w-local, so the set of closed points
+    \uses{prop:exists-ind-etale-retraction-etale,
+      lemma:retractions-strictly-henselian, prop:ind-etale-residue-fields, thm:closed-points-isom-w-local,
+      lemma:w-localization-closed-points}
+    By \ref{prop:w-localization-closed-points}, the ring $A_w$ is w-local, so the set of closed points
     of $\spec{A_w}$ is closed.
     Let $I$ be the radical ideal of $A_w$ such that $V(I)$ is the set of closed points of $\spec{A_w}$.
     Choose an ind-étale and faithfully flat ring map $A_w \to B'$ as in
@@ -717,40 +815,10 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     It remains to verify that the composition $A \to A_w \to B' \to B$ is ind-étale and faithfully flat.
     The first one follows because being ind-étale is stable under composition. For the second
     one it suffices to show that $\spec{B} \to \spec{B'} \to \spec{A_w} \to \spec{A}$ is surjective.
-    Since the closed points of $\spec{A_w}$ surject onto $\spec{A}$ and $B' / IB' \cong B / I B$, it
+    Since the closed points of $\spec{A_w}$ surject onto $\spec{A}$ by
+    \ref{lemma:w-localization-closed-points}
+    and $B' / IB' \cong B / I B$, it
     suffices to check that $V(IB')$ surjects onto $V(I)$. This is \ref{lemma:faithfully-flat-surject-closed}.
-\end{proof}
-
-\section{ind-Zariski maps}
-
-\begin{definition}[Ind-(Zariski localizations), {\cite[\href{https://stacks.math.columbia.edu/tag/096N}{Tag 096N}]{stacks-project}}]
-    \label{def:ind-Zariski}
-    \uses{def:local-isomorphism}
-    An $R$-algebra $S$ is called a \emph{ind-Zariski} if $S$ can be written as a filtered colimit $S \simeq \colim S_i$ with each $R \to S_i$ a local isomorphism. A ring homomorphism $f : R \to S$ is called a \emph{ind-Zariski} if $S$ is ind-Zariski as an $R$-algebra via $f$.
-\end{definition}
-
-\begin{remark}
-  The definition of ind-Zariski is slightly more general from \cite[Definition 2.2.1(iv)]{proetale}, where they defined as a filtered colimit of finite products of principal localizations. 
-\end{remark}
-
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096T}{Tag 096T}]{stacks-project}}]
-  Let $A \to B$ be an ind-Zariski ring map. Then it identifies local rings, i.e. for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
-  \label{thm:ind-Zariski-identifies-local-rings}
-  \uses{def:ind-Zariski,def:identify-local-rings}
-\end{lemma}
-
-\begin{proof}
-  Omitted.
-\end{proof}
-
-\begin{lemma}
-  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat and ind-étale.
-  \label{thm:ind-Zariski-is-flat-ind-etale}
-  \uses{def:ind-Zariski,def:ind-etale}
-\end{lemma}
-
-\begin{proof}
-  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat and étale.
 \end{proof}
 
 \begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097C}{Tag 097C}]{stacks-project}}]
