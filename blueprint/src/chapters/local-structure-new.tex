@@ -355,8 +355,6 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
     %\leanok
 \end{definition}
 
-The goal of this section is to show that for every ring $A$, there exists a faithfully flat, ind-Zariski $A$-algebra $A_{w}$ with $A_w$ w-local.
-
 \begin{lemma}% To be modified.
   \label{thm:w-local-jacobson-radical}
   \uses{def:w-local-ring}
@@ -392,9 +390,11 @@ The goal of this section is to show that for every ring $A$, there exists a fait
 \begin{proof}
   TBA.
 \end{proof}
+The goal of the remaining part of this section is to show that for every ring $A$, there exists a faithfully flat, ind-Zariski
+$A$-algebra $A_{w}$ with $A_w$ w-local. Let $A$ be a ring.
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096V}{Tag 096V}]{stacks-project}}]
-    Let $A$ be a ring and $Z \subseteq \spec{A}$ a locally closed subscheme of the form
+    Let $Z \subseteq \spec{A}$ be a locally closed subscheme of the form
     $D(f) \cap V(I)$ for some $f \in A$ and ideal $I \subseteq A$. Then
     \begin{enumerate}
         \item there exists a multiplicative subset $S \subseteq A$ such that $\spec{S^{-1} A} \to \spec{A}$ induces
@@ -408,6 +408,148 @@ The goal of this section is to show that for every ring $A$, there exists a fait
 \end{lemma}
 
 \begin{proof}
+    TBA
+\end{proof}
+
+\begin{definition}
+    Let $Z \subseteq \spec{A}$ be a locally closed subset of the form $D(f) \cap V(I)$.
+    We denote the $A$-algebra $S^{-1}A$ constructed in \ref{lemma:locally-closed-specializations} by
+    $A_{\tilde{Z}}$.
+    \uses{lemma:locally-closed-specializations}
+    \label{def:tilde-locclosed}
+\end{definition}
+
+\begin{lemma}
+    Let $Z \subseteq \spec{A}$ be a locally closed subset of the form $D(f) \cap V(I)$. Then
+    $A_{\tilde{Z}}$ is ind-Zariski over $A$.
+    \uses{def:tilde-locclosed}
+    \label{lemma:tilde-locclosed-ind-zariski}
+\end{lemma}
+
+\begin{proof}
+    $A_{\tilde{Z}} = S^{-1} A$ for some multiplicative subset $A$.
+\end{proof}
+
+\begin{definition}[Stratification by subsets]
+    Let $E, F \subseteq A$ be subsets. We define
+    \[
+    Z(E, F) = \bigcap_{f \in E'} D(f) \cap \bigcap_{f \in F} V(f)
+    .\]
+    \label{def:subset-stratum}
+\end{definition}
+
+\begin{lemma}
+    Let $A$ be a ring, $E, F \subseteq A$ finite subsets. Then
+    \[
+    Z(E, F) = D\left( \prod_{f \in E}  f \right) \cap V\left( \sum_{f \in F} fA \right)
+    .\]
+    \uses{def:subset-stratum}
+    \label{lemma:subset-stratum-equals-inter}
+\end{lemma}
+
+\begin{proof}
+    This is immediate from the definitions of $D$ and $V$.
+\end{proof}
+
+\begin{lemma}
+    Let $E_1, F_1, E_2, F_2 \subseteq A$ be subsets such that $E_1 \subseteq E_2$ and
+    $F_1 \subseteq F_2$. Then $Z(E_2, F_2) \subseteq Z(E_1, F_1)$.
+    \label{lemma:subset-stratum-mono}
+\end{lemma}
+
+\begin{proof}
+    This is immediate from the definition of $Z(-, -)$.
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be a ring, $E \subseteq A$ a finite subset. Then
+    \[
+        \spec{A} = \coprod_{E = E' \coprod E''} Z(E', E'')
+    \] set theoretically.
+    \uses{def:subset-stratum}
+    \label{lemma:subset-stratification}
+\end{lemma}
+
+\begin{proof}
+    Let $x \in \spec{A}$ and $E = E' \coprod E''$ a disjoint union decomposition. Then
+    $x \in Z(E', E'')$ if and only if $f(x) \neq 0$ for all $f \in E'$ and $f(x) = 0$
+    for all $f \in E''$. Hence $x$ is contained in
+    \[
+    Z(\{ f \in E  \mid f(x) \neq 0\}, \{f \in E  \mid f(x) = 0\})
+    ,\] and this is the only set of this form in which $x$ is contained.
+\end{proof}
+
+\begin{definition}
+    Let $A$ be a ring and $E \subseteq A$ a subset. Let
+    \[
+    A_{E} = \prod_{E = E' \coprod E''} A_{\widetilde{Z(E', E'')}}
+    .\]
+    \uses{def:subset-stratum, def:tilde-locclosed}
+    \label{def:finite-stratification-ring}
+\end{definition}
+
+Note that \ref{def:finite-stratification-ring} is well-defined, because for finite
+subsets $E', E''$ of $A$, the locally closed subset $Z(E', E'')$ is always
+of the right form by \ref{lemma:subset-stratum-equals-inter}.
+
+Let $A$ be a ring. Given finite subsets $E_1, E_2 \subseteq A$ with $E_1 \subseteq E_2$, there is a
+canonical transition map $A_{E_1} \to A_{E_2}$ of $A$-algebras: For
+a disjoint union decomposition $E_2 = E_2' \coprod E_2''$, we set
+$E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$. By \ref{lemma:subset-stratum-mono},
+we obtain $Z(E_2', E_2'') \subseteq Z(E_1', E_1'')$ and hence
+by \ref{lemma:locally-closed-specializations} a unique $A$-algebra map
+$A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
+
+\begin{definition}
+    Let $I(A)$ be the partially ordered set of all finite subsets of $A$. We define the
+    $A$-algebra $A_{w}$ as
+    \[
+    A_w = \colim_{E \in I(A)} A_E
+    .\]
+    \uses{def:finite-stratification-ring, lemma:subset-stratum-mono}
+    \label{def:w-localization}
+\end{definition}
+
+\begin{lemma}
+    The $A$-algebra $A_{w}$ is ind-Zariski.
+    \uses{def:w-localization}
+    \label{lemma:w-localization-ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+    For $E \subseteq A$ a finite subset, the $A$-algebra $A_E$ is ind-Zariski
+    as a finite product of ind-Zariski algebras. Thus $A_w$ is
+    a filtered colimit of ind-Zariski algebras, hence ind-Zariski.
+\end{proof}
+
+\begin{lemma}
+    The $A$-algebra $A_w$ is faithfully flat.
+    \uses{def:w-localization}
+    \label{lemma:w-localization-faithfully-flat}
+\end{lemma}
+
+\begin{proof}
+    TBA
+\end{proof}
+
+\begin{lemma}
+    The closed points of $\spec{A_w}$ surject onto $\spec{A}$.
+    \uses{def:w-localization}
+    \label{lemma:w-localization-closed-points}
+\end{lemma}
+
+\begin{proof}
+    TBA
+\end{proof}
+
+\begin{proposition}
+    The ring $A_w$ is $w$-local.
+    \uses{def:w-localization}
+    \label{prop:w-localization-w-local}
+\end{proposition}
+
+\begin{proof}
+    \uses{lemma:w-localization-closed-points}
     TBA
 \end{proof}
 
@@ -559,24 +701,23 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{proposition}
 
 \begin{proof}
-    By \ref{prop:exists-ind-zariski-w-local}, there exists a faithfully flat, ind-Zariski map
-    $A \to A'$ such that $A'$ is w-local and the set of closed points of $\spec{A'}$ surjects
-    onto $\spec{A}$. Since $A'$ is w-local, the set of closed points of $\spec{A'}$ is closed.
-    Let $I$ be the radical ideal of $A'$ such that $V(I)$ is the set of closed points of $\spec{A'}$.
-    Choose an ind-étale and faithfully flat ring map $A' \to B'$ as in
+    By \ref{prop:w-localization-w-local}, the ring $A_w$ is w-local, so the set of closed points
+    of $\spec{A_w}$ is closed.
+    Let $I$ be the radical ideal of $A_w$ such that $V(I)$ is the set of closed points of $\spec{A_w}$.
+    Choose an ind-étale and faithfully flat ring map $A_w \to B'$ as in
     \ref{prop:exists-ind-etale-retraction-etale}. By
     \ref{lemma:retractions-strictly-henselian}, the local ring $B'_{\mathfrak{m}'}$ is
     strictly henselian for every maximal ideal $\mathfrak{m}'$ of $B'$.
-    The map $A \to A'$ induces algebraic extensions on residue fields at primes by
+    The map $A \to A_w$ induces algebraic extensions on residue fields at primes by
     \ref{prop:ind-etale-residue-fields},
-    so applying \ref{thm:closed-points-isom-w-local} to $A' \to B'$, we obtain
+    so applying \ref{thm:closed-points-isom-w-local} to $A_w \to B'$, we obtain
     an ind-Zariski ring map $B' \to B$ such that $B'/IB' \to B/IB$ is an isomorphism,
     $V(IB)$ is the set of closed points of $\spec{B}$ and $B$ is w-local.
 
-    It remains to verify that the composition $A \to A' \to B' \to B$ is ind-étale and faithfully flat.
+    It remains to verify that the composition $A \to A_w \to B' \to B$ is ind-étale and faithfully flat.
     The first one follows because being ind-étale is stable under composition. For the second
-    one it suffices to show that $\spec{B} \to \spec{B'} \to \spec{A'} \to \spec{A}$ is surjective.
-    Since the closed points of $\spec{A'}$ surject onto $\spec{A}$ and $B' / IB' \cong B / I B$, it
+    one it suffices to show that $\spec{B} \to \spec{B'} \to \spec{A_w} \to \spec{A}$ is surjective.
+    Since the closed points of $\spec{A_w}$ surject onto $\spec{A}$ and $B' / IB' \cong B / I B$, it
     suffices to check that $V(IB')$ surjects onto $V(I)$. This is \ref{lemma:faithfully-flat-surject-closed}.
 \end{proof}
 
