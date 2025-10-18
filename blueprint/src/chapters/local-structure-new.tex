@@ -127,10 +127,12 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
     Let $Z \subseteq X$ be a subset of a topological space. Then $Z^g$ is closed under generalization.
+    \label{lemma:generalization-stable-generalization}
 \end{lemma}
 
 \begin{proof}
     This is immediate from the definition.
+\end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0906}{Tag 0906}]{stacks-project}}]
   \label{thm:pi0-profinite}
@@ -305,6 +307,7 @@ and $P$ a property of morphisms.
                     & Y,
     \end{tikzcd}
     \] with $u$ satisfying $P$, there exists a retraction of $u$.
+    \label{def:p-henselian}
 \end{definition}
 
 \begin{example}
@@ -335,6 +338,7 @@ and $P$ a property of morphisms.
 % TODO: add definition of Henselisation if needed
 
 \begin{definition}[Strictly Henselian local ring]
+    \uses{def:p-henselian}
     \label{def:strictly-henselian-local-ring}
     A local ring $(R, \mathfrak{m}, \kappa)$ is \emph{strictly henselian} if the composition $R \to \kappa \to \kappa^{\mathrm{sep}}$ is étale-Henselian
     for a separable closure $\kappa^{\mathrm{sep}}$.
@@ -492,12 +496,14 @@ The following example shows that our definition agrees with the one in
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0968}{Tag 0968}]{stacks-project}}]
+    \label{lemma:w-local-open-cover-refinement}
+    \uses{def:w-local-space}
     Let $X$ be a w-local space. Then every open covering of $X$ can be refined
     by a finite disjoint union decomposition $X = \coprod U_i$ with $U_i$ open and closed in $X$.
 \end{lemma}
 
 \begin{proof}
-  TBA.
+    TBA.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0968}{Tag 0968}]{stacks-project}}]
@@ -649,7 +655,8 @@ In general this notation is justified by the fact that, up to isomorphism, the r
 on the choice of $f$ and $I$ \stacksproject{096V}.
 
 \begin{lemma}[{\stacksproject{096V}}]
-    \uses{def:generalization}
+    \uses{def:generalization, def:tilde-locclosed}
+    \label{lemma:locally-closed-specializations}
     Let $f \in A$ be an element and $I \subseteq A$ an ideal.
     \begin{enumerate}
         \item The map $\spec{\tildering{A}{I}{f}} \to \spec{A}$ induces
@@ -665,7 +672,6 @@ on the choice of $f$ and $I$ \stacksproject{096V}.
     \end{enumerate}
     In particular, every
     point in $\spec{\tildering{A}{I}{f}}$ specializes to a point in $V(\tildeideal{I}{f})$.
-    \label{lemma:locally-closed-specializations}
 \end{lemma}
 
 \begin{proof}
@@ -764,7 +770,7 @@ $V( \tildeideal{I}{f})$.
     .\]
     Further, we set $I_E \subseteq A$ to be the product of the ideals
     defining $Z(E', E'')$ in $\spec{A_{\widetilde{Z(E', E'')}}}$.
-    \uses{def:subset-stratum, def:tilde-locclosed}
+    \uses{def:subset-stratum, def:tilde-locclosed, lemma:subset-stratum-equals-inter}
     \label{def:finite-stratification-ring}
 \end{definition}
 
@@ -815,8 +821,16 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     Let $E_1, E_2 \subseteq A$ be finite subsets with $E_1 \subseteq E_2$.
     The induced map $\spec{A_{E_2}} \to \spec{A_{E_1}}$ maps
     $V(I_{E_2})$ into $V(I_{E_1})$.
+    \uses{def:finite-stratification-ring, lemma:subset-stratum-mono}
     \label{lemma:finite-stratification-map-closed}
 \end{lemma}
+
+\begin{proof}
+    This holds because for every decomposition $E_2 = E_2' \coprod E_2''$
+    and $E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$, the induced map
+    $\spec{A_{\widetilde{Z(E_2', E_2'')}}} \to \spec{A_{\widetilde{Z(E_1', E_1'')}}}$
+    maps $Z(E_2', E_2'')$ into $Z(E_1', E_1'')$.
+\end{proof}
 
 \begin{definition}
     Let $I(A)$ be the partially ordered set of all finite subsets of $A$. We define the
@@ -826,7 +840,7 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     .\]
     We denote by $I_w \subseteq A_w$ the colimit of the ideals $I_E$, i.e.,
     the union of the images of the $I_E$ in $A_w$.%
-    \uses{def:finite-stratification-ring, lemma:subset-stratum-mono}
+    \uses{def:finite-stratification-ring, lemma:subset-stratum-mono, lemma:finite-stratification-map-closed}
     \label{def:w-localization}
 \end{definition}
 
@@ -848,6 +862,8 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
 \end{proof}
 
 \begin{lemma}
+    \uses{def:w-localization}
+    \label{lemma:w-localization-closed-points}
     Let $A$ be a ring.
     \begin{enumerate}
         \item The composition $V(I_w) \to \spec{A_w} \to \spec{A}$ is a bijection.
@@ -856,12 +872,10 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
         \item $V(I_w)$ is the set of closed points of $\spec{A_w}$.
     \end{enumerate}
     In particular, $\spec{A_w}$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
-    \uses{def:w-localization}
-    \label{lemma:w-localization-closed-points}
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:finite-stratification-ideal-bijection}
+    \uses{lemma:finite-stratification-ideal-bijection, lemma:closure-limit}
     Since $V(I_w) = \lim_{E} V(I_E)$ and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
     bijective for all $E$ by \ref{lemma:finite-stratification-ideal-bijection}, the
     first claim holds.
@@ -972,6 +986,7 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
 \end{proof}
 
 \begin{lemma}
+    \label{lemma:closed-closed-points-tilde-w-local}
     Let $I \subseteq A$ be an ideal such that $V(I) \subseteq A$ only contains closed points.
     Set $B = (A_w)_{\widetilde{V(IA_{w})}}$. Then
     \begin{enumerate}
@@ -979,13 +994,10 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
         \item the set of closed points of $B$ is $V(IB)$, and
         \item the map $A / I \to B / I B$ is an isomorphism.
     \end{enumerate}
-    \label{lemma:w-local-tilde-w-local}
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:w-localization-ind-Zariski, thm:ind-Zariski-identifies-local-rings,
-      lemma:w-local-tilde-w-local,
-      thm:isom-of-identifies-local-rings-bijective, lemma:preimage-closed-points-algebraic}
+    \uses{lemma:w-localization-ind-Zariski, thm:ind-Zariski-identifies-local-rings, lemma:w-local-tilde-w-local, thm:isom-of-identifies-local-rings-bijective, lemma:preimage-closed-points-algebraic, lemma:tilde-locclosed-ind-zariski}
     $A \to A_w$ is ind-Zariski by \ref{lemma:w-localization-ind-Zariski} and therefore induces
     algebraic extensions of residue fields by \ref{thm:ind-Zariski-identifies-local-rings}.
     In particular, the closed subset $V(I A_w)$ only contains
@@ -1019,9 +1031,9 @@ In particular, the composition $A \to B \to C$ is faithfully flat if $A \to B$ i
 \end{lemma}
 
 \begin{proof}
-    \uses{prop:w-localization-closed-points, lemma:w-local-tilde-w-local}
+    \uses{lemma:w-localization-closed-points, lemma:closed-closed-points-tilde-w-local, lemma:tilde-locclosed-ind-zariski, lemma:going-down-surjective-of-closed}
     Every point of $V(IB)$ is a closed point of $\spec{B}$ by \ref{lemma:preimage-closed-points-algebraic}.
-    Hence we may choose $C = (B_w)_{\widetilde{V(IB_w)}}$ as in \ref{lemma:w-local-tilde-w-local}. Then
+    Hence we may choose $C = (B_w)_{\widetilde{V(IB_w)}}$ as in \ref{lemma:closed-closed-points-tilde-w-local}. Then
     the set of closed points of $C$ is $V(IC)$, which is the preimage of $V(I)$ under
     $\spec{C} \to \spec{B} \to \spec{A}$.
 
@@ -1106,10 +1118,12 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097R}{Tag 097R}]{stacks-project}}]
     Let $A$ be a ring. Then there exists an ind-étale faithfully flat $A$-algebra $B$ such that
     every faithfully flat étale ring map $B \to C$ has a retraction.
+    \uses{def:ind-etale}
     \label{prop:exists-ind-etale-retraction-etale}
 \end{proposition}
 
 \begin{proof}
+    \uses{lemma:etale-ind-spreads}
     For any ring $A$, one first constructs $T(A) = \colim_{E} \bigotimes_{B \in E} B$ where
     the colimit runs over finite subsets of faithfully flat étale $A$-algebras. Note that for every faithfully flat étale
     $A$-algebra $B$, there exists a map $B \to T(A)$.
@@ -1129,6 +1143,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \begin{lemma}
     Let $k$ be a field and $A$ an ind-étale, local $k$-algebra. Then $A$ is
     a separable algebraic field extension of $k$.
+    \uses{def:ind-etale}
     \label{lemma:field-local-indetale}
 \end{lemma}
 
@@ -1144,10 +1159,12 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
 \begin{proposition}
     Let $f\colon A \to B$ be ind-étale. Then $f$ induces separable algebraic extensions on residue fields.
+    \uses{def:ind-etale}
     \label{prop:ind-etale-residue-fields}
 \end{proposition}
 
 \begin{proof}
+    \uses{lemma:field-local-indetale}
     Let $\mathfrak{p}$ be a prime ideal of $B$. After base change along $A \to \kappa(\mathfrak{p}^c)$,
     we may assume $A = k$ is a field. After postcomposing with the ind-étale map $B \to B_{\mathfrak{p}}$,
     we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-indetale}.
