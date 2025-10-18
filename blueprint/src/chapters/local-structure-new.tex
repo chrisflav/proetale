@@ -592,14 +592,13 @@ The following example shows that our definition agrees with the one in
     \ref{lemma:spectral-closed-points-profinite}
 \end{proof}
 
-\begin{lemma}[\stacksproject{0A31}]
-    Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then
-    $E^g$ is an intersection of quasi-compact open subsets.
-    \label{lemma:spectral-generalization-intersection-open}
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0A31}{Tag 0A31}, (3) $\implies$ (4)]{stacks-project}}]
+  Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then the generalization $E^g$ is an intersection of quasi-compact open subsets.
+  \label{lemma:spectral-generalization-intersection-open}
 \end{lemma}
 
 \begin{proof}
-    TBA.
+  Let $X$ be a spectral space and let $W$ denote $E^g$. Since every point of $W$ specializes to a point of $E$ we see that an open of $W$ which contains $E$ is equal to $W$. Hence since $E$ is quasi-compact, so is $W$. If $x \in X$, $x \notin W$, then $Z = \overline{\{x\}}$ is disjoint from $W$. Since $W$ is quasi-compact we can find a quasi-compact open $U$ (since there is a open basis of quasi-compact opens of $X$ and finitely many of them would suffice to cover $W$) with $W \subset U$ and $U \cap Z = \emptyset$. We conclude that $W$ is an intersection of quasi-compact open subsets.
 \end{proof}
 
 \begin{lemma}[\stacksproject{0903}]
