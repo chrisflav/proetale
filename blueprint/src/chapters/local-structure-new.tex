@@ -506,14 +506,98 @@ The following example shows that our definition agrees with the one in
     TBA.
 \end{proof}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0968}{Tag 0968}]{stacks-project}}]
-  \label{thm:closed-points-isom-pi0}
-  \uses{def:w-local-space}
-  Let \(X\) be a w-local space. Then the set of closed points \(X^c\) is isomorphic to \(\pi_0(X)\).
+\begin{lemma}
+    Let $X$ be a profinite topological space and $x, y \in X$ be distinct. Then
+    there exist $U, V \subseteq X$ open and closed such that $X = U \coprod V$ and
+    $x \in U$, $y \in V$.
+    \label{lemma:profinite-disj-clopen-separation}
 \end{lemma}
 
 \begin{proof}
-  TBA. (0968)
+    TBA (see 08ZZ).
+\end{proof}
+
+\begin{lemma}[\stacksproject{0905}]
+    Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
+    \label{lemma:spectral-closed-points-profinite}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{lemma}
+    Let $X$ be a w-local space. Then the set of closed points $X^c$ of $X$ is profinite.
+    \uses{def:w-local-space}
+    \label{lemma:w-local-closed-points-profinite}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:spectral-closed-points-profinite}
+    It is a closed subspace of a spectral space, hence spectral. Therefore it is profinite by
+    \ref{lemma:spectral-closed-points-profinite}
+\end{proof}
+
+\begin{lemma}[\stacksproject{0A31}]
+    Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then
+    $E^g$ is an intersection of quasi-compact open subsets.
+    \label{lemma:spectral-generalization-intersection-open}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{lemma}[\stacksproject{0903}]
+    Let $X$ be a spectral space and $E \subseteq X$ a subset closed in the constructible topology.
+    \begin{enumerate}
+        \item If $x \in \overline{E}$, then $x$ is the specialization of a point in $E$.
+        \item If $E$ is stable under specialization, then $E$ is closed.
+    \end{enumerate}
+    \label{lemma:spectral-constructible-closed-closed}
+\end{lemma}
+
+\begin{proof}
+    It suffices to show the first claim.
+\end{proof}
+
+\begin{lemma}
+    Let $X$ be a w-local space and $Z \subseteq X$ a closed subset. Then $Z^g$ is closed.
+    \uses{def:w-local, def:generalization}
+    \label{lemma:w-local-generalization-closed-closed}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:spectral-generalization-intersection-open, lemma:generalization-specialization-closed, lemma:spectral-constructible-closed-closed}
+    Since $Z$ is closed, it is quasi-compact. Hence by \Cref{lemma:spectral-generalization-intersection-open},
+    we see that $Z^g$ is closed in the constructible topology as an intersection of quasi-compact opens.
+    Since $Z$ is stable under specialization, the same holds for $Z^g$ by
+    \Cref{lemma:generalization-specialization-closed}. Thus
+    by \Cref{lemma:spectral-constructible-closed-closed}, the claim follows.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0968}{Tag 0968}]{stacks-project}}]
+    \label{thm:closed-points-isom-pi0}
+    \uses{def:w-local-space}
+    Let \(X\) be a w-local space. Then the composition $X^c \to X \to \pi_0(X)$ is a homeomorphism,
+    where $X^c$ denotes the closed points of $X$.
+\end{lemma}
+
+\begin{proof}
+    \uses{thm:pi0-profinite, lemma:w-local-closed-points-profinite, lemma:profinite-disj-clopen-separation, def:generalization, lemma:w-local-generalization-closed-closed}
+    Since $X^c$ is quasi-compact and $\pi_0(X)$ is Hausdorff by \Cref{thm:pi0-profinite}, it suffices
+    to show the map is bijective.
+    To show injectivity let $x, y \in X^c$ be distinct. Since $X^c$ is profinite
+    (\Cref{lemma:w-local-closed-points-profinite}), there
+    exist open and closed subsets $U_0, V_0 \subseteq X^c$ such that
+    $X^c = U_0 \coprod V_0$ by \Cref{lemma:profinite-disj-clopen-separation}.
+    Let $U = U_0^g$ and $V = V_0^g$. Because $X$ is w-local, we get
+    $X = U \coprod V$ as sets. By \Cref{lemma:w-local-generalization-closed-closed},
+    both $U$ and $V$ are closed and therefore also both open. Hence
+    $x$ and $y$ lie in distinct connected components of $X$, so the images in $\pi_0(X)$ are distinct.
+
+    Since every connected component is closed, it is quasi-compact and hence contains a closed point. Thus
+    the map is surjective.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}]{stacks-project}}]
