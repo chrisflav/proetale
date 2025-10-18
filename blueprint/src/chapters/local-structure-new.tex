@@ -570,13 +570,14 @@ The following example shows that our definition agrees with the one in
   Choose an open subset in this base containing $x$ but not $y$, say $U = \pi_{i_0}^{-1}(\{z_0\})$ for some $i_0 \in I$ and $z_0 \in X_{i_0}$. Then $V = X \setminus U$ is also open and closed, and we have $X = U \coprod V$ with $x \in U$ and $y \in V$.   
 \end{proof}
 
-\begin{lemma}[\stacksproject{0905}]
-    Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
-    \label{lemma:spectral-closed-points-profinite}
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0905}{Tag 0905}, (6) $\implies$ (1)]{stacks-project}}]
+  Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
+  \label{lemma:spectral-closed-points-profinite}
 \end{lemma}
 
 \begin{proof}
-    TBA.
+  \uses{lemma:spectral-constructible-closed-closed}
+  Since every point is closed, there are no nontrivial specializations between points. By \Cref{item:specialization-closed-spectral-constructible-closed-closed} in \Cref{lemma:spectral-constructible-closed-closed}, all constructible subsets of $X$ are closed. In particular, every compact open subset is also closed. Since $X$ is spectral, thus T0, for any two points there is a quasi-compact open (also closed) containing exactly one of them. Thus $X$ is profinite by \verb`isTotallyDisconnected_of_isClopen_set`.
 \end{proof}
 
 \begin{lemma}
@@ -602,12 +603,12 @@ The following example shows that our definition agrees with the one in
 \end{proof}
 
 \begin{lemma}[\stacksproject{0903}]
+    \label{lemma:spectral-constructible-closed-closed}
     Let $X$ be a spectral space and $E \subseteq X$ a subset closed in the constructible topology.
     \begin{enumerate}
         \item If $x \in \overline{E}$, then $x$ is the specialization of a point in $E$.
-        \item If $E$ is stable under specialization, then $E$ is closed.
+        \item If $E$ is stable under specialization, then $E$ is closed. \label{item:specialization-closed-spectral-constructible-closed-closed}
     \end{enumerate}
-    \label{lemma:spectral-constructible-closed-closed}
 \end{lemma}
 
 \begin{proof}
