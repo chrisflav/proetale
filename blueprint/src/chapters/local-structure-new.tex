@@ -69,7 +69,7 @@ The reason that we are interested in extremally disconnected space is the follow
     \label{lemma:closure-limit}
 \end{lemma}
 
-The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}
+The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite}.
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/005F}{Tag 005F}]{stacks-project}}]
   \label{thm:connected-component-intersection-closed-open}
@@ -104,6 +104,26 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \begin{proof}
   \uses{thm:connected-component-intersection-closed-open}
   It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X \setminus V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0906}{Tag 0906}]{stacks-project}}]
+  \label{thm:pi0-profinite}
+  Let $X$ be a spectral space. Then $\pi_0(X)$ is a profinite space.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:connected-component-intersection-closed-open}
+  We will show that \(X\) is Hausdorff, compact, and totally disconnected.
+  By \Cref{thm:connected-component-intersection-closed-open}, every connected component of \(X\) is the intersection of the open and closed subsets containing it. Since \(\pi_0(X)\) is the image of a compact space, it is also compact. It is totally disconnected by construction. Let \(C,D \subset X\) be distinct connected components of \(X\). Write \(C = \bigcap_{\alpha} U_\alpha\) as the intersection of the open and closed subsets of \(X\) containing \(C\). Any finite intersection of \(U_\alpha\)'s is another \(U_\alpha\). Since \(\bigcap_\alpha U_\alpha \cap D = \emptyset\) we conclude that \(U_\alpha \cap D = \emptyset\) for some \(\alpha\) (connected components are closed, thus compact). Since \(U_\alpha\) is open and closed, it is the union of the connected components it contains, i.e., \(U_\alpha\) is the inverse image of some open and closed subset \(V_\alpha \subset \pi_0(X)\). This proves that the points corresponding to \(C\) and \(D\) are contained in disjoint open subsets, i.e., \(\pi_0(X)\) is Hausdorff.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0907}{Tag 0907}]{stacks-project}}]
+  \label{thm:spectral-product}
+  Let $X$ and $Y$ be spectral spaces. Then the product $X \times Y$ is spectral.
+\end{lemma}
+
+\begin{proof}
+  TBA.
 \end{proof}
 
 The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}.
@@ -442,8 +462,8 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
-  Note that $Y$ is a closed subspace of $X \times T$ as $\pi_0(X)$ is a profinite space hence Hausdorff (use Topology, Lemmas 0906 and 08ZH). TopCat.pullbackIsoProdSubtype 
-  Since $X \times T$ is spectral (Topology, Lemma 0907) it follows that $Y$ is spectral (Topology, Lemma 0902). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization (Topology, Lemma 08ZL). It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective. We conclude that $\pi_0(Y) \to T$ is a homeomorphism by Topology, Lemma 08YE.
+  % \uses{thm:pi0-profinite}
+  Note that $Y$ is a closed subspace of $X \times T$ (see \verb`TopCat.pullbackIsoProdSubtype`) as $\pi_0(X)$ is a profinite space (\Cref{thm:pi0-profinite}) hence Hausdorff. Since $X \times T$ is spectral (\Cref{thm:spectral-product}) it follows that $Y$ is spectral (Topology, Lemma 0902). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization (Topology, Lemma 08ZL). It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective. We conclude that $\pi_0(Y) \to T$ is a homeomorphism by Topology, Lemma 08YE.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, second part]{stacks-project}}]
@@ -484,12 +504,6 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
     %\lean{IsWLocalRingMap}
     %\leanok
 \end{definition}
-
-\begin{lemma}% To be modified.
-  \label{thm:w-local-jacobson-radical}
-  \uses{def:w-local-ring}
-  Let $A$ be a w-local ring. The Jacobson radical \(I\) of \(A\) cuts out the closed points \(\Spec(A)^c\) of \(\Spec(A)\).
-\end{lemma}
 
 \begin{proof}
   Omitted.
@@ -1039,31 +1053,6 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
   Thus, $\Spec(A_T) = \varprojlim_W W$ is homeomorphic to $Z$ via the natural map.
 \end{proof}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}]
-  \label{thm:closed-points-isom-w-local}
-  \uses{def:w-local-ring,def:w-local-ring-map,def:ind-Zariski}
-  Let $A$ be a w-local ring. Let $I \subset A$ be the radical ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
-  Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes. Then
-  \begin{enumerate}
-      \item every point of $Z = V(IB)$ is a closed point of $\Spec (B)$,
-      \item there exists an ind-Zariski ring map $B \to C$ such that
-      \begin{enumerate}
-          \item $B/IB \to C/IC$ is an isomorphism, \label{item:quotinet-isom-closed-points-isom-w-local} % thus surjective on closed points
-          \item $C$ is w-local, \label{item:w-local-closed-points-isom-w-local}
-          \item the map $p: Y = \Spec (C) \to X$ induced by the ring map $A \to B \to C$ is w-local, and % this is not needed?
-          \item $p^{-1}(X^c)$ is the set of closed points of $Y$. \label{item:inverse-image-closed-points-isom-w-local}
-      \end{enumerate}
-  \end{enumerate}
-  In particular, the ring map $B \to C$ is faithfully flat.
-\end{lemma}
-
-\begin{proof}
-    \uses{prop:exists-ind-zariski-w-local}
-    TBA.
-
-    The last statement follows from \Cref{thm:ind-Zariski-is-flat-ind-etale} and the fact that if a flat ring map induces a surjection on closed points (guaranteed by \Cref{item:w-local-closed-points-isom-w-local}), then it is faithfully flat.
-\end{proof}
-
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. There exists an ind-Zariski ring map $A \to B$ such that with $Y = \Spec (B)$ the diagram
   \[
@@ -1125,7 +1114,7 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
 \begin{lemma}
   \label{thm:w-contractible-if-ind-etale-plus-c-has-retraction}
   \uses{def:w-local-ring,def:ind-etale,def:w-contractible-ring}
-  Let \(A\) be a w-local ring and $I \subset A$ the Jacobson radical cutting out the set $X^c$ of closed points in $X = \Spec (A)$. If every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction, then \(A\) is w-strictly contractible.
+  Let \(A\) be a w-local ring and $I \subset A$ the an ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$. If every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction, then \(A\) is w-contractible.
 \end{lemma}
 
 \begin{proof}
@@ -1145,7 +1134,7 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
     \item $A$ is w-strictly local, and \label{item:w-strictly-local-ind-etale-plus-c-has-retraction-if}
     \item $\pi_0(\Spec (A))$ is extremally disconnected. \label{item:extremally-disconnected-ind-etale-plus-c-has-retraction-if}
   \end{enumerate}
-  then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction. Here $I \subset A$ is the Jacobson radical of $A$ cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
+  then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction. Here $I \subset A$ is an ideal of $A$ cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
 \end{lemma}
 
 \begin{proof}
