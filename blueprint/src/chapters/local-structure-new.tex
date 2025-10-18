@@ -103,7 +103,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
-  Let $T$ be the connected component containing $x$. Let $S = \bigcap_{\alpha \in A} Z_\alpha$ be the intersection of all open and closed subsets $Z_\alpha$ of $X$ containing $x$. Note that $S$ is closed in $X$. Note that any finite intersection of $Z_\alpha$'s is a $Z_\alpha$. Because $T$ is connected and $x \in T$ we have $T \subset Z_\alpha$ for every \(Z_\alpha\), thus \(T \subset S\). It suffices to show that $S$ is connected. If not, then there exists a disjoint union decomposition $S = B \amalg C$ with $B$ and $C$ open and closed in $S$. In particular, $B$ and $C$ are closed in $X$, and so quasi-compact by assumption (1). By assumption (2) there exist quasi-compact opens $U, V \subset X$ with $B = S \cap U$ and $C = S \cap V$. Then $U \cap V \cap S = \emptyset$. Hence $\bigcap_\alpha U \cap V \cap Z_\alpha = \emptyset$. By assumption (3) the intersection $U \cap V$ is quasi-compact. Hence for some $\alpha' \in A$ we have $U \cap V \cap Z_{\alpha'} = \emptyset$. Since $X \setminus (U \cup V)$ is disjoint from $S$ and closed in $X$ hence quasi-compact, we can use the same argument to see that $Z_{\alpha''} \subset U \cup V$ for some $\alpha'' \in A$. Then $Z_\alpha = Z_{\alpha'} \cap Z_{\alpha''}$ is contained in $U \cup V$ and disjoint from $U \cap V$. Hence $Z_\alpha = U \cap Z_\alpha \amalg V \cap Z_\alpha$ is a decomposition into two open pieces, hence $U \cap Z_\alpha$ and $V \cap Z_\alpha$ are open and closed in $X$. Thus, if $x \in B$ say, then we see that $S \subset U \cap Z_\alpha$ and we conclude that $C = \emptyset$.
+  Let $T$ be the connected component containing $x$. Let $S = \bigcap_{\alpha \in A} Z_\alpha$ be the intersection of all open and closed subsets $Z_\alpha$ of $X$ containing $x$. Note that $S$ is closed in $X$. Note that any finite intersection of $Z_\alpha$'s is a $Z_\alpha$. Because $T$ is connected and $x \in T$ we have $T \subset Z_\alpha$ for every \(Z_\alpha\), thus \(T \subset S\). It suffices to show that $S$ is connected. If not, then there exists a disjoint union decomposition $S = B \amalg C$ with $B$ and $C$ open and closed in $S$. In particular, $B$ and $C$ are closed in $X$, and so quasi-compact by assumption (1). By assumption (2) there exist quasi-compact opens $U, V \subset X$ with $B = S \cap U$ and $C = S \cap V$. Then $U \cap V \cap S = \emptyset$. Hence $\bigcap_\alpha U \cap V \cap Z_\alpha = \emptyset$. By assumption (3) the intersection $U \cap V$ is quasi-compact. Hence for some $\alpha' \in A$ we have $U \cap V \cap Z_{\alpha'} = \emptyset$. Since $X - (U \cup V)$ is disjoint from $S$ and closed in $X$ hence quasi-compact, we can use the same argument to see that $Z_{\alpha''} \subset U \cup V$ for some $\alpha'' \in A$. Then $Z_\alpha = Z_{\alpha'} \cap Z_{\alpha''}$ is contained in $U \cup V$ and disjoint from $U \cap V$. Hence $Z_\alpha = U \cap Z_\alpha \amalg V \cap Z_\alpha$ is a decomposition into two open pieces, hence $U \cap Z_\alpha$ and $V \cap Z_\alpha$ are open and closed in $X$. Thus, if $x \in B$ say, then we see that $S \subset U \cap Z_\alpha$ and we conclude that $C = \emptyset$.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL}]{stacks-project}}]
@@ -123,7 +123,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{proof}
   \uses{thm:connected-component-intersection-closed-open}
-  It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X \setminus V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
+  It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X - V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
 \end{proof}
 
 \begin{lemma}
@@ -193,7 +193,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{proof}
   \uses{thm:closure-product}
-  Let $X$, $Y$ be spectral spaces. Denote $p : X \times Y \to X$ and $q : X \times Y \to Y$ the projections. We first show that \(X \times Y\) is sober. Let $Z \subset X \times Y$ be a closed irreducible subset. Then $p(Z) \subset X$ is irreducible and $q(Z) \subset Y$ is irreducible. Let $x \in X$ be the generic point of the closure of $p(Z)$ and let $y \in Y$ be the generic point of the closure of $q(Z)$. If $(x, y) \notin Z$, then there exist opens $x \in U \subset X$, $y \in V \subset Y$ such that $Z \cap (U \times V) = \emptyset$. Hence $Z$ is contained in $(X \setminus U) \times Y \cup X \times (Y \setminus V)$. Since $Z$ is irreducible, we see that either $Z \subset (X \setminus U) \times Y$ or $Z \subset X \times (Y \setminus V)$. In the first case $p(Z) \subset (X \setminus U)$ and in the second case $q(Z) \subset (Y \setminus V)$. Both cases are absurd as $x$ is in the closure of $p(Z)$ and $y$ is in the closure of $q(Z)$. Thus we conclude that $(x, y) \in Z$, which means that $(x, y)$ is the generic point for $Z$ (\Cref{thm:closure-product}).
+  Let $X$, $Y$ be spectral spaces. Denote $p : X \times Y \to X$ and $q : X \times Y \to Y$ the projections. We first show that \(X \times Y\) is sober. Let $Z \subset X \times Y$ be a closed irreducible subset. Then $p(Z) \subset X$ is irreducible and $q(Z) \subset Y$ is irreducible. Let $x \in X$ be the generic point of the closure of $p(Z)$ and let $y \in Y$ be the generic point of the closure of $q(Z)$. If $(x, y) \notin Z$, then there exist opens $x \in U \subset X$, $y \in V \subset Y$ such that $Z \cap (U \times V) = \emptyset$. Hence $Z$ is contained in $(X - U) \times Y \cup X \times (Y - V)$. Since $Z$ is irreducible, we see that either $Z \subset (X - U) \times Y$ or $Z \subset X \times (Y - V)$. In the first case $p(Z) \subset (X - U)$ and in the second case $q(Z) \subset (Y - V)$. Both cases are absurd as $x$ is in the closure of $p(Z)$ and $y$ is in the closure of $q(Z)$. Thus we conclude that $(x, y) \in Z$, which means that $(x, y)$ is the generic point for $Z$ (\Cref{thm:closure-product}).
 
   A basis of the topology of $X \times Y$ consists of opens of the form $U \times V$ with $U \subset X$ and $V \subset Y$ quasi-compact open (here we use that $X$ and $Y$ are spectral). Then $U \times V$ is quasi-compact as the product of quasi-compact spaces is quasi-compact. Moreover, any quasi-compact open of $X \times Y$ is a finite union of such quasi-compact rectangles $U \times V$. It follows that the intersection of two such is again quasi-compact (since $X$ and $Y$ are spectral). This concludes the proof.
 \end{proof}
@@ -223,7 +223,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 \end{lemma}
 
 \begin{proof}
-  It suffices to show that all the elements of $B \setminus \q$ are all invertible in $B_{\p B}$. Suppose the contrary, let $x \in B \setminus \q$ be an element not invertible in $B_{\p B}$. We can find a prime ideal $\q' \subseteq \p B$ of $B$ containing $x$. By going down there exists a prime $\q'' \subseteq \q$ lying over $\p' = A \cap \q'$. By the uniqueness of primes lying over $\p'$ we see that $\q' = \q''$, which contradicts the fact that $x \notin \q$.
+  It suffices to show that all the elements of $B - \q$ are all invertible in $B_{\p B}$. Suppose the contrary, let $x \in B - \q$ be an element not invertible in $B_{\p B}$. We can find a prime ideal $\q' \subseteq \p B$ of $B$ containing $x$. By going down there exists a prime $\q'' \subseteq \q$ lying over $\p' = A \cap \q'$. By the uniqueness of primes lying over $\p'$ we see that $\q' = \q''$, which contradicts the fact that $x \notin \q$.
 \end{proof}
 
 \begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E} (1)]{stacks-project}}]
@@ -346,13 +346,15 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{proof}
 
 \begin{lemma}
-    A finite product of ind-Zariski algebras is ind-Zariski.
-    \label{lemma:ind-Zariski-products}
-    \uses{def:ind-Zariski}
+  A finite product of ind-Zariski algebras is ind-Zariski.
+  \label{lemma:ind-Zariski-products}
+  \uses{def:ind-Zariski}
 \end{lemma}
 
 \begin{proof}
-    TBA.
+  This is the consequence of the more general fact that if a property $p$ of ring maps is stable under finite products, then Ind-$p$ is also stable under finite products since finite product of filtered index category is again filtered. 
+  
+  It suffices to show that being local isomorphism is stable under finite products. Suppose $A \to B_i$ is a local isomorphism for each $i$ for finitely many $i$'s. Every prime $\q$ in $\prod_i B_i$ is an extension prime ideal of one of the factors, say $B_0$. Since there exists $f_0 \in B_0$, $f_0 \notin \q$ such that $A \to (B_0)_{f_0}$ induces an open immersion, localize $\prod_i B_i$ at the corresponding idempotent times this element \(f_0\) to obtain the desired result.
 \end{proof}
 
 \section{Henselian objects and Henselisation}
@@ -564,16 +566,20 @@ The following example shows that our definition agrees with the one in
 \end{lemma}
 
 \begin{proof}
-    TBA (see 08ZZ).
+  Write $X = \lim_{i \in I} X_i$ as a directed limit of finite discrete spaces. Let $\pi_i \colon X \to X_i$ be the
+  projection maps. A base of the open sets of $X$ is given by the preimages $\pi_i^{-1}(\{z\})$ for $z \in X_i$ and $i \in I$. Every open set in this base is also closed, because its complement is a finite union of such sets.
+
+  Choose an open subset in this base containing $x$ but not $y$, say $U = \pi_{i_0}^{-1}(\{z_0\})$ for some $i_0 \in I$ and $z_0 \in X_{i_0}$. Then $V = X - U$ is also open and closed, and we have $X = U \coprod V$ with $x \in U$ and $y \in V$.   
 \end{proof}
 
-\begin{lemma}[\stacksproject{0905}]
-    Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
-    \label{lemma:spectral-closed-points-profinite}
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0905}{Tag 0905}, (6) $\implies$ (1)]{stacks-project}}]
+  Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
+  \label{lemma:spectral-closed-points-profinite}
 \end{lemma}
 
 \begin{proof}
-    TBA.
+  \uses{lemma:spectral-constructible-closed-closed}
+  Since every point is closed, there are no nontrivial specializations between points. By \Cref{item:specialization-closed-spectral-constructible-closed-closed} in \Cref{lemma:spectral-constructible-closed-closed}, all constructible subsets of $X$ are closed. In particular, every compact open subset is also closed. Since $X$ is spectral, thus T0, for any two points there is a quasi-compact open (also closed) containing exactly one of them. Thus $X$ is profinite by \verb`isTotallyDisconnected_of_isClopen_set`.
 \end{proof}
 
 \begin{lemma}
@@ -588,14 +594,13 @@ The following example shows that our definition agrees with the one in
     \ref{lemma:spectral-closed-points-profinite}
 \end{proof}
 
-\begin{lemma}[\stacksproject{0A31}]
-    Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then
-    $E^g$ is an intersection of quasi-compact open subsets.
-    \label{lemma:spectral-generalization-intersection-open}
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0A31}{Tag 0A31}, (3) $\implies$ (4)]{stacks-project}}]
+  Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then the generalization $E^g$ is an intersection of quasi-compact open subsets.
+  \label{lemma:spectral-generalization-intersection-open}
 \end{lemma}
 
 \begin{proof}
-    TBA.
+  Let $X$ be a spectral space and let $W$ denote $E^g$. Since every point of $W$ specializes to a point of $E$ we see that an open of $W$ which contains $E$ is equal to $W$. Hence since $E$ is quasi-compact, so is $W$. If $x \in X$, $x \notin W$, then $Z = \overline{\{x\}}$ is disjoint from $W$. Since $W$ is quasi-compact we can find a quasi-compact open $U$ (since there is a open basis of quasi-compact opens of $X$ and finitely many of them would suffice to cover $W$) with $W \subset U$ and $U \cap Z = \emptyset$. We conclude that $W$ is an intersection of quasi-compact open subsets.
 \end{proof}
 
 \begin{definition}[Constructible topology, {\stacksproject{08YF}}]
@@ -608,18 +613,6 @@ The following example shows that our definition agrees with the one in
 In other words, a subset of $X$ is open in the constructible topology if and only if
 it is a union of finite intersections of sets of the form $U$ or $X - U$ for
 a quasi-compact open $U$.
-
-\begin{lemma}
-    \uses{def:constructible-topology}
-    \label{lemma:spectral-constructible-open-iff}
-    Let $X$ be a spectral space and $W \subseteq X$ a subset. Then
-    $W$ is open (resp. closed) in the constructible topology if and only if
-    it is a union (resp. intersection) of constructible subsets.
-\end{lemma}
-
-\begin{proof}
-    TBA.
-\end{proof}
 
 \begin{lemma}[\stacksproject{0901}]
     Let $X$ be a spectral space. Then $X$ is quasi-compact in the constructible topology.
@@ -673,7 +666,7 @@ a quasi-compact open $U$.
     Let $X$ be a spectral space and $E \subseteq X$ a subset closed in the constructible topology.
     \begin{enumerate}
         \item If $x \in \overline{E}$, then $x$ is the specialization of a point in $E$.
-        \item If $E$ is stable under specialization, then $E$ is closed.
+        \item If $E$ is stable under specialization, then $E$ is closed. \label{item:specialization-closed-spectral-constructible-closed-closed}
     \end{enumerate}
 \end{lemma}
 
@@ -693,7 +686,7 @@ a quasi-compact open $U$.
 
 \begin{lemma}
     Let $X$ be a w-local space and $Z \subseteq X$ a closed subset. Then $Z^g$ is closed.
-    \uses{def:w-local, def:generalization}
+    \uses{def:w-local-space, def:generalization}
     \label{lemma:w-local-generalization-closed-closed}
 \end{lemma}
 
@@ -1296,8 +1289,8 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     Let $U$ be the image of the induced map $\spec{B'_g} \to \spec{A}$. Since $A \to B'$ is étale, $U$ is open.
     Since $\{\mathfrak{m}\}$ is closed in $\spec{A}$, there exist $a_i$ such that
     \[
-        \spec{A} \setminus \{\mathfrak{m}\} = \bigcup_{i} D(a_i)
-    .\] The complement of $U$ is closed and quasicompact, and contained in $\spec{A} \setminus \{\mathfrak{m}\}$, hence
+        \spec{A} - \{\mathfrak{m}\} = \bigcup_{i} D(a_i)
+    .\] The complement of $U$ is closed and quasicompact, and contained in $\spec{A} - \{\mathfrak{m}\}$, hence
     there exist $a_1, \ldots, a_r$ such that
     \[
         \spec{A} = U \cup \bigcup_{i=1}^r D(a_i)
