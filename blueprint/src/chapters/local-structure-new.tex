@@ -25,7 +25,7 @@ The reason that we are interested in extremally disconnected space is the follow
   \uses{def:extremally-disconnected}
   \lean{CompHaus.toStonean,Stonean.instProjectiveCompHausCompHaus}
   \mathlibok
-  Let \(X\) be a compact Hausdorff topological space. Then \(X\) is extremally disconnected if and only if it is a projective object in the category of compact Hausdorff spaces, i.e., for every continuous surjection \(f : Y \to Z\) of compact Hausdorff spaces and every continuous map \(g : X \to Z\), there exists a continuous map \(h : X \to Y\) such that \(f \circ h = g\).
+  Let \(X\) be a quasi-compact Hausdorff topological space. Then \(X\) is extremally disconnected if and only if it is a projective object in the category of quasi-compact Hausdorff spaces, i.e., for every continuous surjection \(f : Y \to Z\) of quasi-compact Hausdorff spaces and every continuous map \(g : X \to Z\), there exists a continuous map \(h : X \to Y\) such that \(f \circ h = g\).
 \end{theorem}
 
 \begin{definition} [Stone-Čech compactification]
@@ -37,7 +37,7 @@ The reason that we are interested in extremally disconnected space is the follow
   profinite space \(\beta(X)\) such that
   \begin{enumerate}
     \item \(X\) is dense in \(\beta(X)\);
-    \item every continuous map \(f: X \to Y\) to a compact Hausdorff space \(Y\)
+    \item every continuous map \(f: X \to Y\) to a quasi-compact Hausdorff space \(Y\)
         extends uniquely to a continuous map \(\beta(f): \beta(X) \to Y\).
   \end{enumerate}
   We denote the Stone-Čech compactification of \(X\) by \(\beta(X)\).
@@ -69,7 +69,27 @@ The reason that we are interested in extremally disconnected space is the follow
     \label{lemma:closure-limit}
 \end{lemma}
 
-The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite}.
+The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite-w-local}.
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
+  \label{thm:pi0-to-totally-disconnected}
+  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the set of connected components of \(X\). Let \(X \to \pi_0(X)\) be the map which sends \(x \in X\) to the connected component of \(X\) passing through \(x\). Endow \(\pi_0(X)\) with the quotient topology. Then %\(\pi_0(X)\) is a totally disconnected space and 
+  any continuous map \(X \to Y\) from \(X\) to a totally disconnected space \(Y\) factors through \(\pi_0(X)\).
+\end{lemma}
+
+\begin{proof}
+  Since connected subsets are mapped to connected subsets and the connected components of a totally disconnected space are singletons, any continuous map \(X \to Y\) sends each connected component of \(X\) to a single point in \(Y\). Thus, it factors uniquely through \(\pi_0(X)\).
+\end{proof}
+
+\begin{lemma}
+  \label{thm:pi0-to-totally-disconnected-injective}
+  \uses{thm:pi0-to-totally-disconnected}
+  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the topological space of connected components of \(X\). Let \(Y\) be a totally disconnected space. If every fiber of \(X \to Y\) is connected, then the map \(\pi_0(X) \to Y\) is injective.
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/005F}{Tag 005F}]{stacks-project}}]
   \label{thm:connected-component-intersection-closed-open}
@@ -113,8 +133,29 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{proof}
   \uses{thm:connected-component-intersection-closed-open}
-  We will show that \(X\) is Hausdorff, compact, and totally disconnected.
-  By \Cref{thm:connected-component-intersection-closed-open}, every connected component of \(X\) is the intersection of the open and closed subsets containing it. Since \(\pi_0(X)\) is the image of a compact space, it is also compact. It is totally disconnected by construction. Let \(C,D \subset X\) be distinct connected components of \(X\). Write \(C = \bigcap_{\alpha} U_\alpha\) as the intersection of the open and closed subsets of \(X\) containing \(C\). Any finite intersection of \(U_\alpha\)'s is another \(U_\alpha\). Since \(\bigcap_\alpha U_\alpha \cap D = \emptyset\) we conclude that \(U_\alpha \cap D = \emptyset\) for some \(\alpha\) (connected components are closed, thus compact). Since \(U_\alpha\) is open and closed, it is the union of the connected components it contains, i.e., \(U_\alpha\) is the inverse image of some open and closed subset \(V_\alpha \subset \pi_0(X)\). This proves that the points corresponding to \(C\) and \(D\) are contained in disjoint open subsets, i.e., \(\pi_0(X)\) is Hausdorff.
+  We will show that \(X\) is Hausdorff, quasi-compact, and totally disconnected.
+  By \Cref{thm:connected-component-intersection-closed-open}, every connected component of \(X\) is the intersection of the open and closed subsets containing it. Since \(\pi_0(X)\) is the image of a quasi-compact space, it is also quasi-compact. It is totally disconnected by construction. Let \(C,D \subset X\) be distinct connected components of \(X\). Write \(C = \bigcap_{\alpha} U_\alpha\) as the intersection of the open and closed subsets of \(X\) containing \(C\). Any finite intersection of \(U_\alpha\)'s is another \(U_\alpha\). Since \(\bigcap_\alpha U_\alpha \cap D = \emptyset\) we conclude that \(U_\alpha \cap D = \emptyset\) for some \(\alpha\) (connected components are closed, thus quasi-compact). Since \(U_\alpha\) is open and closed, it is the union of the connected components it contains, i.e., \(U_\alpha\) is the inverse image of some open and closed subset \(V_\alpha \subset \pi_0(X)\). This proves that the points corresponding to \(C\) and \(D\) are contained in disjoint open subsets, i.e., \(\pi_0(X)\) is Hausdorff.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:closed-subspace-spectral}
+  Let $X$ be a spectral space. Let $Y \subset X$ be a closed subspace. Then $Y$ is spectral.
+\end{lemma}
+
+\begin{proof}
+  The only thing remaining to show is that $Y$ is sober. Let $Z \subset Y$ be a closed irreducible subset, then $Z$ is also closed in $X$. $Z$ is irreducible in $X$ since any nontrivial closed subset decomposition in $X$ will give a nontrivial closed subset decomposition in $Y$, thus $Z$ has a unique generic point $z \in X$. Since $Z \subset Y$ we have $z \in Y$ with the closure of $z$ in $Y$ is $Z$. This shows that $Y$ is sober.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:closure-product}
+  Let $X$ and $Y$ be topological spaces. Let $(x, y) \in X \times Y$ be a point. Then 
+  \[\overline{\{(x, y)\}} = \overline{\{x\}} \times \overline{\{y\}}.\]
+\end{lemma}
+
+\begin{proof}
+  It is clear that \(\overline{\{(x, y)\}} \subseteq \overline{\{x\}} \times \overline{\{y\}}\).
+
+  If \(z \nin \overline{\{(x, y)\}}\), there exists opens \(U \subset X\), \(V \subset Y\) such that \(z \nin U \times V\), thus \((x, y) \nin U \times V\). Either \(x \nin U\) or \(y \nin V\), suppose \(x \nin U\). Then \(U \cap \overline{\{x\}} = \emptyset\), thus \(U \times V \cap \overline{\{x\}} \times \overline{\{y\}}  = \emptyset\). This shows that \(\overline{\{x\}} \times \overline{\{y\}} \subseteq \overline{\{(x, y)\}}\).
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0907}{Tag 0907}]{stacks-project}}]
@@ -123,7 +164,27 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
-  TBA.
+  \uses{thm:closure-product}
+  Let $X$, $Y$ be spectral spaces. Denote $p : X \times Y \to X$ and $q : X \times Y \to Y$ the projections. We first show that \(X \times Y\) is sober. Let $Z \subset X \times Y$ be a closed irreducible subset. Then $p(Z) \subset X$ is irreducible and $q(Z) \subset Y$ is irreducible. Let $x \in X$ be the generic point of the closure of $p(Z)$ and let $y \in Y$ be the generic point of the closure of $q(Z)$. If $(x, y) \notin Z$, then there exist opens $x \in U \subset X$, $y \in V \subset Y$ such that $Z \cap (U \times V) = \emptyset$. Hence $Z$ is contained in $(X \setminus U) \times Y \cup X \times (Y \setminus V)$. Since $Z$ is irreducible, we see that either $Z \subset (X \setminus U) \times Y$ or $Z \subset X \times (Y \setminus V)$. In the first case $p(Z) \subset (X \setminus U)$ and in the second case $q(Z) \subset (Y \setminus V)$. Both cases are absurd as $x$ is in the closure of $p(Z)$ and $y$ is in the closure of $q(Z)$. Thus we conclude that $(x, y) \in Z$, which means that $(x, y)$ is the generic point for $Z$ (\Cref{thm:closure-product}).
+
+  A basis of the topology of $X \times Y$ consists of opens of the form $U \times V$ with $U \subset X$ and $V \subset Y$ quasi-compact open (here we use that $X$ and $Y$ are spectral). Then $U \times V$ is quasi-compact as the product of quasi-compact spaces is quasi-compact. Moreover, any quasi-compact open of $X \times Y$ is a finite union of such quasi-compact rectangles $U \times V$. It follows that the intersection of two such is again quasi-compact (since $X$ and $Y$ are spectral). This concludes the proof.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, first part]{stacks-project}}]
+Let $X$ be a spectral space. Let
+\[
+\begin{tikzcd}
+Y \arrow[r] \arrow[d] & T \arrow[d] \\
+X \arrow[r] & \pi_0(X)
+\end{tikzcd}
+\]
+be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $Y$ is spectral and $T = \pi_0(Y)$.
+\label{thm:cartesian-profinite}
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:pi0-profinite,thm:spectral-product,thm:closed-subspace-spectral,thm:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
+  Note that $Y$ is a closed subspace of $X \times T$ (see \verb`TopCat.pullbackIsoProdSubtype`) as $\pi_0(X)$ is a profinite space (\Cref{thm:pi0-profinite}) hence Hausdorff. Since $X \times T$ is spectral (\Cref{thm:spectral-product}) it follows that $Y$ is spectral (\Cref{thm:closed-subspace-spectral}). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{thm:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
 \end{proof}
 
 The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}.
@@ -449,23 +510,6 @@ The following example shows that our definition agrees with the one in
   Omitted.
 \end{proof}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, first part]{stacks-project}}]
-Let $X$ be a spectral space. Let
-\[
-\begin{tikzcd}
-Y \arrow[r] \arrow[d] & T \arrow[d] \\
-X \arrow[r] & \pi_0(X)
-\end{tikzcd}
-\]
-be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $Y$ is spectral and $T = \pi_0(Y)$.
-\label{thm:cartesian-profinite}
-\end{lemma}
-
-\begin{proof}
-  % \uses{thm:pi0-profinite}
-  Note that $Y$ is a closed subspace of $X \times T$ (see \verb`TopCat.pullbackIsoProdSubtype`) as $\pi_0(X)$ is a profinite space (\Cref{thm:pi0-profinite}) hence Hausdorff. Since $X \times T$ is spectral (\Cref{thm:spectral-product}) it follows that $Y$ is spectral (Topology, Lemma 0902). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization (Topology, Lemma 08ZL). It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective. We conclude that $\pi_0(Y) \to T$ is a homeomorphism by Topology, Lemma 08YE.
-\end{proof}
-
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, second part]{stacks-project}}]
 Let $X$ be a spectral space. Let
 \[
@@ -480,10 +524,10 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
+  \uses{thm:cartesian-profinite,thm:closed-points-isom-pi0}
+  We know that $Y$ is spectral and $T = \pi_0(Y)$ by \Cref{thm:cartesian-profinite}. Assume $X$ is w-local and let $X^c \subset X$ be its closed points. The inverse image $Y^c \subset Y$ of $X^c$ maps bijectively onto $T$, since $X^c \to \pi_0(X)$ is a bijection by \Cref{thm:closed-points-isom-pi0}. (Note that we do not yet know whether $Y^c$ is the set of closed points of $Y$.) Moreover, $Y^c$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y^c \to \pi_0(Y) = T$ is a homeomorphism by \verb`isHomeomorph_iff_continuous_bijective` (\stacksproject{08YE}). It follows that all points of $Y^c$ are closed in $Y$: if some $y \in Y^c$ specialized to a distinct closed point $y'$ (which also falls in $Y$ since $Y$ is closed), then both would map to the same point in $T$, contradicting the bijectivity of $Y^c \to T$.
 
-%thm:cartesian-profinite
-
-% Next, assume that $X$ is w-local and let $X_0 \subset X$ be the set of closed points. The inverse image $Y_0 \subset Y$ of $X_0$ in $Y$ maps bijectively onto $T$ as $X_0 \to \pi_0(X)$ is a bijection by Lemma 0968. Moreover, $Y_0$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y_0 \to \pi_0(Y) = T$ is a homeomorphism by Topology, Lemma 08YE. It follows that all points of $Y_0$ are closed in $Y$. Conversely, if $y \in Y$ is a closed point, then it is closed in the fibre of $Y \to \pi_0(Y) = T$ and hence its image $x$ in $X$ is closed in the (homeomorphic) fibre of $X \to \pi_0(X)$. This implies $x \in X_0$ and hence $y \in Y_0$. Thus $Y_0$ is the collection of closed points of $Y$ and for each $y \in Y_0$ the set of generalizations of $y$ is the fibre of $Y \to \pi_0(Y)$. The lemma follows.
+  Conversely, if $y \in Y$ is a closed point, then it is closed in its fibre over $T$, and its image $x \in X$ is closed in the corresponding (homeomorphic) fibre of $X \to \pi_0(X)$. Since a point in a w-local space is closed if and only if it is closed in its connected component (which is closed), we have $x \in X^c$, so $y \in Y^c$. Thus $Y^c$ is exactly the set of closed points of $Y$. Moreover, since $Y^c \cong T$, each connected component contains a unique closed point, and for each $y \in Y^c$ the set of generalizations of $y$ is precisely the fibre of $Y \to \pi_0(Y)$ (as any generalization of $y$ lies in the same connected component with $y$). The lemma follows.
 \end{proof}
 
 \section{w-local rings}
@@ -1098,7 +1142,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
   % Let $I \subset A$ be the radical ideal such that $V(I) \subset \Spec(A)$ is the set of closed points of $\Spec (A)$. We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. The map \(B \to C\) is faithfully flat and ind-Zariski, thus identifies local rings by \Cref{thm:ind-Zariski-identifies-local-rings}. Thus we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
 
-  Choose a continuous section to the surjective continuous map $V(IB) \to V(I)$. This is possible because $V(I) = \Spec(A)^c \cong \pi_0(\Spec(A))$ (by \Cref{thm:closed-points-isom-pi0}) is extremally disconnected, see \Cref{thm:extremally-disconnected-projective}. The image is a closed subspace $T \subset \pi_0(\Spec(B)) \cong V(IB)$ (being the continuous image of the compact space $V(I)$) that maps homeomorphically onto $\pi_0(\Spec(A))$. 
+  Choose a continuous section to the surjective continuous map $V(IB) \to V(I)$. This is possible because $V(I) = \Spec(A)^c \cong \pi_0(\Spec(A))$ (by \Cref{thm:closed-points-isom-pi0}) is extremally disconnected, see \Cref{thm:extremally-disconnected-projective}. The image is a closed subspace $T \subset \pi_0(\Spec(B)) \cong V(IB)$ (being the continuous image of the quasi-compact space $V(I)$) that maps homeomorphically onto $\pi_0(\Spec(A))$. 
   
   Let $B \to B_T$ be the ring map from \Cref{def:colim-open-closed-localizations}, which is surjective and ind-Zariski by \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}. It also induces a homeomorphism $\pi_0(\Spec(B_T)) \cong T \cong \pi_0(\Spec(A))$.
   Moreover, by \Cref{thm:surjective-w-local-ring}, $B_T$ is w-local and $B \to B_T$ is w-local. Since ind-Zariski maps identify local rings (\Cref{thm:ind-Zariski-identifies-local-rings}), the composition $A \to B \to B_T$ remains w-local (\Cref{thm:w-local-map-composition}) and identifies local rings (\Cref{thm:identifies-local-rings-composition}). Therefore, by \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}, $A \to B_T$ is an isomorphism.
