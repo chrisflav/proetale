@@ -130,7 +130,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 \begin{lemma}
   \label{thm:finite-product-identifies-local-rings}
   \uses{def:identify-local-rings}
-  The map \(A \to \Prod_{i = 1}^{n} A_i \) identifies local rings, if \(A \to A_i\) identifies local rings for all \(i\).
+  The map \(A \to \prod_{i = 1}^{n} A_i \) identifies local rings, if \(A \to A_i\) identifies local rings for all \(i\).
 \end{lemma}
 
 \begin{proof}
@@ -1046,21 +1046,21 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
-Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. There exists an ind-Zariski ring map $A \to B$ such that with $Y = \Spec (B)$ the diagram
-\[
-\begin{tikzcd}
-Y \arrow[r] \arrow[d] & \pi_0(Y) \arrow[d] \\
-X \arrow[r] & \pi_0(X)
-\end{tikzcd}
-\]
-is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ as spaces over $\pi_0(X)$.
-\label{thm:exists-ind-Zariski-cartesian}
-\uses{def:ind-Zariski}
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. There exists an ind-Zariski ring map $A \to B$ such that with $Y = \Spec (B)$ the diagram
+  \[
+  \begin{tikzcd}
+  Y \arrow[r] \arrow[d] & \pi_0(Y) \arrow[d] \\
+  X \arrow[r] & \pi_0(X)
+  \end{tikzcd}
+  \]
+  is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ as spaces over $\pi_0(X)$.
+  \label{thm:exists-ind-Zariski-cartesian}
+  \uses{def:ind-Zariski}
 \end{lemma}
 
 \begin{proof}
   \uses{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski,thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings,thm:identifies-local-rings-composition,thm:identifies-local-ring-to-top-fully-faithful,thm:cartesian-w-local}
-  Write $T = \lim T_i$ as the limit of an inverse system of finite discrete spaces over a directed set. For each $i$ let $Z_i = \Im (T \to \pi_0(X) \times T_i)$. This is a closed subset. Observe that $X \times T_i$ is the spectrum of $A_i = \prod_{t \in T_i} A$ and that $A \to A_i$ is a local isomorphism. By \Cref{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski}, we see that $Z_i \subset \pi_0(X \times T_i) = \pi_0(X) \times T_i$ corresponds to a surjection $A_i \to B_i$ which is ind-Zariski such that $\Spec (B_i) = (X \times T_i) \times_{\pi_0(X) \times T_i} Z_i = X \times_{\pi_0(X)} Z_i$ as subsets of $X \times T_i$. The transition maps $T_i \to T_{i'}$ induce maps $Z_i \to Z_{i'}$ and $X \times_{\pi_0(X)} Z_i \to X \times_{\pi_0(X)} Z_{i'}$. Since the both the ring maps of \(A \to A_{i} \to B_{i}\) identifies local rings by \Cref{thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings}, their composition also identifies local ring by \Cref{thm:identifies-local-rings-composition}. Now apply \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we
+  Write $T = \lim T_i$ as the limit of an inverse system of finite discrete spaces over a directed set. For each $i$ let $Z_i = \operatorname{Im} (T \to \pi_0(X) \times T_i)$. This is a closed subset. Observe that $X \times T_i$ is the spectrum of $A_i = \prod_{t \in T_i} A$ and that $A \to A_i$ is a local isomorphism. By \Cref{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski}, we see that $Z_i \subset \pi_0(X \times T_i) = \pi_0(X) \times T_i$ corresponds to a surjection $A_i \to B_i$ which is ind-Zariski such that $\Spec (B_i) = (X \times T_i) \times_{\pi_0(X) \times T_i} Z_i = X \times_{\pi_0(X)} Z_i$ as subsets of $X \times T_i$. The transition maps $T_i \to T_{i'}$ induce maps $Z_i \to Z_{i'}$ and $X \times_{\pi_0(X)} Z_i \to X \times_{\pi_0(X)} Z_{i'}$. Since the both the ring maps of \(A \to A_{i} \to B_{i}\) identifies local rings by \Cref{thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings}, their composition also identifies local ring by \Cref{thm:identifies-local-rings-composition}. Now apply \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we
   get ring maps $B_{i'} \to B_i$. 
 
   Set $B = \colim B_i$. Because $T = \lim Z_i$ we have $X \times_{\pi_0(X)} T = \lim X \times_{\pi_0(X)} Z_i$ and hence $Y = \Spec (B) = \lim \Spec (B_i)$ fits into the cartesian diagram
