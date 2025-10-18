@@ -429,7 +429,7 @@ The following example shows that our definition agrees with the one in
   Omitted.
 \end{proof}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}]{stacks-project}}]
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, first part]{stacks-project}}]
 Let $X$ be a spectral space. Let
 \[
 \begin{tikzcd}
@@ -437,13 +437,33 @@ Y \arrow[r] \arrow[d] & T \arrow[d] \\
 X \arrow[r] & \pi_0(X)
 \end{tikzcd}
 \]
-be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $Y$ is spectral and $T = \pi_0(Y)$. If moreover $X$ is w-local, then $Y$ is w-local, $Y \to X$ is w-local, and the set of closed points of $Y$ is the inverse image of the set of closed points of $X$.
-\label{thm:cartesian-w-local}
+be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $Y$ is spectral and $T = \pi_0(Y)$.
+\label{thm:cartesian-profinite}
+\end{lemma}
+
+\begin{proof}
+  Note that $Y$ is a closed subspace of $X \times T$ as $\pi_0(X)$ is a profinite space hence Hausdorff (use Topology, Lemmas 0906 and 08ZH). TopCat.pullbackIsoProdSubtype 
+  Since $X \times T$ is spectral (Topology, Lemma 0907) it follows that $Y$ is spectral (Topology, Lemma 0902). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization (Topology, Lemma 08ZL). It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective. We conclude that $\pi_0(Y) \to T$ is a homeomorphism by Topology, Lemma 08YE.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, second part]{stacks-project}}]
+Let $X$ be a spectral space. Let
+\[
+\begin{tikzcd}
+Y \arrow[r] \arrow[d] & T \arrow[d] \\
+X \arrow[r] & \pi_0(X)
+\end{tikzcd}
+\]
+be a cartesian diagram in the category of topological spaces with $T$ profinite. If moreover $X$ is w-local, then $Y$ is w-local, $Y \to X$ is w-local, and the set of closed points of $Y$ is the inverse image of the set of closed points of $X$.
+\label{thm:cartesian-profinite-w-local}
 \uses{def:w-local-space,def:w-local-space-map}
 \end{lemma}
 
 \begin{proof}
-  TBA.
+
+%thm:cartesian-profinite
+
+% Next, assume that $X$ is w-local and let $X_0 \subset X$ be the set of closed points. The inverse image $Y_0 \subset Y$ of $X_0$ in $Y$ maps bijectively onto $T$ as $X_0 \to \pi_0(X)$ is a bijection by Lemma 0968. Moreover, $Y_0$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y_0 \to \pi_0(Y) = T$ is a homeomorphism by Topology, Lemma 08YE. It follows that all points of $Y_0$ are closed in $Y$. Conversely, if $y \in Y$ is a closed point, then it is closed in the fibre of $Y \to \pi_0(Y) = T$ and hence its image $x$ in $X$ is closed in the (homeomorphic) fibre of $X \to \pi_0(X)$. This implies $x \in X_0$ and hence $y \in Y_0$. Thus $Y_0$ is the collection of closed points of $Y$ and for each $y \in Y_0$ the set of generalizations of $y$ is the fibre of $Y \to \pi_0(Y)$. The lemma follows.
 \end{proof}
 
 \section{w-local rings}
@@ -511,8 +531,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
   \uses{thm:closed-points-isom-pi0,thm:w-local-set-decomposition,thm:localization-isom-of-going-down}
   Let $X^c \subset X = \Spec (A)$ and $Y^c \subset Y = \Spec (B)$ be the sets of closed points. By assumption $Y^c$ maps into $X^c$ and the induced map $Y^c \to X^c$ is a bijection since \Cref{thm:closed-points-isom-pi0} holds. By \Cref{thm:w-local-set-decomposition}, we see that both $X$ and $Y$ , as sets, are disjoint unions of the spectra of the local rings at closed points. As \(A \to B\) identifies local rings, $Y \to X$ is a bijection.
 
-  Since $A \to B$ is flat (can be checked on stalks of \(B\)), it has going down. % Algebra.HasGoingDown.of_flat
-  Thus \Cref{thm:localization-isom-of-going-down} shows for any prime $\q \subset B$ lying over $\p \subset A$ we have $B_{\q} = B_{\p B}$. Since $B_{\q} = A_{\p}$ by assumption, we see that $A_{\p} = B_{\p B}$ for all primes $\p$ of $A$. Thus $A = B$ since isomorphism can be checked locally on $A$.
+  Since $A \to B$ is flat (can be checked on stalks of \(B\)), it has going down (see \verb`Algebra.HasGoingDown.of_flat`). Thus \Cref{thm:localization-isom-of-going-down} shows for any prime $\q \subset B$ lying over $\p \subset A$ we have $B_{\q} = B_{\p B}$. Since $B_{\q} = A_{\p}$ by assumption, we see that $A_{\p} = B_{\p B}$ for all primes $\p$ of $A$. Thus $A = B$ since isomorphism can be checked locally on $A$.
 \end{proof}
 
 The goal of the remaining part of this section is to show that for every ring $A$, there exists a faithfully flat, ind-Zariski
@@ -1059,7 +1078,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
-  \uses{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski,thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings,thm:identifies-local-rings-composition,thm:identifies-local-ring-to-top-fully-faithful,thm:cartesian-w-local}
+  \uses{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski,thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings,thm:identifies-local-rings-composition,thm:identifies-local-ring-to-top-fully-faithful,thm:cartesian-profinite}
   Write $T = \lim T_i$ as the limit of an inverse system of finite discrete spaces over a directed set. For each $i$ let $Z_i = \operatorname{Im} (T \to \pi_0(X) \times T_i)$. This is a closed subset. Observe that $X \times T_i$ is the spectrum of $A_i = \prod_{t \in T_i} A$ and that $A \to A_i$ is a local isomorphism. By \Cref{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski}, we see that $Z_i \subset \pi_0(X \times T_i) = \pi_0(X) \times T_i$ corresponds to a surjection $A_i \to B_i$ which is ind-Zariski such that $\Spec (B_i) = (X \times T_i) \times_{\pi_0(X) \times T_i} Z_i = X \times_{\pi_0(X)} Z_i$ as subsets of $X \times T_i$. The transition maps $T_i \to T_{i'}$ induce maps $Z_i \to Z_{i'}$ and $X \times_{\pi_0(X)} Z_i \to X \times_{\pi_0(X)} Z_{i'}$. Since the both the ring maps of \(A \to A_{i} \to B_{i}\) identifies local rings by \Cref{thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings}, their composition also identifies local ring by \Cref{thm:identifies-local-rings-composition}. Now apply \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we
   get ring maps $B_{i'} \to B_i$. 
 
@@ -1070,7 +1089,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
   X \arrow[r] & \pi_0(X)
   \end{tikzcd}
   \]
-  of topological spaces. By \Cref{thm:cartesian-w-local} we conclude that $T = \pi_0(Y)$.
+  of topological spaces. By \Cref{thm:cartesian-profinite} we conclude that $T = \pi_0(Y)$.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/09AZ}{Tag 09AZ}, second part in the proof of (3) $\implies$ (1)]{stacks-project}}]
@@ -1163,7 +1182,7 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
 
 \begin{proof}
   % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
-  \uses{thm:extremally-disconnected-cover,thm:exists-ind-Zariski-cartesian,thm:cartesian-w-local,thm:ind-Zariski-identifies-local-rings,thm:w-contractible-if}
+  \uses{thm:extremally-disconnected-cover,thm:exists-ind-Zariski-cartesian,thm:cartesian-profinite-w-local,thm:ind-Zariski-identifies-local-rings,thm:w-contractible-if}
   Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. Note that $T$ is profinite.
   Apply \Cref{thm:exists-ind-Zariski-cartesian} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
   \[
@@ -1174,7 +1193,7 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
   \]
   is cartesian in the category of topological spaces.
 
-  Following \Cref{thm:cartesian-w-local}, we note that $\Spec (D)$ is w-local, that $\Spec (D) \to \Spec (C)$ is w-local, and that the set of closed points of $\Spec (D)$ is the inverse image of the set of closed points of $\Spec (C)$.
+  Following \Cref{thm:cartesian-profinite-w-local}, we note that $\Spec (D)$ is w-local, that $\Spec (D) \to \Spec (C)$ is w-local, and that the set of closed points of $\Spec (D)$ is the inverse image of the set of closed points of $\Spec (C)$.
 
   Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$ by \Cref{thm:ind-Zariski-identifies-local-rings}). It follows from \Cref{thm:w-contractible-if} that $D$ is w-contractible.
 \end{proof}
