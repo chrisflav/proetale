@@ -564,7 +564,10 @@ The following example shows that our definition agrees with the one in
 \end{lemma}
 
 \begin{proof}
-    TBA (see 08ZZ).
+  Write $X = \lim_{i \in I} X_i$ as a directed limit of finite discrete spaces. Let $\pi_i \colon X \to X_i$ be the
+  projection maps. A base of the open sets of $X$ is given by the preimages $\pi_i^{-1}(\{z\})$ for $z \in X_i$ and $i \in I$. Every open set in this base is also closed, because its complement is a finite union of such sets.
+
+  Choose an open subset in this base containing $x$ but not $y$, say $U = \pi_{i_0}^{-1}(\{z_0\})$ for some $i_0 \in I$ and $z_0 \in X_{i_0}$. Then $V = X \setminus U$ is also open and closed, and we have $X = U \coprod V$ with $x \in U$ and $y \in V$.   
 \end{proof}
 
 \begin{lemma}[\stacksproject{0905}]
