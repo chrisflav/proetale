@@ -1,5 +1,9 @@
 import Mathlib
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
+import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
+import Proetale.Mathlib.CategoryTheory.Sites.Sieves
+import Proetale.Mathlib.CategoryTheory.Sites.Finite
 
 /-!
 # Another attempt at pro-contractions.
@@ -13,21 +17,54 @@ universe s t w' w v u
 
 namespace CategoryTheory
 
+open CategoryTheory Limits
+
 variable {C : Type u} [Category.{v} C] (K : Precoverage C)
 
-lemma Precoverage.mem_coverings_singleton_of_isPullback [K.IsStableUnderBaseChange]
-    {X Y Z P : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z)
-    (h : IsPullback fst snd f g) (hg : Presieve.singleton g ∈ K Z) :
-    Presieve.singleton fst ∈ K X := by
-  rw [← Presieve.ofArrows_pUnit] at hg ⊢
-  apply K.mem_coverings_of_isPullback _ hg
-  intro _
-  apply h
+@[ext]
+structure FiniteFamilies (C : Type*) [Category C] where
+  set : Set C
+  finite : set.Finite
+
+instance : Preorder (FiniteFamilies C) where
+  le U V := U.set ⊆ V.set
+  le_refl _ := le_rfl
+  le_trans _ _ _ := le_trans
+
+@[simps]
+def FiniteFamilies.map {D : Type*} [Category D] (F : C ⥤ D) :
+    FiniteFamilies C ⥤ FiniteFamilies D where
+  obj s :=
+    { set := F.obj '' s.set
+      finite := s.finite.image _ }
+  map f := homOfLE (Set.image_mono (leOfHom f))
+
+structure SCov (K : Precoverage C) (X : C) where
+  presieve : Presieve X
+  mem : presieve ∈ K X
 
 structure Cov (K : Precoverage C) (X : C) where
   toZeroHypercover : Precoverage.ZeroHypercover.{w} K X
 
 variable {K : Precoverage C} {X : C}
+
+instance : Preorder (SCov K X) where
+  le U V := U.presieve ≤ V.presieve
+  le_refl _ := le_rfl
+  le_trans _ _ _ := le_trans
+
+def SCov.zeroHypercover (U : SCov K X) : K.ZeroHypercover X where
+  I₀ := U.presieve.uncurry
+  X i := i.1.1
+  f i := i.1.2
+  mem₀ := by
+    simp only [PreZeroHypercover.presieve₀]
+    convert U.2
+    refine le_antisymm ?_ ?_
+    · intro Z g ⟨i⟩
+      exact i.2
+    · intro Z g hg
+      exact .mk (⟨⟨Z, g⟩, hg⟩ : U.presieve.uncurry)
 
 namespace Cov
 
@@ -35,21 +72,21 @@ namespace Cov
 structure Hom (U V : Cov K X) where
   σ : V.1.I₀ → U.1.I₀
   iso (i : V.1.I₀) : U.1.X (σ i) ⟶ V.1.X i
-  w (i : V.1.I₀) : iso i ≫ V.1.f _ = U.1.f _
+  [isIso (i : V.1.I₀) : IsIso (iso i)]
+  w (i : V.1.I₀) : iso i ≫ V.1.f _ = U.1.f _ := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.w
+attribute [instance] Hom.isIso
 
 @[simps]
 def Hom.id (U : Cov K X) : U.Hom U where
   σ := _root_.id
   iso _ := 𝟙 _
-  w := by simp
 
 @[simps]
 def Hom.comp {U V W : Cov K X} (f : U.Hom V) (g : V.Hom W) : U.Hom W where
   σ i := f.σ (g.σ i)
   iso _ := f.iso _ ≫ g.iso _
-  w := by simp
 
 open Limits
 
@@ -65,161 +102,88 @@ instance : Category (Cov K X) where
   comp_id := by intros; ext <;> simp; ext; simp
   assoc := by intros; ext <;> simp; ext; simp
 
-variable (K) in
-@[simps -isSimp]
-noncomputable
-def diag (X : C) : Cov.{w} K X ⥤ C where
-  obj U := widePullback X U.1.X U.1.f
-  map {U V} f := WidePullback.lift (WidePullback.base _)
-    (fun j ↦ WidePullback.π _ (f.σ j) ≫ (f.iso j)) (by simp)
-  map_id _ := by
-    apply WidePullback.hom_ext
-    simp only [id_σ, id_iso, Category.comp_id, limit.lift_π,
-      WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app, Category.id_comp, implies_true]
-    simp_rw [id_σ]
-    simp_rw [id_iso]
-    simp
-  map_comp _ _ := by
-    apply WidePullback.hom_ext
-    simp only [comp_σ, comp_iso, limit.lift_π, WidePullbackShape.mkCone_pt,
-      WidePullbackShape.mkCone_π_app, Category.assoc, limit.lift_π_assoc,
-      WidePullbackShape.wideCospan_obj, implies_true]
-    simp_rw [comp_σ]
-    simp_rw [comp_iso]
-    simp
-
 instance [K.HasIsos] : Nonempty (Cov K X) :=
   ⟨⟨Precoverage.ZeroHypercover.singleton (𝟙 X) (K.mem_coverings_of_isIso _)⟩⟩
 
-def Hom.Rel (U V : Cov K X) (f g : U.Hom V) : Prop :=
-  ∀ i : V.1.I₀, WidePullback.π U.1.f (f.σ i) ≫ f.iso i = WidePullback.π U.1.f (g.σ i) ≫ g.iso i
-
-def Hom.Rel.equivalence (U V : Cov K X) : _root_.Equivalence (Rel U V) where
-  refl f i := rfl
-  symm h i := by rw [h]
-  trans h₁ h₂ i := by rw [h₁, h₂]
-
-def Hom.setoid (U V : Cov K X) : Setoid (U.Hom V) where
-  r := Hom.Rel U V
-  iseqv := Hom.Rel.equivalence U V
-
-variable (K X) in
-def HomRel : HomRel (Cov K X) :=
-  fun {U V} f g ↦
-    ∀ i : V.1.I₀, WidePullback.π U.1.f (f.σ i) ≫ f.iso i = WidePullback.π U.1.f (g.σ i) ≫ g.iso i
-
-variable (K X) in
-abbrev HCov := Quotient (HomRel K X)
-
-instance [K.HasIsos] : Nonempty (HCov K X) := ⟨⟨Nonempty.some inferInstance⟩⟩
-
-instance [K.HasIsos] [K.IsStableUnderSup] : IsCofiltered (HCov K X) where
-  cone_objs U V := by
-    refine ⟨⟨⟨U.1.1.sum V.1.1⟩⟩, ?_, ?_, trivial⟩
-    · exact Quot.mk _ {
-        σ i := Sum.inl i
-        iso i := 𝟙 _
-        w := by simp
-      }
-    · exact Quot.mk _ {
-        σ i := Sum.inr i
-        iso i := 𝟙 _
-        w := by simp
-      }
-  cone_maps U V f g := by
-    refine ⟨⟨⟨?_, ?_, ?_⟩, ?_⟩, ?_, ?_⟩
-    · --exact { i : V.1.I₀ // f.σ i = g.σ i }
-      exact PUnit
-    · exact fun _ ↦ X
-    · sorry
-    · sorry
-    · exact Quot.mk _ {
-        σ i := ⟨⟩
-        iso i := by
-          dsimp
-          sorry
-        w := sorry
-      }
-    · dsimp
-      --apply Quot.sound
-      sorry
+variable (K) in
+@[simps -isSimp, simps! obj_hom]
+noncomputable
+def diag (X : C) : Cov.{w} K X ⥤ Over X where
+  obj U := Over.mk (WidePullback.base U.1.f)
+  map {U V} f := Over.homMk <| WidePullback.lift (WidePullback.base _)
+    (fun j ↦ WidePullback.π _ (f.σ j) ≫ (f.iso j)) (by simp)
 
 end Cov
 
-open CategoryTheory Limits
+namespace SCov
 
-variable [∀ (X : C) (U : Cov K X), HasWidePullback _ U.1.X U.1.f]
-  [∀ (X : C), HasColimitsOfShape (Cov K X) C]
+variable (K) in
+@[simps]
+def toCov (X : C) : (SCov K X)ᵒᵖ ⥤ Cov.{max u v} K X where
+  obj U := ⟨U.1.zeroHypercover⟩
+  map {U V} f :=
+    { σ i := ⟨i.1, leOfHom f.1 _ i.2⟩
+      iso i := 𝟙 _
+      w i := by simp only [Category.id_comp]; rfl }
+  map_id _ := rfl
+  map_comp _ _ := by apply Cov.Hom.ext <;> cat_disch
+
+variable [∀ (X : C) (U : SCov K X), HasWidePullback _ _ U.zeroHypercover.f]
+
+variable (K) in
+noncomputable
+def diag (X : C) : (SCov K X)ᵒᵖ ⥤ Over X where
+  obj U := Over.mk (WidePullback.base U.1.zeroHypercover.f)
+  map {U V} f := Over.homMk <| WidePullback.lift (WidePullback.base _)
+    (fun j ↦ WidePullback.π _ (⟨j.1, leOfHom f.1 _ j.2⟩ : U.1.zeroHypercover.I₀))
+    (by intro; exact WidePullback.π_arrow _ _)
+
+instance [K.HasIsos] : Nonempty (SCov K X) :=
+  ⟨⟨.singleton (𝟙 X), K.mem_coverings_of_isIso _⟩⟩
+
+instance [K.IsStableUnderSup] : IsDirected (SCov K X) (· ≤ ·) where
+  directed U V :=
+    ⟨⟨U.presieve ⊔ V.presieve, K.sup_mem_coverings U.2 V.2⟩,
+      le_sup_left (a := U.1), le_sup_right (a := U.1)⟩
+
+example [K.HasIsos] [K.IsStableUnderSup] : IsCofiltered (SCov K X)ᵒᵖ :=
+  inferInstance
+
+end SCov
+
+variable [∀ (X : C) (U : SCov K X), HasWidePullback _ _ U.zeroHypercover.f]
 
 namespace Precoverage
 
-variable (K) in
-noncomputable
-def precontraction (X : C) [HasLimitsOfShape (Cov.{w} K X) C] : C :=
-  limit (Cov.diag.{w} K X)
+variable (X : C)
 
-variable (X : C) [HasLimitsOfShape (Cov.{w} K X) C] [HasIsos K]
-  [HasLimitsOfShape (WidePullbackShape PUnit) C]
+section
 
 variable (K) in
 noncomputable
-def Precontraction.π {Y : C} (f : Y ⟶ X) (h : Presieve.singleton f ∈ K X) : K.precontraction X ⟶ Y :=
-  limit.π (Cov.diag.{w} K X) ⟨ZeroHypercover.singleton f h⟩ ≫ WidePullback.π _ ⟨⟩
+def precontraction (X : C) [HasLimitsOfShape (SCov K X)ᵒᵖ (Over X)] : Over X :=
+  limit (SCov.diag K X)
+
+variable [HasLimitsOfShape (SCov K X)ᵒᵖ (Over X)]
 
 variable (K) in
 noncomputable
-def Precontraction.base : K.precontraction X ⟶ X :=
-  limit.π (Cov.diag.{w} K X) ⟨ZeroHypercover.singleton (𝟙 X) <| mem_coverings_of_isIso (𝟙 X)⟩ ≫
-    (WidePullback.base _)
-
-omit [∀ (X : C),
-  HasColimitsOfShape (Cov K X) C] [K.HasIsos] [HasLimitsOfShape (WidePullbackShape PUnit) C] in
-lemma Precontraction.naturality {Y Z : C} (f : Z ⟶ Y) (g : Y ⟶ X)
-    (hfg : (Presieve.singleton (f ≫ g) ∈ K X)) (hg : Presieve.singleton g ∈ K X) :
-    Precontraction.π K X (f ≫ g) hfg ≫ f = Precontraction.π K X g hg := by
-  simp only [π, ZeroHypercover.singleton_toPreZeroHypercover, PreZeroHypercover.singleton_I₀,
-    Category.assoc]
-  let U : Cov.{w} K X := ⟨ZeroHypercover.singleton _ hfg⟩
-  let V : Cov.{w} K X := ⟨ZeroHypercover.singleton _ hg⟩
-  let f : U ⟶ V := {
-    σ i := i
-    iso i := f
-    w := by simp [U, V]
-  }
-  have := limit.w (Cov.diag.{w} K X) f
-  show limit.π (Cov.diag.{w} K X) U ≫ _ = limit.π (Cov.diag.{w} K X) V ≫ _
-  rw [← this]
-  rw [Category.assoc]
-  congr 1
-  dsimp [Cov.diag_map]
-  erw [WidePullback.lift_π]
-  rfl
+def Precontraction.π {Y : C} (f : Y ⟶ X) (h : Presieve.singleton f ∈ K X) :
+    K.precontraction X ⟶ Over.mk f :=
+  letI U : SCov K X := ⟨_, h⟩
+  limit.π (SCov.diag K X) ⟨U⟩ ≫
+    Over.homMk (WidePullback.π (U.zeroHypercover.f) ⟨⟨_, f⟩, ⟨⟩⟩)
+      (WidePullback.π_arrow _ _)
 
 @[reassoc (attr := simp)]
-lemma Precontraction.π_arrow {Y : C} (f : Y ⟶ X) (h : Presieve.singleton f ∈ K X) :
-    Precontraction.π K X f h ≫ f = Precontraction.base K X := by
-  have := Precontraction.naturality (K := K) X f (𝟙 X) (by simpa) (mem_coverings_of_isIso _)
-  simp only [Category.comp_id] at this
-  rw [this]
-  simp only [π, base]
-  congr 1
-  rw [← Category.comp_id (WidePullback.π (ZeroHypercover.singleton (𝟙 X) _).f PUnit.unit)]
-  apply WidePullback.π_arrow
+lemma Precontraction.π_arrow {Y : C} (f : Y ⟶ X)
+    (h : Presieve.singleton f ∈ K X) :
+    (Precontraction.π K X f h).left ≫ f = (K.precontraction X).hom := by
+  simpa using (Precontraction.π K X f h).w
 
-variable [HasLimitsOfShape (Cov K (K.precontraction X)) C]
+end
 
-@[reassoc]
-lemma Precontraction.base_π_of_isPullback {Y P : C} (f : Y ⟶ X)
-    (hf : Presieve.singleton f ∈ K.coverings X) (fst : P ⟶ K.precontraction X) (snd : P ⟶ Y)
-    (h : IsPullback fst snd (Precontraction.base K X) f)
-    (hfst : Presieve.singleton fst ∈ K.coverings (K.precontraction X)) :
-    Precontraction.base K (K.precontraction X) ≫ Precontraction.π K X f hf =
-      Precontraction.π K _ fst hfst ≫ snd := by
-  let x : P ⟶ P := h.lift fst (fst ≫ Precontraction.π K X f hf) (by simp)
-  rw [← Precontraction.naturality (K.precontraction X) x fst (by simpa [x]) hfst]
-  simp [x]
-
-variable [∀ X, HasLimitsOfShape (Cov K X) C]
+variable [∀ X, HasLimitsOfShape (SCov K X)ᵒᵖ (Over X)]
 
 namespace Contraction.Construction
 
@@ -227,16 +191,26 @@ variable (K) in
 noncomputable
 def obj : ℕ → C
   | 0 => X
-  | n + 1 => K.precontraction (obj n)
+  | n + 1 => (K.precontraction (obj n)).left
 
 variable (K) in
 noncomputable
 def diag : ℕᵒᵖ ⥤ C := Functor.ofOpSequence (X := obj K X)
-  (fun _ ↦ Precontraction.base K _)
+  fun _ ↦ (K.precontraction _).hom
+
+variable (K) in
+noncomputable
+def objBase (n : ℕ) : obj K X n ⟶ X :=
+  (diag K X).map (homOfLE <| n.zero_le).op
 
 lemma diag_map_le_succ (n : ℕ) (hn : n ≤ n + 1) :
-    (diag K X).map (homOfLE hn).op = Precontraction.base K _ := by
+    (diag K X).map (homOfLE hn).op = (K.precontraction _).hom := by
   simp [diag]
+
+noncomputable
+def diagHomBase : diag K X ⟶ (Functor.const _).obj X where
+  app n := objBase K X n.1
+  naturality := sorry
 
 end Contraction.Construction
 
@@ -254,196 +228,87 @@ noncomputable
 abbrev contraction.π (n : ℕ) : contraction K X ⟶ Construction.obj K X n :=
   limit.π _ _
 
+variable (K) in
+noncomputable def Contraction.base : contraction K X ⟶ X :=
+  contraction.π _ _ 0
+
 lemma contraction.w (n m : ℕ) (hmn : n ≤ m) :
     contraction.π K X m ≫ (Construction.diag K X).map ⟨homOfLE hmn⟩ = contraction.π K X n :=
   limit.w _ _
 
-lemma contraction.naturality_of_le_of_isPullback [K.IsStableUnderBaseChange]
-    [Limits.HasPullbacks C] (n m : ℕ) (hnm : n ≤ m) {Y P : C}
-    (f : Y ⟶ Construction.obj K X n)
-    (hf : Presieve.singleton f ∈ K.coverings (Construction.obj K X n))
-    (fst : P ⟶ Construction.obj K X m) (snd : P ⟶ Y)
-    (h : IsPullback fst snd ((Construction.diag K X).map (homOfLE hnm).op) f)
-    (hfst : Presieve.singleton fst ∈ K.coverings (Construction.obj K X m)) :
-    (Construction.diag K X).map ((homOfLE <| show n + 1 ≤ m + 1 by omega).op) ≫
-      Precontraction.π K _ f hf =
-      Precontraction.π K (Construction.obj K X m) fst hfst ≫ snd := by
-  obtain ⟨k, rfl⟩ : ∃ (k : ℕ), m = n + k := ⟨m - n, by omega⟩
-  induction' k with k ih generalizing P
-  · simp only [Nat.add_zero, homOfLE_refl, op_id, Functor.map_id, Category.id_comp]
-    have : fst = snd ≫ f := by
-      rw [← h.w]
-      simp only [Nat.add_zero, homOfLE_refl, op_id, Functor.map_id]
-      erw [Category.comp_id]
-    simp_rw [this]
-    rw [Precontraction.naturality]
-  · rw [← homOfLE_comp (show n + 1 ≤ n + k + 1 by omega) (by omega), op_comp, Functor.map_comp]
-    rw [Construction.diag_map_le_succ]
-    simp only [Construction.obj, homOfLE_leOfHom, Category.assoc, Nat.add_eq]
-    rw [ih (P := pullback ((Construction.diag K X).map (homOfLE <| show n ≤ n + k by omega).op) f)
-      (fst := pullback.fst _ _) (snd := pullback.snd _ _)]
-    erw [Precontraction.base_π_of_isPullback_assoc (P := P) (f := pullback.fst _ _)
-          (fst := fst)
-          (snd := pullback.lift (fst ≫ Precontraction.base K _) snd _)]
-    congr 1
-    simp only [homOfLE_leOfHom, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-    · refine (IsPullback.of_right ?_ ?_ (IsPullback.of_hasPullback _ _).flip).flip
-      · apply IsPullback.flip
-        convert h
-        · simp
-        · rw [← Construction.diag_map_le_succ _ _ (by omega)]
-          rw [← Functor.map_comp, ← op_comp, homOfLE_comp]
-      · simp
-    · apply Precoverage.mem_coverings_singleton_of_isPullback
-      apply h
-      exact hf
-    · intro
-      simp only [Nat.add_eq, homOfLE_leOfHom, Category.assoc]
-      rw [← h.w]
-      rw [← Construction.diag_map_le_succ _ _ (by omega)]
-      rw [← Functor.map_comp, ← op_comp, homOfLE_comp]
-    · omega
-    · exact IsPullback.of_hasPullback _ _
-    · apply Precoverage.mem_coverings_singleton_of_isPullback
-      apply IsPullback.of_hasPullback
-      exact hf
-
 variable (P : MorphismProperty C)
-
 variable [MorphismProperty.ProSpreads.{0, 0} P]
 
-lemma foo [Limits.HasPullbacks C] [K.IsStableUnderBaseChange] [P.IsStableUnderBaseChange]
+lemma exists_comp_eq_id_contraction [Limits.HasPullbacks C]
     (HK : ∀ {A B : C} (f : A ⟶ B), P f → Presieve.singleton f ∈ K B)
-    {Y : C} (f : Y ⟶ K.contraction X) (hf : P.pro f) :
+    {Y : C} (f : Y ⟶ K.contraction X) (hf : P f) :
     ∃ (g : K.contraction X ⟶ Y), g ≫ f = 𝟙 (K.contraction X) := by
-  obtain ⟨J, _, _, D, t, s, hs, hst⟩ := hf
-  have (j : J) : ∃ (n : ℕ) (D' : C) (u : D' ⟶ Construction.obj K X n) (v : D.obj j ⟶ D'),
-      IsPullback (t.app j) v (contraction.π K X n) u ∧ P u := by
+  obtain ⟨n, D', u, v, hv, hu⟩ :
+      ∃ (n : ℕ) (D' : C) (u : D' ⟶ Construction.obj K X n) (v : Y ⟶ D'),
+        IsPullback f v (contraction.π K X n) u ∧ P u := by
     obtain ⟨⟨n⟩, D', f', g, h, hf'⟩ := P.exists_isPullback_of_isCofiltered
       (J := ℕᵒᵖ) (D := Construction.diag K X)
-      (limit.cone _) (limit.isLimit _) (t.app j) (hst j).1
+      (limit.cone _) (limit.isLimit _) f hf
     use n, D', f', g, h
-  choose n D' u v hv hu using this
-  let l (j : J) : K.contraction X ⟶ D.obj j := by
-    refine (hv j).lift (𝟙 _) (contraction.π K X ((n j) + 1) ≫ Precontraction.π _ _ (u j) (HK _ (hu j))) ?_
-    have := limit.w (Construction.diag K X) ⟨homOfLE (Nat.le_succ (n j))⟩
+  let l : K.contraction X ⟶ Y := by
+    refine hv.lift (𝟙 _) (contraction.π K X (n + 1) ≫ (Precontraction.π _ _ u (HK _ hu)).left) ?_
+    have := limit.w (Construction.diag K X) ⟨homOfLE (Nat.le_succ n)⟩
     dsimp only [Nat.succ_eq_add_one, homOfLE_leOfHom] at this
-    simp only [Functor.const_obj_obj, contraction.π, Category.id_comp, Category.assoc,
-      Precontraction.π_arrow]
-    rw [← this]
+    simp only [contraction.π, Category.id_comp, Category.assoc, Precontraction.π_arrow, ← this]
     simp [Construction.diag, Functor.ofOpSequence]
-  let c : Cone D := {
-    pt := K.contraction X
-    π.app := l
-    π.naturality {i j} a := by
-      apply (hv j).hom_ext
-      · simp [l]
-      · simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp, Category.assoc]
-        obtain ⟨⟨m⟩, hmi, hmj, PA, PB, PA₁, PA₂, PB₁, PB₂, hPA, hPB, f', hf', hff'⟩ :=
-          P.exists_isPullback_of_isCofiltered_of_hom (D := Construction.diag K X)
-            (limit.cone _) (limit.isLimit _) (D.map a) (t.app i) (t.app j)
-            (by simp)
-            (v i) (v j) (u i) (u j) (hv i) (hv j) (hu i) (hu j)
-        have := congr($(hff') ≫ PB₂)
-        simp only [limit.cone_x, limit.cone_π, Category.assoc, IsPullback.lift_snd] at this
-        rw [this]
-        conv_lhs => simp [l]
-        have comp := Precontraction.naturality (K := K) (Construction.obj K X m)
-          f' PB₁
-          (by rw [hf']; apply HK _ <| P.of_isPullback hPA.flip (hu i))
-          (by apply HK _ <| P.of_isPullback hPB.flip (hu j))
-        simp_rw [hf'] at comp
-        -- is this true?
-        have : n j ≤ m := hmj.unop.1.1
-        have : n i ≤ m := hmi.unop.1.1
-        have key :
-            l i ≫ hPA.lift (t.app i ≫ limit.π (Construction.diag K X) ⟨m⟩) (v i) (by simp [(hv i).w]) =
-              contraction.π K X (m + 1) ≫ Precontraction.π K (Construction.obj K X m) PA₁
-                (HK _ <| P.of_isPullback hPA.flip (hu i)) := by
-          apply hPA.hom_ext
-          · simp [l]
-            have : m ≤ m + 1 := by omega
-            change contraction.π _ _ _ = _
-            rw [← contraction.w X _ _ this]
-            congr 1
-            simp [Construction.diag, Functor.ofOpSequence]
-          · simp only [Functor.const_obj_obj, Category.assoc, IsPullback.lift_snd, l]
-            have : n i + 1 ≤ m + 1 := by omega
-            rw [← contraction.w X _ _ this, Category.assoc]
-            congr 1
-            simp only [homOfLE_leOfHom]
-            apply contraction.naturality_of_le_of_isPullback
-            exact hPA
-        rw [reassoc_of% key, reassoc_of% comp]
-        have hmjadd : n j + 1 ≤ m + 1 := by omega
-        rw [← contraction.w X _ _ hmjadd, Category.assoc]
-        congr 1
-        simp only [homOfLE_leOfHom]
-        apply contraction.naturality_of_le_of_isPullback
-        exact hPB
-  }
-  obtain ⟨j⟩ := IsCofiltered.nonempty (C := J)
-  refine ⟨hs.lift c, ?_⟩
-  simp [← (hst j).2, hs.fac_assoc, c, l]
+  use l
+  simp [l]
 
 end Precoverage
 
-/-
-we can also do zerohypercover instead?
--/
+namespace MorphismProperty
 
-section
+variable (P : MorphismProperty C) [HasFiniteWidePullbacks C]
 
-noncomputable
-def WidePullback.reindex {α β : Type*} {C : Type*} [Category C] {B : C}
-    {X : α → C} {Y : β → C}
-    {f : (j : α) → X j ⟶ B} [HasWidePullback B X f]
-    {g : (j : β) → Y j ⟶ B} [HasWidePullback B Y g]
-    (e : α ≃ β) (s : ∀ a, X a ≅ Y (e a))
-    (w : ∀ i, (s i).hom ≫ g (e i) = f _) :
-    widePullback B X f ≅ widePullback B Y g where
-  hom := WidePullback.lift (WidePullback.base _)
-    (fun i ↦ WidePullback.π _ (e.symm i) ≫ (s _).hom ≫ eqToHom (by simp))
-    fun i ↦ by
-      obtain ⟨i, rfl⟩ := e.surjective i
-      simp [w]
-  inv := WidePullback.lift (WidePullback.base _)
-    (fun i ↦ WidePullback.π _ (e i) ≫ (s _).inv)
-    fun i ↦ by simp [← w]
+abbrev finitePrecoverage : Precoverage C := P.precoverage ⊓ Precoverage.finite _
 
-noncomputable
-def WidePullback.proj {α β : Type*} {C : Type*} [Category C] {B : C}
-    {X : α ⊕ β → C}
-    {f : (j : α ⊕ β) → X j ⟶ B} [HasWidePullback B X f]
-    [HasWidePullback B (X ∘ Sum.inl) (fun j ↦ f (.inl j))] :
-    widePullback B X f ⟶ widePullback B (X ∘ Sum.inl) (fun j ↦ f (.inl j)) :=
-  WidePullback.lift (WidePullback.base _) (fun j ↦ WidePullback.π _ _) (by simp)
+instance (X : C) (U : SCov P.finitePrecoverage X) : Finite U.zeroHypercover.I₀ :=
+  U.2.2
 
-noncomputable
-def WidePullback.mapOfSumEquiv {α β γ : Type*} {C : Type*} [Category C] {B : C}
-    {X : α → C} {Y : β → C}
-    {f : (j : α) → X j ⟶ B} [HasLimitsOfShape (WidePullbackShape α) C]
-    {g : (j : β) → Y j ⟶ B} [HasLimitsOfShape (WidePullbackShape β) C]
-    [HasLimitsOfShape (WidePullbackShape (β ⊕ γ)) C]
-    (e : β ⊕ γ ≃ α) (s : ∀ (b : β), X (e (.inl b)) ⟶ Y b)
-    (w : ∀ b, s b ≫ g b = f _) :
-    widePullback B X f ⟶ widePullback B Y g :=
-  (WidePullback.reindex (Y := X ∘ e) (g := fun i ↦ f (e i)) e.symm
-    (fun a ↦ eqToIso (by simp)) (fun i ↦ by
-      simp only [Function.comp_apply, eqToIso.hom]
-      rw [← eqToHom_naturality, eqToHom_refl, Category.comp_id]
-      rw [Equiv.apply_symm_apply])).hom ≫
-    WidePullback.lift (objs := Sum.elim Y (X ∘ e ∘ .inr))
-      (arrows := fun i ↦ match i with
-        | .inl b => g b
-        | .inr c => f _)
-      (WidePullback.base _)
-      (fun j ↦ match j with
-        | .inl b => WidePullback.π _ _ ≫ s b
-        | .inr b => WidePullback.π _ _)
-      (by simp [w]) ≫
-      WidePullback.proj
+noncomputable def contraction
+    [∀ X, HasLimitsOfShape (SCov P.finitePrecoverage X)ᵒᵖ (Over X)]
+    [HasLimitsOfShape ℕᵒᵖ C] (X : C) : C :=
+  P.finitePrecoverage.contraction X
 
-end
+variable [∀ X, HasLimitsOfShape (SCov P.finitePrecoverage X)ᵒᵖ (Over X)]
+  [HasLimitsOfShape ℕᵒᵖ C]
+
+noncomputable def Contraction.base (X : C) : P.contraction X ⟶ X :=
+  Precoverage.Contraction.base _ X
+
+lemma pro_precontraction_hom [P.RespectsIso] [P.ContainsIdentities] (X : C) :
+    pro.{max u v} P (P.finitePrecoverage.precontraction X).hom := by
+  refine ⟨(SCov P.finitePrecoverage X)ᵒᵖ, inferInstance, inferInstance,
+    SCov.diag _ _ ⋙ CategoryTheory.Over.forget _, ?_, ?_, ?_, fun j ↦ ⟨?_, ?_⟩⟩
+  · dsimp
+    sorry
+  · exact Functor.whiskerRight
+      (limit.cone <| SCov.diag P.finitePrecoverage X).π
+      (CategoryTheory.Over.forget X)
+  · exact isLimitOfPreserves (CategoryTheory.Over.forget X) (limit.isLimit _)
+  · sorry
+  · sorry
+
+lemma pro_pro_contractionBase [P.RespectsIso] [P.ContainsIdentities] (X : C) :
+    pro.{0} (pro.{max u v} P) (Contraction.base P X) := by
+  refine ⟨ℕᵒᵖ, inferInstance, inferInstance,
+      Precoverage.Contraction.Construction.diag P.finitePrecoverage X,
+      ?_, (limit.cone _).π, limit.isLimit _, ?_⟩
+  · exact { app n := sorry, naturality := sorry }
+  · sorry
+
+lemma exists_comp_eq_id_contraction [ProSpreads.{0, 0} P]
+    {Y : C} (f : Y ⟶ P.contraction X) (hf : P f) :
+    ∃ (g : P.contraction X ⟶ Y), g ≫ f = 𝟙 (P.contraction X) := by
+  refine Precoverage.exists_comp_eq_id_contraction X P ?_ f hf
+  intro A B g hg
+  exact ⟨by simp [hg], by simp⟩
+
+end MorphismProperty
 
 end CategoryTheory
