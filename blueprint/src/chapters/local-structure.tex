@@ -499,6 +499,17 @@ The following example shows that our definition agrees with the one in
   Omitted.
 \end{proof}
 
+\begin{lemma}
+    Let $B = \colim_i B_i$ be a filtered colimit of ind-étale $A$-algebras. Then $B$ is
+    an ind-étale $A$-algebra.
+    \uses{def:ind-etale}
+    \label{lemma:ind-ind-etale}
+\end{lemma}
+
+\begin{proof}
+    This follows from general theory, because étale maps are of finite presentation.
+\end{proof}
+
 \section{w-local spaces}
 
 \begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
@@ -1323,29 +1334,95 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     $B = B' \otimes_{A_f} A_{\mathfrak{m}} \to A_{\mathfrak{m}}$ that is a retraction of $A_{\mathfrak{m}} \to B$.
 \end{proof}
 
-\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097R}{Tag 097R}]{stacks-project}}]
-    Let $A$ be a ring. Then there exists an ind-étale faithfully flat $A$-algebra $B$ such that
-    every faithfully flat étale ring map $B \to C$ has a retraction.
-    \uses{def:ind-etale}
-    \label{prop:exists-ind-etale-retraction-etale}
+\begin{definition}
+    Let $A$ be a ring. Denote by $S(A)$ the set of finite subsets of faithfully flat étale $A$-algebras.
+    We call the $A$-algebra $T(A) = \colim_{E \in S(A)} \bigotimes_{B \in E} B$ the \emph{étale precontraction} of
+    $A$.
+    \label{def:etale-precontraction}
+\end{definition}
+
+\begin{lemma}
+    \uses{def:etale-precontraction}
+    \label{lemma:etale-precontraction-semi-retraction}
+    For every faithfully flat étale ring map $A \to B$, there exists an $A$-algebra map $B \to T(A)$.
+\end{lemma}
+
+\begin{proof}
+    $\{B\}$ is an element of $S(A)$, hence $B$ itself is part of the diagram defining $T(A)$.
+\end{proof}
+
+\begin{lemma}
+    Let $B = \colim_i B_i$ be a filtered colimit of (faithfully) flat $A$-algebras. Then
+    $B$ is (faithfully) flat over $A$.
+    \label{lemma:ind-faithfully-flat}
+\end{lemma}
+
+\begin{proof}
+    Because colimits commute with tensor products, ind-flat is flat. One also checks
+    that pro-surjective is surjective, hence the claim.
+\end{proof}
+
+\begin{lemma}
+    $T(A)$ is ind-étale and faithfully flat over $A$.
+    \label{lemma:etale-precontraction-ind-etale}
+    \uses{def:etale-precontraction, def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:ind-faithfully-flat}
+    For every $E \in S(A)$, the $A$-algebra $\bigotimes_{B \in E} B$ is étale and faithfully flat. Hence
+    the result follows from the definition of ind-étale and \Cref{lemma:ind-faithfully-flat}.
+\end{proof}
+
+\begin{definition}
+    Let $A$ be a ring. Set $T^0(A) = A$ and for $n \in \N$ set $T^{n+1}(A) = T(T^n(A))$.
+    We call the $A$-algebra $T^{\infty}(A) = \colim_{n \in \N} T^n(A)$
+    the \emph{étale contraction of $A$}.
+    \uses{def:etale-precontraction}
+    \label{def:etale-contraction}
+\end{definition}
+
+\begin{lemma}
+    $T^{\infty}(A)$ is ind-étale and faithfully flat over $A$.
+    \uses{def:etale-contraction, def:ind-etale}
+    \label{lemma:etale-contraction-ind-etale}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:etale-precontraction-ind-etale, lemma:ind-faithfully-flat, lemma:ind-ind-etale}
+    This follows from \Cref{lemma:etale-precontraction-ind-etale}, \Cref{lemma:ind-faithfully-flat}
+    and \Cref{lemma:ind-ind-etale}.
+\end{proof}
+
+\begin{proposition}[{\stacksproject{097R}}]
+    Let $T^{\infty}(A) \to B$ be a faithfully flat and étale $A$-algebra map. Then
+    it has a retraction.
+    \label{def:etale-contraction}
+    \label{prop:etale-contraction-retraction}
 \end{proposition}
 
 \begin{proof}
-    \uses{lemma:etale-ind-spreads}
-    For any ring $A$, one first constructs $T(A) = \colim_{E} \bigotimes_{B \in E} B$ where
-    the colimit runs over finite subsets of faithfully flat étale $A$-algebras. Note that for every faithfully flat étale
-    $A$-algebra $B$, there exists a map $B \to T(A)$.
-
-    Now set $T^{n+1}(A) \coloneqq T(T^n(A))$
-    and let $T^{\infty}(A) = \colim_n T^n(A)$. Let $B$ be a faithfully flat étale $T^{\infty}(A)$-algebra. Then
-    by \ref{lemma:etale-ind-spreads}
+    \uses{lemma:etale-ind-spreads, lemma:etale-precontraction-semi-retraction}
+    By \Cref{lemma:etale-ind-spreads}
     there exists $n \in \N$ and a faithfully flat, étale $T^n(A)$-algebra $B'$ such that
-    $B = T^{\infty}(A) \otimes_{T^n(A)} B'$. By the earlier remark, there exists a map
-    $B' \to T^{n+1}(A)$. The identity of $T^{\infty}(A)$ and the composition
+    $B = T^{\infty}(A) \otimes_{T^n(A)} B'$. By \Cref{lemma:etale-precontraction-semi-retraction},
+    there exists a map $B' \to T^{n+1}(A)$. The identity of $T^{\infty}(A)$ and the composition
     $B' \to T^{n+1}(A) \to T^{\infty}(A)$ now induce a retraction
     \[
     B = T^{\infty}(A) \otimes_{T^n(A)} B' \to T^{\infty}(A)
     .\]
+\end{proof}
+
+\begin{corollary}
+    Let $\mathfrak{m}$ be a maximal ideal of $T^{\infty}(A)$. Then $T^{\infty}(A)_{\mathfrak{m}}$
+    is strictly Henselian.
+    \uses{def:etale-contraction}
+    \label{cor:strictly-henselian-etale-contraction}
+\end{corollary}
+
+\begin{proof}
+    \uses{prop:etale-contraction-retraction, lemma:retractions-strictly-henselian}
+    This follows from \Cref{prop:etale-contraction-retraction} and \Cref{lemma:retractions-strictly-henselian}.
 \end{proof}
 
 \begin{lemma}
@@ -1385,23 +1462,21 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{proposition}
 
 \begin{proof}
-    \uses{prop:exists-ind-etale-retraction-etale,
-      lemma:retractions-strictly-henselian, prop:ind-etale-residue-fields, thm:closed-points-isom-w-local,
-      lemma:w-localization-closed-points}
-    By \ref{lemma:w-localization-closed-points}, the ring $A_w$ is w-local, so the set of closed points
+    \uses{cor:strictly-henselian-etale-contraction, prop:ind-etale-residue-fields, thm:closed-points-isom-w-local,
+      lemma:w-localization-closed-points, lemma:etale-contraction-ind-etale}
+    By \Cref{lemma:w-localization-closed-points}, the ring $A_w$ is w-local, so the set of closed points
     of $\spec{A_w}$ is closed.
     Let $I$ be the radical ideal of $A_w$ such that $V(I)$ is the set of closed points of $\spec{A_w}$.
-    Choose an ind-étale and faithfully flat ring map $A_w \to B'$ as in
-    \ref{prop:exists-ind-etale-retraction-etale}. By
-    \ref{lemma:retractions-strictly-henselian}, the local ring $B'_{\mathfrak{m}'}$ is
-    strictly henselian for every maximal ideal $\mathfrak{m}'$ of $B'$.
+    Set $B' = T^{\infty}(A_w)$.
+    By \Cref{cor:strictly-henselian-etale-contraction}, the local ring $B'_{\mathfrak{m}}$ is
+    strictly henselian for every maximal ideal $\mathfrak{m}$ of $B'$.
     The map $A_w \to B'$ induces algebraic extensions on residue fields at primes by
-    \ref{prop:ind-etale-residue-fields},
-    so applying \ref{thm:closed-points-isom-w-local} to $A_w \to B'$, we obtain
+    \Cref{lemma:etale-contraction-ind-etale} and \Cref{prop:ind-etale-residue-fields},
+    so applying \Cref{thm:closed-points-isom-w-local} to $A_w \to B'$, we obtain
     an ind-Zariski ring map $B' \to B$ such that $B'/IB' \to B/IB$ is an isomorphism,
     $V(IB)$ is the set of closed points of $\spec{B}$, $B$ is w-local
     and $A_w \to B' \to B$ is faithfully flat. Since ind-Zariski maps identify
-    local rings by \ref{thm:ind-Zariski-identifies-local-rings} and every closed point of
+    local rings by \Cref{thm:ind-Zariski-identifies-local-rings} and every closed point of
     $\spec{B}$ maps to a closed point of $B'$,
     the local rings at maximal ideals of $B$ are strictly Henselian. Hence $B$ is w-strictly local.
 

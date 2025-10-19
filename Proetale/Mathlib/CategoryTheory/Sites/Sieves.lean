@@ -19,4 +19,10 @@ lemma Presieve.monotone_functorPullback {D : Type*} [Category D] (F : C ⥤ D) (
   intro R₁ R₂ hle Y f hf
   exact hle _ hf
 
+lemma Presieve.uncurry_sup {X : C} (R S : Presieve X) :
+    (R ⊔ S).uncurry = R.uncurry ∪ S.uncurry := rfl
+
+lemma Presieve.uncurry_inf {X : C} (R S : Presieve X) :
+    (R ⊓ S).uncurry = R.uncurry ∩ S.uncurry := rfl
+
 end CategoryTheory
