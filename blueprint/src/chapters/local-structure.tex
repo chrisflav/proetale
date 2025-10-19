@@ -1,30 +1,46 @@
 \chapter{Local structure}
 
+This chapter serves for the commutative algebra preparation of the remaining part of the paper. The key results are
+\begin{enumerate}
+  \item \Cref{thm:ind-etale-w-contractible-cover-exists} expressing that every affine scheme has a w-contractible cover in the proetale site.
+  \item \Cref{thm:weakly-etale-ind-etale} expressing that every weakly etale map can be covered by ind-etale maps.
+\end{enumerate}
+
+% Question: Can we avoid using weakly etale algebra, only use ind-etale algebra? This would need a modification of theorem 5.4.2, by directly mimicking the proof of topological invariance of étale sites for weakly étale.
+% If so, we can remove theorem \Cref{thm:weakly-etale-ind-etale} and every dependency of it.
 \section{Preliminaries}
 
-The following definitions are already formalized in Mathlib.
-
 \begin{definition}[Extremally disconnected space]
-    \label{def:extremally-disconnected}
-    \lean{ExtremallyDisconnected}
-    \mathlibok
+  \label{def:extremally-disconnected}
+  \lean{ExtremallyDisconnected}
+  \mathlibok
 
-    A topological space \(X\) is \emph{extremally disconnected} if the closure of every open subset is open.
+  A topological space \(X\) is \emph{extremally disconnected} if the closure of every open subset is open.
 \end{definition}
 
-\begin{definition} [Stone-Čech compactification]
-    \label{def:stone-cech-compactification}
-    \lean{StoneCech}
-    \mathlibok
+The reason that we are interested in extremally disconnected space is the following theorem.
 
-    Let \(X\) be a topological space. The \emph{Stone-Čech compactification} of \(X\) is the
-    profinite space \(\beta(X)\) such that
-    \begin{enumerate}
-        \item \(X\) is dense in \(\beta(X)\);
-        \item every continuous map \(f: X \to Y\) to a compact Hausdorff space \(Y\)
-            extends uniquely to a continuous map \(\beta(f): \beta(X) \to Y\).
-    \end{enumerate}
-    We denote the Stone-Čech compactification of \(X\) by \(\beta(X)\).
+\begin{theorem}
+  \label{thm:extremally-disconnected-projective}
+  \uses{def:extremally-disconnected}
+  \lean{CompHaus.toStonean,Stonean.instProjectiveCompHausCompHaus}
+  \mathlibok
+  Let \(X\) be a quasi-compact Hausdorff topological space. Then \(X\) is extremally disconnected if and only if it is a projective object in the category of quasi-compact Hausdorff spaces, i.e., for every continuous surjection \(f : Y \to Z\) of quasi-compact Hausdorff spaces and every continuous map \(g : X \to Z\), there exists a continuous map \(h : X \to Y\) such that \(f \circ h = g\).
+\end{theorem}
+
+\begin{definition} [Stone-Čech compactification]
+  \label{def:stone-cech-compactification}
+  \lean{StoneCech}
+  \mathlibok
+
+  Let \(X\) be a topological space. The \emph{Stone-Čech compactification} of \(X\) is the
+  profinite space \(\beta(X)\) such that
+  \begin{enumerate}
+    \item \(X\) is dense in \(\beta(X)\);
+    \item every continuous map \(f: X \to Y\) to a quasi-compact Hausdorff space \(Y\)
+        extends uniquely to a continuous map \(\beta(f): \beta(X) \to Y\).
+  \end{enumerate}
+  We denote the Stone-Čech compactification of \(X\) by \(\beta(X)\).
 \end{definition}
 
 \begin{theorem}
@@ -35,163 +51,697 @@ The following definitions are already formalized in Mathlib.
     \mathlibok
 \end{theorem}
 
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/090D}{Tag 090D}]{stacks-project}}]
+  Let $X$ be a quasi-compact Hausdorff space. There exists a continuous surjection $X' \to X$ with $X'$ quasi-compact, Hausdorff, and extremally disconnected.
+  \label{thm:extremally-disconnected-cover}
+  \uses{def:extremally-disconnected, def:stone-cech-compactification}
+\end{proposition}
+
 \begin{proof}
-    Omitted.
+  \uses{thm:stone-cech-extremally-disconnected}
+  Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
 
-\section{Henselization}
-
-\begin{definition}[Strictly Henselian local ring, {\cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}}]
-    \label{def:strictly-henselian-local-ring}
-    \lean{IsStrictlyHenselianLocalRing}
-    \leanok
-
-    A local ring \(A\) is \emph{strictly henselian} if it is henselian and the residue field of \(A\) is separably closed.
-\end{definition}
-
-1. Ofer Gabber \(K\)-theory of Henselian local rings and Henselian pairs.
-
-2. \url{https://stacks.math.columbia.edu/tag/0EM7}
-
-3. \url{https://arxiv.org/pdf/2112.13552} If \((A,I)\) is a Zariski pair (contained in Jacobson ideal, the only open set containing \(V(I)\) is \(\Spec A\)), then the Henselization is faithfully flay over \(A\). The only input should be Tag 00HR A flat local ring homomorphism of local rings is faithfully flat.
-
-Unify the definition of 2.2.10 with the definition of Henselization in Gabber's paper.
-
-\begin{definition}[Henselian pairs, ]
-    \label{def:henselian-pair}
-
-    TBA
-\end{definition}
-
-\begin{definition}[(Relative) Henselization, {\cite[Definition 2.2.1(ii)]{proetale}}]
-    \label{def:henselization}
-
-    TBA
-
-\end{definition}
-
-\begin{theorem}
-    \label{thm:henselization-is-henselian}
-    \uses{def:henselization,def:henselian-pair}
-    TBA
-
-\end{theorem}
-
-\begin{lemma}[{\cite[Lemma 2.2.12]{proetale}}]
-    \label{lem:henselization-fully-faithful}
-    \uses{def:henselization}
-
-    For surjective maps $A \to A/I$, the functor $\Hens_A(-)$ is fully faithful, so $\Hens_A(-) \otimes_A A/I \simeq \mathrm{id}$ as functors on $\mathrm{Ind}(\et{(A/I)})$.
+\begin{lemma}
+    Let $X = \lim_i X_i$ be a cofiltered limit of topological spaces and let
+    $x \in X$ be an element. Denote by $x_i$ the image of $x$ in $X_i$. Then
+    $\overline{\{x\}} = \lim_i \overline{\{x_i\}}$.
+    \label{lemma:closure-limit}
 \end{lemma}
 
-% Translate Henselization into some tensor product
+The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite-w-local}.
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
+  \label{thm:pi0-to-totally-disconnected}
+  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the set of connected components of \(X\). Let \(X \to \pi_0(X)\) be the map which sends \(x \in X\) to the connected component of \(X\) passing through \(x\). Endow \(\pi_0(X)\) with the quotient topology. Then %\(\pi_0(X)\) is a totally disconnected space and 
+  any continuous map \(X \to Y\) from \(X\) to a totally disconnected space \(Y\) factors through \(\pi_0(X)\).
+\end{lemma}
+
+\begin{proof}
+  Since connected subsets are mapped to connected subsets and the connected components of a totally disconnected space are singletons, any continuous map \(X \to Y\) sends each connected component of \(X\) to a single point in \(Y\). Thus, it factors uniquely through \(\pi_0(X)\).
+\end{proof}
 
 \begin{lemma}
-    Let \(I\) be an ideal of a ring \(A\) contained in the Jacobson radical \(I_A\) of \(A\). Then the Henselization 
+  \label{thm:pi0-to-totally-disconnected-injective}
+  \uses{thm:pi0-to-totally-disconnected}
+  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the topological space of connected components of \(X\). Let \(Y\) be a totally disconnected space. If every fiber of \(X \to Y\) is connected, then the map \(\pi_0(X) \to Y\) is injective.
 \end{lemma}
 
-\section{Weakly étale algebras}
+\begin{proof}
+  Omitted.
+\end{proof}
 
-\begin{definition}[Ind-(Zariski localizations), {\cite[Definition 2.2.1(iv)]{proetale}}]
-    \label{def:ind-zariski-localization}
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/005F}{Tag 005F}]{stacks-project}}]
+  \label{thm:connected-component-intersection-closed-open}
+  Let $X$ be a topological space. Assume
+  \begin{enumerate}
+    \item $X$ is quasi-compact,
+    \item $X$ has a basis for the topology consisting of quasi-compact opens, and
+    \item the intersection of two quasi-compact opens is quasi-compact.
+  \end{enumerate}
+  For any $x \in X$ the connected component of $X$ containing $x$ is the intersection of all open and closed subsets of $X$ containing $x$.
+\end{lemma}
 
-    An $R$-algebra $S$ is called a \textit{Zariski localization} if $S \simeq \prod_{i=1}^n R[f_i^{-1}]$ for some $f_1,\dots,f_n \in R$. An \textit{ind-(Zariski localization)} is a filtered colimit of Zariski localizations. A ring homomorphism $f : R \to S$ is called a \textit{Zariski localization} (resp. \emph{ind-(Zariski localization)}) if $S$ is Zariski localization (resp. ind-(Zariski localization)) as an $R$-algebra via $f$.
+\begin{proof}
+  Let $T$ be the connected component containing $x$. Let $S = \bigcap_{\alpha \in A} Z_\alpha$ be the intersection of all open and closed subsets $Z_\alpha$ of $X$ containing $x$. Note that $S$ is closed in $X$. Note that any finite intersection of $Z_\alpha$'s is a $Z_\alpha$. Because $T$ is connected and $x \in T$ we have $T \subset Z_\alpha$ for every \(Z_\alpha\), thus \(T \subset S\). It suffices to show that $S$ is connected. If not, then there exists a disjoint union decomposition $S = B \amalg C$ with $B$ and $C$ open and closed in $S$. In particular, $B$ and $C$ are closed in $X$, and so quasi-compact by assumption (1). By assumption (2) there exist quasi-compact opens $U, V \subset X$ with $B = S \cap U$ and $C = S \cap V$. Then $U \cap V \cap S = \emptyset$. Hence $\bigcap_\alpha U \cap V \cap Z_\alpha = \emptyset$. By assumption (3) the intersection $U \cap V$ is quasi-compact. Hence for some $\alpha' \in A$ we have $U \cap V \cap Z_{\alpha'} = \emptyset$. Since $X - (U \cup V)$ is disjoint from $S$ and closed in $X$ hence quasi-compact, we can use the same argument to see that $Z_{\alpha''} \subset U \cup V$ for some $\alpha'' \in A$. Then $Z_\alpha = Z_{\alpha'} \cap Z_{\alpha''}$ is contained in $U \cup V$ and disjoint from $U \cap V$. Hence $Z_\alpha = U \cap Z_\alpha \amalg V \cap Z_\alpha$ is a decomposition into two open pieces, hence $U \cap Z_\alpha$ and $V \cap Z_\alpha$ are open and closed in $X$. Thus, if $x \in B$ say, then we see that $S \subset U \cap Z_\alpha$ and we conclude that $C = \emptyset$.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL}]{stacks-project}}]
+  \label{thm:intersection-closed-open-iff} % This is spectral minus sober, we only need X spectral version.
+  Let $X$ be a topological space. Assume
+  \begin{enumerate}
+    \item $X$ is quasi-compact,
+    \item $X$ has a basis for the topology consisting of quasi-compact opens, and
+    \item the intersection of two quasi-compact opens is quasi-compact.
+  \end{enumerate}
+  For a subset $T \subset X$ the following are equivalent:
+  \begin{enumerate}
+    \item $T$ is an intersection of open and closed subsets of $X$, and
+    \item $T$ is closed in $X$ and is a union of connected components of $X$.
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:connected-component-intersection-closed-open}
+  It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X - V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
+\end{proof}
+
+\begin{lemma}
+    Let $f\colon X \to Y$ be an embedding of topological spaces. Then $f$ preserves and reflects
+    specializations, i.e. for $a, b \in X$, $a$ specializes to $b$ if and only if $f(a)$ specializes to $f(b)$.
+    \label{lemma:embedding-specializations}
+\end{lemma}
+
+\begin{proof}
+    The only if direction holds for any continuous map. Conversely, if $f(a)$ specializes to $f(b)$, then
+    $b \in f^{-1}(\overline{\{f(a)\}}) = \overline{\{a\} }$.
+\end{proof}
+
+\begin{definition}
+    Let $X$ be a topological space and $Z \subseteq X$ a subset. The set
+    \[
+    Z^g = \{ x \in X \mid \exists z \in Z, x \rightsquigarrow z \}
+    \] is called the \emph{generalization of $Z$ in $X$}.
+    \label{def:generalization}
 \end{definition}
 
-\begin{definition}[Weakly étale algebras, {\cite[Definition 2.3.1]{proetale}}]
-    An $R$-algebra $S$ is \emph{weakly étale} if $S$ is flat over $R$ and
-    $S$ is flat over $S \otimes_{R} S$. We say a ring homomorphism
-    $R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra via $f$.
-    \label{def:weakly-etale-algebra}
+\begin{lemma}
+    Let $Z \subseteq X$ be a subset of a topological space. Then $Z^g$ is closed under generalization.
+    \label{lemma:generalization-stable-generalization}
+\end{lemma}
+
+\begin{proof}
+    This is immediate from the definition.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0906}{Tag 0906}]{stacks-project}}]
+  \label{thm:pi0-profinite}
+  Let $X$ be a spectral space. Then $\pi_0(X)$ is a profinite space.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:connected-component-intersection-closed-open}
+  We will show that \(X\) is Hausdorff, quasi-compact, and totally disconnected.
+  By \Cref{thm:connected-component-intersection-closed-open}, every connected component of \(X\) is the intersection of the open and closed subsets containing it. Since \(\pi_0(X)\) is the image of a quasi-compact space, it is also quasi-compact. It is totally disconnected by construction. Let \(C,D \subset X\) be distinct connected components of \(X\). Write \(C = \bigcap_{\alpha} U_\alpha\) as the intersection of the open and closed subsets of \(X\) containing \(C\). Any finite intersection of \(U_\alpha\)'s is another \(U_\alpha\). Since \(\bigcap_\alpha U_\alpha \cap D = \emptyset\) we conclude that \(U_\alpha \cap D = \emptyset\) for some \(\alpha\) (connected components are closed, thus quasi-compact). Since \(U_\alpha\) is open and closed, it is the union of the connected components it contains, i.e., \(U_\alpha\) is the inverse image of some open and closed subset \(V_\alpha \subset \pi_0(X)\). This proves that the points corresponding to \(C\) and \(D\) are contained in disjoint open subsets, i.e., \(\pi_0(X)\) is Hausdorff.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:closed-subspace-spectral}
+  Let $X$ be a spectral space. Let $Y \subset X$ be a closed subspace. Then $Y$ is spectral.
+\end{lemma}
+
+\begin{proof}
+  The only thing remaining to show is that $Y$ is sober. Let $Z \subset Y$ be a closed irreducible subset, then $Z$ is also closed in $X$. $Z$ is irreducible in $X$ since any nontrivial closed subset decomposition in $X$ will give a nontrivial closed subset decomposition in $Y$, thus $Z$ has a unique generic point $z \in X$. Since $Z \subset Y$ we have $z \in Y$ with the closure of $z$ in $Y$ is $Z$. This shows that $Y$ is sober.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:closure-product}
+  Let $X$ and $Y$ be topological spaces. Let $(x, y) \in X \times Y$ be a point. Then 
+  \[\overline{\{(x, y)\}} = \overline{\{x\}} \times \overline{\{y\}}.\]
+\end{lemma}
+
+\begin{proof}
+  It is clear that \(\overline{\{(x, y)\}} \subseteq \overline{\{x\}} \times \overline{\{y\}}\).
+
+  If \(z \notin \overline{\{(x, y)\}}\), there exists opens \(U \subset X\), \(V \subset Y\) such that \(z \notin U \times V\), thus \((x, y) \notin U \times V\). Either \(x \notin U\) or \(y \notin V\), suppose \(x \notin U\). Then \(U \cap \overline{\{x\}} = \emptyset\), thus \(U \times V \cap \overline{\{x\}} \times \overline{\{y\}}  = \emptyset\). This shows that \(\overline{\{x\}} \times \overline{\{y\}} \subseteq \overline{\{(x, y)\}}\).
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0907}{Tag 0907}]{stacks-project}}]
+  \label{thm:spectral-product}
+  Let $X$ and $Y$ be spectral spaces. Then the product $X \times Y$ is spectral.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:closure-product}
+  Let $X$, $Y$ be spectral spaces. Denote $p : X \times Y \to X$ and $q : X \times Y \to Y$ the projections. We first show that \(X \times Y\) is sober. Let $Z \subset X \times Y$ be a closed irreducible subset. Then $p(Z) \subset X$ is irreducible and $q(Z) \subset Y$ is irreducible. Let $x \in X$ be the generic point of the closure of $p(Z)$ and let $y \in Y$ be the generic point of the closure of $q(Z)$. If $(x, y) \notin Z$, then there exist opens $x \in U \subset X$, $y \in V \subset Y$ such that $Z \cap (U \times V) = \emptyset$. Hence $Z$ is contained in $(X - U) \times Y \cup X \times (Y - V)$. Since $Z$ is irreducible, we see that either $Z \subset (X - U) \times Y$ or $Z \subset X \times (Y - V)$. In the first case $p(Z) \subset (X - U)$ and in the second case $q(Z) \subset (Y - V)$. Both cases are absurd as $x$ is in the closure of $p(Z)$ and $y$ is in the closure of $q(Z)$. Thus we conclude that $(x, y) \in Z$, which means that $(x, y)$ is the generic point for $Z$ (\Cref{thm:closure-product}).
+
+  A basis of the topology of $X \times Y$ consists of opens of the form $U \times V$ with $U \subset X$ and $V \subset Y$ quasi-compact open (here we use that $X$ and $Y$ are spectral). Then $U \times V$ is quasi-compact as the product of quasi-compact spaces is quasi-compact. Moreover, any quasi-compact open of $X \times Y$ is a finite union of such quasi-compact rectangles $U \times V$. It follows that the intersection of two such is again quasi-compact (since $X$ and $Y$ are spectral). This concludes the proof.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, first part]{stacks-project}}]
+Let $X$ be a spectral space. Let
+\[
+\begin{tikzcd}
+Y \arrow[r] \arrow[d] & T \arrow[d] \\
+X \arrow[r] & \pi_0(X)
+\end{tikzcd}
+\]
+be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $Y$ is spectral and $T = \pi_0(Y)$.
+\label{thm:cartesian-profinite}
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:pi0-profinite,thm:spectral-product,thm:closed-subspace-spectral,thm:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
+  Note that $Y$ is a closed subspace of $X \times T$ (see \verb`TopCat.pullbackIsoProdSubtype`) as $\pi_0(X)$ is a profinite space (\Cref{thm:pi0-profinite}) hence Hausdorff. Since $X \times T$ is spectral (\Cref{thm:spectral-product}) it follows that $Y$ is spectral (\Cref{thm:closed-subspace-spectral}). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{thm:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
+\end{proof}
+
+The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}.
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/00EA}{Tag 00EA}, (1) + (2)(a)]{stacks-project}}]
+  \label{thm:localization-isom-of-going-down}
+  Let $A \to B$ be a ring map which has going down. Let $\p \subset A$ be a prime ideal and let $\q \subset B$ be a prime ideal lying over $\p$. Assume that and there is at most one prime of $B$ above every prime of $A$. Then the natural map $B_{\p B} \to B_{\q}$ is an isomorphism.
+\end{lemma}
+
+\begin{proof}
+  It suffices to show that all the elements of $B - \q$ are all invertible in $B_{\p B}$. Suppose the contrary, let $x \in B - \q$ be an element not invertible in $B_{\p B}$. We can find a prime ideal $\q' \subseteq \p B$ of $B$ containing $x$. By going down there exists a prime $\q'' \subseteq \q$ lying over $\p' = A \cap \q'$. By the uniqueness of primes lying over $\p'$ we see that $\q' = \q''$, which contradicts the fact that $x \notin \q$.
+\end{proof}
+
+\begin{definition}[Local isomorphisms, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E} (1)]{stacks-project}}]
+  \label{def:local-isomorphism}
+  We say $A \to B$ is a \emph{local isomorphism} if for every prime $\mathfrak{q} \subset B$ there exists a $g \in B$, $g \notin \mathfrak{q}$ such that $A \to B_g$ induces an open immersion $\Spec (B_g) \to \Spec (A)$.
 \end{definition}
+
+\begin{definition}[Identify local rings, {\cite[\href{https://stacks.math.columbia.edu/tag/096E}{Tag 096E} (2)]{stacks-project}}]
+  A ring map $A \to B$ \emph{identifies local rings} if for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
+  \label{def:identify-local-rings}
+\end{definition}
+
+\begin{lemma}
+  \label{thm:finite-product-identifies-local-rings}
+  \uses{def:identify-local-rings}
+  The map \(A \to \prod_{i = 1}^{n} A_i \) identifies local rings, if \(A \to A_i\) identifies local rings for all \(i\).
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:identifies-local-rings-composition}
+  Let \(A \to B\) and \(B \to C\) be ring maps that identify local rings. Then the composition \(A \to C\) also identifies local rings.
+  \uses{def:identify-local-rings}
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{definition}{\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}}
+  \label{def:identifies-local-ring-to-top}
+  \uses{def:identify-local-rings,thm:identifies-local-rings-composition}
+  Let $A$ be a ring and $X = \Spec(A)$. Let $\operatorname{ILR}_A$ denote the category of $A$-algebras $B$ for which $A \to B$ identifies local rings, and let $\operatorname{Top}_X$ denote the category of topological spaces over $X$.
+  
+  Define the functor
+  \[
+  F \colon \operatorname{ILR}_A \longrightarrow \operatorname{Top}_X
+  \]
+  by sending $B$ to $\Spec(B)$.
+\end{definition}
+
+\begin{lemma}{\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}}
+  \label{thm:identifies-local-ring-to-top-fully-faithful}
+  \uses{def:identifies-local-ring-to-top}
+  Let $A$ be a ring. Set $X = \Spec (A)$. The functor \(F\) constructed in \Cref{def:identifies-local-ring-to-top}
+  \[
+  B \longmapsto \Spec (B)
+  \]
+  from the category of $A$-algebras $B$ such that $A \to B$ identifies local rings to the category of topological spaces over $X$ is fully faithful.
+\end{lemma}
+
+\begin{proof}
+The functor \(F\) is a composition of two functors:
+1. The fully faithful functor from the category of \(A\)-algebras \(B\) for which \(A \to B\) identifies local rings to the category of ringed spaces \((Y, \O_Y)\) over \(X = \Spec(A)\) satisfying \(\O_Y = p^{-1}\O_X\), where \(p: Y \to X\) is the structure map.
+2. The functor sending a ringed space to its underlying topological space, and a morphism \((f, f^\#)\) to \(f\).
+
+The second functor is fully faithful because \(f^\#\) is always an isomorphism, being given by the canonical identification \(f^{-1}\O_Y \cong f^{-1}p^{-1}\O_X = q^{-1}\O_X \cong \O_Z\), where \(p: Y \to X\) and \(q: Z \to X\) are the structure maps.
+\end{proof}
+
+\begin{lemma}
+    Let $A = \colim_i A_i$ be a filtered colimit of $A$-algebras and let $B$ be an étale $A$-algebra. Then
+    there exists an $i$ and an étale $A_i$-algebra $B'$ such that
+    \[
+    \begin{tikzcd}
+        A_i \arrow{r} \arrow{d} & B' \arrow{d} \\
+        A \arrow{r} & B
+    \end{tikzcd}
+    \] is a pushout diagram.
+    \label{lemma:etale-ind-spreads}
+\end{lemma}
+
+\begin{proof}
+    This follows because every étale algebra is of finite presentation and by possibly enlarging $i$ we can ensure
+    that $B'$ is étale over $A_i$.
+\end{proof}
+
+\section{ind-Zariski maps}
+
+\begin{definition}[Ind-Zariski, {\cite[\href{https://stacks.math.columbia.edu/tag/096N}{Tag 096N}]{stacks-project}}]
+    \label{def:ind-Zariski}
+    \uses{def:local-isomorphism}
+    An $R$-algebra $S$ is called a \emph{ind-Zariski} if $S$ can be written as a filtered colimit $S \simeq \colim S_i$ with each $R \to S_i$ a local isomorphism. A ring homomorphism $f : R \to S$ is called a \emph{ind-Zariski} if $S$ is ind-Zariski as an $R$-algebra via $f$.
+\end{definition}
+
+\begin{remark}
+  The definition of ind-Zariski is slightly more general from \cite[Definition 2.2.1(iv)]{proetale}, where they defined as a filtered colimit of finite products of principal localizations.
+\end{remark}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096T}{Tag 096T}]{stacks-project}}]
+  Let $A \to B$ be an ind-Zariski ring map. Then it identifies local rings, i.e. for every prime $\mathfrak{q} \subset B$ the canonical map $A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}$ is an isomorphism.
+  \label{thm:ind-Zariski-identifies-local-rings}
+  \uses{def:ind-Zariski,def:identify-local-rings}
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}
+  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat and ind-étale.
+  \label{thm:ind-Zariski-is-flat-ind-etale}
+  \uses{def:ind-Zariski,def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat and étale.
+\end{proof}
+
+\begin{lemma}
+    A filtered colimit of ind-Zariski algebras is ind-Zariski.
+    \label{lemma:ind-ind-Zariski}
+  \uses{def:ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+    This follows from general theory, because local isomorphisms are of finite presentation.
+\end{proof}
+
+\begin{lemma}
+  A finite product of ind-Zariski algebras is ind-Zariski.
+  \label{lemma:ind-Zariski-products}
+  \uses{def:ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+  This is the consequence of the more general fact that if a property $p$ of ring maps is stable under finite products, then Ind-$p$ is also stable under finite products since finite product of filtered index category is again filtered. 
+  
+  It suffices to show that being local isomorphism is stable under finite products. Suppose $A \to B_i$ is a local isomorphism for each $i$ for finitely many $i$'s. Every prime $\q$ in $\prod_i B_i$ is an extension prime ideal of one of the factors, say $B_0$. Since there exists $f_0 \in B_0$, $f_0 \notin \q$ such that $A \to (B_0)_{f_0}$ induces an open immersion, localize $\prod_i B_i$ at the corresponding idempotent times this element \(f_0\) to obtain the desired result.
+\end{proof}
+
+\section{Henselian objects and Henselisation}
+
+In this section we define a generalisation of the notion of a Henselian ring to an arbitrary category. Let $\mathcal{C}$ be a category
+and $P$ a property of morphisms.
+
+\begin{definition}[Henselian]
+    A morphism $f\colon X \to Y$ is $P$-\emph{Henselian}, if for every factorisation
+    \[
+    \begin{tikzcd}
+        X \arrow{r}{u} \arrow[swap]{dr}{f} & Z \arrow{d}{v} \\
+                    & Y,
+    \end{tikzcd}
+    \] with $u$ satisfying $P$, there exists a retraction of $u$.
+    \label{def:p-henselian}
+\end{definition}
+
+\begin{example}
+    A local ring $(R, \mathfrak{m}, \kappa)$ is Henselian if and only if the projection $R \to \kappa$ is étale-Henselian.
+\end{example}
+
+\begin{proof}
+    By {\cite[\href{https://stacks.math.columbia.edu/tag/04GG}{Tag 04GG}]{stacks-project}}, $R$ is Henselian if and only if
+    for any étale ring map $R \to S$ and prime $\mathfrak{q}$ of $S$ lying over $\mathfrak{m}$ with $\kappa = \kappa(\mathfrak{q})$,
+    there exists a retraction $S \to R$ of $R \to S$.
+
+    Suppose $R$ is Henselian and let $R \to S \to \kappa$ be a factorisation of $R \to \kappa$ with $R \to S$ étale. Then
+    $\mathfrak{q} = \mathrm{ker}(S \to \kappa)$ is a prime ideal of $S$ lying above $\mathfrak{m}$. Hence we obtain a commutative
+    diagram
+    \[
+        \begin{tikzcd}
+        R \arrow{r} \arrow{d} & S \arrow{r} \arrow{d} & \kappa \\
+        \kappa \arrow[dashed]{r} & \kappa(\mathfrak{q}) \arrow[dashed]{ur},
+        \end{tikzcd}
+    \] where the composition of the dashed arrows is the identity of $\kappa$. Hence $\kappa(\mathfrak{q}) = \kappa$ and by assumption,
+    $R \to S$ has a retraction.
+
+    Now assume that $R \to \kappa$ is étale-Henselian and let $R \to S$ be étale and $\mathfrak{q}$ be a prime ideal of $S$ with
+    $\kappa(\mathfrak{q}) = \kappa$. Hence the composition $R \to S \to \kappa(\mathfrak{q}) = \kappa$ is a factorisation
+    of $R \to \kappa$. Thus $R \to S$ has a retraction.
+\end{proof}
+
+% TODO: add definition of Henselisation if needed
+
+\begin{definition}[Strictly Henselian local ring]
+    \uses{def:p-henselian}
+    \label{def:strictly-henselian-local-ring}
+    A local ring $(R, \mathfrak{m}, \kappa)$ is \emph{strictly henselian} if the composition $R \to \kappa \to \kappa^{\mathrm{sep}}$ is étale-Henselian
+    for a separable closure $\kappa^{\mathrm{sep}}$.
+\end{definition}
+
+The following example shows that our definition agrees with the one in
+\cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}.
+
+\begin{example}
+    A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
+\end{example}
+
+\begin{proposition}
+    \label{thm:strictly-henselian-good-retraction}
+    \uses{def:strictly-henselian-local-ring}
+    Let \(A, \m\) be a strictly henselian local ring. Let \(f : A \to B\) a \'etale ring map with \(\n\) a maximal ideal of \(B\) lying over \(\m\). Then there exists a retraction \(s : B \to A\) of \(A \to B\) such that \(\n = s^{-1}(\m)\).
+\end{proposition}
+
+\begin{proof}
+  Since \(B/\m B\) is an étale algebra over the residue field \(k = A/\m\), it splits as \(B/\m B \cong k_1 \times \cdots \times k_n\) for finitely many finite separable extensions \(k_i\) of \(k\). Thus \(B/\n\), as a quotient of \(B/\m B\), is also a finite separable extension of \(k\). Choose an inclusion \(B/\n \hookrightarrow k^{\sep}\). Then we have a commutative diagram
+  \[
+  \begin{tikzcd}
+    A \arrow{r} \arrow{d} & B \arrow{d}\arrow{rd} & \\
+    k \arrow{r} & B/\n \arrow{r} & k^{\sep}.
+  \end{tikzcd}
+  \]
+  Since \(A \to k^{\sep}\) is étale-Henselian, there exists a retraction \(r : B \to A\) of \(A \to B\). But this retraction may not satisfy \(\n = r^{-1}(\m)\). 
+  
+  To solve this, notice that there are only finitely many prime ideals \(\n_0 = \n, \n_1, \cdots, \n_k\) of \(B\) lying over \(\m\) and they are all maximal ideals. (directly by the fact that \(B/\m B \cong k_1 \times \cdots \times k_n\)). Since \(\bigcap_{i \ne 0} \n_i \nsubseteq \n\) (otherwise one of \(\n_i \subseteq \n\) which is impossible), we can find element \(b \in \n_i\) for every \(i \ne 0\) that does not fall in $\n$. We may replace \((B, \n)\) by \((B_b, \n B_b)\), then \(B\) is still étale over \(A\) and \(\n\) is the only prime ideal of \(B\) lying over \(\m\). Then the section \(s_b : B_b \to A\) given by the previous paragraph satisfies \(\n B_b = s_b^{-1}(\m)\). Composition with the localization map \(B \to B_b\) gives the desired section \(s : B \to A\).
+\end{proof}
+
+\begin{proposition}
+    \label{thm:etale-over-strictly-henselian-localization-isom}
+    \uses{def:strictly-henselian-local-ring}
+    Let \(A\) be a strictly Henselian local ring and \(f : A \to B\) an étale ring map. Suppose \(\n\) is a maximal ideal of \(B\) lying over the maximal ideal \(\m\) of \(A\). Then the induced map \(A \to B_\n\) is an isomorphism.
+\end{proposition}
+
+\begin{proof}
+  \uses{thm:strictly-henselian-good-retraction}
+  Let \(s: B \to A\) be the section given by \Cref{thm:strictly-henselian-good-retraction} for the pair \((B, \n)\). Localizing at \(\m\), we obtain the following diagram:
+  \[
+  \begin{tikzcd}
+    A = A_\m \arrow[r, "f_\m"]\arrow[dr, "f'"'] & B_\m \arrow[d] \arrow[r, "s_\m"] & A \\
+    & B_\n \arrow[ur, dotted, "s'"'] &
+  \end{tikzcd}
+  \]
+  The dotted arrow \(s'\) exists by the universal property of localization, since \(\n = s^{-1}(\m)\). Moreover, \(s'\) is a section of \(f'\).
+
+  Since \(f_\m\) is étale and \(s_\m\) is a section of \(f_\m\), it follows that \(s_\m\) is also étale by the cancellation property of étale maps. Thus \(s'\), being a composition of a localization and an étale map, is flat. As a flat local ring homomorphism, \(s'\) is faithfully flat and hence injective. Since \(s'\) is also a section of \(f'\), it is surjective. Therefore, \(s'\) is an isomorphism, and the composition \(A \to B_\n\) is an isomorphism.
+\end{proof}
+
+\section{Ind-etale and weakly etale ring maps}
 
 \begin{definition}[Ind-étale algebras, {\cite[\href{https://stacks.math.columbia.edu/tag/097I}{Tag 097I}]{stacks-project}}]
     An $R$-algebra $S$ is \emph{ind-étale} if it is a filtered colimit of étale $R$-algebras.
     We say a ring homomorphism $R \to S$ is \emph{ind-étale} if $S$ is ind-étale as an $R$-algebra via $f$.
-    \label{def:ind-etale-algebra}
+    \label{def:ind-etale}
 \end{definition}
 
-\begin{lemma}
-    \label{lem:ind-etale-flat-of-ind-Zariski}
-    \uses{def:ind-zariski-localization, def:ind-etale-algebra}
-
-    If \(S\) is an ind-(Zariski localization) \(R\)-algebra, then \(S\) is ind-étale and flat over \(R\).
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0BSI}{Tag 0BSI}]{stacks-project}}]
+  \label{thm:ind-etale-comp}
+  \uses{def:ind-etale}
+  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale, then $A \to C$ is ind-étale.
 \end{lemma}
 
-The following relation between weakly étale algebra and ind-étale algebra is the main result of this section.
-\begin{theorem}[{\cite[Theorem 2.3.4]{proetale}}]
-Let $f: A \to B$ be weakly étale. Then there exists a faithfully flat ind-étale morphism $g: B \to C$ such that $g \circ f: A \to C$ is ind-étale.
-    \label{thm:weakly-etale-ind-etale}
-\end{theorem}
+\begin{proof}
+  Omitted.
+\end{proof}
 
-Check whether theorem 5.4.2 can be refactored to avoid use the above theorem by directly mimicking the proof of topological invariance of étale sites for weakly étale.
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0BSH}{Tag 0BSH}]{stacks-project}}]
+  \label{thm:ind-etale-base-change}
+  \uses{def:ind-etale}
+  Let $A \to B$ be an ind-étale ring map. For any ring map $A \to C$, the base change $C \to B \otimes_A C$ is ind-étale.
+\end{lemma}
 
-Remove 5.4.1
-
-
-
-The local version of Theorem 2.3.4 follows from the following result of Olivier, \cite{Oli72}:
-
-\begin{theorem}[{\cite[Theorem 2.3.5]{proetale}}]
-Let $A$ be a strictly henselian local ring, and let $B$ be a weakly étale local $A$-algebra. Then $f: A \to B$ is an isomorphism.
-    \label{thm:weakly-etale-local}
-\end{theorem}
-
+\begin{proof}
+  Omitted.
+\end{proof}
 
 \section{w-local spaces}
 
-Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X\) that admits no further non-split open covers.
-
-\begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}]
+\begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
     \label{def:w-local-space}
-    \lean{WLocalSpace}
-    \leanok
-
+    % \lean{WLocalSpace}
+    % \leanok % To be modified
     A topological space \(X\) is \emph{w-local} if it satisfies:
     \begin{enumerate}
-        \item \(X\) is spectral;
-        \item All open covers split, i.e., for every open cover \(\{U_i\}_{i \in I}\) of \(X\), the map \(\coprod_{i \in I} U_i \to X\) has a section;
-        \item The subspace \(X^c\) of closed points is closed.
+        \item \(X\) is spectral,
+        \item every point specializes to a unique closed point,
+        \item the subspace \(X^c\) of closed points is closed.
     \end{enumerate}
 \end{definition}
 
-\begin{definition}[w-local morphisms, {\cite[Definition 2.1.1]{proetale}}]
+\begin{definition}[w-local morphisms, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
     Let \(X\) and \(Y\) be w-local spaces. A morphism \(f: X \to Y\) is \emph{w-local} if it is spectral and the image of closed points \(f(X^c) \subseteq Y^c\).
-    \label{def:w-local-morphism}
+    \label{def:w-local-space-map}
     \uses{def:w-local-space}
     \lean{IsWLocalMap}
     \leanok
 \end{definition}
 
-\begin{definition}
-    \label{def:w-local-space-category}
-    \uses{def:w-local-space, def:w-local-morphism}
-
-    Let \(S\) denote the category of spectral spaces. The category of w-local spaces is denoted by \(\mathcal{S}^{wl}\). The objects are w-local spaces, and the morphisms are w-local morphisms. The inclusion functor is denoted by \(i: \mathcal{S}^{wl} \to \mathcal{S}\).
-\end{definition}
-
-\begin{lemma}[{\cite[Lemma 2.1.9]{proetale}}]
-    \label{lem:w-local-space-preserves-limits}
-    \uses{def:w-local-space-category}
-
-    The category $\mathcal{S}^{wl}$ admits all small limits, and the inclusion $i : \mathcal{S}^{wl} \to \mathcal{S}$ preserves these limits.
+\begin{lemma}
+  Let \(f: X \to Y\) and \(g: Y \to Z\) be w-local maps between w-local spaces. Then the composition \(g \circ f: X \to Z\) is w-local.
+  \label{thm:w-local-map-composition}
+  \uses{def:w-local-space, def:w-local-space-map}
 \end{lemma}
 
-% TBA: S: category of spectral spaces, i : \(\S^{wl}\) is the full subcategory of \(\S\) consisting of w-local spaces.
+\begin{proof}
+  Omitted.
+\end{proof}
 
-\begin{lemma}[{\cite[Lemma 2.1.4, second part]{proetale}}]
-    \label{lem:w-local-space-connected-components}
+\begin{lemma}
+    Let $X$ be w-local and $Z \subseteq X$ a subset closed under specialization. Then the generalization
+    $Z^g$ in $X$ is still closed under specialization.
+    \uses{def:generalization}
+    \label{lemma:generalization-specialization-closed}
+\end{lemma}
+
+\begin{proof}
+    Let $x \rightsquigarrow y$ in $X$ with $x \in Z^g$. Then $x$ specializes to some $z \in Z$, which
+    in turn specializes to a unique closed point $c$ in $X$ because $X$ is w-local.
+    Because $Z$ is stable under specialization, $c \in Z$. Also $y$ specializes to a unique closed
+    point $c'$ in $X$ and by uniqueness we have $c' = c \in Z$. Hence $y \in Z^g$.
+\end{proof}
+
+\begin{lemma}
+    Let $X$ be w-local and $Z \subseteq X$ a subset closed under specialization. If
+    $Z$ is spectral, it is w-local and the inclusion $Z \to X$ maps closed points to closed points.
     \uses{def:w-local-space}
-    \lean{WLocalSpace.closedPointsHomeomorph}
-
-    Let $X$ be a w-local spectral space. The composition $X^c \to X \to \pi_0(X)$ is a homeomorphism.
+    \label{lemma:w-local-specialization-closed}
 \end{lemma}
 
-\begin{definition}[{\cite[Lemma 2.1.10]{proetale}}]
-    \label{def:w-localization-space}
-    \uses{def:w-local-space, def:w-local-space-category}
-    The inclusion $i : \mathcal{S}^{wl} \to \mathcal{S}$ admits a right adjoint $X \mapsto X^Z$. The counit $X^Z \to X$ is a pro-(open cover) for all $X$, and the composite $(X^Z)^c \to X$ is a homeomorphism for the constructible topology on $X$.
+\begin{proof}
+    \uses{lemma:embedding-specializations}
+    Since $Z$ is closed under specializations, we have $Z^c = X^c \cap Z$. In particular
+    $Z^c$ is closed in $Z$ and $Z \to X$ preserves closed points.
+    By \ref{lemma:embedding-specializations}, specializations
+    in $Z$ are the same as specializations in $X$. Since $Z$ is closed
+    under specializations, every point in $Z$ specializes to a unique
+    closed point in $X$ and therefore in $Z$.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096B}{Tag 096B}]{stacks-project}}]
+  \label{thm:closed-subspace-w-local}
+  \uses{def:w-local-space,def:w-local-space-map}
+  Let \(X\) be a w-local space. Then every closed subspace \(Y \subseteq X\) is w-local.
+  Moreover, the inclusion map \(Y \to X\) is w-local.
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:w-local-specialization-closed}
+    This follows from \ref{lemma:w-local-specialization-closed}, because
+    closed subsets are stable under specialization. The inclusion $Y \to X$ is
+    spectral as a closed embedding and hence w-local by the lemma.
+\end{proof}
+
+\begin{lemma}
+    Let $X$ be a profinite topological space and $x, y \in X$ be distinct. Then
+    there exist $U, V \subseteq X$ open and closed such that $X = U \coprod V$ and
+    $x \in U$, $y \in V$.
+    \label{lemma:profinite-disj-clopen-separation}
+\end{lemma}
+
+\begin{proof}
+  Write $X = \lim_{i \in I} X_i$ as a directed limit of finite discrete spaces. Let $\pi_i \colon X \to X_i$ be the
+  projection maps. A base of the open sets of $X$ is given by the preimages $\pi_i^{-1}(\{z\})$ for $z \in X_i$ and $i \in I$. Every open set in this base is also closed, because its complement is a finite union of such sets.
+
+  Choose an open subset in this base containing $x$ but not $y$, say $U = \pi_{i_0}^{-1}(\{z_0\})$ for some $i_0 \in I$ and $z_0 \in X_{i_0}$. Then $V = X - U$ is also open and closed, and we have $X = U \coprod V$ with $x \in U$ and $y \in V$.   
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0905}{Tag 0905}, (6) $\implies$ (1)]{stacks-project}}]
+  Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
+  \label{lemma:spectral-closed-points-profinite}
+\end{lemma}
+
+\begin{proof}
+  \uses{lemma:spectral-constructible-closed-closed}
+  Since every point is closed, there are no nontrivial specializations between points. By \Cref{item:specialization-closed-spectral-constructible-closed-closed} in \Cref{lemma:spectral-constructible-closed-closed}, all constructible subsets of $X$ are closed. In particular, every compact open subset is also closed. Since $X$ is spectral, thus T0, for any two points there is a quasi-compact open (also closed) containing exactly one of them. Thus $X$ is profinite by \verb`isTotallyDisconnected_of_isClopen_set`.
+\end{proof}
+
+\begin{lemma}
+    Let $X$ be a w-local space. Then the set of closed points $X^c$ of $X$ is profinite.
+    \uses{def:w-local-space}
+    \label{lemma:w-local-closed-points-profinite}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:spectral-closed-points-profinite}
+    It is a closed subspace of a spectral space, hence spectral. Therefore it is profinite by
+    \ref{lemma:spectral-closed-points-profinite}
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0A31}{Tag 0A31}, (3) $\implies$ (4)]{stacks-project}}]
+  Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then the generalization $E^g$ is an intersection of quasi-compact open subsets.
+  \label{lemma:spectral-generalization-intersection-open}
+\end{lemma}
+
+\begin{proof}
+  Let $X$ be a spectral space and let $W$ denote $E^g$. Since every point of $W$ specializes to a point of $E$ we see that an open of $W$ which contains $E$ is equal to $W$. Hence since $E$ is quasi-compact, so is $W$. If $x \in X$, $x \notin W$, then $Z = \overline{\{x\}}$ is disjoint from $W$. Since $W$ is quasi-compact we can find a quasi-compact open $U$ (since there is a open basis of quasi-compact opens of $X$ and finitely many of them would suffice to cover $W$) with $W \subset U$ and $U \cap Z = \emptyset$. We conclude that $W$ is an intersection of quasi-compact open subsets.
+\end{proof}
+
+\begin{definition}[Constructible topology, {\stacksproject{08YF}}]
+    Let $X$ be a topological space. The \emph{constructible topology} on $X$
+    is the topology with subbase of opens the sets $U$ and $X - U$ for
+    all quasi-compact opens $U$ of $X$.
+    \label{def:constructible-topology}
 \end{definition}
+
+In other words, a subset of $X$ is open in the constructible topology if and only if
+it is a union of finite intersections of sets of the form $U$ or $X - U$ for
+a quasi-compact open $U$.
+
+\begin{lemma}[\stacksproject{0901}]
+    Let $X$ be a spectral space. Then $X$ is quasi-compact in the constructible topology.
+    \uses{def:constructible-topology}
+    \label{lemma:spectral-constructible-quasi-compact}
+\end{lemma}
+
+\begin{proof}
+    Let $\mathfrak{B}$ be the set of subsets of $X$ that are quasi-compact open or
+    the complement of a quasi-compact open.
+    By definition of the constructible topology and the Alexander subbasis theorem,
+    it suffices to show that every covering $X = \bigcup_{i \in  I} B_i$
+    with $B_i \in \mathfrak{B}$ has a finite subcover. Since
+    for every $B \in \mathfrak{B}$ also $X - B \in \mathfrak{B}$,
+    it suffices to show: If $\{B_i\}_{i \in I}$ is a family of elements
+    of $\mathfrak{B}$ such that all finite subfamilies have non-empty intersection,
+    then $\bigcap_{i \in  I} B_i$ is non-empty.
+
+    Let $\mathcal{S}$ be the set of families in $\mathfrak{B}$ that are pairwise unequal, have non-empty
+    finite intersections and empty intersection. For the sake of contradiction, suppose
+    $\mathcal{S}$ is non-empty. If we equip $\mathcal{S}$ with the ordering by subset inclusion,
+    Zorn's Lemma yields a maximal family $\{B_i\}_{i \in I} \in \mathcal{S}$.
+
+    Let $I' \subseteq I$ be the indices such that $B_i$ is closed and set $Z = \bigcap_{i \in  I'} B_i$.
+    This is a closed and non-empty subset of $X$, because $X$ is quasi-compact
+    and all finite intersections are non-empty by assumption.
+    Note that for any $i_1, \ldots, i_n \in I$ the intersection $\bigcap_{a=1}^n B_{i_a}$ is quasi-compact,
+    hence $Z \cap \bigcap_{a=1}^n B_{i_a}$ is non-empty by the same argument.
+
+    Suppose $Z = Z' \cup Z'$ is reducible with $Z', Z'' \subsetneq Z$ closed. Because
+    $X$ is quasi-separated, there exist quasi-compact opens $U', U'' \subseteq X$ with
+    $U' \cap Z'$ non-empty, $U'' \cap Z''$ non-empty and $U' \cap Z'' = \emptyset = U'' \cap Z'$.
+    Then set $B' = X - U' \in \mathfrak{B}$ and $B'' = X - U'' \in \mathfrak{B}$. We
+    claim that $\{B_i\}_{i \in I}$ with $B'$ or $B''$ added is still in $\mathcal{S}$. Suppose,
+    this is not the case. Then there exist finitely many indices
+    $i_a$ and $j_b$ in $I$ such that
+    \[
+    B' \cap \bigcap_{a=1}^n B_{i_a} = \emptyset = B'' \cap \bigcap_{b=1}^m B_{j_b}
+    .\] By construction, $Z \subseteq B' \cup B''$, so in particular
+    \[
+    Z \cap \bigcap_{a=1}^n B_{i_a} \cap \bigcap_{b=1}^m B_{j_b} = \emptyset
+    .\] which is a contradiction. Hence $\{B_i\}_{i \in I}$ is not maximal, also a contradiction. So
+    $Z$ is irreducible. But for every $i \in I - I'$, the set $B_i$ is open and hence
+    the non-empty open $Z \cap B_i$ of $Z$ contains the unique generic point of $Z$. Hence
+    $\bigcap_{i \in  I} B_i = Z \cap \bigcap_{i \in  I - I'}$ is non-empty, which is again a contradiction.
+\end{proof}
+
+\begin{lemma}[\stacksproject{0903}]
+    \uses{def:constructible-topology}
+    \label{lemma:spectral-constructible-closed-closed}
+    Let $X$ be a spectral space and $E \subseteq X$ a subset closed in the constructible topology.
+    \begin{enumerate}
+        \item If $x \in \overline{E}$, then $x$ is the specialization of a point in $E$.
+        \item If $E$ is stable under specialization, then $E$ is closed. \label{item:specialization-closed-spectral-constructible-closed-closed}
+    \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:spectral-constructible-quasi-compact}
+    It suffices to show the first claim. Let $x \in \overline{E}$
+    and let $\{U_i\}_{i \in I}$ be the set of quasi-compact open neighbourhoods of $x$.
+    Since $X$ is spectral, these form a neighbourhood basis of $x$, so $\bigcap_{i \in  I} U_i$
+    is the set of generalizations of $x$. It hence suffices to show
+    that $\bigcap_{i \in  I} U_i \cap E$ is non-empty. Indeed,
+    as $X$ is quasi-separated, any finite intersection of the $U_i$ is another one and
+    since $x \in \overline{E}$, the intersection $U_i \cap E$ is non-empty for all $i$.
+    Since $U_i \cap E$ is closed in the constructible topology for all $i$
+    and $X$ is quasi-compact in the constructible topology by \ref{lemma:spectral-constructible-quasi-compact},
+    the intersection $\bigcap_{i \in  I} U_i \cap E$ is non-empty.
+\end{proof}
+
+\begin{lemma}
+    Let $X$ be a w-local space and $Z \subseteq X$ a closed subset. Then $Z^g$ is closed.
+    \uses{def:w-local-space, def:generalization}
+    \label{lemma:w-local-generalization-closed-closed}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:spectral-generalization-intersection-open, lemma:generalization-specialization-closed, lemma:spectral-constructible-closed-closed}
+    Since $Z$ is closed, it is quasi-compact. Hence by \Cref{lemma:spectral-generalization-intersection-open},
+    we see that $Z^g$ is closed in the constructible topology as an intersection of quasi-compact opens.
+    Since $Z$ is stable under specialization, the same holds for $Z^g$ by
+    \Cref{lemma:generalization-specialization-closed}. Thus
+    by \Cref{lemma:spectral-constructible-closed-closed}, the claim follows.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0968}{Tag 0968}]{stacks-project}}]
+    \label{thm:closed-points-isom-pi0}
+    \uses{def:w-local-space}
+    Let \(X\) be a w-local space. Then the composition $X^c \to X \to \pi_0(X)$ is a homeomorphism,
+    where $X^c$ denotes the closed points of $X$.
+\end{lemma}
+
+\begin{proof}
+    \uses{thm:pi0-profinite, lemma:w-local-closed-points-profinite, lemma:profinite-disj-clopen-separation, def:generalization, lemma:w-local-generalization-closed-closed}
+    Since $X^c$ is quasi-compact and $\pi_0(X)$ is Hausdorff by \Cref{thm:pi0-profinite}, it suffices
+    to show the map is bijective.
+    To show injectivity let $x, y \in X^c$ be distinct. Since $X^c$ is profinite
+    (\Cref{lemma:w-local-closed-points-profinite}), there
+    exist open and closed subsets $U_0, V_0 \subseteq X^c$ such that
+    $X^c = U_0 \coprod V_0$ by \Cref{lemma:profinite-disj-clopen-separation}.
+    Let $U = U_0^g$ and $V = V_0^g$. Because $X$ is w-local, we get
+    $X = U \coprod V$ as sets. By \Cref{lemma:w-local-generalization-closed-closed},
+    both $U$ and $V$ are closed and therefore also both open. Hence
+    $x$ and $y$ lie in distinct connected components of $X$, so the images in $\pi_0(X)$ are distinct.
+
+    Since every connected component is closed, it is quasi-compact and hence contains a closed point. Thus
+    the map is surjective.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, second part]{stacks-project}}]
+Let $X$ be a spectral space. Let
+\[
+\begin{tikzcd}
+Y \arrow[r] \arrow[d] & T \arrow[d] \\
+X \arrow[r] & \pi_0(X)
+\end{tikzcd}
+\]
+be a cartesian diagram in the category of topological spaces with $T$ profinite. If moreover $X$ is w-local, then $Y$ is w-local, $Y \to X$ is w-local, and the set of closed points of $Y$ is the inverse image of the set of closed points of $X$.
+\label{thm:cartesian-profinite-w-local}
+\uses{def:w-local-space,def:w-local-space-map}
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:cartesian-profinite,thm:closed-points-isom-pi0}
+  We know that $Y$ is spectral and $T = \pi_0(Y)$ by \Cref{thm:cartesian-profinite}. Assume $X$ is w-local and let $X^c \subset X$ be its closed points. The inverse image $Y^c \subset Y$ of $X^c$ maps bijectively onto $T$, since $X^c \to \pi_0(X)$ is a bijection by \Cref{thm:closed-points-isom-pi0}. (Note that we do not yet know whether $Y^c$ is the set of closed points of $Y$.) Moreover, $Y^c$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y^c \to \pi_0(Y) = T$ is a homeomorphism by \verb`isHomeomorph_iff_continuous_bijective` (\stacksproject{08YE}). It follows that all points of $Y^c$ are closed in $Y$: if some $y \in Y^c$ specialized to a distinct closed point $y'$ (which also falls in $Y$ since $Y$ is closed), then both would map to the same point in $T$, contradicting the bijectivity of $Y^c \to T$.
+
+  Conversely, if $y \in Y$ is a closed point, then it is closed in its fibre over $T$, and its image $x \in X$ is closed in the corresponding (homeomorphic) fibre of $X \to \pi_0(X)$. Since a point in a w-local space is closed if and only if it is closed in its connected component (which is closed), we have $x \in X^c$, so $y \in Y^c$. Thus $Y^c$ is exactly the set of closed points of $Y$. Moreover, since $Y^c \cong T$, each connected component contains a unique closed point, and for each $y \in Y^c$ the set of generalizations of $y$ is precisely the fibre of $Y \to \pi_0(Y)$ (as any generalization of $y$ lies in the same connected component with $y$). The lemma follows.
+\end{proof}
 
 \section{w-local rings}
 
@@ -205,137 +755,826 @@ Goal: For every spectral space \(X\), construct the pro-(open cover) \(X^Z \to X
 
 \begin{definition}[w-local ring maps, {\cite[Definition 2.2.1(iii)]{proetale}}]
     A ring map \(f: A \to B\) between w-local rings is \emph{w-local} if the induced map of w-local spaces \(\Spec(f) : \Spec(B) \to \Spec(A)\) is w-local.
+    % Spectral is automatic, only sending closed pts to closed pts matters.
     \label{def:w-local-ring-map}
-    \uses{def:w-local-ring, def:w-local-space, def:w-local-morphism}
+    \uses{def:w-local-ring, def:w-local-space, def:w-local-space-map}
     %\lean{IsWLocalRingMap}
     %\leanok
 \end{definition}
 
-\begin{definition}[{\cite[Lemma 2.2.4]{proetale}}]
-    \label{def:w-localization-ring}
-    \uses{def:w-localization-space}
-    The inclusion of the category of w-local rings and maps inside all rings admits a left adjoint $A \mapsto A^Z$. The unit $A \to A^Z$ is a faithfully flat ind-(Zariski localization), and $\Spec(A)^Z = \Spec(A^Z)$ over $\Spec(A)$.
-\end{definition}
-
-\begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
-    A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every faithfully flat \'etale map \(A \to B\) has a section.
-    \label{def:w-strictly-local-ring}
-    \uses{def:w-local-ring}
-    \lean{WStrictlyLocalRing}
-    \leanok
-\end{definition}
-
-\begin{lemma}[{\cite[Lemma 2.2.9]{proetale}}]
-    \label{lem:w-strictly-local-closed-points}
-    \uses{def:w-strictly-local-ring,def:w-local-ring,def:strictly-henselian-local-ring}
-    \lean{WStrictlyLocalRing.isStrictlyHenselianLocalRing_of_isMaximal,wStrictlyLocalRing_of_isStrictlyHenselianLocalRing_atPrime}
-
-    A w-local ring $A$ is w-strictly local if and only if all local rings of $A$ at closed points are strictly henselian.
-\end{lemma}
+\begin{proof}
+  Omitted.
+\end{proof}
 
 \begin{lemma}
-    \label{lem:w-strictly-local-ind-Zariski-localization}
-    \uses{def:w-strictly-local-ring, def:w-local-ring}
-    If $A$ is w-strictly local, $B$ is an ind-Zariski localization of $A$, and $B$ is w-local, then $B$ is w-strictly local.
+  \label{thm:surjective-w-local-ring}
+  If \(A \to B\) is a surjective ring map and \(A\) is w-local, then \(B\) is w-local.
+  \uses{def:w-local-ring}
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:w-strictly-local-closed-points}
-
-    TBA. Use \Cref{lem:w-strictly-local-closed-points}.
+  \uses{thm:closed-subspace-w-local}
+  This is \Cref{thm:closed-subspace-w-local}.
 \end{proof}
 
-\begin{definition}[Absolutly flat rings]
-    A ring \(A\) is \emph{absolutely flat} if \(A\) is reduced with Krull dimension \(0\).
-    \label{def:absolute-flat-ring}
-\end{definition}
-
-\begin{lemma}[{\cite[Lemma 2.2.3]{proetale}}]
-    \label{lem:w-local-quotient-Jacobson-absolute-flat}
-    \uses{def:w-local-ring, def:absolute-flat-ring}
-
-    If \(A\) is w-local, then the Jacobson radical \(I_A\) cuts out \(\Spec(A)^c \to \Spec(A)\) with its reduced structure. The quotient \(A/I_A\) is an absolutely flat ring.
+\begin{lemma}
+  \label{thm:w-local-set-decomposition}
+  \uses{def:w-local-ring}
+  Let $A$ be a w-local ring. Then $\Spec (A)$ is set theoretically the disjoint union of the spectra of the local
+  rings at closed points.
 \end{lemma}
 
-\begin{lemma}[{\cite[Lemma 2.2.7]{proetale}}]
-    \label{lem:absolute-flat-exists-ind-etale-w-strictly-local}
-    \uses{def:absolute-flat-ring, def:w-strictly-local-ring}
+\begin{proof}
+  This follows from the fact that every point specializes to a unique closed point and the spectrum of the local ring at a point is the set of all points specialize to it.
+\end{proof}
 
-    For any absolutely flat ring $A$, there is an ind-étale faithfully flat map $A \to \overline{A}$ with $\overline{A}$ w-strictly local and absolutely flat. % For a map $A \to B$ of absolutely flat rings, we can choose such maps $A \to \overline{A}$ and $B \to \overline{B}$ together with a map $\overline{A} \to \overline{B}$ of $A$-algebras.
+\begin{lemma}
+  \label{thm:isom-of-identifies-local-rings-bijective}
+  \uses{def:identify-local-rings}
+  Let $A \to B$ be a ring map such that
+  \begin{enumerate}
+    \item $A \to B$ identifies local rings, and
+    \item $\Spec (B) \to \Spec (A)$ is bijective.
+  \end{enumerate}
+  Then $A \to B$ is an isomorphism.
 \end{lemma}
 
-\begin{definition}[{\cite[Lemma 2.2.8]{proetale}}]%TODO: move this to a better place.
-    \label{lem:decouple-topology-from-algebra}
+\begin{proof}
+    \uses{thm:localization-isom-of-going-down,}
+    Since $A \to B$ is flat (can be checked on stalks of \(B\)), it has going down. % Algebra.HasGoingDown.of_flat
+    Thus \Cref{thm:localization-isom-of-going-down} shows for any prime $\q \subset B$ lying over $\p \subset A$ we have $B_{\q} = B_{\p B}$. Since $B_{\q} = A_{\p}$ by assumption, we see that $A_{\p} = B_{\p B}$ for all primes $\p$ of $A$. Thus $A = B$ since isomorphism can be checked locally on $A$.
+\end{proof}
 
-    For any affine scheme $X$, the functor $Y \mapsto \pi_0(Y)$ from affine $X$-schemes \(\AffSch_{/X}\) to profinite $\pi_0(X)$-sets \(\ProFin_{/\pi_0(X)}\) has a fully faithful right adjoint $S \mapsto S \times_{\pi_0(X)} X$, the fibre product in the category of topological spaces ringed using the pullback of the structure sheaf on $X$. Moreover, the natural map $S \times_{\pi_0(X)} X \to X$ is a pro-(Zariski localisation) and pro-finite.
+\begin{lemma}[\stacksproject{097E}]
+  \label{thm:isom-of-identifies-local-rings-w-local-isom-pi0}
+  \uses{def:identify-local-rings,def:w-local-ring,def:w-local-ring-map}
+  Let $A \to B$ be a w-local ring map between w-local rings such that
+  \begin{enumerate}
+    \item $A \to B$ identifies local rings, and
+    \item $\pi_0(\Spec (B)) \to \pi_0(\Spec (A))$ is bijective.
+  \end{enumerate}
+  Then $A \to B$ is an isomorphism.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:closed-points-isom-pi0,thm:w-local-set-decomposition,
+    thm:isom-of-identifies-local-rings-bijective}
+  By \Cref{thm:isom-of-identifies-local-rings-bijective}, it suffices to show
+  that $Y = \Spec (B) \to X = \Spec (A)$ is bijective.
+  Let $X^c \subset X$ and $Y^c \subset Y$ be the sets of closed points. By assumption $Y^c$ maps into $X^c$ and the induced map $Y^c \to X^c$ is a bijection since \Cref{thm:closed-points-isom-pi0} holds. By \Cref{thm:w-local-set-decomposition}, we see that both $X$ and $Y$ , as sets, are disjoint unions of the spectra of the local rings at closed points. As \(A \to B\) identifies local rings, $Y \to X$ is a bijection.
+\end{proof}
+
+The goal of the remaining part of this section is to show that for every ring $A$, there exists a faithfully flat, ind-Zariski
+$A$-algebra $A_{w}$ with $A_w$ w-local. Let $A$ be a ring.
+
+\begin{definition}
+    Let $f \in A$ be an element and $I \subseteq A$ an ideal.
+    Let $S_{f, I} \subseteq A$ be the multiplicative subset of elements which map to invertible
+    elements of $(A/I)_{f}$.
+    We define $\tildering{A}{I}{f}$ to be the $A$-algebra $S_{f, I}^{-1}$
+    and $\tildeideal{I}{f} \subseteq \tildering{A}{I}{f}$ to be the kernel of
+    the induced map $\tildering{A}{I}{f} \to (A / I)_{f}$.
+    \label{def:tilde-locclosed}
 \end{definition}
+
+If $Z \subseteq \spec{A}$ is a locally closed subscheme of the form $D(f) \cap V(I)$, we
+also write $A_{\widetilde{Z}}$ instead of $\tildering{A}{I}{f}$.
+In the following, when we use the notation $A_{\widetilde{Z}}$ there is always a canonical
+choice of $I$ and $f$ for $Z$.
+In general this notation is justified by the fact that, up to isomorphism, the ring $A_{\widetilde{Z}}$ does not depend
+on the choice of $f$ and $I$ \stacksproject{096V}.
+
+\begin{lemma}[{\stacksproject{096V}}]
+    \uses{def:generalization, def:tilde-locclosed}
+    \label{lemma:locally-closed-specializations}
+    Let $f \in A$ be an element and $I \subseteq A$ an ideal.
+    \begin{enumerate}
+        \item The map $\spec{\tildering{A}{I}{f}} \to \spec{A}$ induces
+            a homeomorphism onto the generalization of $D(f) \cap V(g)$.
+        \item The closed subscheme $V(\tildeideal{I}{f})$ induces an isomorphism
+            onto $D(f) \cap V(I)$.
+            \label{item:closed-subscheme-tilde}
+        \item If $A'$ is a ring with an element $f' \in A$ and ideal $I' \subseteq A'$ and
+            $A \to A'$ is a ring map that maps
+            $D(f') \cap V(I')$ into $D(f) \cap V(I)$, then there is a unique $A$-algebra map
+            $\tildering{A}{I}{f} \to \tildering{A'}{I'}{f'}$ making the obvious
+            diagram with $A \to A'$ commute.
+    \end{enumerate}
+    In particular, every
+    point in $\spec{\tildering{A}{I}{f}}$ specializes to a point in $V(\tildeideal{I}{f})$.
+\end{lemma}
+
+\begin{proof}
+    Let $S = S_{f, I}$, $Z = D(f) \cap V(I)$ and $J = \tildeideal{I}{f}$.
+
+    Note that $Z$ is homeomorphic to $\spec{(A/I)_f}$.
+    Since the map $\spec{S^{-1}A} \to \spec{A}$ is a homeomorphism onto its image, to show (1)
+    it suffices to show that the image is the set of points of $\spec{A}$ specializing to $D(f) \cap V(I)$.
+    Let $\mathfrak{p}$ be a prime of $A$ specializing to a $\mathfrak{q}$ in $Z$,
+    so $I \subseteq \mathfrak{q}$ and $f \not\in \mathfrak{q}$. In particular, the image
+    of every element of $\mathfrak{p}$ in $(A / I)_f$ is contained in $\mathfrak{q}$ and
+    is therefore not invertible.
+    Conversely, let $\mathfrak{p}$ be a prime of $A$ which does not specialize to a point in
+    $Z$, hence
+    the image of $\mathfrak{p}$ in $(A/I)_f$ contains the unit element. So there exists
+    $g \in \mathfrak{p}$ that becomes invertible in $(A / I)_f$, so $g \in S$ and
+    $\mathfrak{p}$ is not in the image of $\spec{S^{-1} A}$.
+
+    By construction, the induced map $S^{-1}A \to (A / I)_f$ is surjective and hence
+    induces an isomorphism $S^{-1}A / J \to (A / I)_f$. This shows (2).
+
+    Let $g \in A$. Suppose the image of $g$ in $(A' / I')_{f'}$ is not invertible.
+    Then there exists a prime ideal $\mathfrak{p}$ of $(A' / I')_{f'}$ that contains the image of $g$.
+    Hence $g$ is in the preimage of $\mathfrak{p}$ under $A \to A'$, which lies in $Z$ by assumption. Thus
+    $g$ is not invertible in $(A / I)_f$, which shows $g \not\in S$.
+\end{proof}
+
+In view of \ref{lemma:locally-closed-specializations}, given $Z = D(f) \cap V(I)$ we may
+view $Z$ as a closed subscheme of $\spec{A_{\widetilde{Z}}}$ defined by the ideal
+$V( \tildeideal{I}{f})$.
+
+\begin{lemma}
+    Let $f \in A$ be an element and $I \subseteq A$ an ideal. Then
+    $\tildering{A}{I}{f}$ is ind-Zariski over $A$.
+    \uses{def:tilde-locclosed}
+    \label{lemma:tilde-locclosed-ind-zariski}
+\end{lemma}
+
+\begin{proof}
+    $\tildering{A}{I}{f} = S^{-1} A$ for some multiplicative subset $A$.
+\end{proof}
+
+\begin{definition}[Stratification by subsets]
+    Let $E, F \subseteq A$ be subsets. We define
+    \[
+    Z(E, F) = \bigcap_{f \in E'} D(f) \cap \bigcap_{f \in F} V(f)
+    .\]
+    \label{def:subset-stratum}
+\end{definition}
+
+\begin{lemma}
+    Let $A$ be a ring, $E, F \subseteq A$ finite subsets. Then
+    \[
+    Z(E, F) = D\left( \prod_{f \in E}  f \right) \cap V\left( \sum_{f \in F} fA \right)
+    .\]
+    \uses{def:subset-stratum}
+    \label{lemma:subset-stratum-equals-inter}
+\end{lemma}
+
+\begin{proof}
+    This is immediate from the definitions of $D$ and $V$.
+\end{proof}
+
+\begin{lemma}
+    Let $E_1, F_1, E_2, F_2 \subseteq A$ be subsets such that $E_1 \subseteq E_2$ and
+    $F_1 \subseteq F_2$. Then $Z(E_2, F_2) \subseteq Z(E_1, F_1)$.
+    \label{lemma:subset-stratum-mono}
+\end{lemma}
+
+\begin{proof}
+    This is immediate from the definition of $Z(-, -)$.
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be a ring, $E \subseteq A$ a finite subset. Then
+    \[
+        \spec{A} = \coprod_{E = E' \coprod E''} Z(E', E'')
+    \] set theoretically.
+    \uses{def:subset-stratum}
+    \label{lemma:subset-stratification}
+\end{lemma}
+
+\begin{proof}
+    Let $x \in \spec{A}$ and $E = E' \coprod E''$ a disjoint union decomposition. Then
+    $x \in Z(E', E'')$ if and only if $f(x) \neq 0$ for all $f \in E'$ and $f(x) = 0$
+    for all $f \in E''$. Hence $x$ is contained in
+    \[
+    Z(\{ f \in E  \mid f(x) \neq 0\}, \{f \in E  \mid f(x) = 0\})
+    ,\] and this is the only set of this form in which $x$ is contained.
+\end{proof}
+
+\begin{definition}
+    Let $A$ be a ring and $E \subseteq A$ a finite subset. Let
+    \[
+    A_{E} = \prod_{E = E' \coprod E''} A_{\widetilde{Z(E', E'')}}
+    .\]
+    Further, we set $I_E \subseteq A$ to be the product of the ideals
+    defining $Z(E', E'')$ in $\spec{A_{\widetilde{Z(E', E'')}}}$.
+    \uses{def:subset-stratum, def:tilde-locclosed, lemma:subset-stratum-equals-inter}
+    \label{def:finite-stratification-ring}
+\end{definition}
+
+Note that \ref{def:finite-stratification-ring} is well-defined, because for finite
+subsets $E', E''$ of $A$, the locally closed subset $Z(E', E'')$ is always
+of the right form by \ref{lemma:subset-stratum-equals-inter}.
+
+\begin{lemma}
+    Let $E \subseteq A$ be a finite subset. Then
+    $V(I_E) = \coprod_{E = E' \coprod E''} Z(E', E'')$. In particular,
+    the map $\spec{A_E} \to \spec{A}$ induces a bijection $V(I_E) \to \spec{A}$.
+    \label{lemma:finite-stratification-ideal-bijection}
+    \uses{def:finite-stratification-ring}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:subset-stratification}
+    By definition $I_E$ is the product of the ideals defining $Z(E', E'')$ in
+    $\spec{A_{\widetilde{Z(E', E'')}}}$. Hence the first claim. The second
+    follows from the first, because $\spec{A} = \coprod_{E = E' \coprod E''} Z(E', E'')$ by
+    \ref{lemma:subset-stratification}.
+\end{proof}
+
+\begin{lemma}
+    Let $E \subseteq A$ be a finite subset. Then every point of $\spec{A_E}$ specializes
+    to a point in $V(I_E)$. In particular, $V(I_E)$ contains all closed points of $\spec{A_E}$.%
+    \uses{def:finite-stratification-ring}
+    \label{lemma:finite-stratification-closed-points}
+\end{lemma}
+
+\begin{proof}
+    Let $x \in \spec{A_E}$. Then $x$ is in $\spec{A_{\widetilde{Z(E', E'')}}}$ for some
+    $E = E' \coprod E''$. By
+    \ref{lemma:locally-closed-specializations}, $x$ specializes to a point
+    in $Z(E', E'') \subseteq V(I_E)$.
+    If $x$ is closed, then $x$ specializes to itself, so $x \in V(I_E)$.
+\end{proof}
+
+Let $A$ be a ring. Given finite subsets $E_1, E_2 \subseteq A$ with $E_1 \subseteq E_2$, there is a
+canonical transition map $A_{E_1} \to A_{E_2}$ of $A$-algebras: For
+a disjoint union decomposition $E_2 = E_2' \coprod E_2''$, we set
+$E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$. By \ref{lemma:subset-stratum-mono},
+we obtain $Z(E_2', E_2'') \subseteq Z(E_1', E_1'')$ and hence
+by \ref{lemma:locally-closed-specializations} a unique $A$-algebra map
+$A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
+
+\begin{lemma}
+    Let $E_1, E_2 \subseteq A$ be finite subsets with $E_1 \subseteq E_2$.
+    The induced map $\spec{A_{E_2}} \to \spec{A_{E_1}}$ maps
+    $V(I_{E_2})$ into $V(I_{E_1})$.
+    \uses{def:finite-stratification-ring, lemma:subset-stratum-mono}
+    \label{lemma:finite-stratification-map-closed}
+\end{lemma}
+
+\begin{proof}
+    This holds because for every decomposition $E_2 = E_2' \coprod E_2''$
+    and $E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$, the induced map
+    $\spec{A_{\widetilde{Z(E_2', E_2'')}}} \to \spec{A_{\widetilde{Z(E_1', E_1'')}}}$
+    maps $Z(E_2', E_2'')$ into $Z(E_1', E_1'')$.
+\end{proof}
+
+\begin{definition}
+    Let $I(A)$ be the partially ordered set of all finite subsets of $A$. We define the
+    $A$-algebra $A_{w}$ as
+    \[
+    A_w = \colim_{E \in I(A)} A_E
+    .\]
+    We denote by $I_w \subseteq A_w$ the colimit of the ideals $I_E$, i.e.,
+    the union of the images of the $I_E$ in $A_w$.%
+    \uses{def:finite-stratification-ring, lemma:subset-stratum-mono, lemma:finite-stratification-map-closed}
+    \label{def:w-localization}
+\end{definition}
+
+Note that, since $I_w$ is the colimit of the ideals $I_E$, the closed subset
+$V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
+
+\begin{lemma}
+    The $A$-algebra $A_{w}$ is ind-Zariski.
+    \uses{def:w-localization}
+    \label{lemma:w-localization-ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:ind-Zariski-products, lemma:ind-ind-Zariski}
+    For $E \subseteq A$ a finite subset, the $A$-algebra $A_E$ is ind-Zariski
+    as a finite product of ind-Zariski algebras by \ref{lemma:ind-Zariski-products}.
+    Thus $A_w$ is a filtered colimit of ind-Zariski algebras, hence ind-Zariski
+    by \ref{lemma:ind-ind-Zariski}.
+\end{proof}
+
+\begin{lemma}
+    \uses{def:w-localization}
+    \label{lemma:w-localization-closed-points}
+    Let $A$ be a ring.
+    \begin{enumerate}
+        \item The composition $V(I_w) \to \spec{A_w} \to \spec{A}$ is a bijection.
+            \label{item:w-localization-bijection}
+        \item Every point of $\spec{A_w}$ specializes to a unique point of $V(I_w)$.
+        \item $V(I_w)$ is the set of closed points of $\spec{A_w}$.
+    \end{enumerate}
+    In particular, $\spec{A_w}$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:finite-stratification-ideal-bijection, lemma:closure-limit}
+    Since $V(I_w) = \lim_{E} V(I_E)$ and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
+    bijective for all $E$ by \ref{lemma:finite-stratification-ideal-bijection}, the
+    first claim holds.
+
+    We first show that every point of $\spec{A_w}$ specializes to a point in $V(I_w)$.
+    For this let $y \in \spec{A_w}$. For all $E \subseteq A$ finite, denote by
+    $T_E$ the closure of the image of $y$ in $\spec{A_E}$. By
+    \ref{lemma:finite-stratification-closed-points}, the intersection $T_E \cap V(I_E)$ is
+    non-empty. Since both $T_E$ and $V(I_E)$ are closed, the intersection is closed
+    and hence quasi-compact. Thus $(\lim_E T_E) \cap V(I_w) = \lim_E (T_E \cap V(I_E))$ is non-empty.
+    By \ref{lemma:closure-limit}, the subset $\lim_E T_E$ is the closure of $y$ in $\spec{A_w}$. Hence
+    $y$ specializes to a point in $V(I_E)$.
+
+    For uniqueness, suppose $y \in \spec{A_w}$ specializes to $z, z' \in V(I_w)$ with
+    $z \neq z'$. Denote the images of $z, z'$ in $\spec{A}$ by $x, x'$.
+    Because $V(I_w) \to \spec{A_w} \to \spec{A}$ is injective, $x$ and $x'$ are distinct. Hence we may
+    assume there exists $f \in A$ such that $x \in D(f)$ and $x' \in V(f)$. Set
+    $E = \{f\}$. Then
+    \[
+        \spec{A_E} = \spec{\tildering{A}{0}{f}} \coprod \spec{\tildering{A}{(f)}{1}}
+    .\]
+    Denote the images of $y, z, z'$ in $\spec{A_E}$ by $y_E, x_E, x'_E$. Since
+    $x_E$ maps to $x \in D(f)$ and $x_E'$ maps to $x' \in V(f)$, they lie
+    in different components of the disjoint union decomposition above. But
+    since $\spec{A_w} \to \spec{A}$ is continuous, $y_E$ specializes to both $x_E$ and $x'_E$
+    which is not possible.
+
+    Finally, every closed point specializes to itself and is hence contained in $V(I_{w})$. Conversely,
+    every point in $V(I_{w})$ specializes only to itself, so it is closed.
+\end{proof}
+
+\begin{lemma}
+    The $A$-algebra $A_w$ is faithfully flat.
+    \uses{def:w-localization}
+    \label{lemma:w-localization-faithfully-flat}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:w-localization-closed-points, lemma:w-localization-ind-Zariski}
+    By \ref{lemma:w-localization-ind-Zariski}, $A \to A_w$ is flat. Because
+    $V(I_w)$ surjects onto $\spec{A}$ by \ref{lemma:w-localization-closed-points},
+    in particular $\spec{A_w} \to \spec{A}$ is surjective, hence
+    $A \to A_w$ is faithfully flat.
+\end{proof}
+
+\begin{lemma}[\stacksproject{00GA}]
+    Let $B$ be an $A$-algebra and $\mathfrak{m}$ a maximal ideal of of $R$. Let
+    $\mathfrak{q}$ be a prime ideal lying over $\mathfrak{m}$ such that
+    $\kappa(\mathfrak{q})$ is algebraic over $\kappa(\mathfrak{m})$. Then
+    $\mathfrak{q}$ is maximal.
+    \label{lemma:prime-over-maximal-algebraic}
+\end{lemma}
+
+\begin{proof}
+    We have a factorization $\kappa(\mathfrak{m}) = R / \mathfrak{m} \to S / \mathfrak{q} \to \kappa(\mathfrak{q})$.
+    Hence $S / \mathfrak{q}$ is an intermediate subring of an algebraic field extension and therefore
+    a field.
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be w-local and $I \subseteq A$ an ideal. Then
+    $A_{\widetilde{V(I)}}$ is w-local. If $V(I)$ only contains closed points, then
+    the set of closed points is $V(IA_{\widetilde{V(I)}})$.
+    \label{lemma:w-local-tilde-w-local}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:generalization-specialization-closed, lemma:locally-closed-specializations,
+      lemma:w-local-specialization-closed}
+    By \ref{lemma:locally-closed-specializations}, $\spec{A_{\widetilde{V(I)}}}$ is homeomorphic
+    to the generalization $V(I)^g$. Since $\spec{A}$ is w-local and $V(I)$ is closed
+    under specialization, also $V(I)^g$ is closed under specialization by
+    \ref{lemma:generalization-specialization-closed}. Hence
+    $\spec{A_{\widetilde{V(I)}}} \cong V(I)^g$ is w-local by \ref{lemma:w-local-specialization-closed}.
+
+    By \Cref{item:closed-subscheme-tilde}, we may identify $V(IA_{\widetilde{V(I)}})$ with
+    $V(I)$.
+    Since every point in
+    $\spec{A_{\widetilde{V(I)}}} \cong V(I)^g$ specializes to a unique point in $V(I)$,
+    the closed subset $V(I)$ contains all closed points of $\spec{A_{\widetilde{V(I)}}}$. Hence,
+    if $V(I)$ only contains closed points, the closed points are exactly $V(I)$.
+\end{proof}
+
+\begin{lemma}
+    Let $A \to B$ be a ring map that induces algebraic extensions on residue fields
+    and let $I \subseteq A$ be an ideal, such that $V(I)$ only contains closed points.
+    Then $V(IB)$ only contains closed points.
+    \label{lemma:preimage-closed-points-algebraic}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:prime-over-maximal-algebraic}
+    By \ref{lemma:prime-over-maximal-algebraic}, every prime of $B$ lying above a maximal ideal of $A$
+    is maximal. In particular, the closed subset $V(I B) = (\spec{B} \to \spec{A})^{-1}(V(I))$ only contains
+    closed points.
+\end{proof}
+
+\begin{lemma}
+    Let $B$ be an $A$-algebra satisfying going down. If every closed point of $\spec{A}$
+    has a preimage in $\spec{B}$, the map $\spec{B} \to \spec{A}$ is surjective.
+    \label{lemma:going-down-surjective-of-closed}
+\end{lemma}
+
+\begin{proof}
+    Let $\mathfrak{p}$ be a prime of $A$. Then it is contained in a maximal ideal $\mathfrak{m}$
+    that is the preimage of a prime $\mathfrak{q}$ of $B$. By going-down, there
+    exists therefore a prime $\mathfrak{q}' \subseteq \mathfrak{q}$ lying above $\mathfrak{p}$.
+\end{proof}
+
+\begin{lemma}
+    \label{lemma:closed-closed-points-tilde-w-local}
+    Let $I \subseteq A$ be an ideal such that $V(I) \subseteq A$ only contains closed points.
+    Set $B = (A_w)_{\widetilde{V(IA_{w})}}$. Then
+    \begin{enumerate}
+        \item $B$ is w-local,
+        \item the set of closed points of $B$ is $V(IB)$, and
+        \item the map $A / I \to B / I B$ is an isomorphism.
+    \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:w-localization-ind-Zariski, thm:ind-Zariski-identifies-local-rings, lemma:w-local-tilde-w-local, thm:isom-of-identifies-local-rings-bijective, lemma:preimage-closed-points-algebraic, lemma:tilde-locclosed-ind-zariski}
+    $A \to A_w$ is ind-Zariski by \ref{lemma:w-localization-ind-Zariski} and therefore induces
+    algebraic extensions of residue fields by \ref{thm:ind-Zariski-identifies-local-rings}.
+    In particular, the closed subset $V(I A_w)$ only contains
+    closed points by \ref{lemma:preimage-closed-points-algebraic} and
+    the first two claims follow from \ref{lemma:w-local-tilde-w-local}.
+
+    The map $A \to B$ is ind-Zariski as a composition of ind-Zariski maps by
+    \ref{lemma:w-localization-ind-Zariski} and \ref{lemma:tilde-locclosed-ind-zariski}.
+    Since ind-Zariski is stable under base change, the same holds for $A/I \to B/IB$.
+    Hence it identifies local rings. By \Cref{item:closed-subscheme-tilde},
+    $V(IB) \to V(I A_w)$ is an isomorphism. Moreover
+    $V(I A_{w}) \to V(I)$ is a Bijection by \Cref{item:w-localization-bijection}
+    because $V(I A_{w}) \subseteq V(I_w)$. Hence, the composition
+    $\spec{B / IB} = V(IB) \to V(I A_w) \to V(I)$ is bijective. Thus
+    $A / I \to B / IB$ is an isomorphism by \ref{thm:isom-of-identifies-local-rings-bijective}.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}]
+\label{thm:closed-points-isom-w-local}
+\uses{def:w-local-ring,def:w-local-ring-map,def:ind-Zariski}
+Let $A$ be a w-local ring. Let $I \subset A$ be an ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
+Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes. Then
+there exists an ind-Zariski ring map $B \to C$ such that
+\begin{enumerate}
+    \item $B/IB \to C/IC$ is an isomorphism, \label{item:quotinet-isom-closed-points-isom-w-local} % thus surjective on closed points
+    \item $C$ is w-local, \label{item:w-local-closed-points-isom-w-local}
+    \item the map $p: Y = \Spec (C) \to X$ induced by the ring map $A \to B \to C$ is w-local, and % this is not needed?
+    \item $p^{-1}(X^c)$ is the set of closed points of $Y$. \label{item:inverse-image-closed-points-isom-w-local}
+\end{enumerate}
+In particular, the composition $A \to B \to C$ is faithfully flat if $A \to B$ is faithfully flat.
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:w-localization-closed-points, lemma:closed-closed-points-tilde-w-local, lemma:tilde-locclosed-ind-zariski, lemma:going-down-surjective-of-closed}
+    Every point of $V(IB)$ is a closed point of $\spec{B}$ by \ref{lemma:preimage-closed-points-algebraic}.
+    Hence we may choose $C = (B_w)_{\widetilde{V(IB_w)}}$ as in \ref{lemma:closed-closed-points-tilde-w-local}. Then
+    the set of closed points of $C$ is $V(IC)$, which is the preimage of $V(I)$ under
+    $\spec{C} \to \spec{B} \to \spec{A}$.
+
+    $A \to B \to C$ is flat, so by \ref{lemma:going-down-surjective-of-closed} it suffices
+    to show every closed point of $A$ is in the image. But since $\spec{B} \to \spec{A}$ is surjective,
+    also $V(IC) \cong V(IB) \to V(I)$ is surjective.
+\end{proof}
+
+\begin{remark}
+    As we have seen in the proof of \ref{thm:closed-points-isom-w-local}, we may choose
+    $C$ as $(B_w)_{\widetilde{V(IB_w)}}$.
+\end{remark}
+
+\section{w-strictly-local Rings}
+
+\begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
+    A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every local ring of \(A\) at a maximal ideal is strictly henselian.
+    % TODO: every faithfully flat \'etale map \(A \to B\) has a retraction. this should be a property.
+    \label{def:w-strictly-local-ring}
+    \uses{def:w-local-ring,def:strictly-henselian-local-ring}
+    % refactor WStrictlyLocalRing, using the definition of strictly henselian
+    % \lean{WStrictlyLocalRing}
+    % \leanok
+\end{definition}
+
+The goal of this section is to show that every ring $A$ admits a faithfully flat, ind-étale algebra $B$ that is $w$-strictly-local.
+
+\begin{lemma}
+  \label{thm:ind-etale-strictly-henselian-localization-isom}
+  \uses{def:ind-etale,def:strictly-henselian-local-ring,def:identify-local-rings}
+  Let \(A\) be a strictly henselian local ring. Let \(A \to B\) be an ind-étale ring map. Let $\n$ be an maximal ideal of $B$ lying over the maximal ideal $\m$ of $A$. Then the map $A \to B_\n$ is isomorphism.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:etale-over-strictly-henselian-localization-isom}
+  Write $B = \colim_i B_i$ as a filtered colimit of étale $A$-algebras $B_i$. Since localization commutes with colimits, we have $B_\n = \colim_i (B_i)_{\n_i}$ where $\n_i$ is the restriction of $\n$ to $B_i$. Then use \Cref{thm:etale-over-strictly-henselian-localization-isom} to conclude each $B_i$ is isomorphic to $A$.
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be a ring such that every faithfully flat étale ring map $A \to B$ has
+    a retraction. Then every local ring of $A$ at a maximal ideal is strictly henselian.
+    \label{lemma:retractions-strictly-henselian}
+\end{lemma}
+
+\begin{proof}
+    Let $\mathfrak{m}$ be a maximal ideal of $A$, denote by $\kappa$ the residue field $\kappa(\mathfrak{m})$
+    and by $\kappa^{\mathrm{sep}}$ a separable closure of $\kappa$. Let
+    $A_{\mathfrak{m}} \to B \to \kappa^{\mathrm{sep}}$ be a factorisation of $A_{\mathfrak{m}} \to \kappa^{\mathrm{sep}}$
+    where $A_{\mathfrak{m}} \to B$ is étale. Since $A_{\mathfrak{m}} = \colim_{f \not\in \mathfrak{m}} A_f$,
+    by \ref{lemma:etale-ind-spreads} there exists $f \not\in \mathfrak{m}$ and an étale $A_f$-algebra $B'$
+    such that $B = A_{\mathfrak{m}} \otimes_{A_f} B'$.
+    %Denote by $\mathfrak{q}$ the kernel of
+    %the composition $B' \to B \to \kappa^{\mathrm{sep}}$.
+    %Then $\mathfrak{q}$ lies over $\mathfrak{m}$ in $A$.
+    Because $A \to A_f \to B'$ is étale,
+    there are finitely many prime ideals $\mathfrak{q}_1, \ldots, \mathfrak{q}_n$ of $B'$ lying over $\mathfrak{m}$.
+    Since the kernel of the composition $B' \to B \to \kappa^{\mathrm{sep}}$ lies over $\mathfrak{m}$
+    (the kernel of $A \to \kappa_{\mathrm{sep}}$ is $\mathfrak{m}$), we have $n \ge 1$.
+    Set $\mathfrak{q} = \mathfrak{q}_1$. By prime avoidance, there exists $g \in B'$ such that
+    $g \in \mathfrak{q}_i$ for all $i \ge 2$ and $g \not\in \mathfrak{q}$. Hence
+    $\mathfrak{q}$ is the unique prime ideal of $B'_g$ lying over $\mathfrak{m}$.
+
+    Let $U$ be the image of the induced map $\spec{B'_g} \to \spec{A}$. Since $A \to B'$ is étale, $U$ is open.
+    Since $\{\mathfrak{m}\}$ is closed in $\spec{A}$, there exist $a_i$ such that
+    \[
+        \spec{A} - \{\mathfrak{m}\} = \bigcup_{i} D(a_i)
+    .\] The complement of $U$ is closed and quasicompact, and contained in $\spec{A} - \{\mathfrak{m}\}$, hence
+    there exist $a_1, \ldots, a_r$ such that
+    \[
+        \spec{A} = U \cup \bigcup_{i=1}^r D(a_i)
+    .\] Hence the map $A \to B'_g \times \prod_{i=1}^{r} A_{a_i}$ is étale and faithfully flat. By assumption,
+    it therefore has a retraction $\sigma$. Since $\mathfrak{q}$ is the unique prime ideal of $B'_g \times \prod_{i=1}^{r} A_{a_i}$
+    lying over $\mathfrak{m}$, we have $\sigma^{-1}(\mathfrak{m}) = \mathfrak{q}$. In particular,
+    we obtain a retraction
+    \[
+        B'_{\mathfrak{q}} = \left(B'_g \times \prod_{i=1}^{r} A_{a_i}\right)_{\mathfrak{q}} \to A_{\mathfrak{m}}
+    \] of the map $A_{\mathfrak{m}} \to B'_{\mathfrak{q}}$. Precomposing with $B' \to B'_{\mathfrak{q}}$ we obtain
+    a map $B' \to A_{\mathfrak{m}}$ and hence a map
+    $B = B' \otimes_{A_f} A_{\mathfrak{m}} \to A_{\mathfrak{m}}$ that is a retraction of $A_{\mathfrak{m}} \to B$.
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097R}{Tag 097R}]{stacks-project}}]
+    Let $A$ be a ring. Then there exists an ind-étale faithfully flat $A$-algebra $B$ such that
+    every faithfully flat étale ring map $B \to C$ has a retraction.
+    \uses{def:ind-etale}
+    \label{prop:exists-ind-etale-retraction-etale}
+\end{proposition}
+
+\begin{proof}
+    \uses{lemma:etale-ind-spreads}
+    For any ring $A$, one first constructs $T(A) = \colim_{E} \bigotimes_{B \in E} B$ where
+    the colimit runs over finite subsets of faithfully flat étale $A$-algebras. Note that for every faithfully flat étale
+    $A$-algebra $B$, there exists a map $B \to T(A)$.
+
+    Now set $T^{n+1}(A) \coloneqq T(T^n(A))$
+    and let $T^{\infty}(A) = \colim_n T^n(A)$. Let $B$ be a faithfully flat étale $T^{\infty}(A)$-algebra. Then
+    by \ref{lemma:etale-ind-spreads}
+    there exists $n \in \N$ and a faithfully flat, étale $T^n(A)$-algebra $B'$ such that
+    $B = T^{\infty}(A) \otimes_{T^n(A)} B'$. By the earlier remark, there exists a map
+    $B' \to T^{n+1}(A)$. The identity of $T^{\infty}(A)$ and the composition
+    $B' \to T^{n+1}(A) \to T^{\infty}(A)$ now induce a retraction
+    \[
+    B = T^{\infty}(A) \otimes_{T^n(A)} B' \to T^{\infty}(A)
+    .\]
+\end{proof}
+
+\begin{lemma}
+    Let $k$ be a field and $A$ an ind-étale, local $k$-algebra. Then $A$ is
+    a separable algebraic field extension of $k$.
+    \uses{def:ind-etale}
+    \label{lemma:field-local-indetale}
+\end{lemma}
+
+\begin{proof}
+    Let $A = \colim_i A_i$ such that $A_i$ is an étale $k$-algebra for all $i$.
+    Let $\mathfrak{m}$ be the maximal ideal of $A$. Since localization commutes with colimits,
+    we obtain $A = A_{\mathfrak{m}} = \colim_i (A_i)_{\mathfrak{m}_i}$ where
+    $\mathfrak{m}_i$ is the restriction of $\mathfrak{m}$ to $A_i$. Since $A_i$ is étale over $k$,
+    it is a finite product of finite separable extensions of $k$, hence $(A_i)_{\mathfrak{m}_i}$
+    is a finite separable extension of $k$. Since a filtered colimit of finite separable
+    extensions is an algebraic separable extension, we conclude.
+\end{proof}
+
+\begin{proposition}
+    Let $f\colon A \to B$ be ind-étale. Then $f$ induces separable algebraic extensions on residue fields.
+    \uses{def:ind-etale}
+    \label{prop:ind-etale-residue-fields}
+\end{proposition}
+
+\begin{proof}
+    \uses{lemma:field-local-indetale}
+    Let $\mathfrak{p}$ be a prime ideal of $B$. After base change along $A \to \kappa(\mathfrak{p}^c)$,
+    we may assume $A = k$ is a field. After postcomposing with the ind-étale map $B \to B_{\mathfrak{p}}$,
+    we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-indetale}.
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
+    For any ring \(A\), there exists an ind-étale faithfully flat \(A\)-algebra \(B\) with \(B\) w-strictly local.
+    \label{thm:ind-etale-w-strictly-local-cover}
+    \uses{def:w-strictly-local-ring,def:ind-etale}
+\end{proposition}
+
+\begin{proof}
+    \uses{prop:exists-ind-etale-retraction-etale,
+      lemma:retractions-strictly-henselian, prop:ind-etale-residue-fields, thm:closed-points-isom-w-local,
+      lemma:w-localization-closed-points}
+    By \ref{lemma:w-localization-closed-points}, the ring $A_w$ is w-local, so the set of closed points
+    of $\spec{A_w}$ is closed.
+    Let $I$ be the radical ideal of $A_w$ such that $V(I)$ is the set of closed points of $\spec{A_w}$.
+    Choose an ind-étale and faithfully flat ring map $A_w \to B'$ as in
+    \ref{prop:exists-ind-etale-retraction-etale}. By
+    \ref{lemma:retractions-strictly-henselian}, the local ring $B'_{\mathfrak{m}'}$ is
+    strictly henselian for every maximal ideal $\mathfrak{m}'$ of $B'$.
+    The map $A_w \to B'$ induces algebraic extensions on residue fields at primes by
+    \ref{prop:ind-etale-residue-fields},
+    so applying \ref{thm:closed-points-isom-w-local} to $A_w \to B'$, we obtain
+    an ind-Zariski ring map $B' \to B$ such that $B'/IB' \to B/IB$ is an isomorphism,
+    $V(IB)$ is the set of closed points of $\spec{B}$, $B$ is w-local
+    and $A_w \to B' \to B$ is faithfully flat. Since ind-Zariski maps identify
+    local rings by \ref{thm:ind-Zariski-identifies-local-rings} and every closed point of
+    $\spec{B}$ maps to a closed point of $B'$,
+    the local rings at maximal ideals of $B$ are strictly Henselian. Hence $B$ is w-strictly local.
+
+    It remains to verify that the composition $A \to A_w \to B' \to B$ is ind-étale and faithfully flat.
+    This follows because both ind-étale and faithfully flat is stable under composition.
+\end{proof}
+
+\begin{remark}
+    By following all constructions, we may choose $B$
+    as $((T^{\infty}(A_w))_w)_{\widetilde{V(I ((T^{\infty}(A_w))_w))}}$
+    where $I$ is the radical ideal of $A_w$ defining the closed points of $A_w$.
+
+    One may ask why $T^\infty(A)_w$ does not work. The reason for this is
+    that the map $\spec{T^{\infty}(A)_w} \to \spec{T^{\infty}(A)}$ does not necessarily
+    map closed points to closed points. If $A$ is already $w$-local,
+    we can eliminate the points mapping to non-closed points by taking $I$ to be the ideal defining
+    the closed points of $\spec{A}$.
+    Then $V(I T^{\infty}(A))$ only contains closed points and by
+    passing to the generalization of the preimage of $V(I T^{\infty}(A))$ in
+    $\spec{T^{\infty}(A)_w}$, we obtain the desired affine scheme. If $A$ is not $w$-local,
+    we may replace $A$ by $A_w$ in this process and obtain the result.
+\end{remark}
+
+\begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097C}{Tag 097C}]{stacks-project}}]
+  \label{def:colim-open-closed-localizations}
+  Let $A$ be a ring, $X = \Spec(A)$, and $T \subset \pi_0(X)$. Define the ring $A_T$ by
+  \[ 
+    A_T := \colim_{W} A_W,
+  \]
+  where $W$ runs over all open and closed subsets of $X$ containing the inverse image $Z$ of $T$, and $A \to A_W$ is the localization of $A$ at $W$.
+\end{definition}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097C}{Tag 097C}]{stacks-project}}]
+  \label{thm:colim-open-closed-localizations-surj-ind-zariski}
+  \uses{def:colim-open-closed-localizations,def:ind-Zariski}
+  Let $A$ be a ring, $X = \Spec(A)$, and $T \subset \pi_0(X)$ a closed subset. Then the map $A \to A_T$ from \Cref{def:colim-open-closed-localizations} is a surjective ind-Zariski ring map, and the induced morphism $\Spec(A_T) \to \Spec(A)$ restricts to a homeomorphism of $\Spec(A_T)$ onto the inverse image of $T$ in $X$.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:intersection-closed-open-iff}
+  Each $A \to A_W$ is a localization at an idempotent. Passing to filtered colimits, $A \to A_T$ is surjective and ind-Zariski.
+
+  When $T$ is closed, its inverse image $Z$ is a closed union of connected components. By \Cref{thm:intersection-closed-open-iff}, we have
+  \[
+    Z = \bigcap_{\substack{Z \subseteq W \\ W \text{ open and closed}}} W.
+  \]
+  Thus, $\Spec(A_T) = \varprojlim_W W$ is homeomorphic to $Z$ via the natural map.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. There exists an ind-Zariski ring map $A \to B$ such that with $Y = \Spec (B)$ the diagram
+  \[
+  \begin{tikzcd}
+  Y \arrow[r] \arrow[d] & \pi_0(Y) \arrow[d] \\
+  X \arrow[r] & \pi_0(X)
+  \end{tikzcd}
+  \]
+  is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ as spaces over $\pi_0(X)$.
+  \label{thm:exists-ind-Zariski-cartesian}
+  \uses{def:ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+  \uses{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski,thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings,thm:identifies-local-rings-composition,thm:identifies-local-ring-to-top-fully-faithful,thm:cartesian-profinite}
+  Write $T = \lim T_i$ as the limit of an inverse system of finite discrete spaces over a directed set. For each $i$ let $Z_i = \operatorname{Im} (T \to \pi_0(X) \times T_i)$. This is a closed subset. Observe that $X \times T_i$ is the spectrum of $A_i = \prod_{t \in T_i} A$ and that $A \to A_i$ is a local isomorphism. By \Cref{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski}, we see that $Z_i \subset \pi_0(X \times T_i) = \pi_0(X) \times T_i$ corresponds to a surjection $A_i \to B_i$ which is ind-Zariski such that $\Spec (B_i) = (X \times T_i) \times_{\pi_0(X) \times T_i} Z_i = X \times_{\pi_0(X)} Z_i$ as subsets of $X \times T_i$. The transition maps $T_i \to T_{i'}$ induce maps $Z_i \to Z_{i'}$ and $X \times_{\pi_0(X)} Z_i \to X \times_{\pi_0(X)} Z_{i'}$. Since the both the ring maps of \(A \to A_{i} \to B_{i}\) identifies local rings by \Cref{thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings}, their composition also identifies local ring by \Cref{thm:identifies-local-rings-composition}. Now apply \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we
+  get ring maps $B_{i'} \to B_i$. 
+
+  Set $B = \colim B_i$. Because $T = \lim Z_i$ we have $X \times_{\pi_0(X)} T = \lim X \times_{\pi_0(X)} Z_i$ and hence $Y = \Spec (B) = \lim \Spec (B_i)$ fits into the cartesian diagram
+  \[
+  \begin{tikzcd}
+  Y \arrow[r] \arrow[d] & T \arrow[d] \\
+  X \arrow[r] & \pi_0(X)
+  \end{tikzcd}
+  \]
+  of topological spaces. By \Cref{thm:cartesian-profinite} we conclude that $T = \pi_0(Y)$.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/09AZ}{Tag 09AZ}, second part in the proof of (3) $\implies$ (1)]{stacks-project}}]
+  \label{thm:ff-identifies-local-rings-plus-c-has-retraction-if}
+  \uses{def:w-local-ring,def:extremally-disconnected,def:identify-local-rings}
+  Let $A$ be a ring. If the following two conditions hold:
+  \begin{enumerate}
+    \item $A$ is w-local, and
+    \item $\pi_0(\operatorname{Spec}(A))$ is extremally disconnected.
+  \end{enumerate}
+  Then every faithfully flat ring map $A \to B$ identifying local rings with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:closed-points-isom-pi0,thm:extremally-disconnected-projective,def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski,thm:surjective-w-local-ring,thm:ind-Zariski-identifies-local-rings,thm:w-local-map-composition,thm:identifies-local-rings-composition,thm:isom-of-identifies-local-rings-w-local-isom-pi0}
+  Let $A \to B$ be faithfully flat and identifying local rings, with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\). We will show that $A \to B$ has a retraction.
+
+  % Let $I \subset A$ be the radical ideal such that $V(I) \subset \Spec(A)$ is the set of closed points of $\Spec (A)$. We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. The map \(B \to C\) is faithfully flat and ind-Zariski, thus identifies local rings by \Cref{thm:ind-Zariski-identifies-local-rings}. Thus we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
+
+  Choose a continuous section to the surjective continuous map $V(IB) \to V(I)$. This is possible because $V(I) = \Spec(A)^c \cong \pi_0(\Spec(A))$ (by \Cref{thm:closed-points-isom-pi0}) is extremally disconnected, see \Cref{thm:extremally-disconnected-projective}. The image is a closed subspace $T \subset \pi_0(\Spec(B)) \cong V(IB)$ (being the continuous image of the quasi-compact space $V(I)$) that maps homeomorphically onto $\pi_0(\Spec(A))$. 
+  
+  Let $B \to B_T$ be the ring map from \Cref{def:colim-open-closed-localizations}, which is surjective and ind-Zariski by \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}. It also induces a homeomorphism $\pi_0(\Spec(B_T)) \cong T \cong \pi_0(\Spec(A))$.
+  Moreover, by \Cref{thm:surjective-w-local-ring}, $B_T$ is w-local and $B \to B_T$ is w-local. Since ind-Zariski maps identify local rings (\Cref{thm:ind-Zariski-identifies-local-rings}), the composition $A \to B \to B_T$ remains w-local (\Cref{thm:w-local-map-composition}) and identifies local rings (\Cref{thm:identifies-local-rings-composition}). Therefore, by \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}, $A \to B_T$ is an isomorphism.
+\end{proof}
 
 \section{w-contractible rings}
 
 \begin{definition}[w-contractible rings, {\cite[Definition 2.4.1]{proetale}}]
-A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-\'etale map \(A \to B\) has a section.
-    \label{def:w-contractible-ring}
+A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(A \to B\) has a retraction.
+  \label{def:w-contractible-ring}
 \end{definition}
 
-\begin{lemma}[{\cite[Lemma 2.4.3]{proetale}}]
-    \label{lem:w-contractible-henselian}
-    \uses{def:w-contractible-ring, def:henselian-pair}
-
-    Let $A$ be a ring henselian along an ideal $I$. Then $A$ is w-contractible if and only if $A/I$ is so.
-\end{lemma}
-
-\begin{lemma}[{\cite[Lemma 2.4.8]{proetale}}]
-    \label{lem:w-strictly-local-pi0-extremally-disconnected}
-    \uses{def:w-contractible-ring, def:w-strictly-local-ring}
-    A w-strictly local ring $A$ is w-contractible if and only if $\pi_0(\operatorname{Spec}(A))$ is extremally disconnected.
-\end{lemma}
-
-The last theorem in this section used before \cite[Theorem 5.6.2]{proetale} is the following \Cref{thm:ind-etale-w-contractible-cover-exists}
-
-\begin{lemma}[{\cite[Theorem 2.4.9]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/0983}{Tag 0983}]{stacks-project}}]
-    For any ring $A$, there exists an ind-étale faithfully flat $A$-algebra $A_0$ with $A_0$ w-contractible.
-    \label{thm:ind-etale-w-contractible-cover-exists}
-    \uses{def:w-contractible-ring}
+\begin{lemma}
+  \label{thm:w-contractible-if-ind-etale-plus-c-has-retraction}
+  \uses{def:w-local-ring,def:ind-etale,def:w-contractible-ring}
+  Let \(A\) be a w-local ring and $I \subset A$ the an ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$. If every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction, then \(A\) is w-contractible.
 \end{lemma}
 
 \begin{proof}
-    \uses{thm:stone-cech-extremally-disconnected,lem:w-local-quotient-Jacobson-absolute-flat,lem:absolute-flat-exists-ind-etale-w-strictly-local,lem:w-local-space-connected-components,lem:decouple-topology-from-algebra,lem:w-local-space-preserves-limits,lem:w-strictly-local-ind-Zariski-localization,
-    lem:w-strictly-local-pi0-extremally-disconnected,lem:ind-etale-flat-of-ind-Zariski,
-    lem:henselization-fully-faithful,lem:w-contractible-henselian,def:w-localization-ring}
-    
-    We construct $A_0$ in two steps: first building a w-strictly local cover of $A^Z/I_{A^Z}$, then lifting it to $A$.
+  \uses{thm:closed-points-isom-w-local,thm:ind-Zariski-is-flat-ind-etale,thm:ind-etale-comp}
+  Let $A \to B$ be faithfully flat and ind-étale. 
+  % We will use without further mention the fact that a flat map $A \to B$ is faithfully flat if and only if every closed point of $\operatorname{Spec}(A)$ is in the image of $\operatorname{Spec}(B) \to \operatorname{Spec}(A)$. 
+  We will show that $A \to B$ has a retraction.
 
-    \begin{enumerate}
-        \item \textbf{Construction of w-strictly local cover of $A^Z/I_{A^Z}$:} 
-        We construct an ind-étale faithfully flat $A^Z/I_{A^Z}$-algebra $A_0'$ that is w-strictly local with extremally disconnected profinite set of connected components.
-
-        \begin{enumerate}
-            \item Since $A^Z/I_{A^Z}$ is absolutely flat (\Cref{lem:w-local-quotient-Jacobson-absolute-flat}), \Cref{lem:absolute-flat-exists-ind-etale-w-strictly-local} gives an ind-étale faithfully flat $A^Z/I_{A^Z}$-algebra $\overline{A}$ that is w-strictly local and absolutely flat.
-
-            \item Let $X = \Spec \overline{A}$. By \Cref{lem:w-local-space-connected-components}, we have $X^c \simeq \pi_0(X)$. Take $Y_0 = \beta(X^c)$, the Stone-Čech compactification of $X^c$, which is extremally disconnected (\Cref{thm:stone-cech-extremally-disconnected}).
-
-            \item Applying the functor $S \mapsto S \times_{\pi_0(X)} X$ from $\ProFin_{/\pi_0(X)}$ to $\AffSch_{/X}$ (\Cref{lem:decouple-topology-from-algebra}) to $Y_0$ yields an ind-(Zariski localization) map $f: \overline{A} \to A_0'$ with $(\Spec A_0')^c \cong Y_0$. By \Cref{lem:w-local-space-preserves-limits} for preservation of w-locality under limits with w-local maps, this construction is w-local. By \Cref{lem:w-strictly-local-ind-Zariski-localization}, since $A_0'$ is an ind-(Zariski localization) of a w-strictly local ring $\overline{A}$, $A_0'$ is also w-strictly local.
-
-            The map \(\bar{A} \to A_0'\) is ind-étale and faithfully flat by \Cref{lem:ind-etale-flat-of-ind-Zariski} and the surjectivity on \(\Spec \bar{A}\).
-
-            \item Since both maps \(A^Z/I_{A^Z} \to \bar{A} \to A_0'\) are ind-étale and faithfully flat, the composition $A^Z/I_{A^Z} \to A_0'$ is ind-étale faithfully flat.
-        \end{enumerate}
-        
-        By \Cref{lem:w-strictly-local-pi0-extremally-disconnected}, $A_0'$ is w-contractible.
-
-        \item \textbf{Lifting to $A$:} 
-        Define $A_0 = \operatorname{Hens}_{A^Z}(A_0')$, the Henselization of $A_0'$ relative to $A^Z$.
-        
-        \begin{enumerate}
-            \item By \Cref{lem:henselization-fully-faithful}, we have $A_0 \otimes_{A^Z} (A^Z/I_{A^Z}) \cong A_0'$. Since $A_0$ is Henselian along $I_{A^Z}A_0$, \Cref{lem:w-contractible-henselian} implies $A_0$ is w-contractible as $A_0'$ is w-contractible.
-
-            \item The map $A \to A_0$ is faithfully flat and ind-étale because:
-            \begin{itemize}
-                \item $A \to A^Z$ is ind-étale faithfully flat (\Cref{def:w-localization-ring});
-                \item $A^Z \to A_0$ is ind-étale (as a colimit of ind-étale maps) and faithfully flat {\red(quotient by Jacobson \(I^Z\) leaves maximal ideals unchanged. faithfully flat can be checked locally at maximal ideal of \(A^Z\). Remains to show (relative) Henselization of f.f. local ring hom is faithfully flat, and Henselization repect localization. Should develop a whole section of Henselization...)}
-            \end{itemize}
-        \end{enumerate}
-    \end{enumerate}
-
+  We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. To justify this, note that the map \(A \to C\) is faithfully flat and \(B \to C\) is ind-Zariski, thus ind-étale by \Cref{thm:ind-Zariski-is-flat-ind-etale}. Therefore, by \Cref{thm:ind-etale-comp}, the composition \( A \to C \) is also ind-étale. Hence, we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
 \end{proof}
 
+\begin{lemma}
+  \label{thm:ind-etale-plus-c-has-retraction-if}
+  \uses{def:w-strictly-local-ring,def:extremally-disconnected,def:ind-etale}
+  Let $A$ be a ring. If the following two conditions hold:
+  \begin{enumerate}
+    \item $A$ is w-strictly local, and \label{item:w-strictly-local-ind-etale-plus-c-has-retraction-if}
+    \item $\pi_0(\Spec (A))$ is extremally disconnected. \label{item:extremally-disconnected-ind-etale-plus-c-has-retraction-if}
+  \end{enumerate}
+  then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction. Here $I \subset A$ is an ideal of $A$ cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:ind-etale-base-change,thm:ind-etale-strictly-henselian-localization-isom,thm:ff-identifies-local-rings-plus-c-has-retraction-if}
+  Let \(A \to B\) be a faithfully flat ind-étale map with \(B\) w-local and such that the closed points of \(\Spec(B)\) are exactly \(V(IB)\). In this case, \(A \to B\) identifies local rings. To justify this, it suffices to check the condition at the maximal ideals of \(B\), which lie over maximal ideals of \(A\) since they map to \(V(I) = (\Spec(A))^c\). Since \(A\) is w-strictly local, the local rings of \(A\) at its maximal ideals are strictly Henselian.
+
+  Now fix a maximal ideal \(\mathfrak{n}\) of \(B\) and let \(\mathfrak{m} = \mathfrak{n} \cap A\) be its preimage in \(A\), which is a maximal ideal. By base change to \(A_{\mathfrak{m}}\) and applying \Cref{thm:ind-etale-base-change}, we reduce to the case where \(B\) is ind-étale over a strictly Henselian local ring \(A\), with a maximal ideal \(\mathfrak{n}\) lying over the maximal ideal \(\mathfrak{m}\) of \(A\). We then want to show \(B_{\mathfrak{n}} \cong A\). This follows from \Cref{thm:ind-etale-strictly-henselian-localization-isom}.
+
+  Having established that \(A \to B\) identifies local rings, we conclude by \Cref{thm:ff-identifies-local-rings-plus-c-has-retraction-if} that it admits a retraction.
+\end{proof}
+
+\begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/0982}{Tag 0982}, (3) $\implies$ (2)]{stacks-project}}] % actually iff, but we only need this direction
+  \label{thm:w-contractible-if}
+  \uses{def:w-contractible-ring,def:w-strictly-local-ring,def:extremally-disconnected}
+  Let $A$ be a ring. If the following two conditions hold:
+  \begin{enumerate}
+    \item $A$ is w-strictly local, and
+    \item $\pi_0(\Spec (A))$ is extremally disconnected.
+  \end{enumerate}
+  then $A$ is w-contractible.
+\end{proposition}
+
+\begin{proof}
+  \uses{thm:w-contractible-if-ind-etale-plus-c-has-retraction,thm:ind-etale-plus-c-has-retraction-if}
+  This is \Cref{thm:ind-etale-plus-c-has-retraction-if} with \Cref{thm:w-contractible-if-ind-etale-plus-c-has-retraction}.
+  % Assume (1) or equivalently (2). We have (3)(c) by Lemma \ref{lemma:097V}. Properties (3)(a) and (3)(b) follow from Lemma \ref{lemma:09AZ}.
+\end{proof}
+
+\begin{lemma}
+  If a ring \(C\) is w-strictly local, then there exists an ind-étale faithfully flat \(C\)-algebra \(D\) with \(D\) w-contractible.
+  \label{thm:ind-etale-w-contractible-cover-of-w-strictly-local}
+  \uses{def:w-contractible-ring,def:w-strictly-local-ring,def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+  % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
+  \uses{thm:extremally-disconnected-cover,thm:exists-ind-Zariski-cartesian,thm:cartesian-profinite-w-local,thm:ind-Zariski-identifies-local-rings,thm:w-contractible-if}
+  Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. Note that $T$ is profinite.
+  Apply \Cref{thm:exists-ind-Zariski-cartesian} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
+  \[
+  \begin{tikzcd}
+  \operatorname{Spec}(D) \arrow[r] \arrow[d] & \pi_0(\operatorname{Spec}(D)) \arrow[d] \\
+  \operatorname{Spec}(C) \arrow[r] & \pi_0(\operatorname{Spec}(C))
+  \end{tikzcd}
+  \]
+  is cartesian in the category of topological spaces.
+
+  Following \Cref{thm:cartesian-profinite-w-local}, we note that $\Spec (D)$ is w-local, that $\Spec (D) \to \Spec (C)$ is w-local, and that the set of closed points of $\Spec (D)$ is the inverse image of the set of closed points of $\Spec (C)$.
+
+  Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$ by \Cref{thm:ind-Zariski-identifies-local-rings}). It follows from \Cref{thm:w-contractible-if} that $D$ is w-contractible.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem 2.4.9]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/0983}{Tag 0983}]{stacks-project}}]
+  For any ring $A$, there exists an ind-étale faithfully flat $A$-algebra $D$ with $D$ w-contractible.
+
+  \label{thm:ind-etale-w-contractible-cover-exists}
+  \uses{def:w-contractible-ring,def:ind-etale}
+\end{theorem}
+
+\begin{proof}
+  \uses{thm:ind-etale-w-strictly-local-cover,thm:ind-etale-w-contractible-cover-of-w-strictly-local}
+  This is a combination of \Cref{thm:ind-etale-w-strictly-local-cover} and \Cref{thm:ind-etale-w-contractible-cover-of-w-strictly-local}.
+\end{proof}
