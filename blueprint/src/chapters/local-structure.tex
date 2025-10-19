@@ -160,7 +160,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{proof}
   \uses{thm:connected-component-intersection-closed-open}
-  We will show that \(X\) is Hausdorff, quasi-compact, and totally disconnected.
+  We will show that \(\pi_0(X)\) is Hausdorff, quasi-compact, and totally disconnected.
   By \Cref{thm:connected-component-intersection-closed-open}, every connected component of \(X\) is the intersection of the open and closed subsets containing it. Since \(\pi_0(X)\) is the image of a quasi-compact space, it is also quasi-compact. It is totally disconnected by construction. Let \(C,D \subset X\) be distinct connected components of \(X\). Write \(C = \bigcap_{\alpha} U_\alpha\) as the intersection of the open and closed subsets of \(X\) containing \(C\). Any finite intersection of \(U_\alpha\)'s is another \(U_\alpha\). Since \(\bigcap_\alpha U_\alpha \cap D = \emptyset\) we conclude that \(U_\alpha \cap D = \emptyset\) for some \(\alpha\) (connected components are closed, thus quasi-compact). Since \(U_\alpha\) is open and closed, it is the union of the connected components it contains, i.e., \(U_\alpha\) is the inverse image of some open and closed subset \(V_\alpha \subset \pi_0(X)\). This proves that the points corresponding to \(C\) and \(D\) are contained in disjoint open subsets, i.e., \(\pi_0(X)\) is Hausdorff.
 \end{proof}
 
@@ -285,6 +285,14 @@ The functor \(F\) is a composition of two functors:
 The second functor is fully faithful because \(f^\#\) is always an isomorphism, being given by the canonical identification \(f^{-1}\O_Y \cong f^{-1}p^{-1}\O_X = q^{-1}\O_X \cong \O_Z\), where \(p: Y \to X\) and \(q: Z \to X\) are the structure maps.
 \end{proof}
 
+\begin{definition}
+  \label{def:identifies-local-ring-hom-set-bijection}
+  \uses{def:identify-local-ring,thm:identifies-local-ring-to-top-fully-faithful}
+  Let \(A\) be a ring and \(X = \Spec(A)\). Let \(A \to B\) and \(A \to C\) be two \(A\)-algebras that identifies local rings. As a consequence of \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we have a bijective map 
+  \[F : \Hom_{A\textnormal{-alg}}(B, C) \to \Hom_{\textnormal{-Top}_X}(\Spec(C), \Spec(B)).\]
+  sending \(f : B \to C\) to the continuous map \(\Spec(f) : \Spec(C) \to \Spec(B)\) induced by \(f\).
+\end{definition}
+
 \begin{lemma}
     Let $A = \colim_i A_i$ be a filtered colimit of $A$-algebras and let $B$ be an étale $A$-algebra. Then
     there exists an $i$ and an étale $A_i$-algebra $B'$ such that
@@ -354,6 +362,16 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
   This is the consequence of the more general fact that if a property $p$ of ring maps is stable under finite products, then Ind-$p$ is also stable under finite products since finite product of filtered index category is again filtered. 
   
   It suffices to show that being local isomorphism is stable under finite products. Suppose $A \to B_i$ is a local isomorphism for each $i$ for finitely many $i$'s. Every prime $\q$ in $\prod_i B_i$ is an extension prime ideal of one of the factors, say $B_0$. Since there exists $f_0 \in B_0$, $f_0 \notin \q$ such that $A \to (B_0)_{f_0}$ induces an open immersion, localize $\prod_i B_i$ at the corresponding idempotent times this element \(f_0\) to obtain the desired result.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:ind-Zariski-composition}
+  Let \(A \to B\) and \(B \to C\) be ind-Zariski ring maps. Then the composition \(A \to C\) is also ind-Zariski.
+  \uses{def:ind-Zariski}
+\end{lemma}
+
+\begin{proof}
+  Omitted.
 \end{proof}
 
 \section{Henselian objects and Henselisation}
@@ -1523,25 +1541,81 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
   Thus, $\Spec(A_T) = \varprojlim_W W$ is homeomorphic to $Z$ via the natural map.
 \end{proof}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
-  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. There exists an ind-Zariski ring map $A \to B$ such that with $Y = \Spec (B)$ the diagram
-  \[
-  \begin{tikzcd}
-  Y \arrow[r] \arrow[d] & \pi_0(Y) \arrow[d] \\
-  X \arrow[r] & \pi_0(X)
-  \end{tikzcd}
-  \]
-  is cartesian in the category of topological spaces and such that $\pi_0(Y) = T$ as spaces over $\pi_0(X)$.
-  \label{thm:exists-ind-Zariski-cartesian}
-  \uses{def:ind-Zariski}
+In the following series of constructions, we will modify the connected components of a spectrum to match a given profinite space as in {\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}.
+
+\begin{definition}
+  \label{def:modify-pi0-finite}
+  \uses{def:colim-open-closed-localizations}
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) be a finite discrete quotient of \(T\) with quotient map \(q : T \to S\).  Define the ring $A^f_{q}$ as follow: let $Z = \operatorname{Im} (T \to \pi_0(X) \times S = \pi_0(\Spec (A^{S})))$, where \(A^{S} = \prod_{s \in S} A\) and let
+  \[A^f_{q} := (A^{S})_{Z}\] be the $A^S$-algebra as in \Cref{def:colim-open-closed-localizations}.
+\end{definition}
+
+\begin{lemma}
+  \label{thm:modify-pi0-finite-properties}
+  \uses{def:modify-pi0-finite,def:ind-Zariski,def:identify-local-rings}
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) be a finite discrete quotient of \(T\) with quotient map \(q : T \to S\). Then the $A^S$-algebra defined in \Cref{def:modify-pi0-finite} viewed as $A$-algebra through $A \to A^S \to A^f_{q}$ is ind-Zariski. In particular, it identifies local rings. The map $A^S \to A^f_{q}$ induces a homeomorphism of $\Spec (A^f_{q})$ onto \((X \times S) \times_{\pi_0(X) \times S} Z = X \times_{\pi_0(X)} Z\).
 \end{lemma}
 
 \begin{proof}
-  \uses{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski,thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings,thm:identifies-local-rings-composition,thm:identifies-local-ring-to-top-fully-faithful,thm:cartesian-profinite}
-  Write $T = \lim T_i$ as the limit of an inverse system of finite discrete spaces over a directed set. For each $i$ let $Z_i = \operatorname{Im} (T \to \pi_0(X) \times T_i)$. This is a closed subset. Observe that $X \times T_i$ is the spectrum of $A_i = \prod_{t \in T_i} A$ and that $A \to A_i$ is a local isomorphism. By \Cref{def:colim-open-closed-localizations,thm:colim-open-closed-localizations-surj-ind-zariski}, we see that $Z_i \subset \pi_0(X \times T_i) = \pi_0(X) \times T_i$ corresponds to a surjection $A_i \to B_i$ which is ind-Zariski such that $\Spec (B_i) = (X \times T_i) \times_{\pi_0(X) \times T_i} Z_i = X \times_{\pi_0(X)} Z_i$ as subsets of $X \times T_i$. The transition maps $T_i \to T_{i'}$ induce maps $Z_i \to Z_{i'}$ and $X \times_{\pi_0(X)} Z_i \to X \times_{\pi_0(X)} Z_{i'}$. Since the both the ring maps of \(A \to A_{i} \to B_{i}\) identifies local rings by \Cref{thm:finite-product-identifies-local-rings,thm:ind-Zariski-identifies-local-rings}, their composition also identifies local ring by \Cref{thm:identifies-local-rings-composition}. Now apply \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we
-  get ring maps $B_{i'} \to B_i$. 
+  \uses{thm:ind-Zariski-identifies-local-rings,thm:colim-open-closed-localizations-surj-ind-zariski,thm:ind-Zariski-composition,thm:ind-Zariski-identifies-local-rings}
+  The map $A \to A^S$ is ind-Zariski by \Cref{lemma:ind-Zariski-products} and $A^S \to A^f_{q}$ is also ind-Zariski by \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}.  The composition $A \to A^f_{q}$ is therefore ind-Zariski as well by \Cref{thm:ind-Zariski-composition}. By \Cref{thm:ind-Zariski-identifies-local-rings}, $A \to A^f_{q}$ identifies local rings. The last sentence is a direct consequence of \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}.
+\end{proof}
 
-  Set $B = \colim B_i$. Because $T = \lim Z_i$ we have $X \times_{\pi_0(X)} T = \lim X \times_{\pi_0(X)} Z_i$ and hence $Y = \Spec (B) = \lim \Spec (B_i)$ fits into the cartesian diagram
+\begin{definition}
+  \label{def:modify-pi0-transition-map}
+  \uses{def:modify-pi0-finite,def:identify-local-rings,def:identifies-local-ring-hom-set-bijection}
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) and \(S'\) be finite discrete spaces and let \(q : T \to S\) and \(q' : T \to S'\) be quotient maps. Let \(g : S' \to S\) be a map such that \(q = g \circ q'\). Let \(Z \subseteq \pi_0(\Spec (A^{S})) \times S\) and \(Z' \subseteq \pi_0(\Spec (A^{S'})) \times S'\) be the images of \(T\) under the maps induced by \(f\) and \(f'\) respectively. Then \(g\) induces a map \(Z \to Z'\) and a map \(\tilde{g} : \Spec (A^f_{q}) \cong X \times_{\pi_0(X)} Z \to X \times_{\pi_0(X)} Z' \cong \Spec (A^{f'}_{q'})\).
+
+  Since both maps \(A \to A^f_{q}\) and \(A \to A^{f'}_{q'}\) identify local rings, by the bijection in \Cref{def:identifies-local-ring-hom-set-bijection} we can find a transition ring map
+  \[t_{g}: A^f_{q} \to A^{f'}_{q'}\]
+  that induces the topological map \(\tilde{g}\) between the spectra.
+\end{definition}
+
+\begin{lemma}
+  \label{thm:modify-pi0-transition-map-compatible}
+  \uses{def:modify-pi0-transition-map}
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let $f : T \to \pi_0(X)$ be a continuous map. Let \(S\), \(S'\) and \(S''\) be finite discrete spaces and let \(q : T \to S\), \(q' : T \to S'\) and \(q'' : T \to S''\) be quotient maps. Let \(g : S' \to S\) and \(g' : S'' \to S'\) be maps such that \(q = g \circ q'\) and \(q' = g' \circ q''\). Then the transition maps defined in \Cref{def:modify-pi0-transition-map} satisfy
+  \[t_{g'} \circ t_{g} = t_{g \circ g'}.\]
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:modify-pi0-finite-properties,def:identifies-local-ring-hom-set-bijection}
+  Both maps \(t_{g'}\) and \(t_{g} \circ t_{g' \circ g}\) induce the same topological map between the spectra by construction. Since all maps involved identify local rings by \Cref{thm:modify-pi0-finite-properties}, by fully faithfulness in \Cref{def:identifies-local-ring-hom-set-bijection} we conclude that they are equal.
+\end{proof}
+
+\begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
+  \label{def:modify-pi0-profinite}
+  \uses{def:modify-pi0-finite,def:modify-pi0-transition-map,thm:modify-pi0-transition-map-compatible}
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. Write $T = \lim T_i$ as the limit of an inverse system of finite discrete spaces over a directed set. Define the ring \(A^f_{\pi_0}\) as follows:
+  \[
+    A^f_{\pi_0} := \colim_{(T \to T_i)} A^f_{q_i},
+  \]
+  where \(q_i : T \to T_i\) are the quotient maps and \(A^f_{q_i}\) are the rings defined in \Cref{def:modify-pi0-finite} and the transition maps are those defined in \Cref{def:modify-pi0-transition-map}. By \Cref{thm:modify-pi0-transition-map-compatible} the transition maps are compatible thus the colimit is well-defined.
+\end{definition}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
+  \label{thm:modify-pi0-profinite-properties}
+  \uses{def:modify-pi0-profinite,def:ind-Zariski}
+  Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. Then the $A$-algebra $A^f_{\pi_0}$ defined in \Cref{def:modify-pi0-profinite} is ind-Zariski. Let $Y = \Spec (A^f_{\pi_0})$. Then $\pi_0(Y) \cong T$ and the diagram
+  \[
+  \begin{tikzcd}
+  Y \arrow[r] \arrow[d] & T \arrow[d] \\
+  X \arrow[r] & \pi_0(X)
+  \end{tikzcd}
+  \]
+  is cartesian in the category of topological spaces.
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:modify-pi0-finite-properties,lemma:ind-ind-Zariski,thm:cartesian-profinite}
+  By \Cref{thm:modify-pi0-finite-properties} we see that each \(A \to A^f_{q_i}\) is ind-Zariski, thus $A^f_{\pi_0}$ is ind-Zariski by \Cref{lemma:ind-ind-Zariski}. We have the following canonical cartesian diagram
+  \[
+  \begin{tikzcd}
+  \Spec (A^f_{q_i}) \arrow[r] \arrow[d] & Z_i \arrow[d] \\
+  X \arrow[r] & \pi_0(X).
+  \end{tikzcd}
+  \]
+  Because $T = \lim Z_i$ and, $Y = \Spec (A^f_{\pi_0}) = \lim \Spec (A^f_{q_i})$ fits into the cartesian diagram
   \[
   \begin{tikzcd}
   Y \arrow[r] \arrow[d] & T \arrow[d] \\
@@ -1641,9 +1715,9 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
 
 \begin{proof}
   % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
-  \uses{thm:extremally-disconnected-cover,thm:exists-ind-Zariski-cartesian,thm:cartesian-profinite-w-local,thm:ind-Zariski-identifies-local-rings,thm:w-contractible-if}
-  Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. Note that $T$ is profinite.
-  Apply \Cref{thm:exists-ind-Zariski-cartesian} to find an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
+  \uses{thm:extremally-disconnected-cover,def:modify-pi0-profinite,thm:modify-pi0-profinite-properties,thm:cartesian-profinite-w-local,thm:ind-Zariski-identifies-local-rings,thm:w-contractible-if}
+  Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. (\(T\) can be chosen as \(\beta((\pi_0(\operatorname{Spec}(C)))^{\textnormal{disc}})\).) Note that $T$ is profinite.
+  By \Cref{thm:modify-pi0-profinite-properties}, \Cref{def:modify-pi0-profinite} gives an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
   \[
   \begin{tikzcd}
   \operatorname{Spec}(D) \arrow[r] \arrow[d] & \pi_0(\operatorname{Spec}(D)) \arrow[d] \\
