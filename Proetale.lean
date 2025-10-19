@@ -35,6 +35,8 @@ import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
 import Proetale.Mathlib.CategoryTheory.Sites.Sheaf
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.RingTheory.Henselian
+import Proetale.Mathlib.Topology.Inseparable
+import Proetale.Mathlib.Topology.Separation.Basic
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Pro.Basic
 import Proetale.Replete.WeaklyContractible
@@ -49,4 +51,5 @@ import Proetale.Topology.Flat.Sheaf
 import Proetale.Topology.LocalProperties
 import Proetale.Topology.Proetale.Basic
 import Proetale.Topology.Proetale.Sheafification
+import Proetale.Topology.SpectralSpace.Constructible
 import Proetale.Topology.SpectralSpace.WLocal

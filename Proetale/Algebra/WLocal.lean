@@ -9,9 +9,16 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Topology.SpectralSpace.WLocal
 
-universe u
+/-!
+# w-local rings
 
-class WLocalRing (R : Type*) [CommRing R] : Prop where
+In this file we define w-local rings. A ring is w-local if its prime spectrum is
+a w-local topological space.
+-/
+
+/-- A ring is w-local if it has a w-local prime spectrum. -/
+@[mk_iff]
+class IsWLocalRing (R : Type*) [CommSemiring R] : Prop where
   wLocalSpace_primeSepectrum : WLocalSpace (PrimeSpectrum R)
 
 structure RingHom.IsWLocal {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
@@ -22,17 +29,14 @@ structure RingHom.IsWLocal {R S : Type*} [CommRing R] [CommRing S] (f : R →+* 
 -- To avoid universe issues, we use [BS15, Lemma 2.2.9] as the definition of a `WStrictlyLocalRing`.
 The definition of `Algebra.Etale R A` requires `R` and `A` to be in the same universe.
 -/
-class WStrictlyLocalRing (R : Type u) [CommRing R] : Prop extends WLocalRing R where
-  section_exists :∀ (S : Type u) [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S]
-    [Algebra.Etale R S] , ∃ f : S →+* R, f.comp (algebraMap R S) = RingHom.id R
+class IsWStrictlyLocalRing (R : Type*) [CommRing R] : Prop extends IsWLocalRing R where
 
+theorem WStrictlyLocalRing.isStrictlyHenselianLocalRing_of_isMaximal {R : Type*} [CommRing R]
+    [IsWStrictlyLocalRing R] (m : Ideal R) [m.IsMaximal] : IsStrictlyHenselianLocalRing
+    (Localization.AtPrime m) :=
+  sorry
 
-/--
-
--/
-theorem WStrictlyLocalRing.isStrictlyHenselianLocalRing_of_isMaximal {R : Type u} [CommRing R]
-    [WStrictlyLocalRing R] (m : Ideal R) [m.IsMaximal] : IsStrictlyHenselianLocalRing
-    (Localization.AtPrime m) := sorry
-
-theorem wStrictlyLocalRing_of_isStrictlyHenselianLocalRing_atPrime {R : Type u} [CommRing R]
-    (h : ∀ (m : Ideal R) [m.IsMaximal], IsStrictlyHenselianLocalRing (Localization.AtPrime m)) : WStrictlyLocalRing R := sorry
+theorem wStrictlyLocalRing_of_isStrictlyHenselianLocalRing_atPrime {R : Type*} [CommRing R]
+    (h : ∀ (m : Ideal R) [m.IsMaximal], IsStrictlyHenselianLocalRing (Localization.AtPrime m)) :
+    IsWStrictlyLocalRing R :=
+  sorry

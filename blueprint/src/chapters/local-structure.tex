@@ -93,13 +93,9 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/005F}{Tag 005F}]{stacks-project}}]
   \label{thm:connected-component-intersection-closed-open}
-  Let $X$ be a topological space. Assume
-  \begin{enumerate}
-    \item $X$ is quasi-compact,
-    \item $X$ has a basis for the topology consisting of quasi-compact opens, and
-    \item the intersection of two quasi-compact opens is quasi-compact.
-  \end{enumerate}
-  For any $x \in X$ the connected component of $X$ containing $x$ is the intersection of all open and closed subsets of $X$ containing $x$.
+  Let $X$ be a topological space. Assume $X$ is quasi-compact, quasi-separated
+  and prespectral. Then for any $x \in X$ the connected component of $X$ containing $x$ is
+  the intersection of all open and closed subsets of $X$ containing $x$.
 \end{lemma}
 
 \begin{proof}
@@ -108,13 +104,8 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL}]{stacks-project}}]
   \label{thm:intersection-closed-open-iff} % This is spectral minus sober, we only need X spectral version.
-  Let $X$ be a topological space. Assume
-  \begin{enumerate}
-    \item $X$ is quasi-compact,
-    \item $X$ has a basis for the topology consisting of quasi-compact opens, and
-    \item the intersection of two quasi-compact opens is quasi-compact.
-  \end{enumerate}
-  For a subset $T \subset X$ the following are equivalent:
+  Let $X$ be a topological space. Assume $X$ is quasi-compact, quasi-separated
+  and prespectral. Then for a subset $T \subset X$ the following are equivalent:
   \begin{enumerate}
     \item $T$ is an intersection of open and closed subsets of $X$, and
     \item $T$ is closed in $X$ and is a union of connected components of $X$.
@@ -130,9 +121,12 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
     Let $f\colon X \to Y$ be an embedding of topological spaces. Then $f$ preserves and reflects
     specializations, i.e. for $a, b \in X$, $a$ specializes to $b$ if and only if $f(a)$ specializes to $f(b)$.
     \label{lemma:embedding-specializations}
+    \lean{Topology.IsEmbedding.specializes_iff}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     The only if direction holds for any continuous map. Conversely, if $f(a)$ specializes to $f(b)$, then
     $b \in f^{-1}(\overline{\{f(a)\}}) = \overline{\{a\} }$.
 \end{proof}
@@ -143,14 +137,19 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
     Z^g = \{ x \in X \mid \exists z \in Z, x \rightsquigarrow z \}
     \] is called the \emph{generalization of $Z$ in $X$}.
     \label{def:generalization}
+    \lean{generalizationHull}
+    \leanok
 \end{definition}
 
 \begin{lemma}
     Let $Z \subseteq X$ be a subset of a topological space. Then $Z^g$ is closed under generalization.
     \label{lemma:generalization-stable-generalization}
+    \lean{stableUnderGeneralization_generalizationHull}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This is immediate from the definition.
 \end{proof}
 
@@ -496,8 +495,8 @@ The following example shows that our definition agrees with the one in
 
 \begin{definition}[w-local spaces, {\cite[Definition 2.1.1]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/096A}{Tag 096A}]{stacks-project}}]
     \label{def:w-local-space}
-    % \lean{WLocalSpace}
-    % \leanok % To be modified
+    \lean{WLocalSpace}
+    \leanok
     A topological space \(X\) is \emph{w-local} if it satisfies:
     \begin{enumerate}
         \item \(X\) is spectral,
@@ -515,13 +514,15 @@ The following example shows that our definition agrees with the one in
 \end{definition}
 
 \begin{lemma}
-  Let \(f: X \to Y\) and \(g: Y \to Z\) be w-local maps between w-local spaces. Then the composition \(g \circ f: X \to Z\) is w-local.
-  \label{thm:w-local-map-composition}
-  \uses{def:w-local-space, def:w-local-space-map}
+    Let \(f: X \to Y\) and \(g: Y \to Z\) be w-local maps between w-local spaces. Then the composition \(g \circ f: X \to Z\) is w-local.
+    \label{thm:w-local-map-composition}
+    \uses{def:w-local-space, def:w-local-space-map}
+    \lean{IsWLocalMap.comp}
+    \leanok
 \end{lemma}
 
 \begin{proof}
-  Omitted.
+    Omitted.
 \end{proof}
 
 \begin{lemma}
@@ -529,6 +530,8 @@ The following example shows that our definition agrees with the one in
     $Z^g$ in $X$ is still closed under specialization.
     \uses{def:generalization}
     \label{lemma:generalization-specialization-closed}
+    \lean{StableUnderSpecialization.generalizationHull_of_wLocalSpace}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -543,6 +546,8 @@ The following example shows that our definition agrees with the one in
     $Z$ is spectral, it is w-local and the inclusion $Z \to X$ maps closed points to closed points.
     \uses{def:w-local-space}
     \label{lemma:w-local-specialization-closed}
+    \lean{Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -556,10 +561,12 @@ The following example shows that our definition agrees with the one in
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096B}{Tag 096B}]{stacks-project}}]
-  \label{thm:closed-subspace-w-local}
-  \uses{def:w-local-space,def:w-local-space-map}
-  Let \(X\) be a w-local space. Then every closed subspace \(Y \subseteq X\) is w-local.
-  Moreover, the inclusion map \(Y \to X\) is w-local.
+    \label{thm:closed-subspace-w-local}
+    \uses{def:w-local-space,def:w-local-space-map}
+    Let \(X\) be a w-local space. Then every closed subspace \(Y \subseteq X\) is w-local.
+    Moreover, the inclusion map \(Y \to X\) is w-local.
+    \lean{Topology.IsClosedEmbedding.wLocalSpace}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -619,6 +626,8 @@ The following example shows that our definition agrees with the one in
     is the topology with subbase of opens the sets $U$ and $X - U$ for
     all quasi-compact opens $U$ of $X$.
     \label{def:constructible-topology}
+    \lean{constructibleTopology}
+    \leanok
 \end{definition}
 
 In other words, a subset of $X$ is open in the constructible topology if and only if
@@ -629,6 +638,8 @@ a quasi-compact open $U$.
     Let $X$ be a spectral space. Then $X$ is quasi-compact in the constructible topology.
     \uses{def:constructible-topology}
     \label{lemma:spectral-constructible-quasi-compact}
+    \lean{compactSpace_withConstructibleTopology}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -679,6 +690,8 @@ a quasi-compact open $U$.
         \item If $x \in \overline{E}$, then $x$ is the specialization of a point in $E$.
         \item If $E$ is stable under specialization, then $E$ is closed. \label{item:specialization-closed-spectral-constructible-closed-closed}
     \end{enumerate}
+    \lean{exists_specializes_of_isClosed_constructibleTopology_of_mem_closure, IsClosed.of_isClosed_constructibleTopology}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -699,6 +712,8 @@ a quasi-compact open $U$.
     Let $X$ be a w-local space and $Z \subseteq X$ a closed subset. Then $Z^g$ is closed.
     \uses{def:w-local-space, def:generalization}
     \label{lemma:w-local-generalization-closed-closed}
+    \lean{isClosed_generalizationHull_of_wLocalSpace}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -715,6 +730,8 @@ a quasi-compact open $U$.
     \uses{def:w-local-space}
     Let \(X\) be a w-local space. Then the composition $X^c \to X \to \pi_0(X)$ is a homeomorphism,
     where $X^c$ denotes the closed points of $X$.
+    \lean{WLocalSpace.isHomeomorph_connectedComponents_closedPoints}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -760,7 +777,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
     A ring \(A\) is \emph{w-local} if Spec(A) is w-local.
     \label{def:w-local-ring}
     \uses{def:w-local-space}
-    \lean{WLocalRing}
+    \lean{IsWLocalRing}
     \leanok
 \end{definition}
 
@@ -769,8 +786,6 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
     % Spectral is automatic, only sending closed pts to closed pts matters.
     \label{def:w-local-ring-map}
     \uses{def:w-local-ring, def:w-local-space, def:w-local-space-map}
-    %\lean{IsWLocalRingMap}
-    %\leanok
 \end{definition}
 
 \begin{proof}
