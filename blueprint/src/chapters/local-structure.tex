@@ -63,7 +63,7 @@ The reason that we are interested in extremally disconnected space is the follow
 \end{proof}
 
 \begin{lemma}
-  Let $X = \lim_i X_i$ be a cofiltered limit of topological spaces over some index category \(I\) and let
+  Let $X = \lim_i X_i$ be a limit of topological spaces over some index category \(I\) and let
   $s \subseteq X$ be a subset of \(X\). Denote by $s_i$ the image of $s$ in $X_i$. Then
   $\overline{s} = \bigcap_i \pi_i^{-1} (\overline{s_i})$, where $\pi_i : X \to X_i$ is the projection map.
   \label{lemma:closure-limit-intersection}
@@ -89,19 +89,23 @@ The reason that we are interested in extremally disconnected space is the follow
 
 The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite-w-local}.
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
-  \label{thm:pi0-to-totally-disconnected}
+\begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
+  \label{def:pi0-to-totally-disconnected}
+  \lean{ConnectedComponents.lift,ConnectedComponents.lift_comp,ConnectedComponents.lift_comp_apply}
+  \leanok
   Let \(X\) be a topological space. Let \(\pi_0(X)\) be the set of connected components of \(X\). Let \(X \to \pi_0(X)\) be the map which sends \(x \in X\) to the connected component of \(X\) passing through \(x\). Endow \(\pi_0(X)\) with the quotient topology. Then %\(\pi_0(X)\) is a totally disconnected space and 
   any continuous map \(X \to Y\) from \(X\) to a totally disconnected space \(Y\) factors through \(\pi_0(X)\).
-\end{lemma}
+\end{definition}
 
-\begin{proof}
-  Since connected subsets are mapped to connected subsets and the connected components of a totally disconnected space are singletons, any continuous map \(X \to Y\) sends each connected component of \(X\) to a single point in \(Y\). Thus, it factors uniquely through \(\pi_0(X)\).
-\end{proof}
+% \begin{proof}
+%   Since connected subsets are mapped to connected subsets and the connected components of a totally disconnected space are singletons, any continuous map \(X \to Y\) sends each connected component of \(X\) to a single point in \(Y\). Thus, it factors uniquely through \(\pi_0(X)\).
+% \end{proof}
 
 \begin{lemma}
   \label{thm:pi0-to-totally-disconnected-injective}
-  \uses{thm:pi0-to-totally-disconnected}
+  \uses{def:pi0-to-totally-disconnected}
+  \lean{ConnectedComponents.injective_lift}
+  \leanok
   Let \(X\) be a topological space. Let \(\pi_0(X)\) be the topological space of connected components of \(X\). Let \(Y\) be a totally disconnected space. If every fiber of \(X \to Y\) is connected, then the map \(\pi_0(X) \to Y\) is injective.
 \end{lemma}
 
@@ -228,8 +232,8 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
-  \uses{thm:pi0-profinite,thm:spectral-product,thm:closed-subspace-spectral,thm:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
-  Note that $Y$ is a closed subspace of $X \times T$ (see \verb`TopCat.pullbackIsoProdSubtype`) as $\pi_0(X)$ is a profinite space (\Cref{thm:pi0-profinite}) hence Hausdorff. Since $X \times T$ is spectral (\Cref{thm:spectral-product}) it follows that $Y$ is spectral (\Cref{thm:closed-subspace-spectral}). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{thm:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
+  \uses{thm:pi0-profinite,thm:spectral-product,thm:closed-subspace-spectral,def:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
+  Note that $Y$ is a closed subspace of $X \times T$ (see \verb`TopCat.pullbackIsoProdSubtype`) as $\pi_0(X)$ is a profinite space (\Cref{thm:pi0-profinite}) hence Hausdorff. Since $X \times T$ is spectral (\Cref{thm:spectral-product}) it follows that $Y$ is spectral (\Cref{thm:closed-subspace-spectral}). Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{def:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
 \end{proof}
 
 The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}.
