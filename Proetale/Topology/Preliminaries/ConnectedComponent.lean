@@ -24,6 +24,7 @@ theorem factorsThrough_mk {X : Type*} [TopologicalSpace X]
 If \(f: X \to Y\) is a continuous map and \(Y\) is totally disconnected, then f factors uniquely
 through the connected components of \(X\).
 -/
+@[stacks 08ZL]
 noncomputable def lift {X : Type*} [TopologicalSpace X]
     {Y : Type*} [TopologicalSpace Y] [TotallyDisconnectedSpace Y] (f : C(X, Y)) :
     C(ConnectedComponents X, Y) :=

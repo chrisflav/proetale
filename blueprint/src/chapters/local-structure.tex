@@ -87,57 +87,6 @@ The reason that we are interested in extremally disconnected space is the follow
   Omitted.
 \end{proof}
 
-The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite-w-local}.
-
-\begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
-  \label{def:pi0-to-totally-disconnected}
-  \lean{ConnectedComponents.lift,ConnectedComponents.lift_comp,ConnectedComponents.lift_comp_apply}
-  \leanok
-  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the set of connected components of \(X\). Let \(X \to \pi_0(X)\) be the map which sends \(x \in X\) to the connected component of \(X\) passing through \(x\). Endow \(\pi_0(X)\) with the quotient topology. Then %\(\pi_0(X)\) is a totally disconnected space and 
-  any continuous map \(X \to Y\) from \(X\) to a totally disconnected space \(Y\) factors through \(\pi_0(X)\).
-\end{definition}
-
-% \begin{proof}
-%   Since connected subsets are mapped to connected subsets and the connected components of a totally disconnected space are singletons, any continuous map \(X \to Y\) sends each connected component of \(X\) to a single point in \(Y\). Thus, it factors uniquely through \(\pi_0(X)\).
-% \end{proof}
-
-\begin{lemma}
-  \label{thm:pi0-to-totally-disconnected-injective}
-  \uses{def:pi0-to-totally-disconnected}
-  \lean{ConnectedComponents.injective_lift}
-  \leanok
-  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the topological space of connected components of \(X\). Let \(Y\) be a totally disconnected space. If every fiber of \(X \to Y\) is connected, then the map \(\pi_0(X) \to Y\) is injective.
-\end{lemma}
-
-\begin{proof}
-  Omitted.
-\end{proof}
-
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/005F}{Tag 005F}]{stacks-project}}]
-  \label{thm:connected-component-intersection-closed-open}
-  Let $X$ be a topological space. Assume $X$ is quasi-compact, quasi-separated
-  and prespectral. Then for any $x \in X$ the connected component of $X$ containing $x$ is
-  the intersection of all open and closed subsets of $X$ containing $x$.
-\end{lemma}
-
-\begin{proof}
-  Let $T$ be the connected component containing $x$. Let $S = \bigcap_{\alpha \in A} Z_\alpha$ be the intersection of all open and closed subsets $Z_\alpha$ of $X$ containing $x$. Note that $S$ is closed in $X$. Note that any finite intersection of $Z_\alpha$'s is a $Z_\alpha$. Because $T$ is connected and $x \in T$ we have $T \subset Z_\alpha$ for every \(Z_\alpha\), thus \(T \subset S\). It suffices to show that $S$ is connected. If not, then there exists a disjoint union decomposition $S = B \amalg C$ with $B$ and $C$ open and closed in $S$. In particular, $B$ and $C$ are closed in $X$, and so quasi-compact by assumption (1). By assumption (2) there exist quasi-compact opens $U, V \subset X$ with $B = S \cap U$ and $C = S \cap V$. Then $U \cap V \cap S = \emptyset$. Hence $\bigcap_\alpha U \cap V \cap Z_\alpha = \emptyset$. By assumption (3) the intersection $U \cap V$ is quasi-compact. Hence for some $\alpha' \in A$ we have $U \cap V \cap Z_{\alpha'} = \emptyset$. Since $X - (U \cup V)$ is disjoint from $S$ and closed in $X$ hence quasi-compact, we can use the same argument to see that $Z_{\alpha''} \subset U \cup V$ for some $\alpha'' \in A$. Then $Z_\alpha = Z_{\alpha'} \cap Z_{\alpha''}$ is contained in $U \cup V$ and disjoint from $U \cap V$. Hence $Z_\alpha = U \cap Z_\alpha \amalg V \cap Z_\alpha$ is a decomposition into two open pieces, hence $U \cap Z_\alpha$ and $V \cap Z_\alpha$ are open and closed in $X$. Thus, if $x \in B$ say, then we see that $S \subset U \cap Z_\alpha$ and we conclude that $C = \emptyset$.
-\end{proof}
-
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL}]{stacks-project}}]
-  \label{thm:intersection-closed-open-iff} % This is spectral minus sober, we only need X spectral version.
-  Let $X$ be a topological space. Assume $X$ is quasi-compact, quasi-separated
-  and prespectral. Then for a subset $T \subset X$ the following are equivalent:
-  \begin{enumerate}
-    \item $T$ is an intersection of open and closed subsets of $X$, and
-    \item $T$ is closed in $X$ and is a union of connected components of $X$.
-  \end{enumerate}
-\end{lemma}
-
-\begin{proof}
-  \uses{thm:connected-component-intersection-closed-open}
-  It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X - V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
-\end{proof}
 
 \begin{lemma}
     Let $f\colon X \to Y$ be an embedding of topological spaces. Then $f$ preserves and reflects
@@ -173,6 +122,62 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \begin{proof}
     \leanok
     This is immediate from the definition.
+\end{proof}
+
+The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite-w-local}.
+
+\begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
+  \label{def:pi0-to-totally-disconnected}
+  \lean{ConnectedComponents.lift,ConnectedComponents.lift_comp,ConnectedComponents.lift_comp_apply}
+  \leanok
+  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the set of connected components of \(X\). Let \(X \to \pi_0(X)\) be the map which sends \(x \in X\) to the connected component of \(X\) passing through \(x\). Endow \(\pi_0(X)\) with the quotient topology. Then %\(\pi_0(X)\) is a totally disconnected space and 
+  any continuous map \(X \to Y\) from \(X\) to a totally disconnected space \(Y\) factors through \(\pi_0(X)\).
+\end{definition}
+
+% \begin{proof}
+%   Since connected subsets are mapped to connected subsets and the connected components of a totally disconnected space are singletons, any continuous map \(X \to Y\) sends each connected component of \(X\) to a single point in \(Y\). Thus, it factors uniquely through \(\pi_0(X)\).
+% \end{proof}
+
+\begin{lemma}
+  \label{thm:pi0-to-totally-disconnected-injective}
+  \uses{def:pi0-to-totally-disconnected}
+  \lean{ConnectedComponents.injective_lift}
+  \leanok
+  Let \(X\) be a topological space. Let \(\pi_0(X)\) be the topological space of connected components of \(X\). Let \(Y\) be a totally disconnected space. If every fiber of \(X \to Y\) is connected, then the map \(\pi_0(X) \to Y\) is injective.
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/005F}{Tag 005F}]{stacks-project}}]
+  \label{thm:connected-component-intersection-closed-open}
+  \lean{sInter_isClopen_and_mem_eq_connectedComponent}
+  \leanok
+  Let $X$ be a topological space. Assume $X$ is quasi-compact, quasi-separated
+  and prespectral. Then for any $x \in X$ the connected component of $X$ containing $x$ is
+  the intersection of all open and closed subsets of $X$ containing $x$.
+\end{lemma}
+
+\begin{proof}
+  Let $T$ be the connected component containing $x$. Let $S = \bigcap_{\alpha \in A} Z_\alpha$ be the intersection of all open and closed subsets $Z_\alpha$ of $X$ containing $x$. Note that $S$ is closed in $X$. Note that any finite intersection of $Z_\alpha$'s is a $Z_\alpha$. Because $T$ is connected and $x \in T$ we have $T \subset Z_\alpha$ for every \(Z_\alpha\), thus \(T \subset S\). It suffices to show that $S$ is connected. If not, then there exists a disjoint union decomposition $S = B \amalg C$ with $B$ and $C$ open and closed in $S$. In particular, $B$ and $C$ are closed in $X$, and so quasi-compact by assumption (1). By assumption (2) there exist quasi-compact opens $U, V \subset X$ with $B = S \cap U$ and $C = S \cap V$. Then $U \cap V \cap S = \emptyset$. Hence $\bigcap_\alpha U \cap V \cap Z_\alpha = \emptyset$. By assumption (3) the intersection $U \cap V$ is quasi-compact. Hence for some $\alpha' \in A$ we have $U \cap V \cap Z_{\alpha'} = \emptyset$. Since $X - (U \cup V)$ is disjoint from $S$ and closed in $X$ hence quasi-compact, we can use the same argument to see that $Z_{\alpha''} \subset U \cup V$ for some $\alpha'' \in A$. Then $Z_\alpha = Z_{\alpha'} \cap Z_{\alpha''}$ is contained in $U \cup V$ and disjoint from $U \cap V$. Hence $Z_\alpha = U \cap Z_\alpha \amalg V \cap Z_\alpha$ is a decomposition into two open pieces, hence $U \cap Z_\alpha$ and $V \cap Z_\alpha$ are open and closed in $X$. Thus, if $x \in B$ say, then we see that $S \subset U \cap Z_\alpha$ and we conclude that $C = \emptyset$.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL}]{stacks-project}}]
+  \label{thm:intersection-closed-open-iff}
+  \lean{isClosed_and_iUnion_connectedComponent_iff}
+  \leanok
+  Let $X$ be a topological space. Assume $X$ is quasi-compact, quasi-separated
+  and prespectral. Then for a subset $T \subset X$ the following are equivalent:
+  \begin{enumerate}
+    \item $T$ is an intersection of open and closed subsets of $X$, and
+    \item $T$ is closed in $X$ and is a union of connected components of $X$.
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  \uses{thm:connected-component-intersection-closed-open}
+  It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X - V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0906}{Tag 0906}]{stacks-project}}]
