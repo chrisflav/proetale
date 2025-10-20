@@ -4,6 +4,11 @@ namespace CategoryTheory.MorphismProperty
 
 variable {T : Type*} [Category T] {P Q : MorphismProperty T} (X : T) [Q.IsMultiplicative]
 
+-- this is in mathlib on a later version
+instance (P : MorphismProperty T) [P.RespectsIso] (X : T) :
+    (P.underObj (X := X)).IsClosedUnderIsomorphisms :=
+  sorry
+
 namespace Over
 
 abbrev changeProp {P' Q' : MorphismProperty T} [Q'.IsMultiplicative] (hPP' : P ≤ P') (hQQ' : Q ≤ Q') :
