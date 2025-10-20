@@ -305,7 +305,7 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 
 \begin{definition}
   \label{def:identifies-local-ring-hom-set-bijection}
-  \uses{def:identify-local-ring,thm:identifies-local-ring-to-top-fully-faithful}
+  \uses{def:identify-local-rings,thm:identifies-local-ring-to-top-fully-faithful}
   Let \(A\) be a ring and \(X = \Spec(A)\). Let \(A \to B\) and \(A \to C\) be two \(A\)-algebras that identifies local rings. As a consequence of \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we have a bijective map 
   \[F : \Hom_{A\textnormal{-alg}}(B, C) \to \Hom_{\textnormal{-Top}_X}(\Spec(C), \Spec(B)).\]
   sending \(f : B \to C\) to the continuous map \(\Spec(f) : \Spec(C) \to \Spec(B)\) induced by \(f\).
@@ -862,7 +862,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
-    \uses{thm:localization-isom-of-going-down,}
+    \uses{thm:localization-isom-of-going-down}
     Since $A \to B$ is flat (can be checked on stalks of \(B\)), it has going down. % Algebra.HasGoingDown.of_flat
     Thus \Cref{thm:localization-isom-of-going-down} shows for any prime $\q \subset B$ lying over $\p \subset A$ we have $B_{\q} = B_{\p B}$. Since $B_{\q} = A_{\p}$ by assumption, we see that $A_{\p} = B_{\p B}$ for all primes $\p$ of $A$. Thus $A = B$ since isomorphism can be checked locally on $A$.
 \end{proof}
