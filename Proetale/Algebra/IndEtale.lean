@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiang Jiedong, Christian Merten
 -/
 import Mathlib.RingTheory.RingHom.Etale
-import Proetale.Algebra.Ind
+import Proetale.Algebra.IndZariski
 
 /-!
 # Ind-étale algebras
@@ -34,9 +34,23 @@ class Algebra.IndEtale (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] : 
     (P : ColimitPresentation ι (CommAlgCat.of R S)),
     ∀ (i : ι), Algebra.Etale R (P.diag.obj i)
 
-lemma Algebra.IndEtale.iff_ind_etale (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
+namespace Algebra.IndEtale
+
+variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+
+lemma iff_ind_etale (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
     Algebra.IndEtale R S ↔ ObjectProperty.ind.{u} (CommAlgCat.etale R) (.of R S) :=
   Algebra.indEtale_iff R S
+
+lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [Algebra.IndEtale R S] [Algebra.IndEtale S T] :
+    Algebra.IndEtale R T :=
+  sorry
+
+instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S :=
+  sorry
+
+end Algebra.IndEtale
 
 /-- A ring hom is ind-étale if and only if it is an ind-étale algebra. -/
 @[algebraize Algebra.IndEtale]
@@ -44,7 +58,9 @@ def RingHom.IndEtale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : 
   letI := f.toAlgebra
   Algebra.IndEtale R S
 
-lemma RingHom.IndEtale.iff_ind_etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
+namespace RingHom.IndEtale
+
+lemma iff_ind_etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
     f.IndEtale ↔ MorphismProperty.ind.{u}
       (RingHom.toMorphismProperty RingHom.Etale) (CommRingCat.ofHom f) := by
   algebraize [f]
@@ -52,9 +68,18 @@ lemma RingHom.IndEtale.iff_ind_etale {R S : Type u} [CommRing R] [CommRing S] (f
     RingHom.Etale.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty, CommAlgCat.etale_eq]
 
 /-- A ring hom is ind-étale if and only if it can be written as a colimit of étale ring homs. -/
-lemma RingHom.IndEtale.iff_exists {R S : CommRingCat.{u}} (f : R ⟶ S) :
+lemma iff_exists {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f.hom.IndEtale ↔
     ∃ (J : Type u) (_ : SmallCategory J) (_ : IsFiltered J) (D : J ⥤ CommRingCat.{u})
       (t : (Functor.const J).obj R ⟶ D) (c : D ⟶ (Functor.const J).obj S) (_ : IsColimit (.mk _ c)),
       ∀ i, (t.app i).hom.Etale ∧ t.app i ≫ c.app i = f :=
   RingHom.IndEtale.iff_ind_etale _
+
+variable {R S : Type u} [CommRing R] [CommRing S]
+
+lemma comp {T : Type u} [CommRing T] {g : S →+* T} {f : R →+* S} (hg : g.IndEtale)
+    (hf : f.IndEtale) : (g.comp f).IndEtale := by
+  algebraize [f, g, (g.comp f)]
+  exact Algebra.IndEtale.trans R S T
+
+end RingHom.IndEtale

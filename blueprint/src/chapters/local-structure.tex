@@ -510,6 +510,8 @@ The following example shows that our definition agrees with the one in
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0BSI}{Tag 0BSI}]{stacks-project}}]
   \label{thm:ind-etale-comp}
+  \lean{Algebra.IndEtale.trans, RingHom.IndEtale.comp}
+  \leanok
   \uses{def:ind-etale}
   Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale, then $A \to C$ is ind-étale.
 \end{lemma}
@@ -1051,7 +1053,7 @@ $V( \tildeideal{I}{f})$.
     defining $Z(E', E'')$ in $\spec{A_{\widetilde{Z(E', E'')}}}$.
     \uses{def:subset-stratum, def:tilde-locclosed, lemma:subset-stratum-equals-inter}
     \label{def:finite-stratification-ring}
-    \lean{WLocalization.prodStrata, WLocalization.prodStrataIdeal}
+    \lean{WLocalization.ProdStrata, WLocalization.ProdStrata.ideal}
     \leanok
 \end{definition}
 
@@ -1080,7 +1082,7 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
     to a point in $V(I_E)$. In particular, $V(I_E)$ contains all closed points of $\spec{A_E}$.%
     \uses{def:finite-stratification-ring}
     \label{lemma:finite-stratification-closed-points}
-    \lean{WLocalization.exists_specializes_zeroLocus_prodStrataIdeal, WLocalization.mem_zeroLocus_prodStrataIdeal_of_isClosed}
+    \lean{WLocalization.ProdStrata.exists_specializes_zeroLocus_ideal, WLocalization.ProdStrata.mem_zeroLocus_ideal_of_isClosed}
     \leanok
 \end{lemma}
 
@@ -1701,34 +1703,40 @@ In the following series of constructions, we will modify the connected component
 \section{w-contractible rings}
 
 \begin{definition}[w-contractible rings, {\cite[Definition 2.4.1]{proetale}}]
-A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(A \to B\) has a retraction.
-  \label{def:w-contractible-ring}
+    A ring \(A\) is \emph{w-contractible} if it is w-strictly local and $\pi_0(\spec{A})$
+    is extremally disconnected.
+    \label{def:w-contractible-ring}
+    \lean{IsWContractibleRing}
+    \leanok
 \end{definition}
 
+We will see that if a ring $A$ is w-contractible, every faithfully flat, ind-étale map $A \to B$ has a retraction. To show
+this we will perform a series of reductions.
+
 \begin{lemma}
-  \label{thm:w-contractible-if-ind-etale-plus-c-has-retraction}
-  \uses{def:w-local-ring,def:ind-etale,def:w-contractible-ring}
-  Let \(A\) be a w-local ring and $I \subset A$ the an ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$. If every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction, then \(A\) is w-contractible.
+    \label{thm:w-contractible-if-ind-etale-plus-c-has-retraction}
+    \uses{def:w-local-ring,def:ind-etale,def:w-contractible-ring}
+    Let \(A\) be a w-local ring and $I \subset A$ an ideal cutting out the set $X^c$ of closed points
+    in $X = \Spec (A)$. To show that every faithfully flat, ind-étale map $A \to B$ has a
+    retraction, it suffices to show this for \(B\) w-local and whose
+    closed points of \(\Spec (B)\) are exactly \(V(IB)\).
 \end{lemma}
 
 \begin{proof}
   \uses{thm:closed-points-isom-w-local,thm:ind-Zariski-is-flat-ind-etale,thm:ind-etale-comp}
-  Let $A \to B$ be faithfully flat and ind-étale. 
-  % We will use without further mention the fact that a flat map $A \to B$ is faithfully flat if and only if every closed point of $\operatorname{Spec}(A)$ is in the image of $\operatorname{Spec}(B) \to \operatorname{Spec}(A)$. 
+  Let $A \to B$ be faithfully flat and ind-étale.
+  % We will use without further mention the fact that a flat map $A \to B$ is faithfully flat if and only if every closed point of $\operatorname{Spec}(A)$ is in the image of $\operatorname{Spec}(B) \to \operatorname{Spec}(A)$.
   We will show that $A \to B$ has a retraction.
 
   We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. To justify this, note that the map \(A \to C\) is faithfully flat and \(B \to C\) is ind-Zariski, thus ind-étale by \Cref{thm:ind-Zariski-is-flat-ind-etale}. Therefore, by \Cref{thm:ind-etale-comp}, the composition \( A \to C \) is also ind-étale. Hence, we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
 \end{proof}
 
 \begin{lemma}
-  \label{thm:ind-etale-plus-c-has-retraction-if}
-  \uses{def:w-strictly-local-ring,def:extremally-disconnected,def:ind-etale}
-  Let $A$ be a ring. If the following two conditions hold:
-  \begin{enumerate}
-    \item $A$ is w-strictly local, and \label{item:w-strictly-local-ind-etale-plus-c-has-retraction-if}
-    \item $\pi_0(\Spec (A))$ is extremally disconnected. \label{item:extremally-disconnected-ind-etale-plus-c-has-retraction-if}
-  \end{enumerate}
-  then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction. Here $I \subset A$ is an ideal of $A$ cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
+    \label{thm:ind-etale-plus-c-has-retraction-if}
+    \uses{def:w-strictly-local-ring,def:extremally-disconnected,def:ind-etale}
+    Let $A$ be w-contractible and $I \subseteq A$ an ideal cutting out the set $X^c$ of closed points in $X = \spec{A}$.
+    Then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and
+    whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction.
 \end{lemma}
 
 \begin{proof}
@@ -1741,14 +1749,11 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/0982}{Tag 0982}, (3) $\implies$ (2)]{stacks-project}}] % actually iff, but we only need this direction
-  \label{thm:w-contractible-if}
+  \label{thm:w-contractible-retraction}
   \uses{def:w-contractible-ring,def:w-strictly-local-ring,def:extremally-disconnected}
-  Let $A$ be a ring. If the following two conditions hold:
-  \begin{enumerate}
-    \item $A$ is w-strictly local, and
-    \item $\pi_0(\Spec (A))$ is extremally disconnected.
-  \end{enumerate}
-  then $A$ is w-contractible.
+  If $A$ is w-contractible, every ind-étale, faithfully flat map $A \to B$ has a retraction.
+  \lean{IsWContractibleRing.exists_retraction}
+  \leanok
 \end{proposition}
 
 \begin{proof}
@@ -1758,16 +1763,19 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
 \end{proof}
 
 \begin{lemma}
-  If a ring \(C\) is w-strictly local, then there exists an ind-étale faithfully flat \(C\)-algebra \(D\) with \(D\) w-contractible.
+  If a ring \(C\) is w-strictly local, then there exists an ind-Zariski faithfully flat \(C\)-algebra \(D\) with \(D\) w-contractible.
   \label{thm:ind-etale-w-contractible-cover-of-w-strictly-local}
   \uses{def:w-contractible-ring,def:w-strictly-local-ring,def:ind-etale}
+  \lean{exists_isWContractibleRing_of_isWStrictlyLocal}
+  \leanok
 \end{lemma}
 
 \begin{proof}
   % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
-  \uses{thm:extremally-disconnected-cover,def:modify-pi0-profinite,thm:modify-pi0-profinite-properties,thm:cartesian-profinite-w-local,thm:ind-Zariski-identifies-local-rings,thm:w-contractible-if}
+  \uses{thm:extremally-disconnected-cover,def:modify-pi0-profinite,thm:modify-pi0-profinite-properties,thm:cartesian-profinite-w-local,thm:ind-Zariski-identifies-local-rings}
   Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. (\(T\) can be chosen as \(\beta((\pi_0(\operatorname{Spec}(C)))^{\textnormal{disc}})\).) Note that $T$ is profinite.
-  By \Cref{thm:modify-pi0-profinite-properties}, \Cref{def:modify-pi0-profinite} gives an ind-Zariski ring map $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
+  By \Cref{thm:modify-pi0-profinite-properties}, \Cref{def:modify-pi0-profinite} gives an ind-Zariski ring map
+  $C \to D$ such that $\pi_0(\Spec (D)) \to \pi_0(\Spec (C))$ realizes $T \to \pi_0(\Spec (C))$ and such that
   \[
   \begin{tikzcd}
   \operatorname{Spec}(D) \arrow[r] \arrow[d] & \pi_0(\operatorname{Spec}(D)) \arrow[d] \\
@@ -1778,17 +1786,34 @@ A ring \(A\) is \emph{w-contractible} if every faithfully flat ind-étale map \(
 
   Following \Cref{thm:cartesian-profinite-w-local}, we note that $\Spec (D)$ is w-local, that $\Spec (D) \to \Spec (C)$ is w-local, and that the set of closed points of $\Spec (D)$ is the inverse image of the set of closed points of $\Spec (C)$.
 
-  Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$ by \Cref{thm:ind-Zariski-identifies-local-rings}). It follows from \Cref{thm:w-contractible-if} that $D$ is w-contractible.
+  Thus it is still true that the local rings of $D$ at its maximal ideals are strictly henselian (as they are isomorphic to the local rings at the corresponding maximal ideals of $C$ by \Cref{thm:ind-Zariski-identifies-local-rings}). Hence $D$ is w-contractible.
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 2.4.9]{proetale}}, {\cite[\href{https://stacks.math.columbia.edu/tag/0983}{Tag 0983}]{stacks-project}}]
   For any ring $A$, there exists an ind-étale faithfully flat $A$-algebra $D$ with $D$ w-contractible.
-
   \label{thm:ind-etale-w-contractible-cover-exists}
   \uses{def:w-contractible-ring,def:ind-etale}
+  \lean{exists_isWContractibleRing}
+  \leanok
 \end{theorem}
 
 \begin{proof}
-  \uses{thm:ind-etale-w-strictly-local-cover,thm:ind-etale-w-contractible-cover-of-w-strictly-local}
-  This is a combination of \Cref{thm:ind-etale-w-strictly-local-cover} and \Cref{thm:ind-etale-w-contractible-cover-of-w-strictly-local}.
+    \leanok
+    \uses{thm:ind-etale-w-strictly-local-cover,thm:ind-etale-w-contractible-cover-of-w-strictly-local}
+    This is a combination of \Cref{thm:ind-etale-w-strictly-local-cover} and \Cref{thm:ind-etale-w-contractible-cover-of-w-strictly-local}.
+\end{proof}
+
+\begin{corollary}
+    For any ring $A$, there exists an ind-étale faithfully flat $A$-algebra $B$ such that
+    every ind-étale faithfully flat map $B \to C$ has a retraction.
+    \uses{def:ind-etale}
+    \label{cor:ind-etale-retraction-cover-exists}
+    \lean{exists_forall_exists_retraction}
+    \leanok
+\end{corollary}
+
+\begin{proof}
+    \leanok
+    \uses{thm:ind-etale-w-contractible-cover-exists, thm:w-contractible-retraction}
+    This follows from \Cref{thm:ind-etale-w-contractible-cover-exists} and \Cref{thm:w-contractible-retraction}.
 \end{proof}

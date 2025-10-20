@@ -12,6 +12,10 @@ import Proetale.Algebra.IndZariski
 In this file we show that every ring admits a faithfully flat, ind-Zariski w-local algebra.
 -/
 
+universe u
+
+open CategoryTheory Limits
+
 namespace WLocalization
 
 variable {A : Type*} [CommRing A]
@@ -56,6 +60,13 @@ def ideal (f : A) (I : Ideal A) : Ideal (Generalization f I) :=
 instance indZariski : Algebra.IndZariski A (Generalization f I) :=
   sorry
 
+def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
+  PrimeSpectrum.basicOpen f ∩ PrimeSpectrum.zeroLocus I
+
+def map {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
+    Generalization f I →ₐ[A] Generalization f' I' :=
+  sorry
+
 end Generalization
 
 /-- The single stratum `Z(E, F)` in `Spec A`. -/
@@ -87,34 +98,105 @@ def Stratification.Index.function {E : Finset A} (i : Stratification.Index E) : 
 def Stratification.Index.ideal {E : Finset A} (i : Stratification.Index E) : Ideal A :=
   Ideal.span i.right
 
+lemma locClosedSubset_function_ideal {E : Finset A} (i : Stratification.Index E) :
+    Generalization.locClosedSubset i.function i.ideal = stratum i.left i.right := by
+  rw [Generalization.locClosedSubset, stratum_eq_basicOpen_inter_zeroLocus]
+  rfl
+
+/-- Restrict a disjoint union decomposition of `F` to `E`. -/
+@[simps]
+noncomputable
+def Stratification.Index.restrict {E F : Finset A} (i : Stratification.Index F)
+    (h : E ⊆ F) : Stratification.Index E where
+  left := open Classical in E ∩ i.left
+  right := open Classical in E ∩ i.right
+  disjoint := sorry
+  union_eq := sorry
+
 /-- The product of the generalizations of `Z(E', E'')` indexed by all disjoint union decompositions
 `E = E' ⨿ E''`. -/
-def prodStrata (E : Finset A) : Type _ :=
+def ProdStrata (E : Finset A) : Type _ :=
   ∀ (i : Stratification.Index E), Generalization i.function i.ideal
 
-instance (E : Finset A) : CommRing (prodStrata E) := fast_instance%
+@[ext]
+lemma ProdStrata.ext {E : Finset A} (x y : ProdStrata E) (h : ∀ i, x i = y i) : x = y := by
+  dsimp [ProdStrata] at *
+  ext i
+  exact h i
+
+instance (E : Finset A) : CommRing (ProdStrata E) := fast_instance%
   inferInstanceAs <| CommRing <|
     ∀ (i : Stratification.Index E), Generalization i.function i.ideal
 
-instance (E : Finset A) : Algebra A (prodStrata E) := fast_instance%
+instance (E : Finset A) : Algebra A (ProdStrata E) := fast_instance%
   inferInstanceAs <| Algebra A <|
     ∀ (i : Stratification.Index E), Generalization i.function i.ideal
 
 /-- The ideal of the stratification product, given by the product of the ideals defining
 `Z(E', E'')` in its generalization. -/
-noncomputable def prodStrataIdeal (E : Finset A) : Ideal (prodStrata E) :=
+noncomputable def ProdStrata.ideal (E : Finset A) : Ideal (ProdStrata E) :=
   Ideal.pi fun _ ↦ Generalization.ideal _ _
 
-lemma exists_specializes_zeroLocus_prodStrataIdeal {E : Finset A}
-    (x : PrimeSpectrum (prodStrata E)) :
-    ∃ y ∈ PrimeSpectrum.zeroLocus (prodStrataIdeal E), x ⤳ y :=
+lemma ProdStrata.exists_specializes_zeroLocus_ideal {E : Finset A}
+    (x : PrimeSpectrum (ProdStrata E)) :
+    ∃ y ∈ PrimeSpectrum.zeroLocus (ProdStrata.ideal E), x ⤳ y :=
   sorry
 
-lemma mem_zeroLocus_prodStrataIdeal_of_isClosed {E : Finset A}
-    {x : PrimeSpectrum (prodStrata E)} (hx : IsClosed {x}) :
-    x ∈ PrimeSpectrum.zeroLocus (prodStrataIdeal E) := by
-  obtain ⟨y, hmem, hy⟩ := exists_specializes_zeroLocus_prodStrataIdeal x
+lemma ProdStrata.mem_zeroLocus_ideal_of_isClosed {E : Finset A}
+    {x : PrimeSpectrum (ProdStrata E)} (hx : IsClosed {x}) :
+    x ∈ PrimeSpectrum.zeroLocus (ProdStrata.ideal E) := by
+  obtain ⟨y, hmem, hy⟩ := exists_specializes_zeroLocus_ideal x
   have := hy.mem_closed hx (by simp)
   grind only [= Set.mem_singleton_iff]
 
+/-- If `E ⊆ F`, this is the canonical map `A_E → A_F`. -/
+noncomputable def ProdStrata.map {E F : Finset A} (h : E ⊆ F) :
+    ProdStrata E →ₐ[A] ProdStrata F :=
+  Pi.algHom _ _ fun i ↦
+    AlgHom.comp
+      (Generalization.map <| by
+        rw [locClosedSubset_function_ideal, locClosedSubset_function_ideal]
+        apply stratum_anti <;> simp)
+      (Pi.evalAlgHom _ _ (i.restrict h))
+
+variable (A) in
+/-- The diagram whose colimit is the w-localization of `A`. -/
+noncomputable def diag : Finset A ⥤ CommAlgCat A where
+  obj E := .of A (ProdStrata E)
+  map {E F} f := CommAlgCat.ofHom (ProdStrata.map <| leOfHom f)
+  map_id E := sorry
+  map_comp := sorry
+
+variable (A) in
+/-- The w-localization of a ring as an object of `CommAlgCat A` is the colimit over
+the rings `A_E`. -/
+noncomputable def commAlgCat : CommAlgCat A :=
+  colimit (diag A)
+
+noncomputable def colimitPresentation : ColimitPresentation (Finset A) (commAlgCat A) where
+  diag := diag A
+  ι := (colimit.cocone _).ι
+  isColimit := colimit.isColimit _
+
 end WLocalization
+
+/-- The w-localization of a ring. -/
+def WLocalization (A : Type u) [CommRing A] : Type _ :=
+  WLocalization.commAlgCat A
+
+variable (A : Type u) [CommRing A]
+
+noncomputable instance : CommRing (WLocalization A) := fast_instance%
+  inferInstanceAs <| CommRing (WLocalization.commAlgCat A)
+
+noncomputable instance : Algebra A (WLocalization A) := fast_instance%
+  inferInstanceAs <| Algebra A (WLocalization.commAlgCat A)
+
+instance indZariski_wLocalization : Algebra.IndZariski A (WLocalization A) :=
+  sorry
+
+instance faithfullyFlat_wLocalization : Module.FaithfullyFlat A (WLocalization A) :=
+  sorry
+
+instance isWLocalRing_wLocalization : IsWLocalRing (WLocalization A) :=
+  sorry
