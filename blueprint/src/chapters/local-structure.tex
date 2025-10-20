@@ -849,6 +849,8 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
   \label{thm:surjective-w-local-ring}
   If \(A \to B\) is a surjective ring map and \(A\) is w-local, then \(B\) is w-local.
   \uses{def:w-local-ring}
+  \lean{IsWLocalRing.of_surjective}
+  \leanok
 \end{lemma}
 
 \begin{proof}
@@ -870,6 +872,8 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \begin{lemma}
   \label{thm:isom-of-identifies-local-rings-bijective}
   \uses{def:identify-local-rings}
+  \lean{RingHom.BijectiveOnStalks.bijective_of_bijective}
+  \leanok
   Let $A \to B$ be a ring map such that
   \begin{enumerate}
     \item $A \to B$ identifies local rings, and
@@ -886,6 +890,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 
 \begin{lemma}[\stacksproject{097E}]
   \label{thm:isom-of-identifies-local-rings-w-local-isom-pi0}
+  \lean{RingHom.IsWLocal.bijective_of_bijective}
   \uses{def:identify-local-rings,def:w-local-ring,def:w-local-ring-map}
   Let $A \to B$ be a w-local ring map between w-local rings such that
   \begin{enumerate}
@@ -914,6 +919,8 @@ $A$-algebra $A_{w}$ with $A_w$ w-local. Let $A$ be a ring.
     and $\tildeideal{I}{f} \subseteq \tildering{A}{I}{f}$ to be the kernel of
     the induced map $\tildering{A}{I}{f} \to (A / I)_{f}$.
     \label{def:tilde-locclosed}
+    \lean{WLocalization.Generalization.submonoid, WLocalization.Generalization, WLocalization.Generalization.ideal}
+    \leanok
 \end{definition}
 
 If $Z \subseteq \spec{A}$ is a locally closed subscheme of the form $D(f) \cap V(I)$, we
@@ -977,6 +984,8 @@ $V( \tildeideal{I}{f})$.
     $\tildering{A}{I}{f}$ is ind-Zariski over $A$.
     \uses{def:tilde-locclosed}
     \label{lemma:tilde-locclosed-ind-zariski}
+    \lean{WLocalization.Generalization.indZariski}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -989,6 +998,8 @@ $V( \tildeideal{I}{f})$.
     Z(E, F) = \bigcap_{f \in E'} D(f) \cap \bigcap_{f \in F} V(f)
     .\]
     \label{def:subset-stratum}
+    \lean{WLocalization.stratum}
+    \leanok
 \end{definition}
 
 \begin{lemma}
@@ -998,6 +1009,8 @@ $V( \tildeideal{I}{f})$.
     .\]
     \uses{def:subset-stratum}
     \label{lemma:subset-stratum-equals-inter}
+    \lean{WLocalization.stratum_eq_basicOpen_inter_zeroLocus}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1008,6 +1021,8 @@ $V( \tildeideal{I}{f})$.
     Let $E_1, F_1, E_2, F_2 \subseteq A$ be subsets such that $E_1 \subseteq E_2$ and
     $F_1 \subseteq F_2$. Then $Z(E_2, F_2) \subseteq Z(E_1, F_1)$.
     \label{lemma:subset-stratum-mono}
+    \lean{WLocalization.stratum_anti}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1041,6 +1056,8 @@ $V( \tildeideal{I}{f})$.
     defining $Z(E', E'')$ in $\spec{A_{\widetilde{Z(E', E'')}}}$.
     \uses{def:subset-stratum, def:tilde-locclosed, lemma:subset-stratum-equals-inter}
     \label{def:finite-stratification-ring}
+    \lean{WLocalization.prodStrata, WLocalization.prodStrataIdeal}
+    \leanok
 \end{definition}
 
 Note that \ref{def:finite-stratification-ring} is well-defined, because for finite
@@ -1068,6 +1085,8 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
     to a point in $V(I_E)$. In particular, $V(I_E)$ contains all closed points of $\spec{A_E}$.%
     \uses{def:finite-stratification-ring}
     \label{lemma:finite-stratification-closed-points}
+    \lean{WLocalization.exists_specializes_zeroLocus_prodStrataIdeal, WLocalization.mem_zeroLocus_prodStrataIdeal_of_isClosed}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1319,13 +1338,12 @@ In particular, the composition $A \to B \to C$ is faithfully flat if $A \to B$ i
 \section{w-strictly-local Rings}
 
 \begin{definition}[w-strictly local rings, {\cite[Definition 2.2.1(ii)]{proetale}}]
-    A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every local ring of \(A\) at a maximal ideal is strictly henselian.
-    % TODO: every faithfully flat \'etale map \(A \to B\) has a retraction. this should be a property.
+    A ring \(A\) is \emph{w-strictly local} if \(A\) is w-local, and every local ring of \(A\) at a
+    maximal ideal is strictly henselian.
     \label{def:w-strictly-local-ring}
     \uses{def:w-local-ring,def:strictly-henselian-local-ring}
-    % refactor WStrictlyLocalRing, using the definition of strictly henselian
-    % \lean{WStrictlyLocalRing}
-    % \leanok
+    \lean{IsWStrictlyLocalRing}
+    \leanok
 \end{definition}
 
 The goal of this section is to show that every ring $A$ admits a faithfully flat, ind-étale algebra $B$ that is $w$-strictly-local.
@@ -1333,7 +1351,9 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \begin{lemma}
   \label{thm:ind-etale-strictly-henselian-localization-isom}
   \uses{def:ind-etale,def:strictly-henselian-local-ring,def:identify-local-rings}
-  Let \(A\) be a strictly henselian local ring. Let \(A \to B\) be an ind-étale ring map. Let $\n$ be an maximal ideal of $B$ lying over the maximal ideal $\m$ of $A$. Then the map $A \to B_\n$ is isomorphism.
+  Let \(A\) be a strictly henselian local ring. Let \(A \to B\) be an ind-étale ring map.
+  Let $\n$ be an maximal ideal of $B$ lying over the maximal ideal $\m$ of $A$.
+  Then the map $A \to B_\n$ is isomorphism.
 \end{lemma}
 
 \begin{proof}
