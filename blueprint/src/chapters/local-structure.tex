@@ -32,7 +32,6 @@ The reason that we are interested in extremally disconnected space is the follow
   \label{def:stone-cech-compactification}
   \lean{StoneCech}
   \mathlibok
-
   Let \(X\) be a topological space. The \emph{Stone-Čech compactification} of \(X\) is the
   profinite space \(\beta(X)\) such that
   \begin{enumerate}
@@ -55,6 +54,7 @@ The reason that we are interested in extremally disconnected space is the follow
   Let $X$ be a quasi-compact Hausdorff space. There exists a continuous surjection $X' \to X$ with $X'$ quasi-compact, Hausdorff, and extremally disconnected.
   \label{thm:extremally-disconnected-cover}
   \uses{def:extremally-disconnected, def:stone-cech-compactification}
+  \lean{Stonean.stoneCechObj}
 \end{proposition}
 
 \begin{proof}
@@ -63,11 +63,29 @@ The reason that we are interested in extremally disconnected space is the follow
 \end{proof}
 
 \begin{lemma}
-    Let $X = \lim_i X_i$ be a cofiltered limit of topological spaces and let
-    $x \in X$ be an element. Denote by $x_i$ the image of $x$ in $X_i$. Then
-    $\overline{\{x\}} = \lim_i \overline{\{x_i\}}$.
-    \label{lemma:closure-limit}
+  Let $X = \lim_i X_i$ be a cofiltered limit of topological spaces over some index category \(I\) and let
+  $s \subseteq X$ be a subset of \(X\). Denote by $s_i$ the image of $s$ in $X_i$. Then
+  $\overline{s} = \bigcap_i \pi_i^{-1} (\overline{s_i})$, where $\pi_i : X \to X_i$ is the projection map.
+  \label{lemma:closure-limit-intersection}
+  \lean{TopCat.closure_eq_iInter_preimage_closure_image}
+  \leanok
 \end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:closure-limit-compatible}
+  Let $X = \lim_i X_i$ be a limit of topological spaces over some index category \(I\) and let
+  $s \subseteq X$ be a subset of \(X\). Denote by $s_i$ the image of $s$ in $X_i$. Then for any morphism \(f : i \to j\) in \(I\) with transition map \(\varphi_{f} : X_i \to X_j\), we have \(\varphi_{f}(\overline{s_i}) \subseteq \overline{s_j}\).
+  \lean{image_closure_image_subset_closure_image}
+  \leanok
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
 
 The following pure topological lemmas will be used in \Cref{thm:colim-open-closed-localizations-surj-ind-zariski,thm:cartesian-profinite-w-local}.
 
@@ -291,7 +309,7 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 
 \begin{definition}
   \label{def:identifies-local-ring-hom-set-bijection}
-  \uses{def:identify-local-ring,thm:identifies-local-ring-to-top-fully-faithful}
+  \uses{def:identify-local-rings,thm:identifies-local-ring-to-top-fully-faithful}
   Let \(A\) be a ring and \(X = \Spec(A)\). Let \(A \to B\) and \(A \to C\) be two \(A\)-algebras that identifies local rings. As a consequence of \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we have a bijective map 
   \[F : \Hom_{A\textnormal{-alg}}(B, C) \to \Hom_{\textnormal{-Top}_X}(\Spec(C), \Spec(B)).\]
   sending \(f : B \to C\) to the continuous map \(\Spec(f) : \Spec(C) \to \Spec(B)\) induced by \(f\).
@@ -852,7 +870,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
-    \uses{thm:localization-isom-of-going-down,}
+    \uses{thm:localization-isom-of-going-down}
     Since $A \to B$ is flat (can be checked on stalks of \(B\)), it has going down. % Algebra.HasGoingDown.of_flat
     Thus \Cref{thm:localization-isom-of-going-down} shows for any prime $\q \subset B$ lying over $\p \subset A$ we have $B_{\q} = B_{\p B}$. Since $B_{\q} = A_{\p}$ by assumption, we see that $A_{\p} = B_{\p B}$ for all primes $\p$ of $A$. Thus $A = B$ since isomorphism can be checked locally on $A$.
 \end{proof}
@@ -1117,7 +1135,7 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:finite-stratification-ideal-bijection, lemma:closure-limit}
+    \uses{lemma:finite-stratification-ideal-bijection, lemma:closure-limit-intersection,thm:closure-limit-compatible}
     Since $V(I_w) = \lim_{E} V(I_E)$ and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
     bijective for all $E$ by \ref{lemma:finite-stratification-ideal-bijection}, the
     first claim holds.
@@ -1128,7 +1146,7 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
     \ref{lemma:finite-stratification-closed-points}, the intersection $T_E \cap V(I_E)$ is
     non-empty. Since both $T_E$ and $V(I_E)$ are closed, the intersection is closed
     and hence quasi-compact. Thus $(\lim_E T_E) \cap V(I_w) = \lim_E (T_E \cap V(I_E))$ is non-empty.
-    By \ref{lemma:closure-limit}, the subset $\lim_E T_E$ is the closure of $y$ in $\spec{A_w}$. Hence
+    Apply \ref{lemma:closure-limit-intersection,thm:closure-limit-compatible} to singleton \({y}\), the subset $\lim_E T_E$ is the closure of $y$ in $\spec{A_w}$. (Shuold be a cofiltered version of \verb`IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed`.) Hence
     $y$ specializes to a point in $V(I_E)$.
 
     For uniqueness, suppose $y \in \spec{A_w}$ specializes to $z, z' \in V(I_w)$ with
