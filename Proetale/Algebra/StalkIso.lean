@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Proetale.Algebra.LocalIso
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # Ring homomorphisms bijective on stalks
@@ -27,4 +28,9 @@ variable {R S : Type*} [CommRing R] [CommRing S]
 /-- Local isomorphisms are bijective on stalks. -/
 lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
     f.BijectiveOnStalks :=
+  sorry
+
+lemma RingHom.BijectiveOnStalks.bijective_of_bijective {f : R →+* S}
+    (hf : f.BijectiveOnStalks) (hb : Function.Bijective f.specComap) :
+    Function.Bijective f :=
   sorry

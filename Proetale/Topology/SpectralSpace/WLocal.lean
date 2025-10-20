@@ -29,6 +29,7 @@ class WLocalSpace (X : Type*) [TopologicalSpace X] : Prop extends SpectralSpace 
   isClosed_closedPoints : IsClosed (closedPoints X)
 
 /-- A w-local map is a spectral map that maps closed points to closed points. -/
+@[mk_iff]
 structure IsWLocalMap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) : Prop
     extends IsSpectralMap f where
   preimage_closedPoints : f ⁻¹' (closedPoints Y) ⊆ closedPoints X
