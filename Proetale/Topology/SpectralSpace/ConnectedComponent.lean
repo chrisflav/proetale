@@ -67,10 +67,4 @@ theorem spectralSpace_of_isPullback_mk (Y T : Type u) [TopologicalSpace Y]
 -- @[stacks 096C "first part"]
 -- theorem spectralSpace_of_isPullback_mk' (X Y : TopCat) (T : Profinite) (f : Y ⟶ X) (g : Y ⟶ toTopCat.obj T) (i : toTopCat.obj T ⟶ of (ConnectedComponents X)) (pb : IsPullback g f i (ofHom ⟨mk, continuous_coe⟩ : X ⟶ of (ConnectedComponents X))) : SpectralSpace Y := sorry
 
-@[stacks 096C "first part"]
-theorem spectralSpace_of_isPullback_mk (Y T : Type u) [TopologicalSpace Y]
-    [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
-    (f : C(Y, X)) (g : C(Y, T)) (i : C(T, ConnectedComponents X))
-    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
-    SpectralSpace Y := sorry
 end Spectral
