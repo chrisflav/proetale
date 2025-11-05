@@ -25,11 +25,50 @@ section
 
 variable [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X]
 
+open TopologicalSpace
+lemma foo (S : Set X) (h : IsClosed S) (B : Set X)
+  (hB : IsOpen B) (h2 : IsCompact (S ∩ B))
+  : ∃ U : Set X, IsOpen U ∧ IsCompact U ∧ S ∩ U = S ∩ B := by
+  have := Opens.isBasis_iff_cover.mp (PrespectralSpace.isBasis_opens X)
+  have := this ⟨B, hB⟩
+  obtain ⟨Us, hUs, hUsC⟩ := this
+
+  have heq := congr($(hUsC).carrier)
+  simp at heq
+  have := h2.elim_finite_subcover (U := fun i : Us ↦ i.1) (fun i ↦ i.1.2) (by
+    rw [heq]
+    simp)
+  obtain ⟨t, ht⟩ := this
+  use ⋃ i ∈ t, i
+  constructor
+  · exact isOpen_biUnion (fun i hi ↦ i.1.2)
+  · constructor
+    · apply t.finite_toSet.isCompact_biUnion
+      intro i hi
+      exact hUs i.2
+    · refine subset_antisymm ?_ (by simpa using ht)
+      rw [heq]
+      gcongr
+      intro i hi
+      simp at hi
+      simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
+      grind
+
 @[simp, stacks 005F]
 theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
     ⋂ (U : {U : Set X // IsClopen U ∧ x ∈ U}), U = connectedComponent x := by
   apply subset_antisymm
-  · sorry
+  · apply IsConnected.subset_connectedComponent
+    · by_contra h
+
+      simp only [IsConnected, not_and] at h
+      have := h ⟨x, by simp⟩
+      simp only [IsPreconnected, not_forall] at this
+      obtain ⟨B', C', hB', hC', hBC', hBn', hCn', h⟩ := this
+      push_neg at h
+
+      sorry
+    · simp
   · exact connectedComponent_subset_iInter_isClopen
 
 @[stacks 04PL]
