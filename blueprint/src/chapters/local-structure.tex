@@ -200,7 +200,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:closed-subspace-spectral}
-  \lean{Topology.IsClosedEmbedding.quasiSeparatedSpace,Topology.IsClosedEmbedding.spectral,SpectralSpace.of_isClosed}
+  \lean{Topology.IsClosedEmbedding.quasiSeparatedSpace,Topology.IsClosedEmbedding.spectralSpace,SpectralSpace.of_isClosed}
   \leanok
   Let $X$ be a spectral space. Let $Y \subset X$ be a closed subspace. Then $Y$ is spectral.
 \end{lemma}
@@ -239,34 +239,33 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
   A basis of the topology of $X \times Y$ consists of opens of the form $U \times V$ with $U \subset X$ and $V \subset Y$ quasi-compact open (here we use that $X$ and $Y$ are spectral). Then $U \times V$ is quasi-compact as the product of quasi-compact spaces is quasi-compact. Moreover, any quasi-compact open of $X \times Y$ is a finite union of such quasi-compact rectangles $U \times V$. It follows that the intersection of two such is again quasi-compact (since $X$ and $Y$ are spectral). This concludes the proof.
 \end{proof}
 
-\begin{lemma}
-  \label{thm:pullback-Hausdorff}
-  \lean{T2Space.pullback,CategoryTheory.IsPullback.t2Space}
+\begin{lemma}[{\stacksproject{08ZE}}]
+  \label{thm:Hausdorff-diagonal-closed}
+  \lean{t2Space_iff_diagonal_closed}
   \leanok
-  Let \(X\) and \(Y\) be Hausdorff spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is Hausdorff.
-\end{lemma}
-
-\begin{proof}
-  \leanok
-  Note that \(X \times_S Y\) is a subspace of $X \times Y$. (See \verb`TopCat.pullbackIsoProdSubtype`.) Since $X \times Y$ is Hausdorff (\verb`Prod.t2Space`) it follows that \(X \times_S Y\) is Hausdorff (\verb`Topology.IsEmbedding.t2Space`).
-\end{proof}
-
-\begin{lemma}
-  \label{thm:pullback-closed-embedding-prod}
-  \lean{TopCat.isClosedEmbedding_pullback_to_prod}
-  \leanok
-  Let \(X\), \(Y\), and \(S\) be topological spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. The natural map \(X \times_S Y \to X \to Y\) is a closed embedding.
+  Let \(X\) be a topological space. Then \(X\) is Hausdorff if and only if the diagonal map \(\Delta : X \to X \times X\) is a closed embedding.
 \end{lemma}
 
 \begin{proof}
   Omitted.
 \end{proof}
 
+\begin{lemma}[{\stacksproject{08ZH}}]
+  \label{thm:pullback-closed-embedding-prod}
+  \lean{TopCat.isClosedEmbedding_pullback_to_prod}
+  \leanok
+  Let \(X\), \(Y\), and \(S\) be topological spaces. Assume that \(S\) is Hausdorff. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. The natural map \(X \times_S Y \to X \to Y\) is a closed embedding.
+\end{lemma}
+
+\begin{proof}
+  \(X \times_S Y\) is the inverse image of the image \(\Delta(S)\) of the diagonal map \(\Delta : S \to S \times S\). 
+\end{proof}
+
 \begin{lemma}
   \label{thm:homeo-preserves-spectral}
-  \lean{Homeomorph.spectral,Homeomorph.t0Space,Homeomorph.t2Space,Homeomorph.quasiSober,Homeomorph.quasiSeparatedSpace,Homeomorph.quasiCompactSpace,Homeomorph.prespectral}
+  \lean{Homeomorph.spectralSpace,Homeomorph.t0Space,Homeomorph.t2Space,Homeomorph.quasiSober,Homeomorph.quasiSeparatedSpace,Homeomorph.compactSpace,Homeomorph.prespectralSpace}
   \leanok
-  Let \(X\) and \(Y\) be topological spaces. If \(X\) is spectral (resp. T0, Hausdorff, quasi-Sober, quasi-separated, quasi-compact, prespectral) and there is a homeomorphism \(X \cong Y\), then \(Y\) is spectral (resp. T0, Hausdorff, quasi-Sober, quasi-separated, quasi-compact, prespectral).
+  Let \(X\) and \(Y\) be topological spaces. If \(X\) is spectral (resp. T0, Hausdorff, Sober, quasi-separated, quasi-compact, prespectral) and there is a homeomorphism \(X \cong Y\), then \(Y\) is spectral (resp. T0, Hausdorff, Sober, quasi-separated, quasi-compact, prespectral).
 \end{lemma}
 
 \begin{proof}
@@ -275,9 +274,9 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:pullback-spectral}
-  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,QuasiSeparatedSpace.pullback,QuasiSober.pullback,QuasiCompactSpace.pullback,CategoryTheory.IsPullback.t0Space,CategoryTheory.IsPullback.quasiSober,CategoryTheory.IsPullback.quasiSeparatedSpace,CategoryTheory.IsPullback.compactSpace,CategoryTheory.IsPullback.prespectralSpace,CategoryTheory.IsPullback.spectralSpace}
+  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,QuasiSeparatedSpace.pullback,QuasiSober.pullback,CompactSpace.pullback,CategoryTheory.IsPullback.t0Space,CategoryTheory.IsPullback.quasiSober,CategoryTheory.IsPullback.quasiSeparatedSpace,CategoryTheory.IsPullback.compactSpace,CategoryTheory.IsPullback.prespectralSpace,CategoryTheory.IsPullback.spectralSpace}
   \leanok
-  Let \(X\) and \(Y\) be spectral spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
+  Let \(X\) and \(Y\) be spectral spaces. Let \(S\) be a Hausdorff topological space. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
 \end{lemma}
 
 \begin{proof}
@@ -286,10 +285,21 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
   Note that \(X \times_S Y\) is a closed subspace of $X \times Y$ by \Cref{thm:pullback-closed-embedding-prod}. (For subspace, see \verb`TopCat.pullbackIsoProdSubtype`.) Since $X \times Y$ is spectral (\Cref{thm:spectral-product}) it follows that \(X \times_S Y\) is spectral (\Cref{thm:closed-subspace-spectral}). Note that we also used \Cref{thm:homeo-preserves-spectral} to translate between categorical constructions and non-categorical constructions.
 \end{proof}
 
+\begin{lemma}
+  \label{thm:profinite-spectral}
+  \lean{Prespectral.of_profinite,Spectral.of_profinite}
+  \leanok
+  Let $X$ be a profinite space. Then $X$ is spectral.
+\end{lemma}
+
+\begin{proof}
+  Since R1 implies Sober, Hausdorff implies quasi-separated, it only remains to show that \(X\) is prespectral. Write \(X\) as an inverse limit of finite discrete topological spaces. The preimage of singletons in every finite discrete space are open and closed subsets and forms a topological basis for the topology on \(X\). Thus \(X\) is prespectral.
+\end{proof}
+
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, first part]{stacks-project}}]
 \label{thm:cartesian-profinite}
 \uses{def:pi0-to-totally-disconnected}
-\lean{ConnectedComponents.lift_bijective_of_isPullback,ConnectedComponents.isHomeomorph_lift_of_isPullback}
+\lean{ConnectedComponents.spectralSpace_of_isPullback,ConnectedComponents.lift_bijective_of_isPullback,ConnectedComponents.isHomeomorph_lift_of_isPullback}
 Let $X$ be a spectral space. Let
 \[
 \begin{tikzcd}
@@ -297,12 +307,14 @@ Y \arrow[r] \arrow[d] & T \arrow[d] \\
 X \arrow[r] & \pi_0(X)
 \end{tikzcd}
 \]
-be a cartesian diagram in the category of topological spaces with $T$ profinite. Then the canonical map $\pi_0(Y) \to T$ defined in \Cref{def:pi0-to-totally-disconnected} is an isomorphism.
+be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $Y$ is spectral and the canonical map $\pi_0(Y) \to T$ defined in \Cref{def:pi0-to-totally-disconnected} is an isomorphism.
 \end{lemma}
 
 \begin{proof}
-  \uses{thm:pullback-Hausdorff,thm:pullback-spectral,thm:pi0-profinite,def:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
-  By \Cref{thm:pullback-Hausdorff,thm:pullback-spectral}, \(Y\) is spectral and Hausdorff. By \Cref{thm:pi0-profinite}, $\pi_0(X)$ is a profinite space. Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{def:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
+  \uses{thm:profinite-spectral,thm:pullback-spectral,thm:pi0-profinite,def:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
+  By \Cref{thm:profinite-spectral}, \(T\) is spectral. By \Cref{thm:pi0-profinite} \(\pi_0(X)\) is Hausdorff.
+  By \Cref{thm:pullback-spectral}, \(Y\) is spectral.
+  Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{def:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
 \end{proof}
 
 The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}.
@@ -871,6 +883,9 @@ a quasi-compact open $U$.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, second part]{stacks-project}}]
+\label{thm:cartesian-profinite-w-local}
+\uses{def:w-local-space,def:w-local-space-map}
+\lean{ConnectedComponents.wlocalSpace_of_isPullback,ConnectedComponents.isWLocalMap_of_isPullback,ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback}
 Let $X$ be a spectral space. Let
 \[
 \begin{tikzcd}
@@ -879,13 +894,11 @@ X \arrow[r] & \pi_0(X)
 \end{tikzcd}
 \]
 be a cartesian diagram in the category of topological spaces with $T$ profinite. If moreover $X$ is w-local, then $Y$ is w-local, $Y \to X$ is w-local, and the set of closed points of $Y$ is the inverse image of the set of closed points of $X$.
-\label{thm:cartesian-profinite-w-local}
-\uses{def:w-local-space,def:w-local-space-map}
 \end{lemma}
 
 \begin{proof}
   \uses{thm:pullback-spectral,thm:cartesian-profinite,thm:closed-points-isom-pi0}
-  We know that $Y$ is spectral by \Cref{thm:pullback-spectral} and $T = \pi_0(Y)$ by \Cref{thm:cartesian-profinite}. Assume $X$ is w-local and let $X^c \subset X$ be its closed points. The inverse image $Y^c \subset Y$ of $X^c$ maps bijectively onto $T$, since $X^c \to \pi_0(X)$ is a bijection by \Cref{thm:closed-points-isom-pi0}. (Note that we do not yet know whether $Y^c$ is the set of closed points of $Y$.) Moreover, $Y^c$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y^c \to \pi_0(Y) = T$ is a homeomorphism by \verb`isHomeomorph_iff_continuous_bijective` (\stacksproject{08YE}). It follows that all points of $Y^c$ are closed in $Y$: if some $y \in Y^c$ specialized to a distinct closed point $y'$ (which also falls in $Y$ since $Y$ is closed), then both would map to the same point in $T$, contradicting the bijectivity of $Y^c \to T$.
+  We know that $Y$ is spectral and $T = \pi_0(Y)$ by \Cref{thm:cartesian-profinite}. Assume $X$ is w-local and let $X^c \subset X$ be its closed points. The inverse image $Y^c \subset Y$ of $X^c$ maps bijectively onto $T$, since $X^c \to \pi_0(X)$ is a bijection by \Cref{thm:closed-points-isom-pi0}. (Note that we do not yet know whether $Y^c$ is the set of closed points of $Y$.) Moreover, $Y^c$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y^c \to \pi_0(Y) = T$ is a homeomorphism by \verb`isHomeomorph_iff_continuous_bijective` (\stacksproject{08YE}). It follows that all points of $Y^c$ are closed in $Y$: if some $y \in Y^c$ specialized to a distinct closed point $y'$ (which also falls in $Y$ since $Y$ is closed), then both would map to the same point in $T$, contradicting the bijectivity of $Y^c \to T$.
 
   Conversely, if $y \in Y$ is a closed point, then it is closed in its fibre over $T$, and its image $x \in X$ is closed in the corresponding (homeomorphic) fibre of $X \to \pi_0(X)$. Since a point in a w-local space is closed if and only if it is closed in its connected component (which is closed), we have $x \in X^c$, so $y \in Y^c$. Thus $Y^c$ is exactly the set of closed points of $Y$. Moreover, since $Y^c \cong T$, each connected component contains a unique closed point, and for each $y \in Y^c$ the set of generalizations of $y$ is precisely the fibre of $Y \to \pi_0(Y)$ (as any generalization of $y$ lies in the same connected component with $y$). The lemma follows.
 \end{proof}
@@ -1229,7 +1242,7 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:finite-stratification-ideal-bijection, lemma:closure-limit-intersection,thm:closure-limit-compatible}
+    \uses{lemma:finite-stratification-ideal-bijection,lemma:closure-limit-intersection,thm:closure-limit-compatible}
     Since $V(I_w) = \lim_{E} V(I_E)$ and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
     bijective for all $E$ by \ref{lemma:finite-stratification-ideal-bijection}, the
     first claim holds.

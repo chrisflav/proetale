@@ -18,11 +18,10 @@ variable {P : Type u} [TopologicalSpace P] {f' : C(P, Y)} {g' : C(P, X)} (pb : I
 
 section pullback
 
-instance T2Space.pullback [T2Space X] [T2Space Y]  :
-    T2Space (pullback (ofHom f) (ofHom g) : TopCat) := (homeoOfIso (pullbackIsoProdSubtype (ofHom f) (ofHom g))).symm.t2Space
-
 instance T0Space.pullback [T0Space X] [T0Space Y] (f : C(X, S)) (g : C(Y, S)) :
     T0Space (pullback (ofHom f) (ofHom g) : TopCat) := (homeoOfIso (pullbackIsoProdSubtype (ofHom f) (ofHom g))).symm.t0Space
+
+variable [T2Space S]
 
 instance QuasiSober.pullback [QuasiSober X] [QuasiSober Y] (f : C(X, S)) (g : C(Y, S)) :
     QuasiSober (pullback (ofHom f) (ofHom g) : TopCat) :=
@@ -57,11 +56,10 @@ variable {f g}
 
 include f' g' pb
 
-theorem CategoryTheory.IsPullback.t2Space [T2Space X] [T2Space Y] : T2Space P :=
-  (homeoOfIso pb.isoPullback).symm.t2Space
-
 theorem CategoryTheory.IsPullback.t0Space [T0Space X] [T0Space Y] : T0Space P :=
   (homeoOfIso pb.isoPullback).symm.t0Space
+
+variable [T2Space S]
 
 theorem CategoryTheory.IsPullback.quasiSober [QuasiSober X] [QuasiSober Y] : QuasiSober P :=
   (homeoOfIso pb.isoPullback).symm.quasiSober

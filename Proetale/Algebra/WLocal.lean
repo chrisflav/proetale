@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Henselian
-import Proetale.Topology.SpectralSpace.WLocal
+import Proetale.Topology.SpectralSpace.WLocal.Basic
 import Proetale.Algebra.StalkIso
 
 /-!

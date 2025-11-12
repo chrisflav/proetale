@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
 import Proetale.Topology.Preliminaries.ConnectedComponent
+import Proetale.Topology.Preliminaries.Profinite
 import Proetale.Topology.Preliminaries.Pullback
 import Mathlib.Topology.Spectral.Basic
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
@@ -58,6 +59,12 @@ variable [SpectralSpace X]
 
 open CategoryTheory TopCat ConnectedComponents
 
+theorem ConnectedComponents.spectralSpace_of_isPullback {Y T : Type u} [TopologicalSpace Y]
+    [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
+    {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
+    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
+    SpectralSpace Y := pb.spectralSpace
+
 theorem ConnectedComponents.lift_bijective_of_isPullback {Y T : Type u} [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
     {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
@@ -65,9 +72,9 @@ theorem ConnectedComponents.lift_bijective_of_isPullback {Y T : Type u} [Topolog
     Function.Bijective (ConnectedComponents.lift g) := sorry
 
 @[stacks 096C "first part"]
-theorem ConnectedComponents.isHomeomorph_lift_of_isPullback (Y T : Type u) [TopologicalSpace Y]
+theorem ConnectedComponents.isHomeomorph_lift_of_isPullback {Y T : Type u} [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
-    (f : C(Y, X)) (g : C(Y, T)) (i : C(T, ConnectedComponents X))
+    {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     IsHomeomorph (ConnectedComponents.lift g) :=
   let _ := IsPullback.compactSpace pb
