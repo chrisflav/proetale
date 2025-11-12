@@ -21,7 +21,7 @@ theorem factorsThrough_mk {X : Type*} [TopologicalSpace X]
   exacts [f.2, f.2]
 
 /--
-If \(f: X \to Y\) is a continuous map and \(Y\) is totally disconnected, then f factors uniquely
+If \(f: X \to Y\) is a continuous map and \(Y\) is totally disconnected, then \(f\) factors uniquely
 through the connected components of \(X\).
 -/
 @[stacks 08ZL]

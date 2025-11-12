@@ -4,6 +4,9 @@ open Set TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : β → α}
 
+-- after `quasiSeparatedSpace_iff`
+theorem Homeomorph.quasiSeparatedSpace [QuasiSeparatedSpace α] (f : α ≃ₜ β) : QuasiSeparatedSpace β := sorry
+
 -- put after `QuasiSeparatedSpace.of_isOpenEmbedding`
 theorem Topology.IsClosedEmbedding.quasiSeparatedSpace [QuasiSeparatedSpace α] (h : Topology.IsClosedEmbedding f) :
     QuasiSeparatedSpace β :=

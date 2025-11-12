@@ -40,10 +40,14 @@ theorem isClosed_and_iUnion_connectedComponent_iff {T : Set X} :
   -- uses `ConnectedComponents.injective_lift`
 
 @[stacks 0906]
-instance compactSpace_connectedComponent : CompactSpace (ConnectedComponents X) := sorry
+instance compactSpace_connectedComponent {X : Type u} [TopologicalSpace X] [CompactSpace X]
+    [QuasiSeparatedSpace X] [PrespectralSpace X] : CompactSpace (ConnectedComponents X) :=
+  sorry
 
 @[stacks 0906]
-instance t2Space_connectedComponent : T2Space (ConnectedComponents X) := sorry
+instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactSpace X]
+    [QuasiSeparatedSpace X] [PrespectralSpace X] : T2Space (ConnectedComponents X) :=
+  sorry
 
 end
 
@@ -53,6 +57,12 @@ variable [SpectralSpace X]
 
 #check ConnectedComponents.lift
 open CategoryTheory TopCat ConnectedComponents
+
+theorem spectralSpace_of_isPullback_mk (Y T : Type u) [TopologicalSpace Y]
+    [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
+    (f : C(Y, X)) (g : C(Y, T)) (i : C(T, ConnectedComponents X))
+    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
+    SpectralSpace Y := sorry
 
 -- TBModified
 @[stacks 096C "first part"]

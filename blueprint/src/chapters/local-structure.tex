@@ -188,6 +188,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0906}{Tag 0906}]{stacks-project}}]
   \label{thm:pi0-profinite}
   \lean{totallyDisconnectedSpace_connectedComponent,compactSpace_connectedComponent,t2Space_connectedComponent}
+  \leanok
   Let $X$ be a spectral space. Then $\pi_0(X)$ is a profinite space.
 \end{lemma}
 
@@ -199,7 +200,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:closed-subspace-spectral}
-  \lean{Topology.IsClosedEmbedding.quasiSeparatedSpace,Topology.IsClosedEmbedding.spectral,Spectral.of_isClosed}
+  \lean{Topology.IsClosedEmbedding.quasiSeparatedSpace,Topology.IsClosedEmbedding.spectral,SpectralSpace.of_isClosed}
   \leanok
   Let $X$ be a spectral space. Let $Y \subset X$ be a closed subspace. Then $Y$ is spectral.
 \end{lemma}
@@ -240,23 +241,50 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:pullback-Hausdorff}
+  \lean{T2Space.pullback}
+  \leanok
   Let \(X\) and \(Y\) be Hausdorff spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is Hausdorff.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Note that \(X \times_S Y\) is a subspace of $X \times Y$. (See \verb`TopCat.pullbackIsoProdSubtype`.) Since $X \times Y$ is Hausdorff (\verb`Prod.t2Space`) it follows that \(X \times_S Y\) is Hausdorff (\verb`Topology.IsEmbedding.t2Space`).
 \end{proof}
 
 \begin{lemma}
+  \label{thm:pullback-closed-embedding-prod}
+  \lean{TopCat.isClosedEmbedding_pullback_to_prod}
+  \leanok
+  Let \(X\), \(Y\), and \(S\) be topological spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. The natural map \(X \times_S Y \to X \to Y\) is a closed embedding.
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:homeo-preserves-spectral}
+  \lean{Homeomorph.spectral,Homeomorph.t0Space,Homeomorph.t2Space,Homeomorph.quasiSober,Homeomorph.quasiSeparatedSpace,Homeomorph.quasiCompactSpace,Homeomorph.prespectral}
+  \leanok
+  Let \(X\) and \(Y\) be topological spaces. If \(X\) is spectral (resp. T0, Hausdorff, quasi-Sober, quasi-separated, quasi-compact, prespectral) and there is a homeomorphism \(X \cong Y\), then \(Y\) is spectral (resp. T0, Hausdorff, quasi-Sober, quasi-separated, quasi-compact, prespectral).
+\end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
+
+\begin{lemma}
   \label{thm:pullback-spectral}
+  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,QuasiSeparatedSpace.pullback,QuasiSober.pullback,QuasiCompactSpace.pullback}
+  \leanok
   Let \(X\) and \(Y\) be spectral spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
 \end{lemma}
 
 \begin{proof}
-  \uses{thm:spectral-product,thm:closed-subspace-spectral}
-  Note that \(X \times_S Y\) is a closed subspace of $X \times Y$. (See \verb`TopCat.pullbackIsoProdSubtype`.) Since $X \times Y$ is spectral (\Cref{thm:spectral-product}) it follows that \(X \times_S Y\) is spectral (\Cref{thm:closed-subspace-spectral}).
+  \leanok
+  \uses{thm:spectral-product,thm:closed-subspace-spectral,thm:pullback-closed-embedding-prod,thm:homeo-preserves-spectral}
+  Note that \(X \times_S Y\) is a closed subspace of $X \times Y$ by \Cref{thm:pullback-closed-embedding-prod}. (For subspace, see \verb`TopCat.pullbackIsoProdSubtype`.) Since $X \times Y$ is spectral (\Cref{thm:spectral-product}) it follows that \(X \times_S Y\) is spectral (\Cref{thm:closed-subspace-spectral}). Note that we also used \Cref{thm:homeo-preserves-spectral} to translate between categorical constructions and non-categorical constructions.
 \end{proof}
-
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, first part]{stacks-project}}]
 Let $X$ be a spectral space. Let
