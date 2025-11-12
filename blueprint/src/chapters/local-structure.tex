@@ -170,7 +170,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04PL}{Tag 04PL}]{stacks-project}}]
   \label{thm:intersection-closed-open-iff}
-  \lean{isClosed_and_iUnion_connectedComponent_iff}
+  \lean{isClosed_and_iUnion_connectedComponent_eq_iff}
   \leanok
   Let $X$ be a topological space. Assume $X$ is quasi-compact, quasi-separated
   and prespectral. Then for a subset $T \subset X$ the following are equivalent:
@@ -241,7 +241,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:pullback-Hausdorff}
-  \lean{T2Space.pullback}
+  \lean{T2Space.pullback,CategoryTheory.IsPullback.t2Space}
   \leanok
   Let \(X\) and \(Y\) be Hausdorff spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is Hausdorff.
 \end{lemma}
@@ -275,7 +275,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:pullback-spectral}
-  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,QuasiSeparatedSpace.pullback,QuasiSober.pullback,QuasiCompactSpace.pullback}
+  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,QuasiSeparatedSpace.pullback,QuasiSober.pullback,QuasiCompactSpace.pullback,CategoryTheory.IsPullback.t0Space,CategoryTheory.IsPullback.quasiSober,CategoryTheory.IsPullback.quasiSeparatedSpace,CategoryTheory.IsPullback.compactSpace,CategoryTheory.IsPullback.prespectralSpace,CategoryTheory.IsPullback.spectralSpace}
   \leanok
   Let \(X\) and \(Y\) be spectral spaces. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
 \end{lemma}
@@ -287,6 +287,9 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/096C}{Tag 096C}, first part]{stacks-project}}]
+\label{thm:cartesian-profinite}
+\uses{def:pi0-to-totally-disconnected}
+\lean{ConnectedComponents.lift_bijective_of_isPullback,ConnectedComponents.isHomeomorph_lift_of_isPullback}
 Let $X$ be a spectral space. Let
 \[
 \begin{tikzcd}
@@ -294,8 +297,7 @@ Y \arrow[r] \arrow[d] & T \arrow[d] \\
 X \arrow[r] & \pi_0(X)
 \end{tikzcd}
 \]
-be a cartesian diagram in the category of topological spaces with $T$ profinite. Then $T = \pi_0(Y)$.
-\label{thm:cartesian-profinite}
+be a cartesian diagram in the category of topological spaces with $T$ profinite. Then the canonical map $\pi_0(Y) \to T$ defined in \Cref{def:pi0-to-totally-disconnected} is an isomorphism.
 \end{lemma}
 
 \begin{proof}
