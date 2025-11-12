@@ -73,9 +73,4 @@ theorem ConnectedComponents.isHomeomorph_lift_of_isPullback (Y T : Type u) [Topo
   let _ := IsPullback.compactSpace pb
   (isHomeomorph_iff_continuous_bijective (X := ConnectedComponents Y) (Y := T)).mpr ⟨(lift g).2, lift_bijective_of_isPullback pb⟩
 
--- open Profinite
-
--- @[stacks 096C "first part"]
--- theorem spectralSpace_of_isPullback_mk' (X Y : TopCat) (T : Profinite) (f : Y ⟶ X) (g : Y ⟶ toTopCat.obj T) (i : toTopCat.obj T ⟶ of (ConnectedComponents X)) (pb : IsPullback g f i (ofHom ⟨mk, continuous_coe⟩ : X ⟶ of (ConnectedComponents X))) : SpectralSpace Y := sorry
-
 end Spectral
