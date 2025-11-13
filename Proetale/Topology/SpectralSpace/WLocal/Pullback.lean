@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
 import Proetale.Topology.SpectralSpace.ConnectedComponent
-import Proetale.Topology.SpectralSpace.WLocal.Basic
+import Proetale.Topology.SpectralSpace.WLocal.ClosedPoints
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!

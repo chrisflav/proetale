@@ -41,18 +41,21 @@ lemma IsCompact.isOpen_constructibleTopology_of_isClosed {s : Set X}
   simp [ho, hs]
 
 /-- A spectral space is compact in the constructible topology. -/
+@[stacks 0901]
 instance compactSpace_withConstructibleTopology [SpectralSpace X] :
     CompactSpace (WithConstructibleTopology X) :=
   sorry
 
 /-- If `s` is closed in the constructible topology and `x` is in the closure of `s`, then
 it is the specialization of a point in `s`. -/
+@[stacks 0903 "(1)"]
 lemma exists_specializes_of_isClosed_constructibleTopology_of_mem_closure [SpectralSpace X]
     {s : Set X} (hs : IsClosed[constructibleTopology X] s) {x : X} (hx : x ∈ closure s) :
     ∃ y ∈ s, y ⤳ x :=
   sorry
 
 /-- If `s` is closed in the constructible topology and stable under specialization, it is closed. -/
+@[stacks 0903 "(2)"]
 lemma IsClosed.of_isClosed_constructibleTopology [SpectralSpace X] {s : Set X}
     (hs : IsClosed[constructibleTopology X] s) (h : StableUnderSpecialization s) :
     IsClosed s := by
@@ -61,3 +64,15 @@ lemma IsClosed.of_isClosed_constructibleTopology [SpectralSpace X] {s : Set X}
   obtain ⟨y, hy, hx⟩ :=
     exists_specializes_of_isClosed_constructibleTopology_of_mem_closure hs hx
   exact h hx hy
+
+@[stacks 0905 "(6) → (1)"]
+theorem SpectralSpace.t2Space_of_isClosed_singleton [SpectralSpace X] (h : ∀ x : X, IsClosed ({x} : Set X)) :
+    T2Space X :=
+  sorry
+
+@[stacks 0905 "(6) → (1)"]
+theorem SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton [SpectralSpace X] (h : ∀ x : X, IsClosed ({x} : Set X)) :
+    TotallyDisconnectedSpace X :=
+  sorry
+-- use `isTotallyDisconnected_of_isClopen_set`
+-- use `exists_specializes_of_isClosed_constructibleTopology_of_mem_closure, IsClosed.of_isClosed_constructibleTopology`
