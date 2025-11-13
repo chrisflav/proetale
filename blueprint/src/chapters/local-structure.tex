@@ -369,7 +369,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
   Omitted.
 \end{proof}
 
-\begin{definition}{\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}}
+\begin{definition}[\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}]
   \label{def:identifies-local-ring-to-top}
   \uses{def:identify-local-rings,thm:identifies-local-rings-composition}
   Let $A$ be a ring and $X = \Spec(A)$. Let $\operatorname{ILR}_A$ denote the category of $A$-algebras $B$ for which $A \to B$ identifies local rings, and let $\operatorname{Top}_X$ denote the category of topological spaces over $X$.
@@ -745,6 +745,8 @@ The following example shows that our definition agrees with the one in
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0905}{Tag 0905}, (6) $\implies$ (1)]{stacks-project}}]
   Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
   \label{lemma:spectral-closed-points-profinite}
+  \lean{SpectralSpace.t2Space_of_isClosed_singleton,SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton}
+  \leanok
 \end{lemma}
 
 \begin{proof}
@@ -756,9 +758,12 @@ The following example shows that our definition agrees with the one in
     Let $X$ be a w-local space. Then the set of closed points $X^c$ of $X$ is profinite.
     \uses{def:w-local-space}
     \label{lemma:w-local-closed-points-profinite}
+    \lean{WLocalSpace.t2Space_closedPoints,WLocalSpace.CompactSpace_closedPoints,WLocalSpace.totallyDisconnected_closedPoints}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:spectral-closed-points-profinite}
     It is a closed subspace of a spectral space, hence spectral. Therefore it is profinite by
     \ref{lemma:spectral-closed-points-profinite}
@@ -767,6 +772,9 @@ The following example shows that our definition agrees with the one in
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0A31}{Tag 0A31}, (3) $\implies$ (4)]{stacks-project}}]
   Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then the generalization $E^g$ is an intersection of quasi-compact open subsets.
   \label{lemma:spectral-generalization-intersection-open}
+  \uses{def:generalization}
+  \lean{generalizationHull.eq_sUnion_of_isCompact}
+  \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1278,7 +1286,7 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
     \ref{lemma:finite-stratification-closed-points}, the intersection $T_E \cap V(I_E)$ is
     non-empty. Since both $T_E$ and $V(I_E)$ are closed, the intersection is closed
     and hence quasi-compact. Thus $(\lim_E T_E) \cap V(I_w) = \lim_E (T_E \cap V(I_E))$ is non-empty.
-    Apply \ref{lemma:closure-limit-intersection,thm:closure-limit-compatible} to singleton \({y}\), the subset $\lim_E T_E$ is the closure of $y$ in $\spec{A_w}$. (Shuold be a cofiltered version of \verb`IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed`.) Hence
+    Apply \Cref{lemma:closure-limit-intersection,thm:closure-limit-compatible} to singleton \({y}\), the subset $\lim_E T_E$ is the closure of $y$ in $\spec{A_w}$. (Shuold be a cofiltered version of \verb`IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed`.) Hence
     $y$ specializes to a point in $V(I_E)$.
 
     For uniqueness, suppose $y \in \spec{A_w}$ specializes to $z, z' \in V(I_w)$ with
