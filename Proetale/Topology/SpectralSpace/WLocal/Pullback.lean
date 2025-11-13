@@ -3,6 +3,7 @@ Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
+import Proetale.Topology.SpectralSpace.ConnectedComponent
 import Proetale.Topology.SpectralSpace.WLocal.Basic
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 
