@@ -55,14 +55,21 @@ The reason that we are interested in extremally disconnected space is the follow
     \mathlibok
 \end{theorem}
 
+\begin{proof}
+  \mathlibok
+  Omitted.
+\end{proof}
+
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/090D}{Tag 090D}]{stacks-project}}]
   Let $X$ be a quasi-compact Hausdorff space. There exists a continuous surjection $X' \to X$ with $X'$ quasi-compact, Hausdorff, and extremally disconnected.
   \label{thm:extremally-disconnected-cover}
   \uses{def:extremally-disconnected, def:stone-cech-compactification}
-  \lean{Stonean.stoneCechObj}
+  \lean{CompHaus.presentation,CompHaus.presentation.π,CompHaus.presentation.epi_π,CompHaus.lift}
+  \mathlibok
 \end{proposition}
 
 \begin{proof}
+  \mathlibok
   \uses{thm:stone-cech-extremally-disconnected}
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
@@ -133,20 +140,16 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
   \label{def:pi0-to-totally-disconnected}
-  \lean{ConnectedComponents.lift,ConnectedComponents.lift_comp,ConnectedComponents.lift_comp_apply}
-  \leanok
+  \lean{Continuous.connectedComponentsLift,Continuous.connectedComponentsLift_continuous,Continuous.connectedComponentsLift_apply_coe,Continuous.connectedComponentsLift_comp_coe,}
+  \mathlibok
   Let \(X\) be a topological space. Let \(\pi_0(X)\) be the set of connected components of \(X\). Let \(X \to \pi_0(X)\) be the map which sends \(x \in X\) to the connected component of \(X\) passing through \(x\). Endow \(\pi_0(X)\) with the quotient topology. Then %\(\pi_0(X)\) is a totally disconnected space and 
   any continuous map \(X \to Y\) from \(X\) to a totally disconnected space \(Y\) factors through \(\pi_0(X)\).
 \end{definition}
 
-% \begin{proof}
-%   Since connected subsets are mapped to connected subsets and the connected components of a totally disconnected space are singletons, any continuous map \(X \to Y\) sends each connected component of \(X\) to a single point in \(Y\). Thus, it factors uniquely through \(\pi_0(X)\).
-% \end{proof}
-
 \begin{lemma}
   \label{thm:pi0-to-totally-disconnected-injective}
   \uses{def:pi0-to-totally-disconnected}
-  \lean{ConnectedComponents.injective_lift}
+  \lean{Continuous.connectedComponentsLift_injective}
   \leanok
   Let \(X\) be a topological space. Let \(\pi_0(X)\) be the topological space of connected components of \(X\). Let \(Y\) be a totally disconnected space. If every fiber of \(X \to Y\) is connected, then the map \(\pi_0(X) \to Y\) is injective.
 \end{lemma}
@@ -714,9 +717,12 @@ The following example shows that our definition agrees with the one in
     there exist $U, V \subseteq X$ open and closed such that $X = U \coprod V$ and
     $x \in U$, $y \in V$.
     \label{lemma:profinite-disj-clopen-separation}
+    \lean{instTotallySeparatedSpaceOfTotallyDisconnectedSpace}
+    \mathlibok
 \end{lemma}
 
 \begin{proof}
+  \mathlibok
   Write $X = \lim_{i \in I} X_i$ as a directed limit of finite discrete spaces. Let $\pi_i \colon X \to X_i$ be the
   projection maps. A base of the open sets of $X$ is given by the preimages $\pi_i^{-1}(\{z\})$ for $z \in X_i$ and $i \in I$. Every open set in this base is also closed, because its complement is a finite union of such sets.
 

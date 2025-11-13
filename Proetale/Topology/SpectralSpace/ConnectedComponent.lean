@@ -3,7 +3,6 @@ Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
-import Proetale.Topology.Preliminaries.ConnectedComponent
 import Proetale.Topology.Preliminaries.Profinite
 import Proetale.Topology.Preliminaries.Pullback
 import Mathlib.Topology.Spectral.Basic
@@ -160,7 +159,7 @@ section Spectral
 
 variable [SpectralSpace X]
 
-open CategoryTheory TopCat ConnectedComponents
+open CategoryTheory TopCat Continuous
 
 theorem ConnectedComponents.spectralSpace_of_isPullback {Y T : Type u} [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
@@ -172,15 +171,15 @@ theorem ConnectedComponents.lift_bijective_of_isPullback {Y T : Type u} [Topolog
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
     {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
-    Function.Bijective (ConnectedComponents.lift g) := sorry
+    Function.Bijective (connectedComponentsLift g.2) := sorry
 
 @[stacks 096C "first part"]
 theorem ConnectedComponents.isHomeomorph_lift_of_isPullback {Y T : Type u} [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
     {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
-    IsHomeomorph (ConnectedComponents.lift g) :=
+    IsHomeomorph (connectedComponentsLift g.2) :=
   let _ := IsPullback.compactSpace pb
-  (isHomeomorph_iff_continuous_bijective (X := ConnectedComponents Y) (Y := T)).mpr ⟨(lift g).2, lift_bijective_of_isPullback pb⟩
+  (isHomeomorph_iff_continuous_bijective (X := ConnectedComponents Y) (Y := T)).mpr ⟨connectedComponentsLift_continuous g.2, lift_bijective_of_isPullback pb⟩
 
 end Spectral

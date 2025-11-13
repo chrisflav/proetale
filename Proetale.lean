@@ -65,7 +65,6 @@ import Proetale.Topology.Flat.QuasiCompactTopology
 import Proetale.Topology.Flat.Sheaf
 import Proetale.Topology.LocalProperties
 import Proetale.Topology.Preliminaries.Closure
-import Proetale.Topology.Preliminaries.ConnectedComponent
 import Proetale.Topology.Preliminaries.Profinite
 import Proetale.Topology.Preliminaries.Pullback
 import Proetale.Topology.Proetale.Basic
