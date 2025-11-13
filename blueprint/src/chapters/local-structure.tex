@@ -732,6 +732,8 @@ The following example shows that our definition agrees with the one in
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0905}{Tag 0905}, (6) $\implies$ (1)]{stacks-project}}]
   Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
   \label{lemma:spectral-closed-points-profinite}
+  \lean{SpectralSpace.t2Space_of_isClosed_singleton,SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton}
+  \leanok
 \end{lemma}
 
 \begin{proof}
@@ -743,9 +745,12 @@ The following example shows that our definition agrees with the one in
     Let $X$ be a w-local space. Then the set of closed points $X^c$ of $X$ is profinite.
     \uses{def:w-local-space}
     \label{lemma:w-local-closed-points-profinite}
+    \lean{WLocalSpace.t2Space_closedPoints,WLocalSpace.CompactSpace_closedPoints,WLocalSpace.totallyDisconnected_closedPoints}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:spectral-closed-points-profinite}
     It is a closed subspace of a spectral space, hence spectral. Therefore it is profinite by
     \ref{lemma:spectral-closed-points-profinite}
@@ -754,6 +759,9 @@ The following example shows that our definition agrees with the one in
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0A31}{Tag 0A31}, (3) $\implies$ (4)]{stacks-project}}]
   Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then the generalization $E^g$ is an intersection of quasi-compact open subsets.
   \label{lemma:spectral-generalization-intersection-open}
+  \uses{def:generalization}
+  \lean{generalizationHull.eq_sUnion_of_isCompact}
+  \leanok
 \end{lemma}
 
 \begin{proof}

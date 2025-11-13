@@ -1,4 +1,5 @@
 import Mathlib.Topology.Spectral.Basic
+import Proetale.Mathlib.Topology.Inseparable
 import Proetale.Mathlib.Topology.QuasiSeparated
 import Proetale.Mathlib.Topology.Sober
 import Proetale.Mathlib.Topology.Spectral.Prespectral
@@ -31,3 +32,7 @@ instance SpectralSpace.prod [SpectralSpace X] [SpectralSpace Y] : SpectralSpace 
   toQuasiSober := inferInstance
   toQuasiSeparatedSpace := inferInstance
   toPrespectralSpace := inferInstance
+
+theorem
+ generalizationHull.eq_sUnion_of_isCompact [SpectralSpace X] {s : Set X} (hs : IsCompact s) : ∃ S ⊆ {U : Set X | IsOpen U ∧ IsCompact U}, (generalizationHull s) = ⋃₀ S :=
+  sorry
