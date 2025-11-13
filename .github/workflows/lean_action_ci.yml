@@ -2,8 +2,16 @@ name: Lean Action CI
 
 on:
   push:
+    branches:
+      - master
   pull_request:
   workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -12,6 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+
+      - name: File dependencies
+        run: |
+          sudo apt-get update
+          sudo apt install graphviz -y
+          ~/.elan/bin/lake exe graph website/file_deps.pdf
+
       - name: Build project documentation
         id: build-docgen
         uses: leanprover-community/docgen-action@main
