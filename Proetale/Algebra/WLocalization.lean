@@ -63,6 +63,12 @@ instance indZariski : Algebra.IndZariski A (Generalization f I) :=
 def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
   PrimeSpectrum.basicOpen f ∩ PrimeSpectrum.zeroLocus I
 
+/-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
+the generalization hull of `D(f) ∩ V(I)`. -/
+lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
+    Set.range (algebraMap A (Generalization f I)).specComap = generalizationHull (locClosedSubset f I) :=
+  sorry
+
 def map {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
     Generalization f I →ₐ[A] Generalization f' I' :=
   sorry

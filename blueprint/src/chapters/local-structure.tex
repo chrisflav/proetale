@@ -140,7 +140,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/08ZL}{Tag 08ZL}]{stacks-project}}]
   \label{def:pi0-to-totally-disconnected}
-  \lean{Continuous.connectedComponentsLift,Continuous.connectedComponentsLift_continuous,Continuous.connectedComponentsLift_apply_coe,Continuous.connectedComponentsLift_comp_coe,}
+  \lean{Continuous.connectedComponentsLift,Continuous.connectedComponentsLift_continuous,Continuous.connectedComponentsLift_apply_coe,Continuous.connectedComponentsLift_comp_coe}
   \mathlibok
   Let \(X\) be a topological space. Let \(\pi_0(X)\) be the set of connected components of \(X\). Let \(X \to \pi_0(X)\) be the map which sends \(x \in X\) to the connected component of \(X\) passing through \(x\). Endow \(\pi_0(X)\) with the quotient topology. Then %\(\pi_0(X)\) is a totally disconnected space and 
   any continuous map \(X \to Y\) from \(X\) to a totally disconnected space \(Y\) factors through \(\pi_0(X)\).
@@ -191,7 +191,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0906}{Tag 0906}]{stacks-project}}]
   \label{thm:pi0-profinite}
-  \lean{totallyDisconnectedSpace_connectedComponent,compactSpace_connectedComponent,t2Space_connectedComponent}
+  \lean{compactSpace_connectedComponent,t2Space_connectedComponent}
   \leanok
   Let $X$ be a spectral space. Then $\pi_0(X)$ is a profinite space.
 \end{lemma}
@@ -1036,6 +1036,7 @@ on the choice of $f$ and $I$ \stacksproject{096V}.
     \end{enumerate}
     In particular, every
     point in $\spec{\tildering{A}{I}{f}}$ specializes to a point in $V(\tildeideal{I}{f})$.
+    \lean{WLocalization.Generalization.range_algebraMap_generalization}
 \end{lemma}
 
 \begin{proof}
