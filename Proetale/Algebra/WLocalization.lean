@@ -57,8 +57,9 @@ noncomputable
 def ideal (f : A) (I : Ideal A) : Ideal (Generalization f I) :=
   RingHom.ker (toLocQuotient f I)
 
-instance indZariski : Algebra.IndZariski A (Generalization f I) :=
-  sorry
+instance indZariski : Algebra.IndZariski A (Generalization f I) := by
+  dsimp [Generalization]
+  infer_instance
 
 def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
   PrimeSpectrum.basicOpen f ∩ PrimeSpectrum.zeroLocus I
