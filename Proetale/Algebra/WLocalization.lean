@@ -87,8 +87,13 @@ lemma stratum_eq_basicOpen_inter_zeroLocus (E F : Finset A) :
   sorry
 
 lemma stratum_anti {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :
-    stratum E' F' ⊆ stratum E F :=
-  sorry
+    stratum E' F' ⊆ stratum E F := by
+  rw [stratum, stratum]
+  apply Set.inter_subset_inter
+  · exact Set.biInter_mono hEE' fun x a ⦃a⦄ a ↦ a
+  · apply PrimeSpectrum.zeroLocus_anti_mono
+    exact Ideal.span_mono (Finset.coe_subset.mpr hFF')
+
 
 /-- The type of disjoint union decompositions of `E` into two finite sets. -/
 structure Stratification.Index (E : Finset A) where
