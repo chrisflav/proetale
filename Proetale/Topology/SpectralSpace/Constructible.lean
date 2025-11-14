@@ -6,6 +6,7 @@ Authors: Jiedong Jiang, Christian Merten
 import Proetale.Mathlib.Topology.Inseparable
 import Mathlib.Topology.Spectral.Basic
 import Mathlib.Topology.JacobsonSpace
+import Mathlib.Data.Set.Card
 
 /-!
 # Constructible topology
@@ -43,8 +44,218 @@ lemma IsCompact.isOpen_constructibleTopology_of_isClosed {s : Set X}
 /-- A spectral space is compact in the constructible topology. -/
 @[stacks 0901]
 instance compactSpace_withConstructibleTopology [SpectralSpace X] :
-    CompactSpace (WithConstructibleTopology X) :=
-  sorry
+    CompactSpace (WithConstructibleTopology X) := by
+  let 𝔅 := { s : Set X | IsOpen s ∧ IsCompact s } ∪ { s | IsClosed s ∧ IsCompact sᶜ }
+  apply compactSpace_generateFrom (T := constructibleTopology X) (S := 𝔅) rfl
+  -- TODO: abstract this into standalone lemma
+  suffices ∀ P ⊆ 𝔅, (∀ Q ⊆ P, Q.Finite → (⋂₀ Q).Nonempty) → (⋂₀ P).Nonempty by
+    intro P hP𝔅 hP
+    contrapose! hP
+    simp_rw [← Set.nonempty_compl, Set.compl_sUnion] at hP ⊢
+    apply this
+    · rintro _ ⟨S, hS, rfl⟩
+      specialize hP𝔅 hS
+      refine (Or.symm hP𝔅).imp ?_ (by simp)
+      simp_all only [Set.nonempty_sInter, subset_refl, Set.mem_union, Set.mem_setOf_eq,
+        isOpen_compl_iff, and_self, implies_true, 𝔅]
+    · intro Q hQP hQ
+      specialize @hP (compl '' Q)
+      replace hP : Q ⊆ compl '' P → (compl '' Q).Finite → (⋂₀ Q).Nonempty := by
+        simpa only [Set.image_subset_iff, Set.sInter_image, Set.mem_image, Set.iInter_exists,
+          Set.biInter_and', Set.iInter_iInter_eq_right, compl_compl, Set.nonempty_iInter,
+          Set.mem_iInter, ← compl_involutive.image_eq_preimage] using hP
+      exact hP hQP (hQ.image _)
+  let 𝒮 := {P : Set (Set X) | P ⊆ 𝔅 ∧ (∀ Q ⊆ P, Q.Finite → (⋂₀ Q).Nonempty) ∧ (⋂₀ P) = ∅}
+  suffices 𝒮 = ∅ by
+    contrapose! this
+    rcases this with ⟨P, hP⟩
+    refine ⟨P, hP⟩
+  by_contra! h𝒮
+  obtain ⟨s, hs⟩ := h𝒮
+  have := (zorn_subset_nonempty 𝒮 ?zorn_condition s hs)
+  case zorn_condition =>
+    rintro c hc𝒮 hc ⟨x, hxc⟩
+    have foo : ∀ s ∈ c, s ⊆ ⋃₀ c := by
+      intro S hSc
+      exact Set.subset_sUnion_of_subset c S (fun ⦃a⦄ a ↦ a) hSc
+    refine ⟨⋃₀ c, ?_, foo⟩
+    simp only [Set.mem_setOf_eq, Set.sUnion_subset_iff, 𝒮]
+    refine ⟨?_, ?_, ?_⟩
+    · grind
+    · intro a hac ha
+      suffices ∃ i ∈ c, a ⊆ i by
+        obtain ⟨i, hic, hai⟩ := this
+        exact (hc𝒮 hic).2.1 a hai ha
+      induction h_card : a.ncard generalizing a with
+      | zero =>
+        simp_all only [Set.ncard_eq_zero, Set.empty_subset, and_true, Set.finite_empty]
+        refine ⟨_, hxc⟩
+      | succ n ih =>
+        have : Finite a := ha
+        rw [Set.ncard_eq_succ] at h_card
+        rcases h_card with ⟨z, a, hza, rfl, h_card⟩ 
+        obtain ⟨i, hic, hai⟩ := ih a (by grind) (by exact Set.finite_insert.mp ha) h_card
+        have hz : z ∈ ⋃₀ c := by grind
+        simp only [Set.mem_sUnion] at hz
+        obtain ⟨t, htc, hzt⟩ := hz
+        obtain rfl | hit := eq_or_ne i t
+        · grind
+        · specialize hc hic htc hit
+          grind
+    · grind
+  obtain ⟨B, hsB, hB⟩ := this 
+  have hB𝒮 : B ∈ 𝒮 := hB.prop
+  let B' := {s | s ∈ B ∧ IsClosed s}
+  let Z := ⋂₀ B'
+  have hZ_closed : IsClosed Z := isClosed_sInter fun b hb ↦ hb.2
+  have hZ_nonempty : Z.Nonempty := by
+    dsimp [Z]
+    rw [Set.sInter_eq_iInter]
+    apply CompactSpace.iInter_nonempty (fun b ↦ b.2.2)
+    intro s
+    dsimp [𝒮] at hB𝒮
+    let s' : Set (Set X) := by classical exact (s.image Subtype.val : Set (Set X))
+    have hsB : s' ⊆ B := by
+      intro x
+      simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe, Subtype.exists,
+        exists_and_right, exists_eq_right, forall_exists_index, s']
+      grind
+    have := hB𝒮.2.1 s' hsB (Finset.finite_toSet _)
+    simpa [s'] using this
+  by_cases hZ_irred : IsIrreducible Z
+  · suffices (⋂₀ B).Nonempty by
+      have := hB𝒮.2.2
+      simp_all
+    have hη := hZ_irred.isGenericPoint_genericPoint hZ_closed
+    set η := hZ_irred.genericPoint
+    refine ⟨η, ?_⟩
+    rw [Set.mem_sInter]
+    intro i hi
+    by_cases hiB' : i ∈ B'
+    · suffices Z ⊆ i from this hη.mem
+      apply Set.sInter_subset_of_mem hiB'
+    · have hi_open : IsOpen i := by grind
+      have hi_cmpt : IsCompact i := by grind
+      rw [hη.mem_open_set_iff hi_open, Set.inter_comm]
+      dsimp [Z]
+      rw [Set.sInter_eq_iInter]
+      apply hi_cmpt.inter_iInter_nonempty
+      · exact fun b ↦ b.2.2
+      · intro A
+        have := hB𝒮.2.1 (insert i (by classical exact (A.image Subtype.val : Set (Set X)))) ?sg1 ?sg2
+        case sg1 =>
+          intro x
+          simp only [Finset.coe_image, Set.mem_insert_iff, Set.mem_image, Finset.mem_coe,
+            Subtype.exists, exists_and_right, exists_eq_right]
+          grind
+        case sg2 =>
+          classical
+          exact Set.toFinite (insert i (Finset.image Subtype.val A))
+        convert this using 1
+        simp
+  · unfold IsIrreducible IsPreirreducible  at hZ_irred
+    simp only [hZ_nonempty, true_and, not_forall] at hZ_irred
+    rcases hZ_irred with ⟨U₁, U₂, hU₁, hU₂, hU₁Z, hU₂Z, hU₁₂⟩ 
+    rw [Set.not_nonempty_iff_eq_empty, ← Set.subset_empty_iff] at hU₁₂
+    obtain ⟨x₁, hx₁⟩ : ∃ x₁ ∈ U₁, x₁ ∈ Z ∧ x₁ ∉ U₂ := by obtain ⟨x, hx⟩ := hU₁Z; grind
+    obtain ⟨x₂, hx₂⟩ : ∃ x₂ ∈ U₂, x₂ ∈ Z ∧ x₂ ∉ U₁ := by obtain ⟨x, hx⟩ := hU₂Z; grind 
+    have psp_X : PrespectralSpace X := inferInstance
+    rw [prespectralSpace_iff] at psp_X
+    rw [psp_X.isOpen_iff] at hU₁ hU₂
+    obtain ⟨W₁, hW₁⟩ := hU₁ x₁ hx₁.1
+    obtain ⟨W₂, hW₂⟩ := hU₂ x₂ hx₂.1
+    have hW₁' : W₁ ∩ (Z \ U₁) ⊆ ∅ := by grind
+    have hW₂' : W₂ ∩ (Z \ U₂) ⊆ ∅ := by grind
+    let Y₁ := W₁ᶜ
+    let Y₂ := W₂ᶜ
+    have hY₁_cl : IsClosed Y₁ := by dsimp [Y₁]; simpa using hW₁.1.1
+    have hY₂_cl : IsClosed Y₂ := by dsimp [Y₂]; simpa using hW₂.1.1
+    have hY₁ : Y₁ ∈ 𝔅 := by
+      right
+      dsimp [Y₁]
+      simp only [isClosed_compl_iff, compl_compl, hW₁.1.1, hW₁.1.2, true_and]
+    have hY₂ : Y₂ ∈ 𝔅 := by
+      right
+      dsimp [Y₂]
+      simp only [isClosed_compl_iff, compl_compl, hW₂.1.1, hW₂.1.2, true_and]
+    have hY₁B : insert Y₁ B ∉ 𝒮 := by
+      intro hY₁B
+      have : insert Y₁ B ⊆ B := hB.le_of_ge hY₁B (Set.subset_insert Y₁ B)
+      rw [Set.insert_subset_iff] at this
+      grind
+    have hY₂B : insert Y₂ B ∉ 𝒮 := by
+      intro hY₂B
+      have : insert Y₂ B ⊆ B := hB.le_of_ge hY₂B (Set.subset_insert Y₂ B)
+      rw [Set.insert_subset_iff] at this
+      grind
+    have hY₁_inter_B : Y₁ ∩ ⋂₀ B = ∅ := by grind
+    have hY₂_inter_B : Y₂ ∩ ⋂₀ B = ∅ := by grind
+    dsimp [𝒮] at hY₁B hY₂B
+    simp only [Set.insert_subset_iff, hY₁, hB𝒮.1, and_self, Set.sInter_insert, hY₁_inter_B,
+      and_true, true_and, not_forall, Set.not_nonempty_iff_eq_empty, hY₂, hY₂_inter_B] at hY₁B hY₂B
+    rcases hY₁B with ⟨A₁, hA₁, hA₁', hA₁''⟩
+    rcases hY₂B with ⟨A₂, hA₂, hA₂', hA₂''⟩
+    have : Z ⊆ Y₁ ∪ Y₂ := by grind
+    have : Z ∩ ⋂₀ ((A₁ \ {Y₁}) ∪ (A₂ \ {Y₂})) = ∅ := by grind
+    rw [← Set.not_nonempty_iff_eq_empty] at this
+    have H' : ∀ A : Set (Set X), A ⊆ {U | IsOpen U ∧ IsCompact U} → A.Finite → IsCompact (⋂₀ A) := by
+      intro A hA hA_fin
+      induction h_card : A.ncard generalizing A with
+      | zero =>
+        simp_all only [Set.mem_setOf_eq, Set.subset_empty_iff, Set.ncard_eq_zero, Set.sInter_empty,
+          Set.empty_subset, Set.finite_empty]
+        exact CompactSpace.isCompact_univ
+      | succ n ih =>
+        have : Finite A := hA_fin
+        rw [Set.ncard_eq_succ] at h_card
+        rcases h_card with ⟨S, A, hSA, rfl, h_card⟩ 
+        simp only [Set.sInter_insert]
+        specialize ih A ((Set.subset_insert S A).trans hA) (by apply hA_fin.subset (Set.subset_insert S A)) h_card
+        have := hA (Set.mem_insert S A)
+        refine QuasiSeparatedSpace.inter_isCompact _ _ this.1 this.2 ?_ ih
+        apply Set.Finite.isOpen_sInter
+        · apply hA_fin.subset
+          grind
+        · grind
+    have H : ∀ A, A ⊆ B → A.Finite → IsCompact (⋂₀ A) := by
+      intro A hA hA_fin
+      let Ao := {U | U ∈ A ∧ IsOpen U}
+      let Ac := {Z | Z ∈ A ∧ IsClosed Z}
+      have hAoc : Ao ∪ Ac = A := by
+        apply subset_antisymm
+        · grind
+        · intro x hxA
+          have : x ∈ 𝔅 := hB𝒮.1 (hA hxA)
+          apply this.imp <;> grind
+      rw [← hAoc, Set.sInter_union]
+      refine IsCompact.inter_right (H' Ao ?_ (hA_fin.subset (by grind))) (isClosed_sInter (by grind))
+      intro s hs
+      have h𝔅_cmpt : ∀ s ∈ 𝔅, IsCompact s := by
+        rintro s (hs|hs)
+        · exact hs.2
+        · exact hs.1.isCompact
+      refine ⟨hs.2, h𝔅_cmpt _ ?_⟩
+      grind
+    suffices ∀ A, A ⊆ B → A.Finite → (Z ∩ ⋂₀ A).Nonempty by
+      specialize this ((A₁ \ {Y₁}) ∪ (A₂ \ {Y₂}))
+        (by simp only [Set.union_subset_iff]; grind)
+        (hA₁'.diff.union hA₂'.diff)
+      contradiction
+    intro A hA hA_fin
+    dsimp [Z]
+    rw [Set.sInter_eq_iInter, Set.inter_comm]
+    apply (H A hA hA_fin).inter_iInter_nonempty
+    · exact fun b ↦ b.2.2
+    · intro F
+      have := hB𝒮.2.1 (A ∪ (by classical exact (F.image Subtype.val : Set (Set X))))
+      specialize this (by simp only [Finset.coe_image, Set.union_subset_iff, Set.image_subset_iff]; grind)
+      specialize this (by simp only [Finset.coe_image, Set.finite_union, hA_fin, true_and]; exact Set.toFinite (Subtype.val '' ↑F))
+      convert this
+      ext
+      simp only [Set.iInter_coe_set, Set.mem_inter_iff, Set.mem_sInter, Set.mem_iInter,
+        Finset.coe_image, Set.mem_union, Set.mem_image, Finset.mem_coe, Subtype.exists,
+        exists_and_right, exists_eq_right]
+      grind
 
 /-- If `s` is closed in the constructible topology and `x` is in the closure of `s`, then
 it is the specialization of a point in `s`. -/
