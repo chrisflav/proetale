@@ -8,10 +8,10 @@ lemma Ideal.isMaximal_of_isAlgebraic_isField (A B C: Type*) [Field A] [CommRing 
 
   let g : B →ₐ[A] C := IsScalarTower.toAlgHom _ _ _
   let B' : Subalgebra A C := g.range
-  have h_1 : IsField B' := Subalgebra.isField_of_algebraic B'
-  have h : Function.Injective g := FaithfulSMul.algebraMap_injective B C
-  let g' := AlgEquiv.ofInjective g h
-  apply MulEquiv.isField h_1 g'
+  have hb : IsField B' := Subalgebra.isField_of_algebraic B'
+  have hc : Function.Injective g := FaithfulSMul.algebraMap_injective B C
+  let g' := AlgEquiv.ofInjective g hc
+  apply MulEquiv.isField hb g'
 
 
 lemma Ideal.isMaximal_of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
@@ -27,9 +27,7 @@ lemma Ideal.isMaximal_of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Al
     IsLocalization.lift (M := nonZeroDivisors _ ) (g := of) <| by
       intro y
       apply IsUnit.map
---      apply isUnit_of_mem_nonZeroDivisors
---      apply Ne.isUnit
-      letI := Ideal.Quotient.field m
+      let I := Ideal.Quotient.field m
       apply isUnit_of_mem_nonZeroDivisors y.2
   algebraize [lf]
   have h : IsScalarTower m.ResidueField (B ⧸ q) q.ResidueField := by
@@ -46,3 +44,31 @@ lemma Ideal.isMaximal_of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Al
     rw [faithfulSMul_iff_algebraMap_injective]
     apply IsFractionRing.injective
   exact Ideal.isMaximal_of_isAlgebraic_isField m.ResidueField (B ⧸ q) q.ResidueField
+
+
+lemma PrimeSpectrum.isClosed_of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    (I : Ideal A)
+    (ha : ∀(q : Ideal B) [q.IsPrime], Algebra.IsAlgebraic
+        (q.comap (algebraMap A B)).ResidueField q.ResidueField)
+    (hc : PrimeSpectrum.zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
+    (PrimeSpectrum.zeroLocus (I.map (algebraMap A B)) ⊆ closedPoints (PrimeSpectrum B))
+     := by
+  intro q hq
+  let p := q.comap (algebraMap A B)
+  have hi : (p ∈ PrimeSpectrum.zeroLocus I) := by
+    rw [Ideal.map, PrimeSpectrum.zeroLocus_span, ← PrimeSpectrum.preimage_specComap_zeroLocus] at hq
+    simp at hq
+    simp [p]
+    assumption
+  have hcc : IsClosed {p} := hc hi
+  have hm : Ideal.IsMaximal p.asIdeal := by
+    rw [← PrimeSpectrum.isClosed_singleton_iff_isMaximal]
+    exact hcc
+  have hhh : q.asIdeal.LiesOver p.asIdeal := ⟨rfl⟩
+  have haa : Algebra.IsAlgebraic (p.asIdeal.ResidueField) (q.asIdeal.ResidueField) := by
+    apply ha
+  have hmm : Ideal.IsMaximal q.asIdeal := by
+    apply Ideal.isMaximal_of_isAlgebraic p.asIdeal q.asIdeal
+  simp
+  rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal]
+  exact hmm
