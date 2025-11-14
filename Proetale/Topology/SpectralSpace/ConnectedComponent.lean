@@ -138,14 +138,119 @@ theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
 
 @[stacks 04PL]
 theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
-    (IsClosed T ∧ ∃ I : Set X, ⋃ (x : I), connectedComponent x = T) ↔
+    (IsClosed T ∧ ∃ I : Set X, ⋃ x ∈ I, connectedComponent x = T) ↔
     ∃ J : Set ({U : Set X // IsClopen U}), ⋂ (U : J), U = T := by
-  sorry
+  constructor
+  · intro ⟨h1, h2⟩
+    obtain ⟨J, hJ⟩ := h2
+    let S : Set ({U : Set X // IsClopen U}) := {U | T ⊆ U}
+    use S
+    apply Set.Subset.antisymm
+    · intro x hx
+      by_contra hcontra
+      let CCx := connectedComponent x
+      have hC {p : X} : (p ∈ CCx) ∧ (p ∈ T) → False := by
+        intro htx
+        let CCp := connectedComponent p
+        have heq : CCp = CCx := by
+          apply connectedComponent_eq_iff_mem.mpr
+          exact Set.mem_of_mem_inter_right (id (And.symm htx))
+        have hsub : CCp ⊆ T := by
+          have hp : p ∈ T := htx.2
+          rw [hJ.symm] at hp
+          simp at hp
+          obtain ⟨j, hj⟩ := hp
+          let CCj := connectedComponent j
+          have heq2 : CCp = CCj := by
+            apply connectedComponent_eq_iff_mem.mpr
+            exact hj.2
+          rw [heq2, hJ.symm]
+          simp [CCj]
+          apply Set.subset_biUnion_of_mem hj.1
+        have hx2 : x ∈ T := by
+          apply hsub
+          rw [heq]
+          simp [CCx]
+          exact mem_connectedComponent
+        exact hcontra hx2
+      have lem1 : ⋃ (U : {U : Set X // IsClopen U ∧ x ∈ U}), Uᶜ = (connectedComponent x)ᶜ := by
+        rw [← Set.compl_iInter, sInter_isClopen_and_mem_eq_connectedComponent]
+      have lem2 : T ⊆ (connectedComponent x)ᶜ := by
+        intro t ht htx
+        exact hC ⟨htx, ht⟩
+      rw [lem1.symm] at lem2
+      have lem3 : IsCompact T := by
+        exact IsClosed.isCompact h1
+      have lem4 : ∃ (K: Finset ({U : Set X // IsClopen U ∧ x ∈ U})), T ⊆ ⋃ U ∈ K, Uᶜ := by
+        apply isCompact_iff_finite_subcover.mp
+        · exact lem3
+        · simp
+          exact fun a a_1 a_2 ↦ IsClopen.isClosed a_1
+        · exact lem2
+      obtain ⟨K, hK⟩ := lem4
+      let V := ⋃ U ∈ K, (Uᶜ : Set X)
+      have hV1 : IsClopen V := by
+        apply Set.Finite.isClopen_biUnion
+        · exact K.finite_toSet
+        · simp
+          intro U hU _ _
+          exact hU
+      have hV2 : T ⊆ V := hK
+      have hV3 : x ∉ V := by
+        intro hVx
+        simp [V] at hVx
+        obtain ⟨U, hU1, hU2⟩ := hVx
+        obtain ⟨hU3, _⟩ := hU1
+        exact hU2 hU3.2
+      have hV4 : x ∈ V := by
+        apply hx
+        simp
+        use hV1
+        exact hV2
+      exact hV3 hV4
+    · simp
+      intro U hU1 hU2
+      exact hU2
+  · intro h
+    obtain ⟨J, hJ⟩ := h
+    constructor
+    · rw [hJ.symm]
+      apply isClosed_iInter
+      simp
+      intro a ha
+      exact fun b ↦ IsClopen.isClosed ha
+    · use T
+      apply Set.Subset.antisymm
+      · simp
+        intro t ht1
+        rw [hJ.symm]
+        simp only [Set.iInter_coe_set, Set.subset_iInter_iff, Subtype.forall]
+        intro V hV1 hV2
+        have ht2 : t ∈ ⋂ (U : J), U := by
+          rw [hJ]
+          exact ht1
+        have ht3 : t ∈ V := by
+          simp only [Set.iInter_coe_set, Set.mem_iInter, Subtype.forall] at ht2
+          exact ht2 V hV1 hV2
+        exact IsClopen.connectedComponent_subset hV1 ht3
+      · intro x hx
+        simp only [Set.mem_iUnion, exists_prop]
+        use x
+        constructor
+        · exact hx
+        · exact mem_connectedComponent
+
   -- uses `ConnectedComponents.injective_lift`
 
 instance compactSpace_connectedComponent {X : Type u} [TopologicalSpace X] [CompactSpace X] :
-    CompactSpace (ConnectedComponents X) :=
-  sorry
+    CompactSpace (ConnectedComponents X) where
+  isCompact_univ := by
+    let f : X → ConnectedComponents X := ConnectedComponents.mk
+    have h1 : Continuous f := ConnectedComponents.continuous_coe
+    have h2 : Function.Surjective f := ConnectedComponents.surjective_coe
+    have h3 : IsCompact (Set.range f) := isCompact_range h1
+    simpa [f, ConnectedComponents.range_coe] using h3
+
 
 @[stacks 0906]
 instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactSpace X]
