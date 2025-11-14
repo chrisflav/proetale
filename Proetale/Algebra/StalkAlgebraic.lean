@@ -72,3 +72,29 @@ lemma PrimeSpectrum.isClosed_of_isAlgebraic {A B : Type*} [CommRing A] [CommRing
   simp
   rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal]
   exact hmm
+
+
+lemma PrimeSpectrum.Surjective_HasGoingDown
+    {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    [Algebra.HasGoingDown A B]
+    (hs : ∀(p : PrimeSpectrum A) (hc: IsClosed {p}),
+    ∃(q : PrimeSpectrum B), p = (q.comap (algebraMap A B))):
+--    ∀(p : PrimeSpectrum A), ∃(q : PrimeSpectrum B), p = (q.comap (algebraMap A B))
+    Function.Surjective (PrimeSpectrum.comap (algebraMap A B))
+     := by
+  intro p
+  have hm : ∃(m : PrimeSpectrum A), (m.asIdeal.IsMaximal) ∧ (p.asIdeal ≤ m.asIdeal)
+  := by
+    obtain ⟨m, hm, hle⟩ := Ideal.exists_le_maximal p.asIdeal p.2.ne_top
+    use ⟨m, inferInstance⟩, hm, hle
+  obtain ⟨m, hcm, h⟩ := hm
+  have he : ∃(n : PrimeSpectrum B), m = (n.comap (algebraMap A B)) := by
+    apply hs
+    rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal]
+    apply hcm
+  obtain ⟨n, hcn⟩ := he
+  have : n.asIdeal.LiesOver m.asIdeal := ⟨congr($(hcn).1)⟩
+  obtain ⟨q, hq, hqp⟩ := Ideal.exists_ideal_le_liesOver_of_le n.asIdeal h
+  use ⟨q, hqp.1⟩
+  ext1
+  exact hqp.2.1.symm
