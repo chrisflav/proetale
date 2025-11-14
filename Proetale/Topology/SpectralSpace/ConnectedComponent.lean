@@ -141,9 +141,7 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
     (IsClosed T ∧ ∃ I : Set X, ⋃ x ∈ I, connectedComponent x = T) ↔
     ∃ J : Set ({U : Set X // IsClopen U}), ⋂ (U : J), U = T := by
   constructor
-  · intro h
-    have h1 := h.1
-    have h2 := h.2
+  · intro ⟨h1, h2⟩
     obtain ⟨J, hJ⟩ := h2
     let S : Set ({U : Set X // IsClopen U}) := {U | T ⊆ U}
     use S
@@ -178,8 +176,7 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
       have lem1 : ⋃ (U : {U : Set X // IsClopen U ∧ x ∈ U}), Uᶜ = (connectedComponent x)ᶜ := by
         rw [← Set.compl_iInter, sInter_isClopen_and_mem_eq_connectedComponent]
       have lem2 : T ⊆ (connectedComponent x)ᶜ := by
-        intro t ht
-        intro htx
+        intro t ht htx
         exact hC ⟨htx, ht⟩
       rw [lem1.symm] at lem2
       have lem3 : IsCompact T := by
