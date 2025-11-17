@@ -825,7 +825,7 @@ a quasi-compact open $U$.
     hence $Z \cap \bigcap_{a=1}^n B_{i_a}$ is non-empty by the same argument.
 
     Suppose $Z = Z' \cup Z'$ is reducible with $Z', Z'' \subsetneq Z$ closed. Because
-    $X$ is quasi-separated, there exist quasi-compact opens $U', U'' \subseteq X$ with
+    $X$ is a spectral space, there exist quasi-compact opens $U', U'' \subseteq X$ with
     $U' \cap Z'$ non-empty, $U'' \cap Z''$ non-empty and $U' \cap Z'' = \emptyset = U'' \cap Z'$.
     Then set $B' = X - U' \in \mathfrak{B}$ and $B'' = X - U'' \in \mathfrak{B}$. We
     claim that $\{B_i\}_{i \in I}$ with $B'$ or $B''$ added is still in $\mathcal{S}$. Suppose,
@@ -839,7 +839,8 @@ a quasi-compact open $U$.
     .\] which is a contradiction. Hence $\{B_i\}_{i \in I}$ is not maximal, also a contradiction. So
     $Z$ is irreducible. But for every $i \in I - I'$, the set $B_i$ is open and hence
     the non-empty open $Z \cap B_i$ of $Z$ contains the unique generic point of $Z$. Hence
-    $\bigcap_{i \in  I} B_i = Z \cap \bigcap_{i \in  I - I'}$ is non-empty, which is again a contradiction.
+    $\bigcap_{i \in  I} B_i = Z \cap \bigcap_{i \in  I - I'} B_i$ is non-empty, which is again a contradiction.
+    \leanok
 \end{proof}
 
 \begin{lemma}[\stacksproject{0903}]
