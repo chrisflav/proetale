@@ -1243,6 +1243,7 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     the union of the images of the $I_E$ in $A_w$.%
     \uses{def:finite-stratification-ring, lemma:subset-stratum-mono, lemma:finite-stratification-map-closed}
     \label{def:w-localization}
+    \lean{WLocalization.commAlgCat,WLocalization}
 \end{definition}
 
 Note that, since $I_w$ is the colimit of the ideals $I_E$, the closed subset
@@ -1569,7 +1570,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
 \begin{lemma}
     $T^{\infty}(A)$ is ind-étale and faithfully flat over $A$.
-    \uses{def:etale-contraction, def:ind-etale}
+    \uses{def:etale-contraction,def:ind-etale}
     \label{lemma:etale-contraction-ind-etale}
 \end{lemma}
 
@@ -1582,7 +1583,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \begin{proposition}[{\stacksproject{097R}}]
     Let $T^{\infty}(A) \to B$ be a faithfully flat and étale $A$-algebra map. Then
     it has a retraction.
-    \label{def:etale-contraction}
+    \uses{def:etale-contraction}
     \label{prop:etale-contraction-retraction}
 \end{proposition}
 
@@ -1832,8 +1833,10 @@ We will see that if a ring $A$ is w-contractible, every faithfully flat, ind-ét
 this we will perform a series of reductions.
 
 \begin{lemma}
-    \label{thm:w-contractible-if-ind-etale-plus-c-has-retraction}
-    \uses{def:w-local-ring,def:ind-etale,def:w-contractible-ring}
+    \label{thm:ind-etale-has-retraction-if-ind-etale-plus-c-has}
+    \uses{def:w-local-ring,def:ind-etale}
+    \lean{IsWLocalRing.exists_retraction_of_exists_retraction_of_zeroLocus_map_eq}
+    \leanok
     Let \(A\) be a w-local ring and $I \subset A$ an ideal cutting out the set $X^c$ of closed points
     in $X = \Spec (A)$. To show that every faithfully flat, ind-étale map $A \to B$ has a
     retraction, it suffices to show this for \(B\) w-local and whose
@@ -1850,8 +1853,10 @@ this we will perform a series of reductions.
 \end{proof}
 
 \begin{lemma}
-    \label{thm:ind-etale-plus-c-has-retraction-if}
-    \uses{def:w-strictly-local-ring,def:extremally-disconnected,def:ind-etale}
+    \label{thm:ind-etale-plus-c-has-retraction-if-w-contractible}
+    \uses{def:w-contractible-ring,def:extremally-disconnected,def:ind-etale}
+    \lean{IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints}
+    \leanok
     Let $A$ be w-contractible and $I \subseteq A$ an ideal cutting out the set $X^c$ of closed points in $X = \spec{A}$.
     Then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and
     whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction.
@@ -1875,8 +1880,8 @@ this we will perform a series of reductions.
 \end{proposition}
 
 \begin{proof}
-  \uses{thm:w-contractible-if-ind-etale-plus-c-has-retraction,thm:ind-etale-plus-c-has-retraction-if}
-  This is \Cref{thm:ind-etale-plus-c-has-retraction-if} with \Cref{thm:w-contractible-if-ind-etale-plus-c-has-retraction}.
+  \uses{thm:ind-etale-has-retraction-if-ind-etale-plus-c-has,thm:ind-etale-plus-c-has-retraction-if-w-contractible}
+  This is \Cref{thm:ind-etale-plus-c-has-retraction-if-w-contractible} with \Cref{thm:ind-etale-has-retraction-if-ind-etale-plus-c-has}.
   % Assume (1) or equivalently (2). We have (3)(c) by Lemma \ref{lemma:097V}. Properties (3)(a) and (3)(b) follow from Lemma \ref{lemma:09AZ}.
 \end{proof}
 

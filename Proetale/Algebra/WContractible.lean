@@ -29,23 +29,49 @@ class IsWContractibleRing (R : Type*) [CommRing R] extends IsWStrictlyLocalRing 
   extremallyDisconnected_connectedComponents :
     ExtremallyDisconnected (ConnectedComponents <| PrimeSpectrum R)
 
-variable (R : Type u) [CommRing R]
+open PrimeSpectrum
+
+variable {R : Type u} [CommRing R]
+
+theorem IsWLocalRing.exists_retraction_of_exists_retraction_of_zeroLocus_map_eq [IsWLocalRing R] {I :Ideal R} (hI : zeroLocus I = closedPoints (PrimeSpectrum R))
+  (h : ∀ {S : Type u} [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S], zeroLocus (I.map (algebraMap R S)) = closedPoints (PrimeSpectrum S) →
+    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R) (S : Type u) [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] :
+    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R :=
+  sorry -- input from `WLocalization`
+
+/--
+Let `R` be a w-contractible ring and `I` an ideal of `R` cutting out the set `X^c` of closed
+points in `Spec R`. Then every faithfully flat ind-étale map `R →+* S` with `S` w-local and
+whose closed points of `Spec S` are exactly `V(IB)` has a retraction.
+-/
+theorem IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints [IsWContractibleRing R]
+    {I :Ideal R} (hI : zeroLocus I = closedPoints (PrimeSpectrum R)) {S : Type u} [CommRing S]
+    [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S]
+    (hS : zeroLocus (I.map (algebraMap R S)) = closedPoints (PrimeSpectrum S)) :
+    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R := by
+  sorry -- thm:ind-etale-plus-c-has-retraction-if-w-contractible
+
+variable (R)
 
 /-- If `R` is w-contractible, every faithfully flat, ind-étale map `R →+* S` has a retraction. -/
-theorem IsWContractibleRing.exists_retraction (R : Type u) [CommRing R] [IsWContractibleRing R]
+theorem IsWContractibleRing.exists_retraction [IsWContractibleRing R]
     (S : Type u) [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] :
-    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R :=
-  sorry
+    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R := by
+  let I := vanishingIdeal (closedPoints (PrimeSpectrum R))
+  have hI : zeroLocus I = closedPoints (PrimeSpectrum R) := by
+    rw [zeroLocus_vanishingIdeal_eq_closure, IsClosed.closure_eq (IsWLocalRing.wLocalSpace_primeSepectrum.isClosed_closedPoints)]
+  apply IsWLocalRing.exists_retraction_of_exists_retraction_of_zeroLocus_map_eq hI
+  exact IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints hI
 
 /-- Any w-strictly-local ring has an ind-Zariski, faithfully flat cover that is w-contractible. -/
-lemma exists_isWContractibleRing_of_isWStrictlyLocal (R : Type u) [CommRing R]
+lemma exists_isWContractibleRing_of_isWStrictlyLocal
     [IsWStrictlyLocalRing R] :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S),
       Algebra.IndZariski R S ∧ Module.FaithfullyFlat R S ∧ IsWContractibleRing S :=
   sorry
 
 /-- Any ring has an ind-étale, faithfully flat cover that is w-contractible. -/
-theorem exists_isWContractibleRing (R : Type u) [CommRing R] :
+theorem exists_isWContractibleRing :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S),
       Algebra.IndEtale R S ∧ Module.FaithfullyFlat R S ∧ IsWContractibleRing S := by
   obtain ⟨S, _, _, _, _, _⟩ :=
@@ -58,7 +84,7 @@ theorem exists_isWContractibleRing (R : Type u) [CommRing R] :
 
 /-- Any ring has an ind-étale, faithfully flat cover for which every ind-étale
 faithfully flat cover splits. -/
-theorem exists_forall_exists_retraction (R : Type u) [CommRing R] :
+theorem exists_forall_exists_retraction :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S),
       Algebra.IndEtale R S ∧ Module.FaithfullyFlat R S ∧
       ∀ (T : Type u) [CommRing T] [Algebra S T] [Algebra.IndEtale S T] [Module.FaithfullyFlat S T],

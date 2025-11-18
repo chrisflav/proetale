@@ -212,3 +212,8 @@ instance faithfullyFlat_wLocalization : Module.FaithfullyFlat A (WLocalization A
 
 instance isWLocalRing_wLocalization : IsWLocalRing (WLocalization A) :=
   sorry
+
+-- thm:closed-points-isom-w-local should be put here
+-- theorem
+
+open PrimeSpectrum
