@@ -449,13 +449,14 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{proof}
 
 \begin{lemma}
-  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat and ind-étale.
-  \label{thm:ind-Zariski-is-flat-ind-etale}
-  \uses{def:ind-Zariski,def:ind-etale}
+  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat.
+  \label{thm:ind-Zariski-is-flat}
+  \uses{def:ind-Zariski}
+  \lean{Algebra.IndZariski.flat,RingHom.IndZariski.flat}
 \end{lemma}
 
 \begin{proof}
-  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat and étale.
+  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat.
 \end{proof}
 
 \begin{lemma}
@@ -484,6 +485,7 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
   \label{thm:ind-Zariski-composition}
   Let \(A \to B\) and \(B \to C\) be ind-Zariski ring maps. Then the composition \(A \to C\) is also ind-Zariski.
   \uses{def:ind-Zariski}
+  \lean{Algebra.IndZariski.trans,RingHom.IndZariski.comp}
 \end{lemma}
 
 \begin{proof}
@@ -638,6 +640,17 @@ The following example shows that our definition agrees with the one in
 
 \begin{proof}
     This follows from general theory, because étale maps are of finite presentation.
+\end{proof}
+
+\begin{lemma}
+  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is ind-étale.
+  \label{thm:ind-Zariski-is-ind-etale}
+  \uses{def:ind-Zariski,def:ind-etale}
+  \lean{Algebra.IndZariski.indEtale,RingHom.IndZariski.indEtale}
+\end{lemma}
+
+\begin{proof}
+  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is étale.
 \end{proof}
 
 \section{w-local spaces}
@@ -1501,7 +1514,7 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
     \item $B/IB \to C/IC$ is an isomorphism, \label{item:quotinet-isom-closed-points-isom-w-local} % thus surjective on closed points
     \item $C$ is w-local, \label{item:w-local-closed-points-isom-w-local}
     \item the map $p: Y = \Spec (C) \to X$ induced by the ring map $A \to B \to C$ is w-local, and % this is not needed?
-    \item $p^{-1}(X^c)$ is the set of closed points of $Y$. \label{item:inverse-image-closed-points-isom-w-local}
+    \item $p^{-1}(X^c)$ is the set of closed points of $Y$, i.e. V(IC) is the set of closed points of $Y$. \label{item:inverse-image-closed-points-isom-w-local}
 \end{enumerate}
 \end{lemma}
 
@@ -1522,8 +1535,8 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 \end{corollary}
 
 \begin{proof}
-  \uses{thm:ind-Zariski-is-flat-ind-etale,thm:w-localization-ideal-ind-Zariski,lemma:going-down-surjective-of-closed,thm:closed-points-isom-w-local}
-  By \Cref{thm:ind-Zariski-is-flat-ind-etale,thm:w-localization-ideal-ind-Zariski}, $A \to B \to C$ is flat, so by \ref{lemma:going-down-surjective-of-closed} it suffices
+  \uses{thm:ind-Zariski-is-flat,thm:w-localization-ideal-ind-Zariski,lemma:going-down-surjective-of-closed,thm:closed-points-isom-w-local}
+  By \Cref{thm:ind-Zariski-is-flat,thm:w-localization-ideal-ind-Zariski}, $A \to B \to C$ is flat, so by \ref{lemma:going-down-surjective-of-closed} it suffices
   to show every closed point of $A$ is in the image. But since $\spec{B} \to \spec{A}$ is surjective,
   also $V(IC) \cong V(IB) \to V(I)$ is surjective (the first map is an isomorphism by \Cref{item:quotinet-isom-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}).
 \end{proof}
@@ -1911,26 +1924,6 @@ We will see that if a ring $A$ is w-contractible, every faithfully flat, ind-ét
 this we will perform a series of reductions.
 
 \begin{lemma}
-    \label{thm:ind-etale-has-retraction-if-ind-etale-plus-c-has}
-    \uses{def:w-local-ring,def:ind-etale}
-    \lean{IsWLocalRing.exists_retraction_of_exists_retraction_of_zeroLocus_map_eq}
-    \leanok
-    Let \(A\) be a w-local ring and $I \subset A$ an ideal cutting out the set $X^c$ of closed points
-    in $X = \Spec (A)$. To show that every faithfully flat, ind-étale map $A \to B$ has a
-    retraction, it suffices to show this for \(B\) w-local and whose
-    closed points of \(\Spec (B)\) are exactly \(V(IB)\).
-\end{lemma}
-
-\begin{proof}
-  \uses{def:w-localization-ideal,cor:closed-points-isom-w-local-faithfully-flat,thm:w-localization-ideal-ind-Zariski,thm:ind-Zariski-is-flat-ind-etale,thm:ind-etale-comp,thm:closed-points-isom-w-local}
-  Let $A \to B$ be faithfully flat and ind-étale.
-  % We will use without further mention the fact that a flat map $A \to B$ is faithfully flat if and only if every closed point of $\operatorname{Spec}(A)$ is in the image of $\operatorname{Spec}(B) \to \operatorname{Spec}(A)$.
-  We will show that $A \to B$ has a retraction.
-
-  We may replace $B$ by the ring $C = B_{w, IB}$ (see \Cref{def:w-localization-ideal}). To justify this, note that the map \(A \to C\) is faithfully flat by \Cref{cor:closed-points-isom-w-local-faithfully-flat} and \(B \to C\) is ind-Zariski by \Cref{thm:w-localization-ideal-ind-Zariski}, thus ind-étale by \Cref{thm:ind-Zariski-is-flat-ind-etale}. Therefore, by \Cref{thm:ind-etale-comp}, the composition \( A \to C \) is also ind-étale. Hence, we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
-\end{proof}
-
-\begin{lemma}
     \label{thm:ind-etale-plus-c-has-retraction-if-w-contractible}
     \uses{def:w-contractible-ring,def:extremally-disconnected,def:ind-etale}
     \lean{IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints}
@@ -1958,8 +1951,12 @@ this we will perform a series of reductions.
 \end{proposition}
 
 \begin{proof}
-  \uses{thm:ind-etale-has-retraction-if-ind-etale-plus-c-has,thm:ind-etale-plus-c-has-retraction-if-w-contractible}
-  This is \Cref{thm:ind-etale-plus-c-has-retraction-if-w-contractible} with \Cref{thm:ind-etale-has-retraction-if-ind-etale-plus-c-has}.
+  \uses{def:w-localization-ideal,cor:closed-points-isom-w-local-faithfully-flat,thm:w-localization-ideal-ind-Zariski,thm:ind-Zariski-is-ind-etale,thm:ind-etale-comp,thm:closed-points-isom-w-local,thm:ind-etale-plus-c-has-retraction-if-w-contractible}
+  \leanok
+  With \Cref{thm:ind-etale-plus-c-has-retraction-if-w-contractible}, it suffices to reduce to the case that \(B\) is furthur w-local and the closed points of \(\Spec (B)\) are exactly \(V(IB)\).
+
+  Let $A \to B$ be faithfully flat and ind-étale. We may replace $B$ by the ring $C = B_{w, IB}$ (see \Cref{def:w-localization-ideal}). To justify this, note that the map \(A \to C\) is faithfully flat by \Cref{cor:closed-points-isom-w-local-faithfully-flat} and \(B \to C\) is ind-Zariski by \Cref{thm:w-localization-ideal-ind-Zariski}, thus ind-étale by \Cref{thm:ind-Zariski-is-ind-etale}. Therefore, by \Cref{thm:ind-etale-comp}, the composition \( A \to C \) is also ind-étale. Hence, we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
+
   % Assume (1) or equivalently (2). We have (3)(c) by Lemma \ref{lemma:097V}. Properties (3)(a) and (3)(b) follow from Lemma \ref{lemma:09AZ}.
 \end{proof}
 

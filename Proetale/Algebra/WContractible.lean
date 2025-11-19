@@ -34,13 +34,6 @@ open PrimeSpectrum
 
 variable {R : Type u} [CommRing R]
 
--- this proof should be merged into `IsWContractibleRing.exists_retraction` after finished. this is the reduction step
-theorem IsWLocalRing.exists_retraction_of_exists_retraction_of_zeroLocus_map_eq [IsWLocalRing R] {I :Ideal R} (hI : zeroLocus I = closedPoints (PrimeSpectrum R))
-  (h : ∀ {S : Type u} [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S], zeroLocus (I.map (algebraMap R S)) = closedPoints (PrimeSpectrum S) →
-    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R) (S : Type u) [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] :
-    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R :=
-  sorry -- input from `WLocalization`
-
 /--
 Let `R` be a w-contractible ring and `I` an ideal of `R` cutting out the set `X^c` of closed
 points in `Spec R`. Then every faithfully flat ind-étale map `R →+* S` with `S` w-local and
@@ -62,8 +55,15 @@ theorem IsWContractibleRing.exists_retraction [IsWContractibleRing R]
   let I := vanishingIdeal (closedPoints (PrimeSpectrum R))
   have hI : zeroLocus I = closedPoints (PrimeSpectrum R) := by
     rw [zeroLocus_vanishingIdeal_eq_closure, IsClosed.closure_eq (IsWLocalRing.wLocalSpace_primeSepectrum.isClosed_closedPoints)]
-  apply IsWLocalRing.exists_retraction_of_exists_retraction_of_zeroLocus_map_eq hI
-  exact IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints hI
+  let S' := (I.map (algebraMap R S)).WLocalization
+  have : Module.FaithfullyFlat R S' :=
+    Ideal.WLocalization.faithfullyFlat_map_algebraMap hI (fun _ _ ↦ inferInstance)
+  have : Algebra.IndEtale R S' := Algebra.IndEtale.trans R S S'
+  have : zeroLocus (I.map (algebraMap R S')) = closedPoints (PrimeSpectrum S') := Ideal.WLocalization.algebraMap_specComap_preimage_closedPoints_eq hI (fun _ _ ↦ inferInstance)
+  obtain ⟨g, hg⟩ := IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints hI this
+  use g.comp (algebraMap S S')
+  simp only [RingHom.comp_assoc]
+  exact hg
 
 /-- Any w-strictly-local ring has an ind-Zariski, faithfully flat cover that is w-contractible. -/
 lemma exists_isWContractibleRing_of_isWStrictlyLocal

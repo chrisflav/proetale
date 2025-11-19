@@ -77,6 +77,7 @@ theorem zeroLocus_map_algebraMap_eq_closedPoints (hI : zeroLocus I ⊆ closedPoi
     zeroLocus (I.map (algebraMap A I.WLocalization)) =
     closedPoints (PrimeSpectrum I.WLocalization) := sorry
 
+variable (I) in
 @[stacks 097A "(2)(a)"]
 theorem quotientMap_algebraMap_bijective : Function.Bijective (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map) := sorry
 
@@ -87,9 +88,33 @@ instance [Algebra A B] : IsScalarTower A B (I.map (algebraMap A B)).WLocalizatio
 
 @[stacks 097A "(2)(d)"]
 theorem algebraMap_specComap_preimage_closedPoints_eq [IsWLocalRing A] [Algebra A B] (hI : zeroLocus I = closedPoints (PrimeSpectrum A)) (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime], Algebra.IsAlgebraic m.ResidueField q.ResidueField) :
-    (algebraMap A (I.map (algebraMap A B)).WLocalization).specComap ⁻¹' (closedPoints (PrimeSpectrum A)) = closedPoints (PrimeSpectrum (I.map (algebraMap A B)).WLocalization) := sorry
+    zeroLocus (I.map (algebraMap A (I.map (algebraMap A B)).WLocalization)) = closedPoints (PrimeSpectrum (I.map (algebraMap A B)).WLocalization) := sorry
 
-theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.FaithfullyFlat A B] (hI : zeroLocus I = closedPoints (PrimeSpectrum A)) (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime], Algebra.IsAlgebraic m.ResidueField q.ResidueField) : Module.FaithfullyFlat A (I.map (algebraMap A B)).WLocalization := sorry
--- use `Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage`
+theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.FaithfullyFlat A B] (hI : zeroLocus I = closedPoints (PrimeSpectrum A)) (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime], Algebra.IsAlgebraic m.ResidueField q.ResidueField) : Module.FaithfullyFlat A (I.map (algebraMap A B)).WLocalization := by
+  have : Module.Flat A (I.map (algebraMap A B)).WLocalization := Module.Flat.trans A B (I.map (algebraMap A B)).WLocalization
+  apply Module.FaithfullyFlat.of_specComap_surjective
+  apply Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage
+  rw [← hI]
+  calc
+    zeroLocus I ⊆ (algebraMap A B).specComap '' zeroLocus (I.map (algebraMap A B)) := by
+      intro p hp
+      simp only [mem_zeroLocus, SetLike.coe_subset_coe, Set.mem_image] at hp ⊢
+      obtain ⟨q, hq⟩ := PrimeSpectrum.specComap_surjective_of_faithfullyFlat p (B := B)
+      refine ⟨q, ?_, hq⟩
+      simp only [← hq, specComap_asIdeal] at hp
+      exact Ideal.map_le_of_le_comap hp
+    _ ⊆ (algebraMap A B).specComap '' ((algebraMap B (I.map (algebraMap A B)).WLocalization).specComap '' zeroLocus (I.map ((algebraMap B (I.map (algebraMap A B)).WLocalization).comp (algebraMap A B)))) := by
+      apply Set.image_mono
+      intro p hp
+      simp at hp
+      -- let p' := (Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I.map (algebraMap A B))).symm ⟨p, hp⟩
+      -- let q' := PrimeSpectrum.comapEquiv (RingEquiv.ofBijective _ (quotientMap_algebraMap_bijective (I.map (algebraMap A B)))) p'
+      -- let q := (Ideal.primeSpectrumQuotientOrderIsoZeroLocus _) q'
+      -- use q
+      -- simp [q, q', p']
+      sorry
+    _ ⊆ _ := by
+      rw [← Set.image_comp, ← specComap_comp]
+      exact Set.image_subset_range _ _
 
 end Ideal.WLocalization
