@@ -3,6 +3,7 @@ Copyright (c) 2025 Jiang Jiedong, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiang Jiedong, Christian Merten
 -/
+import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndZariski
@@ -33,6 +34,7 @@ open PrimeSpectrum
 
 variable {R : Type u} [CommRing R]
 
+-- this proof should be merged into `IsWContractibleRing.exists_retraction` after finished. this is the reduction step
 theorem IsWLocalRing.exists_retraction_of_exists_retraction_of_zeroLocus_map_eq [IsWLocalRing R] {I :Ideal R} (hI : zeroLocus I = closedPoints (PrimeSpectrum R))
   (h : ∀ {S : Type u} [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S], zeroLocus (I.map (algebraMap R S)) = closedPoints (PrimeSpectrum S) →
     ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R) (S : Type u) [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] :

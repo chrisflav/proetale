@@ -8,7 +8,8 @@ import Proetale.Algebra.StalkAlgebraic
 import Proetale.Algebra.StalkIso
 import Proetale.Algebra.WContractible
 import Proetale.Algebra.WLocal
-import Proetale.Algebra.WLocalization
+import Proetale.Algebra.WLocalization.Basic
+import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Basic
@@ -44,6 +45,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
 import Proetale.Mathlib.CategoryTheory.Sites.Sheaf
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.RingTheory.Henselian
+import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 import Proetale.Mathlib.Topology.Inseparable

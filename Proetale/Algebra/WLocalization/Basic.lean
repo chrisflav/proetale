@@ -204,16 +204,16 @@ noncomputable instance : CommRing (WLocalization A) := fast_instance%
 noncomputable instance : Algebra A (WLocalization A) := fast_instance%
   inferInstanceAs <| Algebra A (WLocalization.commAlgCat A)
 
-instance indZariski_wLocalization : Algebra.IndZariski A (WLocalization A) :=
+noncomputable def WLocalization.ideal : Ideal (WLocalization A) :=
+  ⨆ E : Finset A, Ideal.map (colimitPresentation.ι.app E).hom (ProdStrata.ideal E)
+
+instance WLocalization.indZariski : Algebra.IndZariski A (WLocalization A) :=
   sorry
 
-instance faithfullyFlat_wLocalization : Module.FaithfullyFlat A (WLocalization A) :=
+instance WLocalization.faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
 
-instance isWLocalRing_wLocalization : IsWLocalRing (WLocalization A) :=
+instance WLocalization.isWLocalRing : IsWLocalRing (WLocalization A) :=
   sorry
-
--- thm:closed-points-isom-w-local should be put here
--- theorem
 
 open PrimeSpectrum
