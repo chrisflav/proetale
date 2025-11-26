@@ -3,7 +3,7 @@ import Mathlib.RingTheory.Unramified.LocalRing
 import Mathlib.Topology.JacobsonSpace
 
 /-- `IsScalarTower` version of `Subalgebra.isField_of_algebraic`. -/
-lemma Ideal.isMaximal_of_isAlgebraic_isField (k R K : Type*) [Field k] [Field K]
+lemma IsField.of_isScalarTower_of_isAlgebraic (k R K : Type*) [Field k] [Field K]
     [CommSemiring R] [Algebra k R] [Algebra R K] [Algebra k K] [IsScalarTower k R K]
     [FaithfulSMul R K] [Algebra.IsAlgebraic k K] : IsField R :=
   AlgEquiv.ofInjective (IsScalarTower.toAlgHom k R K)
@@ -11,6 +11,7 @@ lemma Ideal.isMaximal_of_isAlgebraic_isField (k R K : Type*) [Field k] [Field K]
 
 /-- If `q` lies over a maximal ideal `m` and the residue field extension is algebraic, `q`
 is maximal. -/
+@[stacks 00GA]
 lemma Ideal.IsMaximal.of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
     (m : Ideal A) [m.IsMaximal] (q : Ideal B) [Ideal.IsPrime q]
     [q.LiesOver m] [Algebra.IsAlgebraic m.ResidueField q.ResidueField] : q.IsMaximal := by
@@ -32,7 +33,7 @@ lemma Ideal.IsMaximal.of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Al
   have h : FaithfulSMul (B ⧸ q) q.ResidueField := by
     rw [faithfulSMul_iff_algebraMap_injective]
     apply IsFractionRing.injective
-  exact Ideal.isMaximal_of_isAlgebraic_isField m.ResidueField (B ⧸ q) q.ResidueField
+  exact .of_isScalarTower_of_isAlgebraic m.ResidueField (B ⧸ q) q.ResidueField
 
 /-- Let `B` be an `A`-algebra inducing algebraic extensions on residue fields.
 If `V(I) ⊆ Spec A` only contains closed points, also `V(IB)` only contains closed points. -/
