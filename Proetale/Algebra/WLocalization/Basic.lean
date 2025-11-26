@@ -83,8 +83,16 @@ def stratum (E F : Finset A) : Set (PrimeSpectrum A) :=
 lemma stratum_eq_basicOpen_inter_zeroLocus (E F : Finset A) :
     stratum E F =
       (PrimeSpectrum.basicOpen (∏ f ∈ E, f) : Set _) ∩
-        PrimeSpectrum.zeroLocus (Ideal.span (F : Set A)) :=
-  sorry
+        PrimeSpectrum.zeroLocus (Ideal.span (F : Set A)) := by
+  classical
+  rw [stratum]
+  congr
+  induction E using Finset.induction_on with
+  | empty =>
+    simp
+  | insert a s h1 h2 =>
+    simp [h2, Finset.prod_insert h1, -PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
+      PrimeSpectrum.basicOpen_mul]
 
 lemma stratum_anti {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :
     stratum E' F' ⊆ stratum E F := by
@@ -93,7 +101,6 @@ lemma stratum_anti {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :
   · exact Set.biInter_mono hEE' fun x a ⦃a⦄ a ↦ a
   · apply PrimeSpectrum.zeroLocus_anti_mono
     exact Ideal.span_mono (Finset.coe_subset.mpr hFF')
-
 
 /-- The type of disjoint union decompositions of `E` into two finite sets. -/
 structure Stratification.Index (E : Finset A) where
