@@ -49,7 +49,7 @@ lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower
     Algebra.IndEtale R T :=
   sorry
 
-instance (priority := 100) _root_.Algebra.IndZariski.indEtale [IndZariski R S] : IndEtale R S :=
+instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S :=
   sorry
 
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S) [q.LiesOver p] [p.IsPrime] [q.IsPrime] : Algebra.IsSeparable p.ResidueField q.ResidueField := sorry
@@ -89,6 +89,6 @@ lemma comp {T : Type u} [CommRing T] {g : S →+* T} {f : R →+* S} (hg : g.Ind
 lemma _root_.RingHom.IndZariski.indEtale {f : R →+* S}
     (hf : f.IndZariski) : f.IndEtale := by
   algebraize [f]
-  exact Algebra.IndZariski.indEtale R S
+  exact .of_indZariski R S
 
 end RingHom.IndEtale

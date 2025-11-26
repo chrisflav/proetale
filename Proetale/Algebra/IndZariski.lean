@@ -44,7 +44,7 @@ lemma Algebra.IndZariski.trans (R S T : Type u) [CommRing R] [CommRing S] [CommR
     Algebra.IndZariski R T :=
   sorry
 
-instance (priority := 100) Algebra.IndZariski.flat (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+instance (priority := 100) Module.Flat.of_indZariski (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.IndZariski R S] : Module.Flat R S :=
   sorry
 
@@ -88,4 +88,4 @@ lemma RingHom.IndZariski.comp (R S T : Type u) [CommRing R] [CommRing S] [CommRi
 theorem RingHom.IndZariski.flat (R S : Type u) [CommRing R] [CommRing S] (f : R →+* S)
     (h : f.IndZariski) : f.Flat := by
   algebraize [f]
-  exact Algebra.IndZariski.flat R S
+  exact .of_indZariski R S
