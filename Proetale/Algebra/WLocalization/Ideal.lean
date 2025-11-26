@@ -47,7 +47,7 @@ theorem zeroLocus_map_algebraMap_subset_closedPoints [Algebra A B] (h : ∀ (m :
     simpa [isClosed_singleton_iff_isMaximal] using hI (Ideal.le_comap_of_map_le hq)
   have : q.asIdeal.LiesOver m.asIdeal := ⟨PrimeSpectrum.ext_iff.mp hm_def⟩
   have := h m.asIdeal q.asIdeal
-  exact Ideal.isMaximal_of_isAlgebraic m.asIdeal q.asIdeal
+  exact Ideal.IsMaximal.of_isAlgebraic m.asIdeal q.asIdeal
 
 variable (I) in
 /--
