@@ -3,6 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.RingTheory.RingHom.Flat
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Ind
 
@@ -37,6 +38,25 @@ lemma Algebra.IndZariski.iff_ind_isLocalIso (R S : Type u) [CommRing R] [CommRin
     Algebra.IndZariski R S ↔ ObjectProperty.ind.{u} (CommAlgCat.isLocalIso R) (.of R S) :=
   Algebra.indZariski_iff R S
 
+lemma Algebra.IndZariski.trans (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    [Algebra.IndZariski R S] [Algebra.IndZariski S T] :
+    Algebra.IndZariski R T :=
+  sorry
+
+instance (priority := 100) Algebra.IndZariski.flat (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.IndZariski R S] : Module.Flat R S :=
+  sorry
+
+lemma Algebra.IndZariski.of_isLocalization (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Algebra.IndZariski R S :=
+  sorry
+
+instance Algebra.IndZariski.localization (R : Type u) [CommRing R] (M : Submonoid R) :
+    Algebra.IndZariski R (Localization M) :=
+  of_isLocalization R _ M
+
 /-- A ring hom is ind-Zariski if and only if it is an ind-Zariski algebra. -/
 @[stacks 096N, algebraize Algebra.IndZariski]
 def RingHom.IndZariski {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
@@ -58,3 +78,14 @@ lemma RingHom.IndZariski.iff_exists {R S : CommRingCat.{u}} (f : R ⟶ S) :
       (t : (Functor.const J).obj R ⟶ D) (c : D ⟶ (Functor.const J).obj S) (_ : IsColimit (.mk _ c)),
       ∀ i, (t.app i).hom.IsLocalIso ∧ t.app i ≫ c.app i = f :=
   RingHom.IndZariski.iff_ind_isLocalIso _
+
+lemma RingHom.IndZariski.comp (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
+    {f : R →+* S} {g : S →+* T} (hf : f.IndZariski) (hg : g.IndZariski) :
+    (g.comp f).IndZariski := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.IndZariski.trans R S T
+
+theorem RingHom.IndZariski.flat (R S : Type u) [CommRing R] [CommRing S] (f : R →+* S)
+    (h : f.IndZariski) : f.Flat := by
+  algebraize [f]
+  exact Algebra.IndZariski.flat R S

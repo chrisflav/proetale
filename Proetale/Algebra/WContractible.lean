@@ -3,6 +3,7 @@ Copyright (c) 2025 Jiang Jiedong, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiang Jiedong, Christian Merten
 -/
+import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndZariski
@@ -29,23 +30,50 @@ class IsWContractibleRing (R : Type*) [CommRing R] extends IsWStrictlyLocalRing 
   extremallyDisconnected_connectedComponents :
     ExtremallyDisconnected (ConnectedComponents <| PrimeSpectrum R)
 
-variable (R : Type u) [CommRing R]
+open PrimeSpectrum
+
+variable {R : Type u} [CommRing R]
+
+/--
+Let `R` be a w-contractible ring and `I` an ideal of `R` cutting out the set `X^c` of closed
+points in `Spec R`. Then every faithfully flat ind-étale map `R →+* S` with `S` w-local and
+whose closed points of `Spec S` are exactly `V(IB)` has a retraction.
+-/
+theorem IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints [IsWContractibleRing R]
+    {I :Ideal R} (hI : zeroLocus I = closedPoints (PrimeSpectrum R)) {S : Type u} [CommRing S]
+    [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S]
+    (hS : zeroLocus (I.map (algebraMap R S)) = closedPoints (PrimeSpectrum S)) :
+    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R := by
+  sorry -- thm:ind-etale-plus-c-has-retraction-if-w-contractible
+
+variable (R)
 
 /-- If `R` is w-contractible, every faithfully flat, ind-étale map `R →+* S` has a retraction. -/
-theorem IsWContractibleRing.exists_retraction (R : Type u) [CommRing R] [IsWContractibleRing R]
+theorem IsWContractibleRing.exists_retraction [IsWContractibleRing R]
     (S : Type u) [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] :
-    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R :=
-  sorry
+    ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R := by
+  let I := vanishingIdeal (closedPoints (PrimeSpectrum R))
+  have hI : zeroLocus I = closedPoints (PrimeSpectrum R) := by
+    rw [zeroLocus_vanishingIdeal_eq_closure, IsClosed.closure_eq (IsWLocalRing.wLocalSpace_primeSepectrum.isClosed_closedPoints)]
+  let S' := (I.map (algebraMap R S)).WLocalization
+  have : Module.FaithfullyFlat R S' :=
+    Ideal.WLocalization.faithfullyFlat_map_algebraMap hI (fun _ _ ↦ inferInstance)
+  have : Algebra.IndEtale R S' := Algebra.IndEtale.trans R S S'
+  have : zeroLocus (I.map (algebraMap R S')) = closedPoints (PrimeSpectrum S') := Ideal.WLocalization.algebraMap_specComap_preimage_closedPoints_eq hI (fun _ _ ↦ inferInstance)
+  obtain ⟨g, hg⟩ := IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints hI this
+  use g.comp (algebraMap S S')
+  simp only [RingHom.comp_assoc]
+  exact hg
 
 /-- Any w-strictly-local ring has an ind-Zariski, faithfully flat cover that is w-contractible. -/
-lemma exists_isWContractibleRing_of_isWStrictlyLocal (R : Type u) [CommRing R]
+lemma exists_isWContractibleRing_of_isWStrictlyLocal
     [IsWStrictlyLocalRing R] :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S),
       Algebra.IndZariski R S ∧ Module.FaithfullyFlat R S ∧ IsWContractibleRing S :=
   sorry
 
 /-- Any ring has an ind-étale, faithfully flat cover that is w-contractible. -/
-theorem exists_isWContractibleRing (R : Type u) [CommRing R] :
+theorem exists_isWContractibleRing :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S),
       Algebra.IndEtale R S ∧ Module.FaithfullyFlat R S ∧ IsWContractibleRing S := by
   obtain ⟨S, _, _, _, _, _⟩ :=
@@ -58,7 +86,7 @@ theorem exists_isWContractibleRing (R : Type u) [CommRing R] :
 
 /-- Any ring has an ind-étale, faithfully flat cover for which every ind-étale
 faithfully flat cover splits. -/
-theorem exists_forall_exists_retraction (R : Type u) [CommRing R] :
+theorem exists_forall_exists_retraction :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S),
       Algebra.IndEtale R S ∧ Module.FaithfullyFlat R S ∧
       ∀ (T : Type u) [CommRing T] [Algebra S T] [Algebra.IndEtale S T] [Module.FaithfullyFlat S T],

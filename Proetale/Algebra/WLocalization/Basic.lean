@@ -57,8 +57,9 @@ noncomputable
 def ideal (f : A) (I : Ideal A) : Ideal (Generalization f I) :=
   RingHom.ker (toLocQuotient f I)
 
-instance indZariski : Algebra.IndZariski A (Generalization f I) :=
-  sorry
+instance indZariski : Algebra.IndZariski A (Generalization f I) := by
+  dsimp [Generalization]
+  infer_instance
 
 def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
   PrimeSpectrum.basicOpen f ∩ PrimeSpectrum.zeroLocus I
@@ -93,23 +94,13 @@ lemma stratum_eq_basicOpen_inter_zeroLocus (E F : Finset A) :
     simp [h2, Finset.prod_insert h1, -PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
       PrimeSpectrum.basicOpen_mul]
 
-
 lemma stratum_anti {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :
     stratum E' F' ⊆ stratum E F := by
-  intro x hx
-  rw [stratum] at *
-  simp at *
-  constructor
-  · have h := hx.1
-    intro i hi
-    apply h
-    apply hEE'
-    exact hi
-  · have h := hx.2
-    intro f hf
-    apply h
-    apply hFF'
-    exact hf
+  rw [stratum, stratum]
+  apply Set.inter_subset_inter
+  · exact Set.biInter_mono hEE' fun x a ⦃a⦄ a ↦ a
+  · apply PrimeSpectrum.zeroLocus_anti_mono
+    exact Ideal.span_mono (Finset.coe_subset.mpr hFF')
 
 /-- The type of disjoint union decompositions of `E` into two finite sets. -/
 structure Stratification.Index (E : Finset A) where
@@ -220,11 +211,16 @@ noncomputable instance : CommRing (WLocalization A) := fast_instance%
 noncomputable instance : Algebra A (WLocalization A) := fast_instance%
   inferInstanceAs <| Algebra A (WLocalization.commAlgCat A)
 
-instance indZariski_wLocalization : Algebra.IndZariski A (WLocalization A) :=
+noncomputable def WLocalization.ideal : Ideal (WLocalization A) :=
+  ⨆ E : Finset A, Ideal.map (colimitPresentation.ι.app E).hom (ProdStrata.ideal E)
+
+instance WLocalization.indZariski : Algebra.IndZariski A (WLocalization A) :=
   sorry
 
-instance faithfullyFlat_wLocalization : Module.FaithfullyFlat A (WLocalization A) :=
+instance WLocalization.faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
 
-instance isWLocalRing_wLocalization : IsWLocalRing (WLocalization A) :=
+instance WLocalization.isWLocalRing : IsWLocalRing (WLocalization A) :=
   sorry
+
+open PrimeSpectrum

@@ -361,13 +361,15 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
   \label{thm:identifies-local-rings-composition}
   Let \(A \to B\) and \(B \to C\) be ring maps that identify local rings. Then the composition \(A \to C\) also identifies local rings.
   \uses{def:identify-local-rings}
+  \lean{RingHom.BijectiveOnStalks.comp}
+  \leanok
 \end{lemma}
 
 \begin{proof}
   Omitted.
 \end{proof}
 
-\begin{definition}[\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}]
+\begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}}]
   \label{def:identifies-local-ring-to-top}
   \uses{def:identify-local-rings,thm:identifies-local-rings-composition}
   Let $A$ be a ring and $X = \Spec(A)$. Let $\operatorname{ILR}_A$ denote the category of $A$-algebras $B$ for which $A \to B$ identifies local rings, and let $\operatorname{Top}_X$ denote the category of topological spaces over $X$.
@@ -447,13 +449,14 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{proof}
 
 \begin{lemma}
-  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat and ind-étale.
-  \label{thm:ind-Zariski-is-flat-ind-etale}
-  \uses{def:ind-Zariski,def:ind-etale}
+  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is flat.
+  \label{thm:ind-Zariski-is-flat}
+  \uses{def:ind-Zariski}
+  \lean{Algebra.IndZariski.flat,RingHom.IndZariski.flat}
 \end{lemma}
 
 \begin{proof}
-  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat and étale.
+  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat.
 \end{proof}
 
 \begin{lemma}
@@ -482,10 +485,22 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
   \label{thm:ind-Zariski-composition}
   Let \(A \to B\) and \(B \to C\) be ind-Zariski ring maps. Then the composition \(A \to C\) is also ind-Zariski.
   \uses{def:ind-Zariski}
+  \lean{Algebra.IndZariski.trans,RingHom.IndZariski.comp}
 \end{lemma}
 
 \begin{proof}
   Omitted.
+\end{proof}
+
+\begin{lemma}
+    \label{lemma:ind-Zariski-localization}
+    Let $A$ be a ring and $S \subseteq A$ a multiplicative subset. Then $S^{-1}A$ is ind-Zariski over $A$.
+    \lean{Algebra.IndZariski.of_isLocalization}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    $S^{-1} A = \colim_{f \in S} A_f$ and $A \to A_f$ is a local isomorphism.
 \end{proof}
 
 \section{Henselian objects and Henselisation}
@@ -625,6 +640,17 @@ The following example shows that our definition agrees with the one in
 
 \begin{proof}
     This follows from general theory, because étale maps are of finite presentation.
+\end{proof}
+
+\begin{lemma}
+  Let $A \to B$ be an ind-Zariski ring map. Then $A \to B$ is ind-étale.
+  \label{thm:ind-Zariski-is-ind-etale}
+  \uses{def:ind-Zariski,def:ind-etale}
+  \lean{Algebra.IndZariski.indEtale,RingHom.IndZariski.indEtale}
+\end{lemma}
+
+\begin{proof}
+  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is étale.
 \end{proof}
 
 \section{w-local spaces}
@@ -812,7 +838,7 @@ a quasi-compact open $U$.
     hence $Z \cap \bigcap_{a=1}^n B_{i_a}$ is non-empty by the same argument.
 
     Suppose $Z = Z' \cup Z'$ is reducible with $Z', Z'' \subsetneq Z$ closed. Because
-    $X$ is quasi-separated, there exist quasi-compact opens $U', U'' \subseteq X$ with
+    $X$ is a spectral space, there exist quasi-compact opens $U', U'' \subseteq X$ with
     $U' \cap Z'$ non-empty, $U'' \cap Z''$ non-empty and $U' \cap Z'' = \emptyset = U'' \cap Z'$.
     Then set $B' = X - U' \in \mathfrak{B}$ and $B'' = X - U'' \in \mathfrak{B}$. We
     claim that $\{B_i\}_{i \in I}$ with $B'$ or $B''$ added is still in $\mathcal{S}$. Suppose,
@@ -826,7 +852,8 @@ a quasi-compact open $U$.
     .\] which is a contradiction. Hence $\{B_i\}_{i \in I}$ is not maximal, also a contradiction. So
     $Z$ is irreducible. But for every $i \in I - I'$, the set $B_i$ is open and hence
     the non-empty open $Z \cap B_i$ of $Z$ contains the unique generic point of $Z$. Hence
-    $\bigcap_{i \in  I} B_i = Z \cap \bigcap_{i \in  I - I'}$ is non-empty, which is again a contradiction.
+    $\bigcap_{i \in  I} B_i = Z \cap \bigcap_{i \in  I - I'} B_i$ is non-empty, which is again a contradiction.
+    \leanok
 \end{proof}
 
 \begin{lemma}[\stacksproject{0903}]
@@ -1086,7 +1113,9 @@ $V( \tildeideal{I}{f})$.
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:ind-Zariski-localization}
     $\tildering{A}{I}{f} = S^{-1} A$ for some multiplicative subset $A$.
+    \leanok
 \end{proof}
 
 \begin{definition}[Stratification by subsets]
@@ -1227,15 +1256,27 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     the union of the images of the $I_E$ in $A_w$.%
     \uses{def:finite-stratification-ring, lemma:subset-stratum-mono, lemma:finite-stratification-map-closed}
     \label{def:w-localization}
+    \lean{WLocalization.commAlgCat,WLocalization,WLocalization.ideal}
+    \leanok
 \end{definition}
 
-Note that, since $I_w$ is the colimit of the ideals $I_E$, the closed subset
-$V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
+By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
+\begin{lemma}
+  \label{thm:colim-ideal-lim-zero-locus}
+    Let $(A_i, I_i)_{i \in I}$ be a filtered system of
+    rings with ideals. Set $A = \colim_{i \in I} A_i$ and
+    $I = \colim_{i \in I} I_i = colim_{i \in I} I_i A$. Then
+    \[
+        V(I) = \lim_{i \in I} V(I_i) = \bigcap_{i \in I} \text{preimage of } V(I_i) \text{ in } \spec{A}
+    .\]
+\end{lemma}
 
 \begin{lemma}
     The $A$-algebra $A_{w}$ is ind-Zariski.
     \uses{def:w-localization}
     \label{lemma:w-localization-ind-Zariski}
+    \lean{WLocalization.indZariski}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1253,22 +1294,22 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
     \begin{enumerate}
         \item The composition $V(I_w) \to \spec{A_w} \to \spec{A}$ is a bijection.
             \label{item:w-localization-bijection}
-        \item Every point of $\spec{A_w}$ specializes to a unique point of $V(I_w)$.
-        \item $V(I_w)$ is the set of closed points of $\spec{A_w}$.
+        \item Every point of $\spec{A_w}$ specializes to a unique point of $V(I_w)$. \label{item:w-localization-specializes}
+        \item $V(I_w)$ is the set of closed points of $\spec{A_w}$. \label{item:w-localization-closed-points}
     \end{enumerate}
     In particular, $\spec{A_w}$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:finite-stratification-ideal-bijection,lemma:closure-limit-intersection,thm:closure-limit-compatible}
-    Since $V(I_w) = \lim_{E} V(I_E)$ and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
-    bijective for all $E$ by \ref{lemma:finite-stratification-ideal-bijection}, the
+    \uses{thm:colim-ideal-lim-zero-locus,lemma:finite-stratification-ideal-bijection,lemma:closure-limit-intersection,thm:closure-limit-compatible}
+    Since $V(I_w) = \lim_{E} V(I_E)$ (by \Cref{thm:colim-ideal-lim-zero-locus}) and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
+    bijective for all $E$ by \Cref{lemma:finite-stratification-ideal-bijection}, the
     first claim holds.
 
     We first show that every point of $\spec{A_w}$ specializes to a point in $V(I_w)$.
     For this let $y \in \spec{A_w}$. For all $E \subseteq A$ finite, denote by
     $T_E$ the closure of the image of $y$ in $\spec{A_E}$. By
-    \ref{lemma:finite-stratification-closed-points}, the intersection $T_E \cap V(I_E)$ is
+    \Cref{lemma:finite-stratification-closed-points}, the intersection $T_E \cap V(I_E)$ is
     non-empty. Since both $T_E$ and $V(I_E)$ are closed, the intersection is closed
     and hence quasi-compact. Thus $(\lim_E T_E) \cap V(I_w) = \lim_E (T_E \cap V(I_E))$ is non-empty.
     Apply \Cref{lemma:closure-limit-intersection,thm:closure-limit-compatible} to singleton \({y}\), the subset $\lim_E T_E$ is the closure of $y$ in $\spec{A_w}$. (Shuold be a cofiltered version of \verb`IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed`.) Hence
@@ -1292,10 +1333,25 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
     every point in $V(I_{w})$ specializes only to itself, so it is closed.
 \end{proof}
 
+\begin{corollary}
+    Let $A$ be a ring. The $A$-algebra $A_w$ is w-local.
+    \uses{def:w-localization,def:w-local-ring}
+    \label{cor:w-localization-w-local}
+    \lean{WLocalization.isWLocalRing}
+    \leanok
+\end{corollary}
+
+\begin{proof}
+  \uses{lemma:w-localization-closed-points}
+  Immediate from \Cref{item:w-localization-specializes,item:w-localization-closed-points} in \Cref{lemma:w-localization-closed-points}.
+\end{proof}
+
 \begin{lemma}
     The $A$-algebra $A_w$ is faithfully flat.
     \uses{def:w-localization}
     \label{lemma:w-localization-faithfully-flat}
+    \lean{WLocalization.faithfullyFlat}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1324,9 +1380,11 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
 
 \begin{lemma}
     Let $A$ be w-local and $I \subseteq A$ an ideal. Then
-    $A_{\widetilde{V(I)}}$ is w-local. If $V(I)$ only contains closed points, then
+    $A_{\widetilde{V(I)}} = A_{\widetilde{(I,1)}}$ is w-local. If $V(I)$ only contains closed points, then
     the set of closed points is $V(IA_{\widetilde{V(I)}})$.
     \label{lemma:w-local-tilde-w-local}
+    \lean{isWLocalRing_generalization_one,IsWLocalRing.zeroLocus_map_algebraMap_generalization_one_eq}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1338,7 +1396,7 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
     \ref{lemma:generalization-specialization-closed}. Hence
     $\spec{A_{\widetilde{V(I)}}} \cong V(I)^g$ is w-local by \ref{lemma:w-local-specialization-closed}.
 
-    By \Cref{item:closed-subscheme-tilde}, we may identify $V(IA_{\widetilde{V(I)}})$ with
+    By \Cref{item:closed-subscheme-tilde} in \Cref{lemma:locally-closed-specializations}, we may identify $V(IA_{\widetilde{V(I)}})$ with
     $V(I)$.
     Since every point in
     $\spec{A_{\widetilde{V(I)}}} \cong V(I)^g$ specializes to a unique point in $V(I)$,
@@ -1351,10 +1409,13 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
     and let $I \subseteq A$ be an ideal, such that $V(I)$ only contains closed points.
     Then $V(IB)$ only contains closed points.
     \label{lemma:preimage-closed-points-algebraic}
+    \lean{zeroLocus_map_algebraMap_subset_closedPoints}
+    \leanok
 \end{lemma}
 
 \begin{proof}
     \uses{lemma:prime-over-maximal-algebraic}
+    \leanok
     By \ref{lemma:prime-over-maximal-algebraic}, every prime of $B$ lying above a maximal ideal of $A$
     is maximal. In particular, the closed subset $V(I B) = (\spec{B} \to \spec{A})^{-1}(V(I))$ only contains
     closed points.
@@ -1364,75 +1425,122 @@ $V(I_w)$ is the inverse limit of the closed subsets $V(I_E)$.
     Let $B$ be an $A$-algebra satisfying going down. If every closed point of $\spec{A}$
     has a preimage in $\spec{B}$, the map $\spec{B} \to \spec{A}$ is surjective.
     \label{lemma:going-down-surjective-of-closed}
+    \lean{Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $\mathfrak{p}$ be a prime of $A$. Then it is contained in a maximal ideal $\mathfrak{m}$
     that is the preimage of a prime $\mathfrak{q}$ of $B$. By going-down, there
     exists therefore a prime $\mathfrak{q}' \subseteq \mathfrak{q}$ lying above $\mathfrak{p}$.
 \end{proof}
 
+\begin{definition}
+  Let $A$ be a ring and $I \subseteq A$ an ideal. We define the \emph{w-localization of $A$ with respect to $I$} to be the ring $(A_w)_{\widetilde{V(IA_{w})}}$, denoted by $A_{w,I}$.
+  \uses{def:w-localization,def:tilde-locclosed}
+  \label{def:w-localization-ideal}
+  \lean{Ideal.WLocalization}
+  \leanok
+\end{definition}
+
 \begin{lemma}
+  Let $A$ be a ring and $I \subseteq A$ an ideal. The ring $A_{w,I}$ is w-local.
+  \uses{def:w-localization-ideal,def:w-local-ring}
+  \label{lemma:w-localization-ideal-w-local}
+  \lean{isWLocalRing_generalization_one,Ideal.WLocalization.isWLocalRing}
+  \leanok
+\end{lemma}
+
+\begin{proof}
+  \uses{lemma:w-local-tilde-w-local, cor:w-localization-w-local}
+  Follows immediately from \Cref{lemma:w-local-tilde-w-local} and \Cref{cor:w-localization-w-local}.
+\end{proof}
+
+\begin{lemma}
+  Let $A$ be a ring and $I \subseteq A$ an ideal. The ring map $A \to A_{w, I}$ is ind-Zariski.
+  \label{thm:w-localization-ideal-ind-Zariski}
+  \uses{def:w-localization-ideal,def:ind-Zariski}
+  \lean{Ideal.WLocalization.indZariski}
+  \leanok
+\end{lemma}
+
+\begin{proof}
+  \uses{lemma:w-localization-ind-Zariski, lemma:tilde-locclosed-ind-zariski,thm:ind-Zariski-composition}
+  The map $A \to A_w$ is ind-Zariski by \Cref{lemma:w-localization-ind-Zariski} and
+  the map $A_w \to A_{w, I}$ is ind-Zariski by \Cref{lemma:tilde-locclosed-ind-zariski}.
+  Hence the composition $A \to A_{w, I}$ is ind-Zariski by \Cref{thm:ind-Zariski-composition}.
+\end{proof}
+
+\begin{lemma}
+    \uses{def:w-localization-ideal}
     \label{lemma:closed-closed-points-tilde-w-local}
-    Let $I \subseteq A$ be an ideal such that $V(I) \subseteq A$ only contains closed points.
-    Set $B = (A_w)_{\widetilde{V(IA_{w})}}$. Then
+    \lean{Ideal.WLocalization.zeroLocus_map_algebraMap_eq_closedPoints,Ideal.WLocalization.quotientMap_algebraMap_bijective}
+    \leanok
+    Let $I \subseteq A$ be an ideal such that $V(I) \subseteq A$ only contains closed points. Then
     \begin{enumerate}
-        \item $B$ is w-local,
-        \item the set of closed points of $B$ is $V(IB)$, and
-        \item the map $A / I \to B / I B$ is an isomorphism.
+        \item the set of closed points of $A_{w, I}$ is $V(IA_{w, I})$, and
+        \item the map $A / I \to A_{w, I} / I A_{w, I}$ is an isomorphism.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:w-localization-ind-Zariski, thm:ind-Zariski-identifies-local-rings, lemma:w-local-tilde-w-local, thm:isom-of-identifies-local-rings-bijective, lemma:preimage-closed-points-algebraic, lemma:tilde-locclosed-ind-zariski}
+    \uses{lemma:w-localization-ind-Zariski,thm:ind-Zariski-identifies-local-rings,lemma:w-local-tilde-w-local,thm:isom-of-identifies-local-rings-bijective,lemma:preimage-closed-points-algebraic,lemma:tilde-locclosed-ind-zariski,lemma:locally-closed-specializations}
     $A \to A_w$ is ind-Zariski by \ref{lemma:w-localization-ind-Zariski} and therefore induces
     algebraic extensions of residue fields by \ref{thm:ind-Zariski-identifies-local-rings}.
     In particular, the closed subset $V(I A_w)$ only contains
     closed points by \ref{lemma:preimage-closed-points-algebraic} and
-    the first two claims follow from \ref{lemma:w-local-tilde-w-local}.
+    the first claim follow from \ref{lemma:w-local-tilde-w-local}.
 
-    The map $A \to B$ is ind-Zariski as a composition of ind-Zariski maps by
+    The map $A \to A_{w, I}$ is ind-Zariski as a composition of ind-Zariski maps by
     \ref{lemma:w-localization-ind-Zariski} and \ref{lemma:tilde-locclosed-ind-zariski}.
-    Since ind-Zariski is stable under base change, the same holds for $A/I \to B/IB$.
-    Hence it identifies local rings. By \Cref{item:closed-subscheme-tilde},
-    $V(IB) \to V(I A_w)$ is an isomorphism. Moreover
-    $V(I A_{w}) \to V(I)$ is a Bijection by \Cref{item:w-localization-bijection}
+    Since ind-Zariski is stable under base change, the same holds for $A/I \to A_{w, I}/IA_{w, I}$.
+    Hence it identifies local rings. By \Cref{item:closed-subscheme-tilde} in \Cref{lemma:locally-closed-specializations},
+    $V(IA_{w, I}) \to V(I A_w)$ is an isomorphism. Moreover
+    $V(I A_{w}) \to V(I)$ is a bijection by \Cref{item:w-localization-bijection}
     because $V(I A_{w}) \subseteq V(I_w)$. Hence, the composition
-    $\spec{B / IB} = V(IB) \to V(I A_w) \to V(I)$ is bijective. Thus
-    $A / I \to B / IB$ is an isomorphism by \ref{thm:isom-of-identifies-local-rings-bijective}.
+    $\spec{A_{w, I} / I A_{w, I}} = V(I A_{w, I}) \to V(I A_w) \to V(I)$ is bijective. Thus
+    $A / I \to A_{w, I} / I A_{w, I}$ is an isomorphism by \ref{thm:isom-of-identifies-local-rings-bijective}.
 \end{proof}
 
-\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}]
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097A}{Tag 097A}]{stacks-project}}, (2)]
 \label{thm:closed-points-isom-w-local}
-\uses{def:w-local-ring,def:w-local-ring-map,def:ind-Zariski}
+\uses{def:w-local-ring,def:w-local-ring-map,def:ind-Zariski,def:w-localization-ideal}
+\lean{Ideal.WLocalization.quotientMap_algebraMap_bijective,Ideal.WLocalization.algebraMap_specComap_preimage_closedPoints_eq}
+\leanok
 Let $A$ be a w-local ring. Let $I \subset A$ be an ideal cutting out the set $X^c$ of closed points in $X = \Spec (A)$.
-Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes. Then
-there exists an ind-Zariski ring map $B \to C$ such that
+Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes. Let $C$ be the ring $B_{w, IB}$ constructed in \Cref{def:w-localization-ideal}. Then
 \begin{enumerate}
     \item $B/IB \to C/IC$ is an isomorphism, \label{item:quotinet-isom-closed-points-isom-w-local} % thus surjective on closed points
     \item $C$ is w-local, \label{item:w-local-closed-points-isom-w-local}
     \item the map $p: Y = \Spec (C) \to X$ induced by the ring map $A \to B \to C$ is w-local, and % this is not needed?
-    \item $p^{-1}(X^c)$ is the set of closed points of $Y$. \label{item:inverse-image-closed-points-isom-w-local}
+    \item $p^{-1}(X^c)$ is the set of closed points of $Y$, i.e. V(IC) is the set of closed points of $Y$. \label{item:inverse-image-closed-points-isom-w-local}
 \end{enumerate}
-In particular, the composition $A \to B \to C$ is faithfully flat if $A \to B$ is faithfully flat.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:w-localization-closed-points, lemma:closed-closed-points-tilde-w-local, lemma:tilde-locclosed-ind-zariski, lemma:going-down-surjective-of-closed}
+    \uses{lemma:w-localization-closed-points, lemma:closed-closed-points-tilde-w-local, lemma:tilde-locclosed-ind-zariski}
     Every point of $V(IB)$ is a closed point of $\spec{B}$ by \ref{lemma:preimage-closed-points-algebraic}.
     Hence we may choose $C = (B_w)_{\widetilde{V(IB_w)}}$ as in \ref{lemma:closed-closed-points-tilde-w-local}. Then
     the set of closed points of $C$ is $V(IC)$, which is the preimage of $V(I)$ under
     $\spec{C} \to \spec{B} \to \spec{A}$.
-
-    $A \to B \to C$ is flat, so by \ref{lemma:going-down-surjective-of-closed} it suffices
-    to show every closed point of $A$ is in the image. But since $\spec{B} \to \spec{A}$ is surjective,
-    also $V(IC) \cong V(IB) \to V(I)$ is surjective.
 \end{proof}
 
-\begin{remark}
-    As we have seen in the proof of \ref{thm:closed-points-isom-w-local}, we may choose
-    $C$ as $(B_w)_{\widetilde{V(IB_w)}}$.
-\end{remark}
+\begin{corollary}
+  Notation as in \Cref{thm:closed-points-isom-w-local}. If further $A \to B$ is faithfully flat, then the composition $A \to B \to C$ is also faithfully flat.
+  \label{cor:closed-points-isom-w-local-faithfully-flat}
+  \uses{def:w-localization-ideal}
+  \lean{Ideal.WLocalization.faithfullyFlat_map_algebraMap}
+  \leanok
+\end{corollary}
+
+\begin{proof}
+  \uses{thm:ind-Zariski-is-flat,thm:w-localization-ideal-ind-Zariski,lemma:going-down-surjective-of-closed,thm:closed-points-isom-w-local}
+  By \Cref{thm:ind-Zariski-is-flat,thm:w-localization-ideal-ind-Zariski}, $A \to B \to C$ is flat, so by \ref{lemma:going-down-surjective-of-closed} it suffices
+  to show every closed point of $A$ is in the image. But since $\spec{B} \to \spec{A}$ is surjective,
+  also $V(IC) \cong V(IB) \to V(I)$ is surjective (the first map is an isomorphism by \Cref{item:quotinet-isom-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}).
+\end{proof}
+
 
 \section{w-strictly-local Rings}
 
@@ -1553,7 +1661,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
 \begin{lemma}
     $T^{\infty}(A)$ is ind-étale and faithfully flat over $A$.
-    \uses{def:etale-contraction, def:ind-etale}
+    \uses{def:etale-contraction,def:ind-etale}
     \label{lemma:etale-contraction-ind-etale}
 \end{lemma}
 
@@ -1566,7 +1674,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \begin{proposition}[{\stacksproject{097R}}]
     Let $T^{\infty}(A) \to B$ be a faithfully flat and étale $A$-algebra map. Then
     it has a retraction.
-    \label{def:etale-contraction}
+    \uses{def:etale-contraction}
     \label{prop:etale-contraction-retraction}
 \end{proposition}
 
@@ -1631,7 +1739,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{proposition}
 
 \begin{proof}
-    \uses{cor:strictly-henselian-etale-contraction, prop:ind-etale-residue-fields, thm:closed-points-isom-w-local,
+    \uses{cor:strictly-henselian-etale-contraction, prop:ind-etale-residue-fields,def:w-localization-ideal,thm:closed-points-isom-w-local,cor:closed-points-isom-w-local-faithfully-flat,
       lemma:w-localization-closed-points, lemma:etale-contraction-ind-etale}
     By \Cref{lemma:w-localization-closed-points}, the ring $A_w$ is w-local, so the set of closed points
     of $\spec{A_w}$ is closed.
@@ -1641,10 +1749,10 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     strictly henselian for every maximal ideal $\mathfrak{m}$ of $B'$.
     The map $A_w \to B'$ induces algebraic extensions on residue fields at primes by
     \Cref{lemma:etale-contraction-ind-etale} and \Cref{prop:ind-etale-residue-fields},
-    so applying \Cref{thm:closed-points-isom-w-local} to $A_w \to B'$, we obtain
+    so applying \Cref{def:w-localization-ideal,thm:closed-points-isom-w-local} to $A_w \to B'$, we obtain
     an ind-Zariski ring map $B' \to B$ such that $B'/IB' \to B/IB$ is an isomorphism,
     $V(IB)$ is the set of closed points of $\spec{B}$, $B$ is w-local
-    and $A_w \to B' \to B$ is faithfully flat. Since ind-Zariski maps identify
+    and $A_w \to B' \to B$ is faithfully flat by \Cref{cor:closed-points-isom-w-local-faithfully-flat}. Since ind-Zariski maps identify
     local rings by \Cref{thm:ind-Zariski-identifies-local-rings} and every closed point of
     $\spec{B}$ maps to a closed point of $B'$,
     the local rings at maximal ideals of $B$ are strictly Henselian. Hence $B$ is w-strictly local.
@@ -1816,26 +1924,10 @@ We will see that if a ring $A$ is w-contractible, every faithfully flat, ind-ét
 this we will perform a series of reductions.
 
 \begin{lemma}
-    \label{thm:w-contractible-if-ind-etale-plus-c-has-retraction}
-    \uses{def:w-local-ring,def:ind-etale,def:w-contractible-ring}
-    Let \(A\) be a w-local ring and $I \subset A$ an ideal cutting out the set $X^c$ of closed points
-    in $X = \Spec (A)$. To show that every faithfully flat, ind-étale map $A \to B$ has a
-    retraction, it suffices to show this for \(B\) w-local and whose
-    closed points of \(\Spec (B)\) are exactly \(V(IB)\).
-\end{lemma}
-
-\begin{proof}
-  \uses{thm:closed-points-isom-w-local,thm:ind-Zariski-is-flat-ind-etale,thm:ind-etale-comp}
-  Let $A \to B$ be faithfully flat and ind-étale.
-  % We will use without further mention the fact that a flat map $A \to B$ is faithfully flat if and only if every closed point of $\operatorname{Spec}(A)$ is in the image of $\operatorname{Spec}(B) \to \operatorname{Spec}(A)$.
-  We will show that $A \to B$ has a retraction.
-
-  We may replace $B$ by the ring $C$ constructed in \Cref{thm:closed-points-isom-w-local} for $A \to B$ and $I \subset A$. To justify this, note that the map \(A \to C\) is faithfully flat and \(B \to C\) is ind-Zariski, thus ind-étale by \Cref{thm:ind-Zariski-is-flat-ind-etale}. Therefore, by \Cref{thm:ind-etale-comp}, the composition \( A \to C \) is also ind-étale. Hence, we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
-\end{proof}
-
-\begin{lemma}
-    \label{thm:ind-etale-plus-c-has-retraction-if}
-    \uses{def:w-strictly-local-ring,def:extremally-disconnected,def:ind-etale}
+    \label{thm:ind-etale-plus-c-has-retraction-if-w-contractible}
+    \uses{def:w-contractible-ring,def:extremally-disconnected,def:ind-etale}
+    \lean{IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints}
+    \leanok
     Let $A$ be w-contractible and $I \subseteq A$ an ideal cutting out the set $X^c$ of closed points in $X = \spec{A}$.
     Then every faithfully flat ind-étale map \(A \to B\) with \(B\) w-local and
     whose closed points of \(\Spec (B)\) are exactly \(V(IB)\) has a retraction.
@@ -1859,8 +1951,12 @@ this we will perform a series of reductions.
 \end{proposition}
 
 \begin{proof}
-  \uses{thm:w-contractible-if-ind-etale-plus-c-has-retraction,thm:ind-etale-plus-c-has-retraction-if}
-  This is \Cref{thm:ind-etale-plus-c-has-retraction-if} with \Cref{thm:w-contractible-if-ind-etale-plus-c-has-retraction}.
+  \uses{def:w-localization-ideal,cor:closed-points-isom-w-local-faithfully-flat,thm:w-localization-ideal-ind-Zariski,thm:ind-Zariski-is-ind-etale,thm:ind-etale-comp,thm:closed-points-isom-w-local,thm:ind-etale-plus-c-has-retraction-if-w-contractible}
+  \leanok
+  With \Cref{thm:ind-etale-plus-c-has-retraction-if-w-contractible}, it suffices to reduce to the case that \(B\) is furthur w-local and the closed points of \(\Spec (B)\) are exactly \(V(IB)\).
+
+  Let $A \to B$ be faithfully flat and ind-étale. We may replace $B$ by the ring $C = B_{w, IB}$ (see \Cref{def:w-localization-ideal}). To justify this, note that the map \(A \to C\) is faithfully flat by \Cref{cor:closed-points-isom-w-local-faithfully-flat} and \(B \to C\) is ind-Zariski by \Cref{thm:w-localization-ideal-ind-Zariski}, thus ind-étale by \Cref{thm:ind-Zariski-is-ind-etale}. Therefore, by \Cref{thm:ind-etale-comp}, the composition \( A \to C \) is also ind-étale. Hence, we may assume $\Spec (B)$ is w-local such that the set of closed points of $\Spec (B)$ is $V(IB)$ by \Cref{item:w-local-closed-points-isom-w-local,item:inverse-image-closed-points-isom-w-local} in \Cref{thm:closed-points-isom-w-local}.
+
   % Assume (1) or equivalently (2). We have (3)(c) by Lemma \ref{lemma:097V}. Properties (3)(a) and (3)(b) follow from Lemma \ref{lemma:09AZ}.
 \end{proof}
 
