@@ -361,13 +361,15 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
   \label{thm:identifies-local-rings-composition}
   Let \(A \to B\) and \(B \to C\) be ring maps that identify local rings. Then the composition \(A \to C\) also identifies local rings.
   \uses{def:identify-local-rings}
+  \lean{RingHom.BijectiveOnStalks.comp}
+  \leanok
 \end{lemma}
 
 \begin{proof}
   Omitted.
 \end{proof}
 
-\begin{definition}[\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}]
+\begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}}]
   \label{def:identifies-local-ring-to-top}
   \uses{def:identify-local-rings,thm:identifies-local-rings-composition}
   Let $A$ be a ring and $X = \Spec(A)$. Let $\operatorname{ILR}_A$ denote the category of $A$-algebras $B$ for which $A \to B$ identifies local rings, and let $\operatorname{Top}_X$ denote the category of topological spaces over $X$.
@@ -486,6 +488,17 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 
 \begin{proof}
   Omitted.
+\end{proof}
+
+\begin{lemma}
+    \label{lemma:ind-Zariski-localization}
+    Let $A$ be a ring and $S \subseteq A$ a multiplicative subset. Then $S^{-1}A$ is ind-Zariski over $A$.
+    \lean{Algebra.IndZariski.of_isLocalization}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    $S^{-1} A = \colim_{f \in S} A_f$ and $A \to A_f$ is a local isomorphism.
 \end{proof}
 
 \section{Henselian objects and Henselisation}
@@ -1086,7 +1099,9 @@ $V( \tildeideal{I}{f})$.
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:ind-Zariski-localization}
     $\tildering{A}{I}{f} = S^{-1} A$ for some multiplicative subset $A$.
+    \leanok
 \end{proof}
 
 \begin{definition}[Stratification by subsets]

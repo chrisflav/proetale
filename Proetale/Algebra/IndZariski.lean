@@ -37,6 +37,15 @@ lemma Algebra.IndZariski.iff_ind_isLocalIso (R S : Type u) [CommRing R] [CommRin
     Algebra.IndZariski R S ↔ ObjectProperty.ind.{u} (CommAlgCat.isLocalIso R) (.of R S) :=
   Algebra.indZariski_iff R S
 
+lemma Algebra.IndZariski.of_isLocalization (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Algebra.IndZariski R S :=
+  sorry
+
+instance Algebra.IndZariski.localization (R : Type u) [CommRing R] (M : Submonoid R) :
+    Algebra.IndZariski R (Localization M) :=
+  of_isLocalization R _ M
+
 /-- A ring hom is ind-Zariski if and only if it is an ind-Zariski algebra. -/
 @[stacks 096N, algebraize Algebra.IndZariski]
 def RingHom.IndZariski {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
