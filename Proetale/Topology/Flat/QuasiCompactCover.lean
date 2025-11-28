@@ -195,9 +195,35 @@ instance {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] [AlgebraicGe
   sorry
 
 lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover P)
-    [CompactSpace S] [𝒰.QuasiCompact] :
-    ∃ (𝒱 : S.AffineCover P) (f : 𝒱.cover ⟶ 𝒰), Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.app j) :=
-  sorry
+    [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [𝒰.QuasiCompact] :
+    ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),
+      Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.app j) := by
+  obtain ⟨n, f, V, hV, h⟩ := exists_isAffineOpen_of_isCompact 𝒰
+    (show IsCompact (⊤ : Opens S).carrier from isCompact_univ)
+  simp [← Set.univ_subset_iff, Set.subset_def] at h
+  choose idx x hmem hx using h
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · exact
+      { I₀ := ULift (Fin n)
+        X i := Γ(_, V i.down)
+        f i := (hV _).fromSpec ≫ 𝒰.f (f _)
+        idx s := ⟨idx s⟩
+        covers s := by
+          use (hV _).isoSpec.hom.base ⟨x s, hmem s⟩
+          rw [← Scheme.comp_base_apply, ← IsAffineOpen.isoSpec_inv_ι, Category.assoc,
+            Iso.hom_inv_id_assoc]
+          simp [hx]
+        map_prop i :=
+          RespectsLeft.precomp (Q := IsOpenImmersion) _ inferInstance _ (𝒰.map_prop _) }
+  · exact
+      { idx i := f i.down
+        app i := (hV i.down).fromSpec
+        app_prop i := by
+          -- TODO: make this a separate lemma
+          rw [← Category.comp_id (hV _).fromSpec]
+          exact RespectsLeft.precomp (Q := IsOpenImmersion) _ inferInstance _ (P.id_mem _) }
+  · infer_instance
+  · infer_instance
 
 instance {S : Scheme.{u}} [IsAffine S] (𝒰 : S.AffineCover P) [Finite 𝒰.I₀] :
     𝒰.cover.QuasiCompact :=
