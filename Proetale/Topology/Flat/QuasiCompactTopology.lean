@@ -31,17 +31,29 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C] {X : C}
 
--- this needs more assumptions, but the proof will show which the correct ones are
-lemma Presieve.isSheafFor_ofArrows_comp {F : Cᵒᵖ ⥤ Type*} {ι : Type*} {Y Z : ι → C}
-    (f : ∀ i, Y i ⟶ X) (g : ∀ i, Z i ⟶ X)
-    (e : ∀ i, Y i ≅ Z i) (H : Presieve.IsSheafFor F (.ofArrows _ g)) :
-    Presieve.IsSheafFor F (.ofArrows _ (fun i ↦ (e i).hom ≫ g i)) := by
-  let B (W : C) (w : W ⟶ X) (hw : Presieve.ofArrows _ g w) : Sieve W :=
-    sorry
-  have : .ofArrows _ (fun i ↦ (e i).hom ≫ g i) = Sieve.bind (.ofArrows _ g) B :=
-    sorry
-  rw [Presieve.isSheafFor_iff_generate, ← Sieve.ofArrows, this]
-  sorry
+lemma Presieve.isSheafFor_ofArrows_comp_iff {F : Cᵒᵖ ⥤ Type*} {ι : Type*} {Y Z : ι → C}
+    (g : ∀ i, Z i ⟶ X)
+    (e : ∀ i, Y i ≅ Z i) :
+    Presieve.IsSheafFor F (.ofArrows _ (fun i ↦ (e i).hom ≫ g i)) ↔
+      Presieve.IsSheafFor F (.ofArrows _ g) := by
+  have : Sieve.generate (.ofArrows _ g) =
+      Sieve.generate (.ofArrows _ (fun i ↦ (e i).hom ≫ g i)) := by
+    refine le_antisymm ?_ ?_
+    · rw [Sieve.generate_le_iff]
+      rintro - - ⟨i⟩
+      exact ⟨_, (e i).inv, (e i).hom ≫ g i, ⟨i⟩, by simp⟩
+    · rw [Sieve.generate_le_iff]
+      rintro - - ⟨i⟩
+      exact ⟨_, (e i).hom, _, ⟨i⟩, by simp⟩
+  rw [Presieve.isSheafFor_iff_generate, ← this, ← Presieve.isSheafFor_iff_generate]
+
+lemma isSheafFor_singleton_iff_of_iso
+    {F : Cᵒᵖ ⥤ Type*} {S X Y : C} (f : X ⟶ S) (g : Y ⟶ S)
+    (e : X ≅ Y) (he : e.hom ≫ g = f) :
+    Presieve.IsSheafFor F (.singleton f) ↔ Presieve.IsSheafFor F (.singleton g) := by
+  subst he
+  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
+    Presieve.isSheafFor_ofArrows_comp_iff]
 
 end CategoryTheory
 
@@ -154,15 +166,6 @@ lemma Scheme.Cover.Hom.isSheafFor {F : Scheme.{u}ᵒᵖ ⥤ Type*} {S : Scheme.{
     rw [← Presieve.ofArrows_pullback]
     apply H₂
 
-lemma isSheafFor_iff_of_iso {F : Scheme.{u}ᵒᵖ ⥤ Type*} {S X Y : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
-    (e : X ≅ Y) (hF : Presieve.IsSheaf Scheme.zariskiTopology F)
-    (he : e.hom ≫ g = f) :
-    Presieve.IsSheafFor F (.singleton f) ↔ Presieve.IsSheafFor F (.singleton g) := by
-  subst he
-  refine ⟨fun hf ↦ ?_, ?_⟩
-  · sorry
-  · sorry
-
 /-- A pre-sheaf is a sheaf for the `P`-qc topology if and only if it is a sheaf
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`.-/
@@ -240,7 +243,7 @@ nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtS
     have : IsAffine (𝒰.sigma.X default) := by dsimp; infer_instance
     let f : Spec _ ⟶ Spec R := (𝒰.sigma.X default).isoSpec.inv ≫ 𝒰.sigma.f default
     obtain ⟨φ, hφ⟩ := Spec.map_surjective f
-    rw [isSheafFor_iff_of_iso _ (Spec.map φ) (𝒰.sigma.X default).isoSpec hzar (by simp [hφ, f])]
+    rw [isSheafFor_singleton_iff_of_iso _ (Spec.map φ) (𝒰.sigma.X default).isoSpec (by simp [hφ, f])]
     refine hff _ ?_ ?_
     · simpa only [hφ, f] using IsLocalAtSource.comp (𝒰.sigma.map_prop _) _
     · simp only [hφ, f, Cover.sigma_I₀, PUnit.default_eq_unit, Cover.sigma_X, Cover.sigma_f, f]
