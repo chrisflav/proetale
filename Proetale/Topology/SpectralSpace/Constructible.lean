@@ -93,7 +93,7 @@ instance compactSpace_withConstructibleTopology [SpectralSpace X] :
       | succ n ih =>
         have : Finite a := ha
         rw [Set.ncard_eq_succ] at h_card
-        rcases h_card with ⟨z, a, hza, rfl, h_card⟩ 
+        rcases h_card with ⟨z, a, hza, rfl, h_card⟩
         obtain ⟨i, hic, hai⟩ := ih a (by grind) (by exact Set.finite_insert.mp ha) h_card
         have hz : z ∈ ⋃₀ c := by grind
         simp only [Set.mem_sUnion] at hz
@@ -103,7 +103,7 @@ instance compactSpace_withConstructibleTopology [SpectralSpace X] :
         · specialize hc hic htc hit
           grind
     · grind
-  obtain ⟨B, hsB, hB⟩ := this 
+  obtain ⟨B, hsB, hB⟩ := this
   have hB𝒮 : B ∈ 𝒮 := hB.prop
   let B' := {s | s ∈ B ∧ IsClosed s}
   let Z := ⋂₀ B'
@@ -155,10 +155,10 @@ instance compactSpace_withConstructibleTopology [SpectralSpace X] :
         simp
   · unfold IsIrreducible IsPreirreducible  at hZ_irred
     simp only [hZ_nonempty, true_and, not_forall] at hZ_irred
-    rcases hZ_irred with ⟨U₁, U₂, hU₁, hU₂, hU₁Z, hU₂Z, hU₁₂⟩ 
+    rcases hZ_irred with ⟨U₁, U₂, hU₁, hU₂, hU₁Z, hU₂Z, hU₁₂⟩
     rw [Set.not_nonempty_iff_eq_empty, ← Set.subset_empty_iff] at hU₁₂
     obtain ⟨x₁, hx₁⟩ : ∃ x₁ ∈ U₁, x₁ ∈ Z ∧ x₁ ∉ U₂ := by obtain ⟨x, hx⟩ := hU₁Z; grind
-    obtain ⟨x₂, hx₂⟩ : ∃ x₂ ∈ U₂, x₂ ∈ Z ∧ x₂ ∉ U₁ := by obtain ⟨x, hx⟩ := hU₂Z; grind 
+    obtain ⟨x₂, hx₂⟩ : ∃ x₂ ∈ U₂, x₂ ∈ Z ∧ x₂ ∉ U₁ := by obtain ⟨x, hx⟩ := hU₂Z; grind
     have psp_X : PrespectralSpace X := inferInstance
     rw [prespectralSpace_iff] at psp_X
     rw [psp_X.isOpen_iff] at hU₁ hU₂
@@ -208,7 +208,7 @@ instance compactSpace_withConstructibleTopology [SpectralSpace X] :
       | succ n ih =>
         have : Finite A := hA_fin
         rw [Set.ncard_eq_succ] at h_card
-        rcases h_card with ⟨S, A, hSA, rfl, h_card⟩ 
+        rcases h_card with ⟨S, A, hSA, rfl, h_card⟩
         simp only [Set.sInter_insert]
         specialize ih A ((Set.subset_insert S A).trans hA) (by apply hA_fin.subset (Set.subset_insert S A)) h_card
         have := hA (Set.mem_insert S A)
@@ -277,13 +277,14 @@ lemma IsClosed.of_isClosed_constructibleTopology [SpectralSpace X] {s : Set X}
   exact h hx hy
 
 @[stacks 0905 "(6) → (1)"]
-theorem SpectralSpace.t2Space_of_isClosed_singleton [SpectralSpace X] (h : ∀ x : X, IsClosed ({x} : Set X)) :
-    T2Space X :=
+theorem SpectralSpace.t2Space_of_isClosed_singleton [SpectralSpace X]
+    (h : ∀ x : X, IsClosed ({x} : Set X)) : T2Space X :=
   sorry
 
 @[stacks 0905 "(6) → (1)"]
-theorem SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton [SpectralSpace X] (h : ∀ x : X, IsClosed ({x} : Set X)) :
-    TotallyDisconnectedSpace X :=
+theorem SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton [SpectralSpace X]
+    (h : ∀ x : X, IsClosed ({x} : Set X)) : TotallyDisconnectedSpace X :=
   sorry
 -- use `isTotallyDisconnected_of_isClopen_set`
--- use `exists_specializes_of_isClosed_constructibleTopology_of_mem_closure, IsClosed.of_isClosed_constructibleTopology`
+-- use `exists_specializes_of_isClosed_constructibleTopology_of_mem_closure,
+-- IsClosed.of_isClosed_constructibleTopology`
