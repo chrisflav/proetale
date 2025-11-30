@@ -258,11 +258,16 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
   \label{thm:pullback-closed-embedding-prod}
   \lean{TopCat.isClosedEmbedding_pullback_to_prod}
   \leanok
-  Let \(X\), \(Y\), and \(S\) be topological spaces. Assume that \(S\) is Hausdorff. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. The natural map \(X \times_S Y \to X \to Y\) is a closed embedding.
+  Let \(X\), \(Y\), and \(S\) be topological spaces. Assume that \(S\) is Hausdorff. 
+  Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. The natural map 
+  \(X \times_S Y \to X \to Y\) is a closed embedding.
 \end{lemma}
 
 \begin{proof}
-  \(X \times_S Y\) is the inverse image of the image \(\Delta(S)\) of the diagonal map \(\Delta : S \to S \times S\). 
+  \uses{thm:Hausdorff-diagonal-closed}
+  \(X \times_S Y\) is the inverse image of the image \(\Delta(S)\) of the diagonal map 
+  \(\Delta : S \to S \times S\). It follows from \Cref{thm:Hausdorff-diagonal-closed} that 
+  \(\Delta(S)\) is a closed subset.
 \end{proof}
 
 \begin{lemma}
@@ -1195,6 +1200,8 @@ $V( \tildeideal{I}{f})$.
     \] set theoretically.
     \uses{def:subset-stratum}
     \label{lemma:subset-stratification}
+    \lean{WLocalization.Stratification.Index.iUnion_stratum}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1229,6 +1236,8 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
     the map $\spec{A_E} \to \spec{A}$ induces a bijection $V(I_E) \to \spec{A}$.
     \label{lemma:finite-stratification-ideal-bijection}
     \uses{def:finite-stratification-ring}
+    \lean{WLocalization.ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1244,11 +1253,13 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
     to a point in $V(I_E)$. In particular, $V(I_E)$ contains all closed points of $\spec{A_E}$.%
     \uses{def:finite-stratification-ring}
     \label{lemma:finite-stratification-closed-points}
-    \lean{WLocalization.ProdStrata.exists_specializes_zeroLocus_ideal, WLocalization.ProdStrata.mem_zeroLocus_ideal_of_isClosed}
+    \lean{WLocalization.ProdStrata.exists_specializes_zeroLocus_ideal,
+      WLocalization.ProdStrata.mem_zeroLocus_ideal_of_isClosed}
     \leanok
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:locally-closed-specializations}
     Let $x \in \spec{A_E}$. Then $x$ is in $\spec{A_{\widetilde{Z(E', E'')}}}$ for some
     $E = E' \coprod E''$. By
     \ref{lemma:locally-closed-specializations}, $x$ specializes to a point
@@ -1270,6 +1281,8 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
     $V(I_{E_2})$ into $V(I_{E_1})$.
     \uses{def:finite-stratification-ring, lemma:subset-stratum-mono}
     \label{lemma:finite-stratification-map-closed}
+    \lean{WLocalization.ProdStrata.mapsTo_map_specComap}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1298,11 +1311,17 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
   \label{thm:colim-ideal-lim-zero-locus}
     Let $(A_i, I_i)_{i \in I}$ be a filtered system of
     rings with ideals. Set $A = \colim_{i \in I} A_i$ and
-    $I = \colim_{i \in I} I_i = colim_{i \in I} I_i A$. Then
+    $I = \colim_{i \in I} I_i = \colim_{i \in I} I_i A$. Then
     \[
-        V(I) = \lim_{i \in I} V(I_i) = \bigcap_{i \in I} \text{preimage of } V(I_i) \text{ in } \spec{A}
+    V(I) = \lim_{i \in I} V(I_i) = \bigcap_{i \in I} \text{preimage of } V(I_i) \text{ in } \spec{A}
     .\]
+  \lean{zeroLocus_eq_iInter_specComap_preimage,specComap_preimage_zeroLocus_subset}
+  \leanok
 \end{lemma}
+
+\begin{proof}
+  Omitted.
+\end{proof}
 
 \begin{lemma}
     The $A$-algebra $A_{w}$ is ind-Zariski.
@@ -1323,6 +1342,9 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \begin{lemma}
     \uses{def:w-localization}
     \label{lemma:w-localization-closed-points}
+    \lean{WLocalization.bijOn_algebraMap_specComap_zeroLocus_ideal,
+      WLocalization.exists_mem_zeroLocus_ideal_specializes,WLocalization.zeroLocus_ideal_eq}
+    \leanok
     Let $A$ be a ring.
     \begin{enumerate}
         \item The composition $V(I_w) \to \spec{A_w} \to \spec{A}$ is a bijection.
@@ -1330,11 +1352,10 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
         \item Every point of $\spec{A_w}$ specializes to a unique point of $V(I_w)$. \label{item:w-localization-specializes}
         \item $V(I_w)$ is the set of closed points of $\spec{A_w}$. \label{item:w-localization-closed-points}
     \end{enumerate}
-    In particular, $\spec{A_w}$ is w-local and the closed points of $\spec{A_w}$ surject onto $\spec{A}$.
 \end{lemma}
 
 \begin{proof}
-    \uses{thm:colim-ideal-lim-zero-locus,lemma:finite-stratification-ideal-bijection,lemma:closure-limit-intersection,thm:closure-limit-compatible}
+    \uses{thm:colim-ideal-lim-zero-locus,lemma:finite-stratification-ideal-bijection,lemma:finite-stratification-closed-points,lemma:closure-limit-intersection,thm:closure-limit-compatible}
     Since $V(I_w) = \lim_{E} V(I_E)$ (by \Cref{thm:colim-ideal-lim-zero-locus}) and $V(I_E) \to \spec{A_E} \to \spec{A}$ is
     bijective for all $E$ by \Cref{lemma:finite-stratification-ideal-bijection}, the
     first claim holds.

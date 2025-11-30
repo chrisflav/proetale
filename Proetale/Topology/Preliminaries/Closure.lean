@@ -5,6 +5,7 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Closures in categorical limits of topological spaces.
@@ -13,7 +14,7 @@ import Mathlib.Topology.Category.TopCat.Basic
 
 open CategoryTheory Limits
 
-theorem TopCat.closure_eq_iInter_preimage_closure_image {I : Type*} [Category I]
+theorem TopCat.closure_eq_iInter_preimage_closure_image {I : Type*} [Category I] [IsFiltered I]
     {F : Functor I TopCat} {C : Cone F} (hC : IsLimit C) (s : Set C.pt) :
     closure s = ⋂ (i : I), (C.π.app i)⁻¹' (closure ((C.π.app i)'' s)) :=
   sorry
