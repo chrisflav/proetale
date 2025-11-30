@@ -1475,7 +1475,9 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \begin{lemma}
     \uses{def:w-localization-ideal}
     \label{lemma:closed-closed-points-tilde-w-local}
-    \lean{Ideal.WLocalization.zeroLocus_map_algebraMap_eq_closedPoints,Ideal.WLocalization.quotientMap_algebraMap_bijective}
+    \lean{Ideal.WLocalization.zeroLocus_map_algebraMap_eq_closedPoints,
+      Ideal.WLocalization.quotientMap_algebraMap_bijective,
+      Ideal.WLocalization.bijOn_zeroLocus_map}
     \leanok
     Let $I \subseteq A$ be an ideal such that $V(I) \subseteq A$ only contains closed points. Then
     \begin{enumerate}
@@ -1528,6 +1530,7 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 
 \begin{corollary}
   Notation as in \Cref{thm:closed-points-isom-w-local}. If further $A \to B$ is faithfully flat, then the composition $A \to B \to C$ is also faithfully flat.
+  % Condition "Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at primes." is not needed
   \label{cor:closed-points-isom-w-local-faithfully-flat}
   \uses{def:w-localization-ideal}
   \lean{Ideal.WLocalization.faithfullyFlat_map_algebraMap}
@@ -1535,6 +1538,7 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 \end{corollary}
 
 \begin{proof}
+  \leanok
   \uses{thm:ind-Zariski-is-flat,thm:w-localization-ideal-ind-Zariski,lemma:going-down-surjective-of-closed,thm:closed-points-isom-w-local}
   By \Cref{thm:ind-Zariski-is-flat,thm:w-localization-ideal-ind-Zariski}, $A \to B \to C$ is flat, so by \ref{lemma:going-down-surjective-of-closed} it suffices
   to show every closed point of $A$ is in the image. But since $\spec{B} \to \spec{A}$ is surjective,

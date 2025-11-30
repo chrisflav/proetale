@@ -57,7 +57,7 @@ theorem IsWContractibleRing.exists_retraction [IsWContractibleRing R]
     rw [zeroLocus_vanishingIdeal_eq_closure, IsClosed.closure_eq (IsWLocalRing.wLocalSpace_primeSepectrum.isClosed_closedPoints)]
   let S' := (I.map (algebraMap R S)).WLocalization
   have : Module.FaithfullyFlat R S' :=
-    Ideal.WLocalization.faithfullyFlat_map_algebraMap hI (fun _ _ ↦ inferInstance)
+    Ideal.WLocalization.faithfullyFlat_map_algebraMap hI
   have : Algebra.IndEtale R S' := Algebra.IndEtale.trans R S S'
   have : zeroLocus (I.map (algebraMap R S')) = closedPoints (PrimeSpectrum S') := Ideal.WLocalization.algebraMap_specComap_preimage_closedPoints_eq hI (fun _ _ ↦ inferInstance)
   obtain ⟨g, hg⟩ := IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints hI this
