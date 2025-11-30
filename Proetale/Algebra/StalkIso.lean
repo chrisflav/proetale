@@ -30,12 +30,18 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
     f.BijectiveOnStalks :=
   sorry
 
-lemma RingHom.BijectiveOnStalks.comp {T : Type*} [CommRing T]
-    {f : R →+* S} {g : S →+* T}
+namespace RingHom.BijectiveOnStalks
+
+lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) : (g.comp f).BijectiveOnStalks :=
   sorry
 
-lemma RingHom.BijectiveOnStalks.bijective_of_bijective {f : R →+* S}
-    (hf : f.BijectiveOnStalks) (hb : Function.Bijective f.specComap) :
-    Function.Bijective f :=
+lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
+    (hb : Function.Bijective f.specComap) : Function.Bijective f :=
   sorry
+
+lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T} :
+    RingHom.BijectiveOnStalks (f.prod g) :=
+  sorry
+
+end RingHom.BijectiveOnStalks

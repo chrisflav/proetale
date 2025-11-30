@@ -94,7 +94,6 @@ theorem quotientMap_algebraMap_bijective :
     Function.Bijective (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map) :=
   sorry
 
--- tba in blueprint
 variable (I) in
 theorem bijOn_zeroLocus_map : Set.BijOn (algebraMap A I.WLocalization).specComap
     (zeroLocus (I.map (algebraMap A I.WLocalization))) (zeroLocus I) := by
