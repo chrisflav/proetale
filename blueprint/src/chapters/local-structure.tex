@@ -635,7 +635,8 @@ The following example shows that our definition agrees with the one in
   \lean{Algebra.IndEtale.trans, RingHom.IndEtale.comp}
   \leanok
   \uses{def:ind-etale}
-  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale, then $A \to C$ is ind-étale.
+  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale, 
+  then $A \to C$ is ind-étale.
 \end{lemma}
 
 \begin{proof}
@@ -645,7 +646,10 @@ The following example shows that our definition agrees with the one in
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0BSH}{Tag 0BSH}]{stacks-project}}]
   \label{thm:ind-etale-base-change}
   \uses{def:ind-etale}
-  Let $A \to B$ be an ind-étale ring map. For any ring map $A \to C$, the base change $C \to B \otimes_A C$ is ind-étale.
+  \lean{RingHom.IndEtale.isStableUnderBaseChange}
+  \leanok
+  Let $A \to B$ be an ind-étale ring map. For any ring map $A \to C$, the base change 
+  $C \to B \otimes_A C$ is ind-étale.
 \end{lemma}
 
 \begin{proof}
@@ -657,6 +661,9 @@ The following example shows that our definition agrees with the one in
     an ind-étale $A$-algebra.
     \uses{def:ind-etale}
     \label{lemma:ind-ind-etale}
+    \lean{Algebra.IndEtale.of_colimitPresentation,RingHom.IndEtale.iff_ind_indEtale,
+      RingHom.IndEtale.iff_exists_indEtale,Algebra.IndEtale.iff_ind_indEtale}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -668,6 +675,7 @@ The following example shows that our definition agrees with the one in
   \label{thm:ind-Zariski-is-ind-etale}
   \uses{def:ind-Zariski,def:ind-etale}
   \lean{Algebra.IndEtale.of_indZariski,RingHom.IndZariski.indEtale}
+  \leanok
 \end{lemma}
 
 \begin{proof}

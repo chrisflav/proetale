@@ -49,10 +49,17 @@ lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower
     Algebra.IndEtale R T :=
   sorry
 
+theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
+    (P : ColimitPresentation ι (CommAlgCat.of R S))
+    (h : ∀ (i : ι), Algebra.IndEtale R (P.diag.obj i)) : Algebra.IndEtale R S :=
+  sorry
+
 instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S :=
   sorry
 
-instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S) [q.LiesOver p] [p.IsPrime] [q.IsPrime] : Algebra.IsSeparable p.ResidueField q.ResidueField := sorry
+instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
+    [q.LiesOver p] [p.IsPrime] [q.IsPrime] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
+  sorry
 
 end Algebra.IndEtale
 
@@ -61,6 +68,11 @@ end Algebra.IndEtale
 def RingHom.IndEtale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.IndEtale R S
+
+variable (S) in
+lemma Algebra.IndEtale.iff_algebraMap_indEtale :
+    Algebra.IndEtale R S ↔ (algebraMap R S).IndEtale :=
+  toAlgebra_algebraMap (R := R) (S := S).symm ▸ Iff.rfl
 
 namespace RingHom.IndEtale
 
@@ -85,6 +97,29 @@ lemma comp {T : Type u} [CommRing T] {g : S →+* T} {f : R →+* S} (hg : g.Ind
     (hf : f.IndEtale) : (g.comp f).IndEtale := by
   algebraize [f, g, (g.comp f)]
   exact Algebra.IndEtale.trans R S T
+
+lemma isStableUnderBaseChange : IsStableUnderBaseChange IndEtale :=
+  sorry
+
+/-- Ind-étale is equivalent to ind-ind-étale. -/
+lemma iff_ind_indEtale (f : R →+* S) :
+    f.IndEtale ↔ MorphismProperty.ind.{u}
+      (RingHom.toMorphismProperty RingHom.IndEtale) (CommRingCat.ofHom f) := by
+  algebraize [f]
+  sorry
+
+/-- A ring hom is ind-étale if and only if it can be written as a colimit of ind-étale maps. -/
+lemma iff_exists_indEtale {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    f.hom.IndEtale ↔
+    ∃ (J : Type u) (_ : SmallCategory J) (_ : IsFiltered J) (D : J ⥤ CommRingCat.{u})
+      (t : (Functor.const J).obj R ⟶ D) (c : D ⟶ (Functor.const J).obj S)
+      (_ : IsColimit (.mk _ c)), ∀ i, (t.app i).hom.IndEtale ∧ t.app i ≫ c.app i = f :=
+  iff_ind_indEtale _
+
+theorem _root_.Algebra.IndEtale.iff_ind_indEtale [Algebra R S] :
+    Algebra.IndEtale R S ↔ ObjectProperty.ind.{u}
+      (RingHom.toObjectProperty RingHom.IndEtale R) (.of R S) := by
+  sorry
 
 lemma _root_.RingHom.IndZariski.indEtale {f : R →+* S}
     (hf : f.IndZariski) : f.IndEtale := by
