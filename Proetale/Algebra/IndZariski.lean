@@ -148,13 +148,12 @@ lemma iff_ind_indZariski (f : R →+* S) :
   algebraize [f]
   sorry
 
-/-- A ring hom is ind-Zariski if and only if it can be written as a colimit of ind-Zariski maps. -/
-lemma iff_exists_indZariski {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    f.hom.IndZariski ↔
-    ∃ (J : Type u) (_ : SmallCategory J) (_ : IsFiltered J) (D : J ⥤ CommRingCat.{u})
-      (t : (Functor.const J).obj R ⟶ D) (c : D ⟶ (Functor.const J).obj S)
-      (_ : IsColimit (.mk _ c)), ∀ i, (t.app i).hom.IndZariski ∧ t.app i ≫ c.app i = f :=
-  iff_ind_indZariski _
+/-- A ring hom is ind-Zariski if it can be written as a filtered colimit of ind-Zariski maps. -/
+lemma of_isColimit {R S : CommRingCat.{u}} (f : R ⟶ S) (J : Type u) [SmallCategory J]
+    [IsFiltered J] (D : J ⥤ CommRingCat.{u}) {t : (Functor.const J).obj R ⟶ D}
+    {c : D ⟶ (Functor.const J).obj S} (hc : IsColimit (.mk _ c))
+    (htc : ∀ i, (t.app i).hom.IndZariski ∧ t.app i ≫ c.app i = f) : f.hom.IndZariski :=
+  (iff_ind_indZariski _).mpr ⟨J, ‹_›, ‹_›, D, t, c, hc, by simpa using htc⟩
 
 theorem _root_.Algebra.IndZariski.iff_ind_indZariksi [Algebra R S] :
     Algebra.IndZariski R S ↔ ObjectProperty.ind.{u}

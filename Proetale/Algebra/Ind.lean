@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.MorphismProperty.Ind
 import Mathlib.RingTheory.RingHomProperties
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
 
-open CategoryTheory
-
 variable {R : Type*} [CommRing R]
 
 universe u v w w'

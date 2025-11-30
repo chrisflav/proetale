@@ -326,7 +326,11 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/00EA}{Tag 00EA}, (1) + (2)(a)]{stacks-project}}]
   \label{thm:localization-isom-of-going-down}
-  Let $A \to B$ be a ring map which has going down. Let $\p \subset A$ be a prime ideal and let $\q \subset B$ be a prime ideal lying over $\p$. Assume that and there is at most one prime of $B$ above every prime of $A$. Then the natural map $B_{\p B} \to B_{\q}$ is an isomorphism.
+  \lean{Algebra.HasGoingDown.factor_bijective_of_subsingleton}
+  \leanok
+  Let $A \to B$ be a ring map which has going down. Let $\p \subset A$ be a prime ideal and let 
+  $\q \subset B$ be a prime ideal lying over $\p$. Assume that and there is at most one prime
+  of $B$ above every prime of $A$. Then the natural map $B_{\p B} \to B_{\q}$ is an isomorphism.
 \end{lemma}
 
 \begin{proof}
@@ -471,7 +475,7 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
   A filtered colimit of ind-Zariski algebras is ind-Zariski.
   \label{lemma:ind-ind-Zariski}
   \uses{def:ind-Zariski}
-  \lean{Algebra.IndZariski.of_colimitPresentation,RingHom.IndZariski.iff_exists_indZariski,
+  \lean{Algebra.IndZariski.of_colimitPresentation,RingHom.IndZariski.of_isColimit,
     Algebra.IndZariski.iff_ind_indZariksi,RingHom.IndZariski.iff_ind_indZariski}
   \leanok
 \end{lemma}
@@ -662,7 +666,7 @@ The following example shows that our definition agrees with the one in
     \uses{def:ind-etale}
     \label{lemma:ind-ind-etale}
     \lean{Algebra.IndEtale.of_colimitPresentation,RingHom.IndEtale.iff_ind_indEtale,
-      RingHom.IndEtale.iff_exists_indEtale,Algebra.IndEtale.iff_ind_indEtale}
+      RingHom.IndEtale.of_isColimit,Algebra.IndEtale.iff_ind_indEtale}
     \leanok
 \end{lemma}
 
@@ -1672,6 +1676,11 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     Let $B = \colim_i B_i$ be a filtered colimit of (faithfully) flat $A$-algebras. Then
     $B$ is (faithfully) flat over $A$.
     \label{lemma:ind-faithfully-flat}
+    \lean{Module.Flat.of_colimitPresentation,Module.FaithfullyFlat.of_colimitPresentation,
+      Module.Flat.iff_ind_flat,Module.FaithfullyFlat.iff_ind_faithfullyFlat,
+      RingHom.Flat.iff_ind_flat,RingHom.FaithfullyFlat.iff_ind_faithfullyFlat,
+      RingHom.Flat.of_isColimit,RingHom.FaithfullyFlat.of_isColimit}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1746,7 +1755,9 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     Let $k$ be a field and $A$ an ind-étale, local $k$-algebra. Then $A$ is
     a separable algebraic field extension of $k$.
     \uses{def:ind-etale}
-    \label{lemma:field-local-indetale}
+    \label{lemma:field-local-ind-etale}
+    \lean{Algebra.IndEtale.isSeparable}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1760,16 +1771,19 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{proof}
 
 \begin{proposition}
-    Let $f\colon A \to B$ be ind-étale. Then $f$ induces separable algebraic extensions on residue fields.
+    Let $f\colon A \to B$ be ind-étale. Then $f$ induces separable algebraic 
+    extensions on residue fields.
     \uses{def:ind-etale}
     \label{prop:ind-etale-residue-fields}
+    \lean{Algebra.IndEtale.isSeparable_residueField}
+    \leanok
 \end{proposition}
 
 \begin{proof}
-    \uses{lemma:field-local-indetale}
+    \uses{lemma:field-local-ind-etale}
     Let $\mathfrak{p}$ be a prime ideal of $B$. After base change along $A \to \kappa(\mathfrak{p}^c)$,
     we may assume $A = k$ is a field. After postcomposing with the ind-étale map $B \to B_{\mathfrak{p}}$,
-    we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-indetale}.
+    we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-ind-etale}.
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]

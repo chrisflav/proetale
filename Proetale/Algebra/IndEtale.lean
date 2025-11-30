@@ -57,6 +57,10 @@ theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
 instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S :=
   sorry
 
+instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLocalRing R] :
+    Algebra.IsSeparable k R := by
+  sorry
+
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
     [q.LiesOver p] [p.IsPrime] [q.IsPrime] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   sorry
@@ -108,13 +112,12 @@ lemma iff_ind_indEtale (f : R →+* S) :
   algebraize [f]
   sorry
 
-/-- A ring hom is ind-étale if and only if it can be written as a colimit of ind-étale maps. -/
-lemma iff_exists_indEtale {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    f.hom.IndEtale ↔
-    ∃ (J : Type u) (_ : SmallCategory J) (_ : IsFiltered J) (D : J ⥤ CommRingCat.{u})
-      (t : (Functor.const J).obj R ⟶ D) (c : D ⟶ (Functor.const J).obj S)
-      (_ : IsColimit (.mk _ c)), ∀ i, (t.app i).hom.IndEtale ∧ t.app i ≫ c.app i = f :=
-  iff_ind_indEtale _
+/-- A ring hom is ind-étale if it can be written as a filtered colimit of ind-étale maps. -/
+lemma of_isColimit {R S : CommRingCat.{u}} (f : R ⟶ S) (J : Type u) [SmallCategory J]
+    [IsFiltered J] (D : J ⥤ CommRingCat.{u}) {t : (Functor.const J).obj R ⟶ D}
+    {c : D ⟶ (Functor.const J).obj S} (hc : IsColimit (.mk _ c))
+    (htc : ∀ i, (t.app i).hom.IndEtale ∧ t.app i ≫ c.app i = f) : f.hom.IndEtale :=
+  (iff_ind_indEtale _).mpr ⟨J, ‹_›, ‹_›, D, t, c, hc, by simpa using htc⟩
 
 theorem _root_.Algebra.IndEtale.iff_ind_indEtale [Algebra R S] :
     Algebra.IndEtale R S ↔ ObjectProperty.ind.{u}
