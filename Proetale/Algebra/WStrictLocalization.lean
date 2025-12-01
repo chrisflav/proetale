@@ -14,6 +14,8 @@ In this file we show that every ring admits a faithfully flat, ind-étale w-stri
 
 universe u
 
+-- def Precontraction
+
 def WStrictLocalization (R : Type u) [CommRing R] : Type u := sorry
 
 variable (R : Type u) [CommRing R]

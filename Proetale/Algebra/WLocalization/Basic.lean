@@ -68,11 +68,27 @@ def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
 /-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
 the generalization hull of `D(f) ∩ V(I)`. -/
 lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
-    Set.range (algebraMap A (Generalization f I)).specComap = generalizationHull (locClosedSubset f I) :=
+    Set.range (algebraMap A (Generalization f I)).specComap =
+    generalizationHull (locClosedSubset f I) :=
   sorry
 
-def map {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
-    Generalization f I →ₐ[A] Generalization f' I' :=
+lemma bijOn_algebraMap_generalization_specComap_zeroLocus_ideal (f : A) (I : Ideal A) :
+    Set.BijOn (algebraMap A (Generalization f I)).specComap (zeroLocus (ideal f I))
+    (locClosedSubset f I) :=
+  sorry
+
+theorem submonoid_le {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
+    submonoid f I ≤ submonoid f' I' :=
+  sorry
+
+noncomputable def map {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
+    Generalization f I →ₐ[A] Generalization f' I' where
+  toRingHom := IsLocalization.map (T := Generalization.submonoid f' I')
+    (Generalization f' I') (RingHom.id A) (submonoid_le h)
+  commutes' := sorry
+
+lemma exists_specializes_zeroLocus_ideal {f : A} (I : Ideal A)
+    (x : PrimeSpectrum (Generalization f I)) : ∃ y ∈ zeroLocus (ideal f I), x ⤳ y :=
   sorry
 
 end Generalization

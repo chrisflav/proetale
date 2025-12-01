@@ -7,6 +7,7 @@ import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndZariski
+import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # w-contractible rings
@@ -30,7 +31,110 @@ class IsWContractibleRing (R : Type*) [CommRing R] extends IsWStrictlyLocalRing 
   extremallyDisconnected_connectedComponents :
     ExtremallyDisconnected (ConnectedComponents <| PrimeSpectrum R)
 
-open PrimeSpectrum
+open PrimeSpectrum TopologicalSpace
+
+noncomputable section
+
+namespace WContractification
+
+variable {A : Type u} [CommRing A]
+
+/-!
+## The W-Contractification
+
+In this section, we construct w-contractification of w-strictly local rings.
+-/
+
+def RestrictClopen (W : Clopens (PrimeSpectrum A)) : Type u :=
+  Localization.Away (isIdempotentElemEquivClopens.symm W).val
+
+namespace RestrictClopen
+
+variable {W W₁ W₂ : Clopens (PrimeSpectrum A)}
+
+instance commRing : CommRing (RestrictClopen W) := fast_instance%
+  inferInstanceAs <| CommRing <| Localization.Away _
+
+instance algebra : Algebra A (RestrictClopen W) := fast_instance%
+  inferInstanceAs <| Algebra A <| Localization.Away _
+
+instance away : IsLocalization.Away (isIdempotentElemEquivClopens.symm W).val
+    (RestrictClopen W) :=
+  inferInstanceAs <| IsLocalization.Away _ <| Localization.Away _
+
+lemma val_dvd {W₁ W₂ : Clopens (PrimeSpectrum A)} (h : W₁ ≤ W₂) :
+    (isIdempotentElemEquivClopens.symm W₂).val ∣
+    (isIdempotentElemEquivClopens.symm W₁).val := by
+  use (isIdempotentElemEquivClopens.symm W₁).val
+  nth_rw 1 [(isIdempotentElemEquivClopens.symm.monotone h).symm, mul_comm]
+
+open IsLocalization Away in
+def map {W₁ W₂ : Clopens (PrimeSpectrum A)} (h : W₁ ≤ W₂) :
+    RestrictClopen W₂ →ₐ[A] RestrictClopen W₁ where
+  toRingHom := lift (isIdempotentElemEquivClopens.symm W₂).val (isUnit_of_dvd _ (val_dvd h))
+  commutes' := sorry
+
+end RestrictClopen
+
+open scoped CategoryTheory
+open CategoryTheory.Limits Topology
+
+section Restriction
+variable (T : Set (ConnectedComponents (PrimeSpectrum A)))
+
+def Restriction.diag :
+    {W : Clopens (PrimeSpectrum A) // ConnectedComponents.mk ⁻¹' T ≤ W}ᵒᵖ ⥤ CommAlgCat A where
+  obj W := .of A (RestrictClopen W.unop.val)
+  map {X Y} f := CommAlgCat.ofHom (RestrictClopen.map f.unop.le)
+  map_id := sorry
+  map_comp := sorry
+
+def Restriction : Type u :=
+  colimit (C := CommAlgCat A) (Restriction.diag T)
+
+namespace Restriction
+
+instance commRing : CommRing (Restriction T) := fast_instance%
+  inferInstanceAs <| CommRing <| colimit (C := CommAlgCat A) (Restriction.diag T)
+
+instance algebra : Algebra A (Restriction T) := fast_instance%
+  inferInstanceAs <| Algebra A <| colimit (C := CommAlgCat A) (Restriction.diag T)
+
+instance indZariski : Algebra.IndZariski A (Restriction T) := sorry
+
+lemma algebraMap_surjective : Function.Surjective (algebraMap A (Restriction T)) := sorry
+
+variable {T}
+
+lemma range_algebraMap_specComap (h : IsClosed T) :
+    Set.range (algebraMap A (Restriction T)).specComap = ConnectedComponents.mk ⁻¹' T :=
+  sorry
+
+lemma isClosedEmbedding_algebraMap_specComap (h : IsClosed T) :
+    IsClosedEmbedding (algebraMap A (Restriction T)).specComap :=
+  sorry
+
+end Restriction
+
+end Restriction
+
+section Pullback
+
+variable {T : Type*} [TopologicalSpace T] [CompactSpace T] (S : DiscreteQuotient T)
+  (f : C(T, ConnectedComponents (PrimeSpectrum A)))
+
+-- #synth Finite S
+-- #synth Ring (S → A)
+-- #check (S : Type _)
+-- #check PrimeSpectrum.sigmaToPi
+-- def Z := Set.range fun t ↦ (S.proj t, f t)
+-- def Pullback := S → A
+
+end Pullback
+
+end WContractification
+
+end
 
 variable {R : Type u} [CommRing R]
 
