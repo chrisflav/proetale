@@ -15,9 +15,10 @@ theorem Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimag
   obtain ⟨q, _, hq, hpq⟩ := Ideal.exists_ideal_le_liesOver_of_le n hle
   use ⟨q, hq⟩, PrimeSpectrum.ext hpq.over.symm
 
+set_option pp.proofs.threshold 100
 theorem Algebra.HasGoingDown.factor_bijective_of_subsingleton  {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.HasGoingDown R S] (p : Ideal R) (q : Ideal S) [p.IsPrime] [q.IsPrime] [q.LiesOver p]
     (h : ∀ (p : Ideal R) [p.IsPrime], Subsingleton {q : Ideal S // q.IsPrime ∧ q.LiesOver p}) :
     Function.Bijective (Ideal.Quotient.factor (S := p.map (algebraMap R S)) (T := q)
-    (Ideal.LiesOver.over (P := q) (p := p) ▸ Ideal.map_comap_le)) :=
+    (Ideal.LiesOver.over (P := q) (p := p) ▸ Ideal.map_comap_le)) := by
   sorry

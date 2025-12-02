@@ -15,7 +15,7 @@ theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpa
 variable (S T : Type*) [TopologicalSpace S] [TopologicalSpace T]
 
 theorem connectedComponent.prod (s : S) (t : T) :
-    connectedComponent (s, t) = connectedComponent s ×ˢ connectedComponent t :=
+    connectedComponent (s, t) = connectedComponent s ×ˢ connectedComponent t := by
   sorry
 
 theorem ConnectedComponents.isHomeomorph_connectedComponentsLift_prod :

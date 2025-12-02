@@ -90,8 +90,8 @@ def RingHom.IndZariski {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) 
 
 namespace RingHom.IndZariski
 
-lemma Algebra.IndZariski.iff_algebraMap_indZariski [Algebra R S] :
-    Algebra.IndZariski R S ↔ (algebraMap R S).IndZariski :=
+lemma algebraMap_iff [Algebra R S] :
+    (algebraMap R S).IndZariski ↔ Algebra.IndZariski R S:=
   toAlgebra_algebraMap (R := R) (S := S).symm ▸ Iff.rfl
 
 variable {R S T}

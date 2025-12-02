@@ -73,12 +73,11 @@ def RingHom.IndEtale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : 
   letI := f.toAlgebra
   Algebra.IndEtale R S
 
-variable (S) in
-lemma Algebra.IndEtale.iff_algebraMap_indEtale :
-    Algebra.IndEtale R S ↔ (algebraMap R S).IndEtale :=
-  toAlgebra_algebraMap (R := R) (S := S).symm ▸ Iff.rfl
-
 namespace RingHom.IndEtale
+
+variable (S) in
+lemma algebraMap_iff : (algebraMap R S).IndEtale ↔ Algebra.IndEtale R S :=
+  toAlgebra_algebraMap (R := R) (S := S).symm ▸ Iff.rfl
 
 lemma iff_ind_etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
     f.IndEtale ↔ MorphismProperty.ind.{u}
