@@ -670,7 +670,7 @@ The following example shows that our definition agrees with the one in
   Since \(f_\m\) is étale and \(s_\m\) is a section of \(f_\m\), it follows that \(s_\m\) is also étale by the cancellation property of étale maps. Thus \(s'\), being a composition of a localization and an étale map, is flat. As a flat local ring homomorphism, \(s'\) is faithfully flat and hence injective. Since \(s'\) is also a section of \(f'\), it is surjective. Therefore, \(s'\) is an isomorphism, and the composition \(A \to B_\n\) is an isomorphism.
 \end{proof}
 
-\section{Ind-etale and weakly etale ring maps}
+\section{Ind-etale ring maps}
 
 \begin{definition}[Ind-étale algebras, {\cite[\href{https://stacks.math.columbia.edu/tag/097I}{Tag 097I}]{stacks-project}}]
     An $R$-algebra $S$ is \emph{ind-étale} if it is a filtered colimit of étale $R$-algebras.
@@ -2164,3 +2164,34 @@ this we will perform a series of reductions.
     \uses{thm:ind-etale-w-contractible-cover-exists, thm:w-contractible-retraction}
     This follows from \Cref{thm:ind-etale-w-contractible-cover-exists} and \Cref{thm:w-contractible-retraction}.
 \end{proof}
+
+\section{Weakly étale algebras}
+
+Ind-étale is a practical notion, since it usually allows reducing proofs to the étale case. Geometrically,
+ind-étale is badly behaved though, since it is not local on the (geometric) target. For this reason, when we later
+define the pro-étale site of a scheme, we use the notion of weakly étale ring maps instead.
+
+\begin{definition}[Weakly étale algebras]
+    An $R$-algebra $S$ is \emph{weakly étale} if it is flat over $R$ and flat over $S \otimes_{R} S$.
+    A ring homorphism $f \colon R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra.
+    \label{def:weakly-etale-algebra}
+\end{definition}
+
+\begin{lemma}
+    Every étale algebra is weakly étale.
+    \label{lemma:etale-weakly-etale-algebra}
+\end{lemma}
+
+\begin{proof}
+    Let $S$ be an étale $R$-algebra. Then $S$ is $R$-flat. Also
+    $S \otimes_{R} S \cong S × T$ for some ring $T$, in particular $\spec{S \otimes_{R} S} \to \spec{S}$ is
+    an open immersion, hence flat.
+\end{proof}
+
+The following theorem is difficult to prove and we will try to avoid it for now.
+
+\begin{theorem}
+    Let $R \to S$ be weakly étale. Then there exists a faithfully flat ind-étale morphism
+    $S \to T$ such that the composition $R \to T$ is ind-étale.
+    \label{thm:weakly-etale-ind-etale}
+\end{theorem}

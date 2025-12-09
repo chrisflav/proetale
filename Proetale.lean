@@ -63,6 +63,7 @@ import Proetale.Pro.Basic
 import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Coherent.Affine
 import Proetale.Topology.Coherent.Etale
+import Proetale.Topology.Comparison.Affine
 import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Comparison.Pullback
 import Proetale.Topology.Flat.CompactOpenCovered
