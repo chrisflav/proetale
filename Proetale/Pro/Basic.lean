@@ -128,7 +128,7 @@ abbrev cone (pres : RelativeLimitPresentation J F X) : Cone (pres.diag ⋙ F) :=
   Cone.mk _ pres.π
 
 /-- Forget the fact that the diagram factors through `F`. -/
-def colimitPresentation (pres : RelativeLimitPresentation J F X) : LimitPresentation J X where
+def limitPresentation (pres : RelativeLimitPresentation J F X) : LimitPresentation J X where
   diag := pres.diag ⋙ F
   π := pres.π
   isLimit := pres.isLimit
@@ -213,6 +213,12 @@ class Functor.IsPro (F : C ⥤ D) : Prop where
   hom_exists {X Y : D} (f : X ⟶ Y) : ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCofiltered J)
     (pres₁ : RelativeLimitPresentation J F X) (pres₂ : RelativeLimitPresentation J F Y)
     (t : pres₁.Hom pres₂), f = t.map
+
+/-- The pro-category of `C` is `(Ind Cᵒᵖ)ᵒᵖ`. -/
+def Pro (C : Type*) [Category C] := (Ind Cᵒᵖ)ᵒᵖ
+
+noncomputable instance : Category (Pro C) :=
+  inferInstanceAs <| Category (Ind Cᵒᵖ)ᵒᵖ
 
 def PreOneHypercover.functor (F : C ⥤ D) (X : C) : PreOneHypercover.{w} X ⥤ PreOneHypercover.{w} (F.obj X) where
   obj E := E.map F
@@ -444,7 +450,7 @@ lemma Presheaf.IsSheaf.of_preservesFilteredColimitsOfSize (P : Dᵒᵖ ⥤ A) (h
     [(GrothendieckTopology.oneHypercoverRelativelyRepresentable.{w} F A J K).IsGenerating] :
     IsSheaf K P := by
   rw [(GrothendieckTopology.oneHypercoverRelativelyRepresentable F A J K).isSheaf_iff]
-  intro X E hE@⟨I, _, _, pres, _, mem⟩
+  intro X E ⟨I, _, _, pres, hinst, mem⟩
   constructor
   apply pres.isLimit (P := P)
   intro j
