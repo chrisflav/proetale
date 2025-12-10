@@ -27,13 +27,20 @@ lemma Algebra.IsStandardOpenImmersion.of_bijective (h : Function.Bijective (alge
   use 1
   apply IsLocalization.away_of_isUnit_of_bijective _ isUnit_one h
 
+lemma Algebra.IsStandardOpenImmersion.of_algEquiv (T : Type*) [CommSemiring T] [Algebra R T]
+    (e : S ≃ₐ[R] T) [h : IsStandardOpenImmersion R S] :
+    IsStandardOpenImmersion R T := by
+  rw [Algebra.isStandardOpenImmersion_iff] at *
+  obtain ⟨r, hr⟩ := h
+  use r
+  exact IsLocalization.isLocalization_of_algEquiv _ e
+
 namespace Algebra.IsLocalIso
 
 instance [IsStandardOpenImmersion R S] : IsLocalIso R S where
   exists_notMem_isStandardOpenImmersion q hq := by
     use 1, hq.one_notMem
     exact IsStandardOpenImmersion.trans _ S _
-
 
 lemma of_span_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) = ⊤)
     (T : ι → Type*) [∀ i, CommRing (T i)] [∀ i, Algebra R (T i)] [∀ i, Algebra S (T i)]
@@ -81,7 +88,17 @@ lemma of_span_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) =
 
     have : IsStandardOpenImmersion (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) :=
       .of_bijective _ _ e.symm.bijective
-    have : IsStandardOpenImmersion R (Localization.Away ((algebraMap S (T i)) g)) := sorry
+    have : IsStandardOpenImmersion R (Localization.Away ((algebraMap S (T i)) g)) := by
+      rw [← hg]
+      have : IsLocalization.Away (g' * (algebraMap S (T i)) (f i) ^ n) (Localization.Away g') := by
+        apply (config := { allowSynthFailures := true }) IsLocalization.Away.mul' (Localization.Away g')
+        apply IsLocalization.away_of_isUnit_of_bijective
+        · exact IsUnit.map _ (IsUnit.pow _ (IsLocalization.Away.algebraMap_isUnit _))
+        · exact Function.bijective_id
+      let e' : Localization.Away (g' * (algebraMap S (T i) (f i))^n) ≃ₐ[T i] Localization.Away g' := by
+        exact Localization.algEquiv _ _ 
+
+      apply IsStandardOpenImmersion.of_algEquiv _ _ _ (e'.symm.restrictScalars R)
     apply IsStandardOpenImmersion.trans _ (Localization.Away (algebraMap S (T i) g)) _
 
 lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
