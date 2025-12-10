@@ -28,11 +28,6 @@ instance QuasiSober.pullback [QuasiSober X] [QuasiSober Y] (f : C(X, S)) (g : C(
   let _ := (homeoOfIso (prodIsoProd (of X) (of Y))).symm.quasiSober
   (isClosedEmbedding_pullback_to_prod (ofHom f) (ofHom g)).quasiSober
 
-instance QuasiSeparatedSpace.pullback [QuasiSeparatedSpace X] [QuasiSeparatedSpace Y] (f : C(X, S)) (g : C(Y, S)) :
-    QuasiSeparatedSpace (pullback (ofHom f) (ofHom g) : TopCat) :=
-  let _ := (homeoOfIso (prodIsoProd (of X) (of Y))).symm.quasiSeparatedSpace
-  (isClosedEmbedding_pullback_to_prod (ofHom f) (ofHom g)).quasiSeparatedSpace
-
 instance CompactSpace.pullback [CompactSpace X] [CompactSpace Y] (f : C(X, S)) (g : C(Y, S)) :
     CompactSpace (pullback (ofHom f) (ofHom g) : TopCat) :=
   let _ := (homeoOfIso (prodIsoProd (of X) (of Y))).symm.compactSpace
@@ -63,10 +58,6 @@ variable [T2Space S]
 
 theorem CategoryTheory.IsPullback.quasiSober [QuasiSober X] [QuasiSober Y] : QuasiSober P :=
   (homeoOfIso pb.isoPullback).symm.quasiSober
-
-theorem CategoryTheory.IsPullback.quasiSeparatedSpace [QuasiSeparatedSpace X] [QuasiSeparatedSpace Y] :
-    QuasiSeparatedSpace P :=
-  (homeoOfIso pb.isoPullback).symm.quasiSeparatedSpace
 
 theorem CategoryTheory.IsPullback.compactSpace [CompactSpace X] [CompactSpace Y] : CompactSpace P :=
   (homeoOfIso pb.isoPullback).symm.compactSpace

@@ -239,14 +239,24 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:closed-subspace-spectral}
-  \lean{Topology.IsClosedEmbedding.quasiSeparatedSpace,Topology.IsClosedEmbedding.spectralSpace,SpectralSpace.of_isClosed}
+  \lean{Topology.IsClosedEmbedding.isOpen_and_isCompact_and_preimage_eq,
+    Topology.IsClosedEmbedding.spectralSpace,SpectralSpace.of_isClosed}
   \leanok
   Let $X$ be a spectral space. Let $Y \subset X$ be a closed subspace. Then $Y$ is spectral.
 \end{lemma}
 
 \begin{proof}
-  (The only remaining part in Lean is quasi-separatedness.)
-  The only thing remaining to show is that $Y$ is sober. Let $Z \subset Y$ be a closed irreducible subset, then $Z$ is also closed in $X$. $Z$ is irreducible in $X$ since any nontrivial closed subset decomposition in $X$ will give a nontrivial closed subset decomposition in $Y$, thus $Z$ has a unique generic point $z \in X$. Since $Z \subset Y$ we have $z \in Y$ with the closure of $z$ in $Y$ is $Z$. This shows that $Y$ is sober.
+  \leanok
+  The only remaining part in Lean is quasi-separatedness.
+  Suppose that \(V\) is open compact in \(Y\), we show that there exists open compact \(U\) in 
+  \(X\) such that \(V = U \cap Y\). We can find \(U'\) in \(X\) such that \(V = U' \cap Y\). Write
+  \(U' = \bigcup_{i \in I} U_i\) as a union of compact opens, then a finite subset \(i \in I_0\) 
+  of \(U_i\) already covers \(V\). Take \(U := \bigcup_{i \in I\_0} U_i\) as desired.
+  
+  For any compact opens \(V_1,\, V_2 \subset Y\), 
+  there exists compact open \(U_1, U_2 \subset X\) s.t. \(V_i = U_i \cap Y_i\). Then 
+  \(V_1 \cap V_2 = (U_1 \cap U_2) \cap Y \), is still open compact in \(Y\). Here \(U_1 \cap U_2\)
+  is quasi-compact since \(X\) is quasi-separated.
 \end{proof}
 
 \begin{lemma}
@@ -318,9 +328,12 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:pullback-spectral} 
-  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,QuasiSeparatedSpace.pullback,QuasiSober.pullback,CompactSpace.pullback,CategoryTheory.IsPullback.t0Space,CategoryTheory.IsPullback.quasiSober,CategoryTheory.IsPullback.quasiSeparatedSpace,CategoryTheory.IsPullback.compactSpace,CategoryTheory.IsPullback.prespectralSpace,CategoryTheory.IsPullback.spectralSpace}
+  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,
+    QuasiSober.pullback,CompactSpace.pullback,CategoryTheory.IsPullback.t0Space,
+    CategoryTheory.IsPullback.quasiSober,CategoryTheory.IsPullback.compactSpace,
+    CategoryTheory.IsPullback.prespectralSpace,CategoryTheory.IsPullback.spectralSpace}
   \leanok
-  (This is wrong!!!!!!!) Let \(X\) and \(Y\) be spectral spaces. Let \(S\) be a Hausdorff topological space. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
+  Let \(X\) and \(Y\) be spectral spaces. Let \(S\) be a Hausdorff topological space. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
 \end{lemma}
 
 \begin{proof}
@@ -364,7 +377,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \begin{proof}
   \uses{thm:profinite-spectral,thm:pullback-spectral,thm:pi0-profinite,def:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
   By \Cref{thm:profinite-spectral}, \(T\) is spectral. By \Cref{thm:pi0-profinite} \(\pi_0(X)\) is Hausdorff.
-  By \Cref{thm:pullback-spectral}, \(Y\) is spectral. (This is wrong!!!!!!!)
+  By \Cref{thm:pullback-spectral}, \(Y\) is spectral.
   Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{def:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
 \end{proof}
 

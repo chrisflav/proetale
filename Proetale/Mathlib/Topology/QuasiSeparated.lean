@@ -7,11 +7,6 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : β →
 -- after `quasiSeparatedSpace_iff`
 theorem Homeomorph.quasiSeparatedSpace [QuasiSeparatedSpace α] (f : α ≃ₜ β) : QuasiSeparatedSpace β := sorry
 
--- put after `QuasiSeparatedSpace.of_isOpenEmbedding` -- is this correct? No.
-theorem Topology.IsClosedEmbedding.quasiSeparatedSpace [QuasiSeparatedSpace α] (h : Topology.IsClosedEmbedding f) :
-    QuasiSeparatedSpace β := by
-  sorry
-
 -- after `NoetherianSpace.to_quasiSeparatedSpace`
 instance QuasiSeparatedSpace.prod [QuasiSeparatedSpace α] [QuasiSeparatedSpace β] :
     QuasiSeparatedSpace (α × β) := by
