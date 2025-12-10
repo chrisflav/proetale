@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.RingTheory.RingHom.OpenImmersion
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.Tactic.DepRewrite
 
 /-!
 # Local isomorphisms
@@ -20,12 +21,19 @@ class Algebra.IsLocalIso (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebr
 
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 
+lemma Algebra.IsStandardOpenImmersion.of_bijective (h : Function.Bijective (algebraMap R S)) :
+    IsStandardOpenImmersion R S := by
+  rw [Algebra.isStandardOpenImmersion_iff]
+  use 1
+  apply IsLocalization.away_of_isUnit_of_bijective _ isUnit_one h
+
 namespace Algebra.IsLocalIso
 
 instance [IsStandardOpenImmersion R S] : IsLocalIso R S where
   exists_notMem_isStandardOpenImmersion q hq := by
     use 1, hq.one_notMem
     exact IsStandardOpenImmersion.trans _ S _
+
 
 lemma of_span_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) = ⊤)
     (T : ι → Type*) [∀ i, CommRing (T i)] [∀ i, Algebra R (T i)] [∀ i, Algebra S (T i)]
@@ -34,8 +42,47 @@ lemma of_span_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) =
   constructor
   intro q  hq
   rw [← PrimeSpectrum.iSup_basicOpen_eq_top_iff] at h
-  /- have : q ∈ ⨆ PrimeSpectrum.basicOpen (f i)  := sorry  -/
-  sorry
+
+  have : ⟨q, hq⟩ ∈ ⨆ i, PrimeSpectrum.basicOpen (f i)  := by simp [h]
+  simp at this
+  obtain ⟨i, hi⟩ := this
+  have : ⟨q, hq⟩ ∈ PrimeSpectrum.basicOpen (f i) := hi
+  rw [← SetLike.mem_coe, ← PrimeSpectrum.localization_away_comap_range (T i)] at this
+  obtain ⟨q', hq'⟩ := this
+  obtain ⟨g', hg', h⟩ := exists_notMem_isStandardOpenImmersion (R := R) q'.1
+  obtain ⟨n, g, hg⟩ := IsLocalization.Away.surj (f i) g'
+  use g * (f i)
+
+  constructor
+  · apply Ideal.IsPrime.mul_notMem hq _ hi
+    simp [PrimeSpectrum.ext_iff] at hq'
+    rw [← hq']
+    simp
+    rw [← hg]
+    rwa [Ideal.mul_unit_mem_iff_mem]
+    apply IsUnit.pow
+    apply IsLocalization.Away.algebraMap_isUnit
+  · have : IsLocalization.Away (g * (f i)) (Localization.Away (algebraMap S (T i) g)) := .mul (T i) _ _ _
+    let e : Localization.Away (g * (f i)) ≃ₐ[S] (Localization.Away (algebraMap S (T i) g)) :=
+      Localization.algEquiv _ _
+    let : Algebra (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) :=
+      RingHom.toAlgebra e.symm.toAlgHom
+
+    have : IsScalarTower R (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) := by
+      refine .of_algebraMap_eq' ?_
+      rw [RingHom.algebraMap_toAlgebra]
+      rw [← RingHom.cancel_left (g := e.toRingHom) e.injective]
+      ext
+      simp
+      simp [e]
+      rw [IsScalarTower.algebraMap_apply R S]
+      simp
+      rw [← IsScalarTower.algebraMap_apply R S]
+
+    have : IsStandardOpenImmersion (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) :=
+      .of_bijective _ _ e.symm.bijective
+    have : IsStandardOpenImmersion R (Localization.Away ((algebraMap S (T i)) g)) := sorry
+    apply IsStandardOpenImmersion.trans _ (Localization.Away (algebraMap S (T i) g)) _
 
 lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
     [CommRing R] [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)] [Finite ι] [∀ i, IsLocalIso R (S i)] :
