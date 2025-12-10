@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.RingTheory.RingHom.OpenImmersion
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Local isomorphisms
@@ -25,6 +26,22 @@ instance [IsStandardOpenImmersion R S] : IsLocalIso R S where
   exists_notMem_isStandardOpenImmersion q hq := by
     use 1, hq.one_notMem
     exact IsStandardOpenImmersion.trans _ S _
+
+lemma of_span_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) = ⊤)
+    (T : ι → Type*) [∀ i, CommRing (T i)] [∀ i, Algebra R (T i)] [∀ i, Algebra S (T i)]
+    [∀ i, IsScalarTower R S (T i)] [∀ i, IsLocalization.Away (f i) (T i)]
+    [∀ i, IsLocalIso R (T i)] : IsLocalIso R S := by
+  constructor
+  intro q  hq
+  rw [← PrimeSpectrum.iSup_basicOpen_eq_top_iff] at h
+  /- have : q ∈ ⨆ PrimeSpectrum.basicOpen (f i)  := sorry  -/
+  sorry
+
+lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
+    [CommRing R] [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)] [Finite ι] [∀ i, IsLocalIso R (S i)] :
+    IsLocalIso R (∀ i, S i)  := by
+
+  sorry
 
 end Algebra.IsLocalIso
 
