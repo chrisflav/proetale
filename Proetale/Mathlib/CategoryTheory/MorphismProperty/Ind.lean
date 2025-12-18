@@ -40,6 +40,9 @@ open Opposite
 
 namespace MorphismProperty
 
+instance [P.ContainsIdentities] : (ind.{w} P).ContainsIdentities where
+  id_mem X := le_ind _ _ (P.id_mem X)
+
 variable {P}
 
 /--
@@ -64,5 +67,18 @@ lemma pro_eq_unop_ind_op : pro.{w} P = (ind.{w} P.op).unop := by
   · exact ⟨Jᵒᵖ, inferInstance, inferInstance, D.leftOp, NatTrans.leftOp t,
       NatTrans.leftOp s, isLimitOfCoconeRightOpOfCone D.leftOp hs, fun j ↦ ⟨(hst _).1,
       op_injective (hst _).2⟩⟩
+
+@[gcongr]
+lemma unop_mono {P Q : MorphismProperty Cᵒᵖ} (h : P ≤ Q) : P.unop ≤ Q.unop :=
+  fun _ _ _ hf ↦ h _ hf
+
+variable (P) in
+lemma le_pro : P ≤ pro.{w} P := by
+  rw [pro_eq_unop_ind_op]
+  conv_lhs => rw [← unop_op P]
+  exact unop_mono P.op.le_ind
+
+instance [P.ContainsIdentities] : (pro.{w} P).ContainsIdentities where
+  id_mem X := le_pro _ _ (P.id_mem X)
 
 end CategoryTheory.MorphismProperty

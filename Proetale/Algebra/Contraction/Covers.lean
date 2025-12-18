@@ -1,6 +1,8 @@
 import Mathlib
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
@@ -131,6 +133,7 @@ def toCov (X : C) : (SCov K X)ᵒᵖ ⥤ Cov.{max u v} K X where
 variable [∀ (X : C) (U : SCov K X), HasWidePullback _ _ U.zeroHypercover.f]
 
 variable (K) in
+@[simps! -isSimp obj_hom]
 noncomputable
 def diag (X : C) : (SCov K X)ᵒᵖ ⥤ Over X where
   obj U := Over.mk (WidePullback.base U.1.zeroHypercover.f)
@@ -207,10 +210,14 @@ lemma diag_map_le_succ (n : ℕ) (hn : n ≤ n + 1) :
     (diag K X).map (homOfLE hn).op = (K.precontraction _).hom := by
   simp [diag]
 
+@[simps]
 noncomputable
 def diagHomBase : diag K X ⟶ (Functor.const _).obj X where
   app n := objBase K X n.1
-  naturality := sorry
+  naturality n m f := by
+    simp only [Functor.const_obj_obj, objBase, Opposite.op_unop, homOfLE_leOfHom,
+      Functor.const_obj_map, Category.comp_id, homOfLE_leOfHom, ← Functor.map_comp]
+    rfl
 
 end Contraction.Construction
 
@@ -263,12 +270,63 @@ end Precoverage
 
 namespace MorphismProperty
 
-variable (P : MorphismProperty C) [HasFiniteWidePullbacks C]
+variable (P : MorphismProperty C)
+
+lemma of_isLimit_widePullbackCone [HasFiniteWidePullbacks C] {ι : Type*} [Finite ι] {X : C}
+    {Y : ι → C} {f : ∀ i, Y i ⟶ X}
+    (s : WidePullbackCone f) (hs : IsLimit s) [P.IsStableUnderBaseChange]
+    [P.IsStableUnderComposition] [P.ContainsIdentities] (hf : ∀ i, P (f i)) :
+    P s.base := by
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e h =>
+    let s' := s.reindex e
+    have hs' : IsLimit s' := (WidePullbackCone.reindexIsLimitEquiv _ _).symm hs
+    change P s'.base
+    apply h _ hs'
+    intro
+    apply hf
+  | h_empty =>
+    have : IsIso s.base := by
+      use WidePullbackCone.IsLimit.lift hs (𝟙 X) (fun i ↦ i.elim) (by simp)
+      simp only [WidePullbackCone.IsLimit.lift_base, and_true]
+      apply WidePullbackCone.IsLimit.hom_ext hs <;> simp
+    exact P.of_isIso _
+  | h_option ih =>
+    let s' : WidePullbackCone (fun i ↦ f (some i)) :=
+      limit.cone _
+    let hs' : IsLimit s' := limit.isLimit _
+    have H : P s'.base := by
+      apply ih _ hs'
+      intro
+      apply hf
+    have H' : P (s.π none) := by
+      apply P.of_isPullback _ H
+      · exact f none
+      · exact WidePullbackCone.IsLimit.lift hs' s.base (fun i ↦ s.π (some i)) (by simp)
+      · apply IsPullback.flip
+        apply CategoryTheory.Limits.WidePullbackCone.isPullback_of_isCompl'
+        · exact Option.some_injective _
+        · rw [← Set.compl_range_some]
+          exact IsCompl.symm isCompl_compl
+        · exact hs
+    rw [← s.condition none]
+    exact P.comp_mem _ _ H' (hf none)
+
+lemma widePullbackBase [HasFiniteWidePullbacks C] {ι : Type*} [Finite ι] {X : C}
+    {Y : ι → C} {f : ∀ i, Y i ⟶ X}
+    [P.IsStableUnderBaseChange]
+    [P.IsStableUnderComposition] [P.ContainsIdentities] (hf : ∀ i, P (f i)) :
+    P (WidePullback.base f) := by
+  apply of_isLimit_widePullbackCone
+  · exact limit.isLimit _
+  · exact hf
 
 abbrev finitePrecoverage : Precoverage C := P.precoverage ⊓ Precoverage.finite _
 
 instance (X : C) (U : SCov P.finitePrecoverage X) : Finite U.zeroHypercover.I₀ :=
   U.2.2
+
+variable [HasFiniteWidePullbacks C]
 
 noncomputable def contraction
     [∀ X, HasLimitsOfShape (SCov P.finitePrecoverage X)ᵒᵖ (Over X)]
@@ -276,31 +334,43 @@ noncomputable def contraction
   P.finitePrecoverage.contraction X
 
 variable [∀ X, HasLimitsOfShape (SCov P.finitePrecoverage X)ᵒᵖ (Over X)]
-  [HasLimitsOfShape ℕᵒᵖ C]
 
-noncomputable def Contraction.base (X : C) : P.contraction X ⟶ X :=
-  Precoverage.Contraction.base _ X
-
-lemma pro_precontraction_hom [P.RespectsIso] [P.ContainsIdentities] (X : C) :
+lemma pro_precontraction_hom [P.IsMultiplicative] [P.IsStableUnderBaseChange] (X : C) :
     pro.{max u v} P (P.finitePrecoverage.precontraction X).hom := by
   refine ⟨(SCov P.finitePrecoverage X)ᵒᵖ, inferInstance, inferInstance,
     SCov.diag _ _ ⋙ CategoryTheory.Over.forget _, ?_, ?_, ?_, fun j ↦ ⟨?_, ?_⟩⟩
-  · dsimp
-    sorry
+  · exact { app _ := ((SCov.diag _ _).obj _).hom }
   · exact Functor.whiskerRight
       (limit.cone <| SCov.diag P.finitePrecoverage X).π
       (CategoryTheory.Over.forget X)
   · exact isLimitOfPreserves (CategoryTheory.Over.forget X) (limit.isLimit _)
-  · sorry
-  · sorry
+  · simp [SCov.diag_obj_hom]
+    apply widePullbackBase
+    intro i
+    exact j.1.mem.1 i.2
+  · simp only [Functor.id_obj, Functor.const_obj_obj, Functor.comp_obj, Over.forget_obj,
+      limit.cone_x, Functor.whiskerRight_app, limit.cone_π, Over.forget_map, CategoryTheory.Over.w]
+    rfl
 
-lemma pro_pro_contractionBase [P.RespectsIso] [P.ContainsIdentities] (X : C) :
+variable [HasLimitsOfShape ℕᵒᵖ C]
+
+noncomputable def Contraction.base (X : C) : P.contraction X ⟶ X :=
+  Precoverage.Contraction.base _ X
+
+lemma pro_pro_contractionBase [ProSpreads.{max u v, max u v} P]
+    [P.IsStableUnderBaseChange] [P.IsMultiplicative] (X : C) :
     pro.{0} (pro.{max u v} P) (Contraction.base P X) := by
   refine ⟨ℕᵒᵖ, inferInstance, inferInstance,
       Precoverage.Contraction.Construction.diag P.finitePrecoverage X,
       ?_, (limit.cone _).π, limit.isLimit _, ?_⟩
-  · exact { app n := sorry, naturality := sorry }
-  · sorry
+  · apply Precoverage.Contraction.Construction.diagHomBase
+  · intro n
+    refine ⟨?_, ?_⟩
+    · dsimp [Precoverage.Contraction.Construction.objBase, Precoverage.Contraction.Construction.diag]
+      apply ofOpSequence_map_of_isMultiplicative
+      intro n
+      apply pro_precontraction_hom
+    · apply limit.w
 
 lemma exists_comp_eq_id_contraction [ProSpreads.{0, 0} P]
     {Y : C} (f : Y ⟶ P.contraction X) (hf : P f) :

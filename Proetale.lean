@@ -34,6 +34,7 @@ import Proetale.Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
@@ -46,6 +47,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
 import Proetale.Mathlib.CategoryTheory.Sites.Sheaf
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
+import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks

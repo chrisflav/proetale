@@ -72,6 +72,7 @@ alias exists_isPushout_of_isFiltered_of_hom := IndSpreads.exists_isPushout_of_ho
 
 variable (Q : MorphismProperty C)
 
+-- in a PR to mathlib
 lemma ind_iff_exists {X Y : C} {f : X ⟶ Y} (hf : ind.{w} (isFinitelyPresentable _) f) :
     ind.{w} P f ↔ ∀ {Z : C} (p : X ⟶ Z) (g : Z ⟶ Y) (hp : isFinitelyPresentable.{w} _ p) (hpg : p ≫ g = f),
       ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ Y), u ≫ v = g ∧ P (p ≫ u) := by
@@ -82,11 +83,14 @@ lemma ind_iff_exists {X Y : C} {f : X ⟶ Y} (hf : ind.{w} (isFinitelyPresentabl
     obtain ⟨J, _, _, D, t, s, hs, hst⟩ := hf
     sorry
 
+-- in a PR to mathlib
 instance [P.IsStableUnderComposition] [IndSpreads.{w, w} P] : IsStableUnderComposition (ind.{w} P) where
   comp_mem {X Y Z} f g :=
       fun ⟨If, _, _, Df, tf, sf, hsf, hstf⟩ ⟨Ig, _, _, Dg, tg, sg, hsg, hstg⟩ ↦ by
     choose σ T' f' u h hf' using fun i ↦ P.exists_isPushout_of_isFiltered _ hsf (tg.app i) (hstg i).1
     sorry
+
+instance [P.IsMultiplicative] [IndSpreads.{w, w} P] : (ind.{w} P).IsMultiplicative where
 
 /--
 A property of morphisms `P` is said to pro-spread if `P`-morphisms into cofiltered limits
@@ -140,5 +144,12 @@ class ProSpreads (P : MorphismProperty C) : Prop where
 alias exists_isPullback_of_isCofiltered := ProSpreads.exists_isPullback
 
 alias exists_isPullback_of_isCofiltered_of_hom := ProSpreads.exists_isPullback_of_hom
+
+-- in a PR to mathlib
+instance [P.IsStableUnderComposition] [ProSpreads.{w, w} P] : IsStableUnderComposition (pro.{w} P) :=
+    sorry
+
+-- in a PR to mathlib
+instance [P.IsMultiplicative] [ProSpreads.{w, w} P] : (pro.{w} P).IsMultiplicative where
 
 end MorphismProperty
