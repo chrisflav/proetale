@@ -33,6 +33,8 @@ instance : Preorder (FiniteFamilies C) where
   le_refl _ := le_rfl
   le_trans _ _ _ := le_trans
 
+/-- If `F` is an equivalence, this functor is NOT necessarily an equivalence, because
+`FiniteFamilies` is a preorder, so every equivalence would be an isomorphism. -/
 @[simps]
 def FiniteFamilies.map {D : Type*} [Category D] (F : C ⥤ D) :
     FiniteFamilies C ⥤ FiniteFamilies D where
@@ -372,12 +374,35 @@ lemma pro_pro_contractionBase [ProSpreads.{max u v, max u v} P]
       apply pro_precontraction_hom
     · apply limit.w
 
+lemma pro_contractionBase
+    (H : P ≤ isFinitelyPresentable.{max u v} C)
+    [ProSpreads.{max u v, max u v} P]
+    [P.IsStableUnderBaseChange] [P.IsMultiplicative] (X : C) :
+    pro.{max u v} P (Contraction.base P X) := by
+  rw [← pro_pro H]
+  apply pro_of_univLE.{0, max u v}
+  exact P.pro_pro_contractionBase _
+
 lemma exists_comp_eq_id_contraction [ProSpreads.{0, 0} P]
     {Y : C} (f : Y ⟶ P.contraction X) (hf : P f) :
     ∃ (g : P.contraction X ⟶ Y), g ≫ f = 𝟙 (P.contraction X) := by
   refine Precoverage.exists_comp_eq_id_contraction X P ?_ f hf
   intro A B g hg
   exact ⟨by simp [hg], by simp⟩
+
+lemma exists_pro_forall_exists_section {C : Type u} [Category.{v} C] (P : MorphismProperty C)
+    [HasFiniteWidePullbacks C] [HasLimitsOfShape ℕᵒᵖ C]
+    [P.IsMultiplicative] [P.IsStableUnderBaseChange]
+    [∀ (X : C), HasLimitsOfShape (SCov P.finitePrecoverage X)ᵒᵖ (Over X)]
+    [ProSpreads.{0, 0} P] [ProSpreads.{max u v, max u v} P]
+    (H : P ≤ isFinitelyPresentable.{max u v} C) (X : C) :
+    ∃ (Y : C) (f : Y ⟶ X),
+      pro.{max u v} P f ∧ ∀ {Z : C} (g : Z ⟶ Y), P g → ∃ (s : Y ⟶ Z), s ≫ g = 𝟙 Y := by
+  refine ⟨P.contraction X, Contraction.base P X, ?_, ?_⟩
+  · exact pro_contractionBase _ H _
+  · intro Z g hg
+    obtain ⟨s, hs⟩ := exists_comp_eq_id_contraction P g hg
+    use s
 
 end MorphismProperty
 

@@ -23,7 +23,7 @@ We show that `ind P` inherits stability properties from `P`.
 - Show `ind P` is stable under composition if `P` spreads out (Christian).
 -/
 
-universe s t w v u
+universe s t w' w v u
 
 namespace CategoryTheory
 
@@ -38,10 +38,21 @@ instance (X : C) [HasFilteredColimits C] : ReflectsFilteredColimits (Under.forge
 
 open Opposite
 
+namespace ObjectProperty
+
+lemma ind_of_univLE (P : ObjectProperty C) [UnivLE.{w', w}] :
+    ind.{w'} P ≤ ind.{w} P := by
+  sorry
+
+end ObjectProperty
+
 namespace MorphismProperty
 
 instance [P.ContainsIdentities] : (ind.{w} P).ContainsIdentities where
   id_mem X := le_ind _ _ (P.id_mem X)
+
+lemma ind_of_univLE [UnivLE.{w', w}] : ind.{w'} P ≤ ind.{w} P := by
+  sorry
 
 variable {P}
 
@@ -72,6 +83,10 @@ lemma pro_eq_unop_ind_op : pro.{w} P = (ind.{w} P.op).unop := by
 lemma unop_mono {P Q : MorphismProperty Cᵒᵖ} (h : P ≤ Q) : P.unop ≤ Q.unop :=
   fun _ _ _ hf ↦ h _ hf
 
+@[gcongr]
+lemma op_mono {P Q : MorphismProperty C} (h : P ≤ Q) : P.op ≤ Q.op :=
+  fun _ _ _ hf ↦ h _ hf
+
 variable (P) in
 lemma le_pro : P ≤ pro.{w} P := by
   rw [pro_eq_unop_ind_op]
@@ -80,5 +95,19 @@ lemma le_pro : P ≤ pro.{w} P := by
 
 instance [P.ContainsIdentities] : (pro.{w} P).ContainsIdentities where
   id_mem X := le_pro _ _ (P.id_mem X)
+
+lemma op_isFinitelyPresentable :
+    (isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ :=
+  sorry
+
+lemma pro_pro [LocallySmall.{w} C] (H :P ≤ isFinitelyPresentable.{w} C) :
+    pro.{w} (pro.{w} P) = pro.{w} P := by
+  rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind]
+  rw [← op_isFinitelyPresentable]
+  exact P.op_mono H
+
+lemma pro_of_univLE [UnivLE.{w', w}] :
+    pro.{w'} P ≤ pro.{w} P := by
+  sorry
 
 end CategoryTheory.MorphismProperty
