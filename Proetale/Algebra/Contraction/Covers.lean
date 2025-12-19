@@ -379,7 +379,7 @@ lemma contraction.w (n m : ℕ) (hmn : n ≤ m) :
     contraction.π P X m ≫ (Construction.diag P X).map ⟨homOfLE hmn⟩ = contraction.π P X n :=
   limit.w _ _
 
-lemma exists_comp_eq_id_contraction [ProSpreads.{0, 0} P] [Limits.HasPullbacks C]
+lemma exists_comp_eq_id_contraction [PreProSpreads.{0} P] [Limits.HasPullbacks C]
     {Y : C} (f : Y ⟶ contraction.{w} P X) (hf : P f) :
     ∃ (g : contraction.{w} P X ⟶ Y), g ≫ f = 𝟙 (contraction.{w} P X) := by
   obtain ⟨n, D', u, v, hv, hu⟩ :
@@ -398,7 +398,7 @@ lemma exists_comp_eq_id_contraction [ProSpreads.{0, 0} P] [Limits.HasPullbacks C
   use l
   simp [l]
 
-lemma pro_pro_contractionBase [ProSpreads.{w, w} P]
+lemma pro_pro_contractionBase [PreProSpreads.{w} P]
     [P.IsStableUnderBaseChange] [P.IsMultiplicative] (X : C) :
     pro.{0} (pro.{w} P) (Contraction.base P X) := by
   refine ⟨ℕᵒᵖ, inferInstance, inferInstance,
@@ -415,7 +415,7 @@ lemma pro_pro_contractionBase [ProSpreads.{w, w} P]
 
 lemma pro_contractionBase [LocallySmall.{w} C]
     (H : P ≤ isFinitelyPresentable.{w} C)
-    [ProSpreads.{w, w} P]
+    [PreProSpreads.{w} P]
     [P.IsStableUnderBaseChange] [P.IsMultiplicative] (X : C) :
     pro.{w} P (Contraction.base P X) := by
   rw [← pro_pro H]
@@ -428,7 +428,7 @@ lemma exists_pro_forall_exists_section {C : Type u} [Category.{v} C] [LocallySma
     [P.IsMultiplicative] [P.IsStableUnderBaseChange]
     [∀ (X : C), EssentiallySmall.{w} (P.Over ⊤ X)]
     [∀ (X : C), HasLimitsOfShape (FiniteFamilies (SmallModel.{w} <| P.Over ⊤ X))ᵒᵖ (Over X)]
-    [ProSpreads.{0, 0} P] [ProSpreads.{w, w} P]
+    [PreProSpreads.{0} P] [PreProSpreads.{w} P]
     (H : P ≤ isFinitelyPresentable.{w} C) (X : C) :
     ∃ (Y : C) (f : Y ⟶ X),
       pro.{w} P f ∧ ∀ {Z : C} (g : Z ⟶ Y), P g → ∃ (s : Y ⟶ Z), s ≫ g = 𝟙 Y := by
