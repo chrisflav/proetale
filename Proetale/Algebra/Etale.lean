@@ -29,6 +29,22 @@ lemma RingHom.FinitePresentation.of_bijective {R S : Type*} [CommRing R] [CommRi
     rw [this]
     exact Submodule.fg_bot
 
+lemma RingHom.FormallyUnramified.of_bijective {R S : Type u} [CommRing R] [CommRing S]
+    {f : R →+* S} (hf : Function.Bijective f) :
+    f.FormallyUnramified := by
+  sorry
+
+lemma RingHom.Smooth.of_bijective {R S : Type u} [CommRing R] [CommRing S]
+    {f : R →+* S} (hf : Function.Bijective f) :
+    f.Smooth := by
+  sorry
+
+lemma RingHom.Etale.of_bijective {R S : Type u} [CommRing R] [CommRing S]
+    {f : R →+* S} (hf : Function.Bijective f) :
+    f.Etale := by
+  rw [RingHom.etale_iff_formallyUnramified_and_smooth]
+  exact ⟨.of_bijective hf, .of_bijective hf⟩
+
 namespace Algebra
 
 variable (R : Type*) (A : Type u) (B : Type u) [CommRing R] [CommRing A] [Algebra R A]
@@ -44,6 +60,13 @@ end Algebra
 
 namespace CommRingCat
 
+def surjectiveSpec : MorphismProperty CommRingCat :=
+  RingHom.toMorphismProperty fun f ↦ Function.Surjective (PrimeSpectrum.comap f)
+
+@[simp]
+lemma surjectiveSpec_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    surjectiveSpec f ↔ Function.Surjective (PrimeSpectrum.comap f.hom) := .rfl
+
 def etale : MorphismProperty CommRingCat :=
   RingHom.toMorphismProperty fun f ↦ f.Etale
 
@@ -51,9 +74,27 @@ def etale : MorphismProperty CommRingCat :=
 lemma etale_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     etale f ↔ f.hom.Etale := .rfl
 
+lemma etale_le_isFinitelyPresentable :
+    etale.{u} ≤ MorphismProperty.isFinitelyPresentable.{u} CommRingCat.{u} :=
+  fun _ _ _ hf ↦ isFinitelyPresentable _ _ hf.2
+
 instance : etale.IsStableUnderCobaseChange := by
   rw [etale, RingHom.isStableUnderCobaseChange_toMorphismProperty_iff]
   exact RingHom.Etale.isStableUnderBaseChange
+
+instance : surjectiveSpec.IsStableUnderCobaseChange :=
+  sorry
+
+instance : etale.IsMultiplicative where
+  id_mem R := .of_bijective Function.bijective_id
+  comp_mem {R S T} f g hf hg := by
+    apply RingHom.Etale.stableUnderComposition
+    exact hf
+    exact hg
+
+instance : surjectiveSpec.IsMultiplicative where
+  id_mem R := by simp [Function.surjective_id]
+  comp_mem _ _ h1 h2 := by simpa using h1.comp h2
 
 variable {J : Type*} [Category J] (D : J ⥤ CommRingCat.{u})
 
@@ -82,5 +123,12 @@ instance : MorphismProperty.PreIndSpreads.{u} etale.{u} := by
   · simpa [RingHom.etale_algebraMap]
   · rw [hf_eq, ← RingHom.algebraMap_toAlgebra g, isPushout_iff_isPushout]
     exact Algebra.IsPushout.of_equiv (S' := ↑R ⊗[↥R₀] S₀) e.symm rfl
+
+instance (R : CommRingCat.{u}) : EssentiallySmall.{u} (MorphismProperty.Under etale ⊤ R) :=
+  essentiallySmall_of_le (fun _ _ _ hf ↦ .of_finitePresentation hf.2) _
+
+instance (R : CommRingCat.{u}ᵒᵖ) :
+    EssentiallySmall.{u} (CommRingCat.etale.op.Over ⊤ R) :=
+  sorry
 
 end CommRingCat

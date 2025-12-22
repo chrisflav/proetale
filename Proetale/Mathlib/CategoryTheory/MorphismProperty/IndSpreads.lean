@@ -10,7 +10,7 @@ import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
 -/
 
 
-universe s t w v u
+universe s t w' w v u
 
 namespace CategoryTheory
 
@@ -61,6 +61,11 @@ lemma PreIndSpreads.of_isInitial [HasPushouts C] [P.IsStableUnderCobaseChange]
       fun j ↦ h.hom_ext _ _
     exact ⟨j, pushout f' q, pushout.inr _ _, pushout.desc v (c.ι.app j ≫ f) (by simp [← H.w]),
       .of_left (by simpa) (by simp) (IsPushout.of_hasPushout f' q).flip, P.pushout_inr _ _ hf'⟩
+
+lemma PreIndSpreads.of_univLE [UnivLE.{w, w'}] [PreIndSpreads.{w'} P] :
+    PreIndSpreads.{w} P where
+  exists_isPushout {J} _ _ D c hc T f hf :=
+    sorry
 
 /--
 - Given a `colim Dᵢ`-morphism `f : A = colim Dᵢ ⨿_[Dᵢ] A' ⟶ colim Dᵢ ⨿_[Dⱼ] B' = B` where `A' ⟶ Dᵢ` and
@@ -137,6 +142,20 @@ class PreProSpreads (P : MorphismProperty C) : Prop where
     ∃ (j : J) (T' : C) (f' : T' ⟶ D.obj j) (g : T ⟶ T'),
       IsPullback f g (c.π.app j) f' ∧ P f'
 
+alias exists_isPullback_of_isCofiltered := PreProSpreads.exists_isPullback
+
+lemma PreProSpreads.op_iff (P : MorphismProperty C) :
+    PreProSpreads.{w} P.op ↔ PreIndSpreads.{w} P := by
+  refine ⟨fun h ↦ ⟨fun {J} _ _ D c hc T f hf ↦ ?_⟩, fun h ↦ ⟨fun {J} _ _ D c hc T f hf ↦ ?_⟩⟩
+  · obtain ⟨j, T', f', g, h, hf'⟩ := P.op.exists_isPullback_of_isCofiltered c.op hc.op f.op hf
+    exact ⟨j.unop, T'.unop, f'.unop, g.unop, h.unop.flip, hf'⟩
+  · obtain ⟨j, T', f', g, h, hf'⟩ := P.exists_isPushout_of_isFiltered (coconeLeftOpOfCone c)
+      (isColimitCoconeLeftOpOfCone _ hc) f.unop hf
+    exact ⟨j.unop, Opposite.op T', f'.op, g.op, h.op.flip, hf'⟩
+
+instance PreProSpreads.op [PreIndSpreads.{w} P] : PreProSpreads.{w} P.op := by
+  rwa [PreProSpreads.op_iff]
+
 /--
 - Given a `lim Dᵢ`-morphism `f : A = lim Dᵢ ×_[Dᵢ] A' ⟶ lim Dᵢ ×_[Dⱼ] B' = B` where `Dᵢ ⟶ A'` and
   `Dⱼ ⟶ B'` satisfiy `P`, there exists
@@ -166,9 +185,6 @@ class ProSpreads (P : MorphismProperty C) : Prop extends PreProSpreads.{w} P whe
       f' ≫ PB₁ = PA₁ ∧
       f ≫ hPB.lift (pB ≫ c.π.app j) qB (by simp [hB.w]) =
         hPA.lift (pA ≫ c.π.app j) qA (by simp [hA.w]) ≫ f'
-
-
-alias exists_isPullback_of_isCofiltered := PreProSpreads.exists_isPullback
 
 alias exists_isPullback_of_isCofiltered_of_hom := ProSpreads.exists_isPullback_of_hom
 

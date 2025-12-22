@@ -7,6 +7,7 @@ import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
+import Proetale.Algebra.ProEtaleContraction
 import Proetale.Algebra.StalkAlgebraic
 import Proetale.Algebra.StalkIso
 import Proetale.Algebra.WContractible

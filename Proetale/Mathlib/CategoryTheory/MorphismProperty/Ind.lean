@@ -79,6 +79,9 @@ lemma pro_eq_unop_ind_op : pro.{w} P = (ind.{w} P.op).unop := by
       NatTrans.leftOp s, isLimitOfCoconeRightOpOfCone D.leftOp hs, fun j ↦ ⟨(hst _).1,
       op_injective (hst _).2⟩⟩
 
+lemma ind_eq_unop_pro_op : ind.{w} P = (pro.{w} P.op).unop := by
+  sorry
+
 @[gcongr]
 lemma unop_mono {P Q : MorphismProperty Cᵒᵖ} (h : P ≤ Q) : P.unop ≤ Q.unop :=
   fun _ _ _ hf ↦ h _ hf
