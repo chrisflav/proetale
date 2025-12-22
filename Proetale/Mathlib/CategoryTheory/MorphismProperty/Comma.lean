@@ -5,9 +5,20 @@ namespace CategoryTheory.MorphismProperty
 variable {T : Type*} [Category T] {P Q : MorphismProperty T} (X : T) [Q.IsMultiplicative]
 
 -- this is in mathlib on a later version
+-- `also solvable by copilot`
 instance (P : MorphismProperty T) [P.RespectsIso] (X : T) :
-    (P.underObj (X := X)).IsClosedUnderIsomorphisms :=
-  sorry
+    (P.underObj (X := X)).IsClosedUnderIsomorphisms := by
+  classical
+  refine ⟨?_⟩
+  intro A B e hA
+  -- Postcompose `A.hom` with the isomorphism on the right component of `e.hom`.
+  have h' : P (A.hom ≫ e.hom.right) :=
+    MorphismProperty.RespectsIso.postcomp (P := P) (e := e.hom.right) (f := A.hom) hA
+  -- In `Under X`, commutativity identifies this composite with `B.hom`.
+  have hw : A.hom ≫ e.hom.right = B.hom := by
+    simp only [Functor.const_obj_obj, Functor.id_obj, CategoryTheory.Under.w]
+  -- Rewrite and conclude.
+  simpa [hw] using h'
 
 namespace Over
 
