@@ -43,6 +43,16 @@ class PreIndSpreads (P : MorphismProperty C) : Prop where
     ∃ (j : J) (T' : C) (f' : D.obj j ⟶ T') (g : T' ⟶ T),
       IsPushout (c.ι.app j) f' f g ∧ P f'
 
+alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
+
+lemma PreIndSpreads.inf (Q : MorphismProperty C) [PreIndSpreads.{w} P]
+    [PreIndSpreads.{w} Q] :
+    PreIndSpreads.{w} (P ⊓ Q) where
+  exists_isPushout {J} _ _ D c hc T f hf := by
+    obtain ⟨j₁, T'₁, f'₁, g₁, hg₁⟩ := P.exists_isPushout_of_isFiltered c hc f hf.1
+    obtain ⟨j₂, T'₂, f'₂, g₂, hg₂⟩ := Q.exists_isPushout_of_isFiltered c hc f hf.2
+    sorry
+
 variable {P} in
 /-- If `C` has an initial object `S` such that every `P`-morphism `X ⟶ Y` descends to
 a P-morphism `X' ⟶ Y'` with `X'` finitely presented over `S`, then `P` pre-ind-spreads. -/
@@ -93,8 +103,6 @@ class IndSpreads (P : MorphismProperty C) : Prop extends PreIndSpreads.{w} P whe
       PA₁ ≫ f' = PB₁ ∧
       hPA.desc (c.ι.app j ≫ pA) qA (by simp [hA.w]) ≫ f =
         f' ≫ hPB.desc (c.ι.app j ≫ pB) qB (by simp [hB.w])
-
-alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
 
 alias exists_isPushout_of_isFiltered_of_hom := IndSpreads.exists_isPushout_of_hom
 

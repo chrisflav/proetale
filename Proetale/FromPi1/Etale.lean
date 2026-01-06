@@ -1,7 +1,15 @@
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
+import Mathlib.RingTheory.RingHom.Smooth
+
+universe u
 
 open CategoryTheory
+
+lemma RingHom.Smooth.flat {R S : Type u} [CommRing R] [CommRing S]
+    {f : R →+* S} (hf : f.Smooth) :
+    f.Flat :=
+  sorry
 
 namespace AlgebraicGeometry
 

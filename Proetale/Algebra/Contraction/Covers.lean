@@ -1,11 +1,8 @@
-import Mathlib
-import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
-import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
-import Proetale.Mathlib.CategoryTheory.Sites.Sieves
-import Proetale.Mathlib.CategoryTheory.Sites.Finite
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 
 /-!
 # Another attempt at pro-contractions.
@@ -270,7 +267,7 @@ variable [∀ (X : C) (U : SCov K X), HasWidePullback _ _ U.zeroHypercover.f]
 
 namespace MorphismProperty
 
-variable (P : MorphismProperty C)
+variable (P Q : MorphismProperty C)
 
 variable (X : C)
 
@@ -322,34 +319,34 @@ lemma pro_precontraction_hom [P.IsMultiplicative] [P.IsStableUnderBaseChange] :
 end
 
 variable [HasFiniteWidePullbacks C]
-  [∀ X, EssentiallySmall.{w} (P.Over ⊤ X)]
-  [∀ X : C, HasLimitsOfShape (FiniteFamilies (SmallModel.{w} (P.Over ⊤ X)))ᵒᵖ (Over X)]
+  [∀ X, EssentiallySmall.{w} ((P ⊓ Q).Over ⊤ X)]
+  [∀ X : C, HasLimitsOfShape (FiniteFamilies (SmallModel.{w} ((P ⊓ Q).Over ⊤ X)))ᵒᵖ (Over X)]
 
 namespace Contraction.Construction
 
 noncomputable
 def obj : ℕ → C
   | 0 => X
-  | n + 1 => (precontraction.{w} P (obj n)).left
+  | n + 1 => (precontraction.{w} (P ⊓ Q) (obj n)).left
 
 variable (K) in
 noncomputable
-def diag : ℕᵒᵖ ⥤ C := Functor.ofOpSequence (X := obj P X)
-  fun _ ↦ (P.precontraction _).hom
+def diag : ℕᵒᵖ ⥤ C := Functor.ofOpSequence (X := obj P Q X)
+  fun _ ↦ ((P ⊓ Q).precontraction _).hom
 
 variable (K) in
 noncomputable
-def objBase (n : ℕ) : obj P X n ⟶ X :=
-  (diag P X).map (homOfLE <| n.zero_le).op
+def objBase (n : ℕ) : obj P Q X n ⟶ X :=
+  (diag P Q X).map (homOfLE <| n.zero_le).op
 
 lemma diag_map_le_succ (n : ℕ) (hn : n ≤ n + 1) :
-    (diag P X).map (homOfLE hn).op = (P.precontraction _).hom := by
+    (diag P Q X).map (homOfLE hn).op = ((P ⊓ Q).precontraction _).hom := by
   simp [diag]
 
 @[simps]
 noncomputable
-def diagHomBase : diag P X ⟶ (Functor.const _).obj X where
-  app n := objBase P X n.1
+def diagHomBase : diag P Q X ⟶ (Functor.const _).obj X where
+  app n := objBase P Q X n.1
   naturality n m f := by
     simp only [Functor.const_obj_obj, objBase, Opposite.op_unop, homOfLE_leOfHom,
       Functor.const_obj_map, Category.comp_id, homOfLE_leOfHom, ← Functor.map_comp]
@@ -364,79 +361,104 @@ variable [HasLimitsOfShape ℕᵒᵖ C]
 variable (K) in
 noncomputable
 def contraction : C :=
-  limit (Contraction.Construction.diag P X)
+  limit (Contraction.Construction.diag P Q X)
 
 variable (K) in
 noncomputable
-abbrev contraction.π (n : ℕ) : contraction P X ⟶ Construction.obj P X n :=
+abbrev contraction.π (n : ℕ) : contraction P Q X ⟶ Construction.obj P Q X n :=
   limit.π _ _
 
 variable (K) in
-noncomputable def Contraction.base : contraction P X ⟶ X :=
-  contraction.π _ _ 0
+noncomputable def Contraction.base : contraction P Q X ⟶ X :=
+  contraction.π _ _ _ 0
 
 lemma contraction.w (n m : ℕ) (hmn : n ≤ m) :
-    contraction.π P X m ≫ (Construction.diag P X).map ⟨homOfLE hmn⟩ = contraction.π P X n :=
+    contraction.π P Q X m ≫ (Construction.diag P Q X).map ⟨homOfLE hmn⟩ = contraction.π P Q X n :=
   limit.w _ _
 
-lemma exists_comp_eq_id_contraction [PreProSpreads.{0} P] [Limits.HasPullbacks C]
-    {Y : C} (f : Y ⟶ contraction.{w} P X) (hf : P f) :
-    ∃ (g : contraction.{w} P X ⟶ Y), g ≫ f = 𝟙 (contraction.{w} P X) := by
+lemma pro_pro_contractionπ [PreProSpreads.{w} P]
+    [P.IsStableUnderBaseChange] [P.IsMultiplicative]
+    [Q.IsStableUnderBaseChange] [Q.IsMultiplicative] (X : C) (n : ℕ) :
+    pro.{0} (pro.{w} P) (contraction.π P Q X n) := by
+  apply pro_coneπ
+  · exact limit.isLimit _
+  · intro k f
+    apply ofOpSequence_map_of_isMultiplicative
+    intro m
+    apply pro_mono inf_le_left
+    exact pro_precontraction_hom.{w} (P ⊓ Q) (Construction.obj P Q X m)
+
+lemma pro_pro_contractionBase [PreProSpreads.{w} P]
+    [P.IsStableUnderBaseChange] [P.IsMultiplicative]
+    [Q.IsStableUnderBaseChange] [Q.IsMultiplicative] (X : C) :
+    pro.{0} (pro.{w} P) (Contraction.base P Q X) :=
+  pro_pro_contractionπ _ _ _ 0
+
+lemma prop_contractionπ
+    (h : pro.{w} Q = Q)
+    [P.IsStableUnderBaseChange] [P.IsMultiplicative]
+    [Q.IsStableUnderBaseChange] [Q.IsMultiplicative]
+    (X : C) (n : ℕ) :
+    Q (contraction.π P Q X n) := by
+  have h' : pro.{0} Q = Q := by
+    refine le_antisymm (le_trans ?_ h.le) ?_
+    · apply pro_of_univLE
+    · exact Q.le_pro
+  nth_rw 1 [← h']
+  apply pro_coneπ
+  · exact limit.isLimit _
+  · intro k f
+    apply ofOpSequence_map_of_isMultiplicative
+    intro m
+    nth_rw 1 [← h]
+    apply pro_mono inf_le_right
+    exact pro_precontraction_hom.{w} (P ⊓ Q) (Construction.obj P Q X m)
+
+lemma exists_comp_eq_id_contraction
+    (h : pro.{w} Q = Q)
+    (H : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z),
+      Q (f ≫ g) → Q f → P g → Q g)
+    [PreProSpreads.{0} P] [Limits.HasPullbacks C]
+    [Q.IsMultiplicative] [Q.IsStableUnderBaseChange]
+    [P.IsMultiplicative] [P.IsStableUnderBaseChange]
+    {Y : C} (f : Y ⟶ contraction.{w} P Q X) (hf : P f) (hf' : Q f) :
+    ∃ (g : contraction.{w} P Q X ⟶ Y), g ≫ f = 𝟙 (contraction.{w} P Q X) := by
   obtain ⟨n, D', u, v, hv, hu⟩ :
-      ∃ (n : ℕ) (D' : C) (u : D' ⟶ Construction.obj P X n) (v : Y ⟶ D'),
-        IsPullback f v (contraction.π P X n) u ∧ P u := by
+      ∃ (n : ℕ) (D' : C) (u : D' ⟶ Construction.obj P Q X n) (v : Y ⟶ D'),
+        IsPullback f v (contraction.π P Q X n) u ∧ P u := by
     obtain ⟨⟨n⟩, D', f', g, h, hf'⟩ := P.exists_isPullback_of_isCofiltered
-      (J := ℕᵒᵖ) (D := Construction.diag P X)
+      (J := ℕᵒᵖ) (D := Construction.diag P Q X)
       (limit.cone _) (limit.isLimit _) f hf
     use n, D', f', g, h
-  let l : P.contraction X ⟶ Y := by
-    refine hv.lift (𝟙 _) (contraction.π P X (n + 1) ≫ (Precontraction.π _ _ u hu).left) ?_
-    have := limit.w (Construction.diag P X) ⟨homOfLE (Nat.le_succ n)⟩
+  have hu' : Q u := by
+    apply H v
+    · rw [← hv.w]
+      apply Q.comp_mem _ _ hf'
+      apply prop_contractionπ
+      exact h
+    · apply Q.of_isPullback hv
+      apply prop_contractionπ
+      apply h
+    · exact hu
+  let l : P.contraction Q X ⟶ Y := by
+    refine hv.lift (𝟙 _) (contraction.π P Q X (n + 1) ≫
+      (Precontraction.π (P ⊓ Q) _ u ⟨hu, hu'⟩).left) ?_
+    have := limit.w (Construction.diag P Q X) ⟨homOfLE (Nat.le_succ n)⟩
     dsimp only [Nat.succ_eq_add_one, homOfLE_leOfHom] at this
     simp only [contraction.π, Category.id_comp, Category.assoc, Precontraction.π_arrow, ← this]
     simp [Construction.diag, Functor.ofOpSequence]
   use l
   simp [l]
 
-lemma pro_pro_contractionBase [PreProSpreads.{w} P]
-    [P.IsStableUnderBaseChange] [P.IsMultiplicative] (X : C) :
-    pro.{0} (pro.{w} P) (Contraction.base P X) := by
-  refine ⟨ℕᵒᵖ, inferInstance, inferInstance,
-      Contraction.Construction.diag P X,
-      ?_, (limit.cone _).π, limit.isLimit _, ?_⟩
-  · apply Contraction.Construction.diagHomBase
-  · intro n
-    refine ⟨?_, ?_⟩
-    · dsimp [Contraction.Construction.objBase, Contraction.Construction.diag]
-      apply ofOpSequence_map_of_isMultiplicative
-      intro n
-      apply pro_precontraction_hom
-    · apply limit.w
-
 lemma pro_contractionBase [LocallySmall.{w} C]
     (H : P ≤ isFinitelyPresentable.{w} C)
     [PreProSpreads.{w} P]
-    [P.IsStableUnderBaseChange] [P.IsMultiplicative] (X : C) :
-    pro.{w} P (Contraction.base P X) := by
+    [P.IsStableUnderBaseChange] [P.IsMultiplicative]
+    [Q.IsStableUnderBaseChange] [Q.IsMultiplicative] (X : C) :
+    pro.{w} P (Contraction.base P Q X) := by
   rw [← pro_pro H]
   apply pro_of_univLE.{0, w}
-  exact P.pro_pro_contractionBase _
-
-lemma exists_pro_forall_exists_section {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
-    (P : MorphismProperty C)
-    [HasFiniteWidePullbacks C] [HasLimitsOfShape ℕᵒᵖ C]
-    [P.IsMultiplicative] [P.IsStableUnderBaseChange]
-    [∀ (X : C), EssentiallySmall.{w} (P.Over ⊤ X)]
-    [∀ (X : C), HasLimitsOfShape (FiniteFamilies (SmallModel.{w} <| P.Over ⊤ X))ᵒᵖ (Over X)]
-    [PreProSpreads.{0} P] [PreProSpreads.{w} P]
-    (H : P ≤ isFinitelyPresentable.{w} C) (X : C) :
-    ∃ (Y : C) (f : Y ⟶ X),
-      pro.{w} P f ∧ ∀ {Z : C} (g : Z ⟶ Y), P g → ∃ (s : Y ⟶ Z), s ≫ g = 𝟙 Y := by
-  refine ⟨P.contraction X, Contraction.base P X, ?_, ?_⟩
-  · exact pro_contractionBase _ H _
-  · intro Z g hg
-    obtain ⟨s, hs⟩ := exists_comp_eq_id_contraction P _ g hg
-    use s
+  exact P.pro_pro_contractionBase _ _
 
 end MorphismProperty
 
