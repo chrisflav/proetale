@@ -45,7 +45,7 @@ noncomputable instance : Algebra R (IndEtaleContraction R) :=
   f.toAlgebra
 
 /-- The ind-contraction of `R` is ind-étale over `R`. -/
-instance : Algebra.IndEtale R (IndEtaleContraction R) := by
+instance indEtale_indEtaleContraction : Algebra.IndEtale R (IndEtaleContraction R) := by
   rw [← RingHom.IndEtale.algebraMap_iff, RingHom.algebraMap_toAlgebra,
     RingHom.IndEtale.iff_ind_etale]
   dsimp only [CommRingCat.ofHom_hom]
@@ -54,7 +54,7 @@ instance : Algebra.IndEtale R (IndEtaleContraction R) := by
   apply MorphismProperty.pro_contractionBase
   grw [← MorphismProperty.op_isFinitelyPresentable, CommRingCat.etale_le_isFinitelyPresentable]
 
-instance : Module.FaithfullyFlat R (IndEtaleContraction R) := by
+instance faithfullyFlat_indEtaleContraction : Module.FaithfullyFlat R (IndEtaleContraction R) := by
   rw [← RingHom.faithfullyFlat_algebraMap_iff, RingHom.algebraMap_toAlgebra]
   have heq : MorphismProperty.pro.{u} CommRingCat.faithfullyFlat.{u}.op =
       CommRingCat.faithfullyFlat.{u}.op := by

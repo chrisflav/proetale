@@ -6,19 +6,25 @@ universe u
 
 open CategoryTheory Limits
 
+namespace CommAlgCat
+
 variable {R : Type u} [CommRing R]
 
-instance {J : Type*} [Category J] (M : CommAlgCat R) :
+instance preservesColimitsOfShape_tensorLeft
+    {J : Type*} [Category J] (M : CommAlgCat R) :
     PreservesColimitsOfShape J (MonoidalCategory.tensorLeft M) :=
   sorry
 
-instance : PreservesColimits (forget₂ (CommAlgCat R) CommRingCat) :=
+instance preservesColimitsOfSize_forget_commRingCat :
+    PreservesColimits (forget₂ (CommAlgCat R) CommRingCat) :=
   sorry
 
-instance (R : Type u) [CommRing R] :
+instance preservesFilteredColimitsOfSize_forget_algCat (R : Type u) [CommRing R] :
     PreservesFilteredColimitsOfSize (forget₂ (CommAlgCat R) (AlgCat R)) :=
   sorry
 
-instance (R : Type u) [CommRing R] :
+end CommAlgCat
+
+instance AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat (R : Type u) [CommRing R] :
     PreservesFilteredColimitsOfSize (forget₂ (AlgCat R) (ModuleCat R)) :=
   sorry

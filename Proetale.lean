@@ -20,6 +20,7 @@ import Proetale.Basic
 import Proetale.FromPi1.Etale
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Basic
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
+import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Proetale.Mathlib.AlgebraicGeometry.Limits
@@ -33,6 +34,7 @@ import Proetale.Mathlib.CategoryTheory.Limits.Comma
 import Proetale.Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
@@ -51,6 +53,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
 import Proetale.Mathlib.CategoryTheory.Sites.Sheaf
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
+import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks

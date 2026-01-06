@@ -23,6 +23,25 @@ lemma ObjectProperty.ind_iff_of_equivalence (e : C ≌ D) (P : ObjectProperty D)
 
 namespace ObjectProperty
 
+lemma ind_inverseImage_le
+    {C : Type*} [Category C] {D : Type*} [Category D]
+    (F : C ⥤ D) (P : ObjectProperty D)
+    [PreservesFilteredColimitsOfSize.{w, w} F] :
+    ind.{w} (P.inverseImage F) ≤ (ind.{w} P).inverseImage F := by
+  intro X ⟨J, _, _, pres, h⟩
+  simp only [prop_inverseImage_iff]
+  use J, inferInstance, inferInstance, pres.map F, h
+
+lemma ind_inverseImage_eq_of_isEquivalence
+    {C : Type*} [Category C] {D : Type*} [Category D]
+    (F : C ⥤ D) (P : ObjectProperty D) [P.IsClosedUnderIsomorphisms]
+    [F.IsEquivalence] :
+    ind.{w} (P.inverseImage F) = (ind.{w} P).inverseImage F := by
+  refine le_antisymm (ind_inverseImage_le _ _) fun X ⟨J, _, _, pres, h⟩ ↦ ?_
+  refine ⟨J, ‹_›, ‹_›, .ofIso (pres.map F.asEquivalence.inverse) ?_, fun j ↦ ?_⟩
+  · exact (F.asEquivalence.unitIso.app X).symm
+  · exact P.prop_of_iso ((F.asEquivalence.counitIso.app _).symm) (h j)
+
 variable (P : ObjectProperty C)
 
 lemma ind_iff_exists {X : C} (hf : ind.{w} (isFinitelyPresentable _) X) :
