@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.RingTheory.RingHom.OpenImmersion
+import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.Tactic.DepRewrite
 import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 
 /-!
@@ -12,6 +14,41 @@ import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 A ring homomorphism is a local isomorphism if source locally (in the geometric sense)
 it is a standard open immersion.
 -/
+
+-- remove after bumping
+lemma Pi.single_induction' {ι : Type*} [DecidableEq ι] [Finite ι] {M : ι → Type*}
+    [∀ i, AddCommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
+    (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
+    (single : ∀ i m, p (Pi.single i m)) : p f := by
+  cases nonempty_fintype ι
+  rw [← Finset.univ_sum_single f]
+  exact Finset.sum_induction _ _ add zero (by simp [single])
+
+-- remove after bumping
+lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
+    [∀ i, CommRing (R i)] (i : ι) :
+    RingHom.ker (Pi.evalRingHom R i) = Ideal.span {1 - Pi.single i 1} := by
+  apply le_antisymm
+  · intro x hx
+    simp only [mem_ker, Pi.evalRingHom_apply] at hx
+    rw [Ideal.mem_span_singleton]
+    use x + Pi.single i 1
+    simp [mul_add, sub_mul, one_mul, ← Pi.single_mul_left, hx]
+  · simp [Ideal.span_le]
+
+-- remove after bumping
+lemma Ideal.span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)
+    [∀ i, Ring (R i)] : Ideal.span (Set.range fun i ↦ (Pi.single i 1 : Π i, R i)) = ⊤ := by
+  rw [eq_top_iff]
+  rintro x -
+  induction x using Pi.single_induction' with
+  | zero => simp
+  | add f g hf hg => exact Ideal.add_mem _ hf hg
+  | single i r =>
+      have : Pi.single i r = Pi.single i r * Pi.single i 1 := by simp [← Pi.single_mul_left]
+      rw [this]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)
+
 /-- An `R`-algebra `S` is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
 class Algebra.IsLocalIso (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] : Prop where
@@ -27,8 +64,77 @@ instance (priority := 100) [IsStandardOpenImmersion R S] : IsLocalIso R S where
     use 1, hq.one_notMem
     exact IsStandardOpenImmersion.trans _ S _
 
+-- TODO: cleanup proof after bumping
+lemma of_span_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) = ⊤)
+    (T : ι → Type*) [∀ i, CommRing (T i)] [∀ i, Algebra R (T i)] [∀ i, Algebra S (T i)]
+    [∀ i, IsScalarTower R S (T i)] [∀ i, IsLocalization.Away (f i) (T i)]
+    [∀ i, IsLocalIso R (T i)] : IsLocalIso R S := by
+  constructor
+  intro q hq
+  rw [← PrimeSpectrum.iSup_basicOpen_eq_top_iff] at h
+  have : ⟨q, hq⟩ ∈ ⨆ i, PrimeSpectrum.basicOpen (f i)  := by simp [h]
+  simp at this
+  obtain ⟨i, hi⟩ := this
+  have : ⟨q, hq⟩ ∈ PrimeSpectrum.basicOpen (f i) := hi
+  rw [← SetLike.mem_coe, ← PrimeSpectrum.localization_away_comap_range (T i)] at this
+  obtain ⟨q', hq'⟩ := this
+  obtain ⟨g', hg', h⟩ := exists_notMem_isStandardOpenImmersion (R := R) q'.1
+  obtain ⟨n, g, hg⟩ := IsLocalization.Away.surj (f i) g'
+  use g * (f i)
+  constructor
+  · apply Ideal.IsPrime.mul_notMem hq _ hi
+    simp [PrimeSpectrum.ext_iff] at hq'
+    rw [← hq']
+    simp
+    rw [← hg]
+    rwa [Ideal.mul_unit_mem_iff_mem]
+    apply IsUnit.pow
+    apply IsLocalization.Away.algebraMap_isUnit
+  · have : IsLocalization.Away (g * (f i)) (Localization.Away (algebraMap S (T i) g)) := .mul (T i) _ _ _
+    let e : Localization.Away (g * (f i)) ≃ₐ[S] (Localization.Away (algebraMap S (T i) g)) :=
+      Localization.algEquiv _ _
+    let : Algebra (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) :=
+      RingHom.toAlgebra e.symm.toAlgHom
+    have : IsScalarTower R (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) := by
+      refine .of_algebraMap_eq' ?_
+      rw [RingHom.algebraMap_toAlgebra, ← RingHom.cancel_left (g := e.toRingHom) e.injective]
+      ext
+      simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+        AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+        AlgEquiv.toAlgHom_eq_coe, AlgHomClass.toRingHom_toAlgHom, AlgEquiv.apply_symm_apply]
+      simp [e]
+      rw [IsScalarTower.algebraMap_apply R S, IsLocalization.map_eq, RingHomCompTriple.comp_apply,
+        ← IsScalarTower.algebraMap_apply R S]
+    have : IsStandardOpenImmersion
+        (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) :=
+      .of_bijective _ _ e.symm.bijective
+    have : IsStandardOpenImmersion R (Localization.Away ((algebraMap S (T i)) g)) := by
+      rw [← hg]
+      have : IsLocalization.Away (g' * (algebraMap S (T i)) (f i) ^ n) (Localization.Away g') := by
+        apply (config := { allowSynthFailures := true }) IsLocalization.Away.mul' (Localization.Away g')
+        apply IsLocalization.away_of_isUnit_of_bijective
+        · exact IsUnit.map _ (IsUnit.pow _ (IsLocalization.Away.algebraMap_isUnit _))
+        · exact Function.bijective_id
+      let e' : Localization.Away (g' * (algebraMap S (T i) (f i))^n) ≃ₐ[T i] Localization.Away g' := by
+        exact Localization.algEquiv _ _
+      apply IsStandardOpenImmersion.of_algEquiv _ _ _ (e'.symm.restrictScalars R)
+    apply IsStandardOpenImmersion.trans _ (Localization.Away (algebraMap S (T i) g)) _
+
+lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
+    [CommRing R] [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)] [Finite ι] [∀ i, IsLocalIso R (S i)] :
+    IsLocalIso R (∀ i, S i)  := by
+  classical
+  let (i : ι) : Algebra (∀ i, S i) (S i) := (Pi.evalAlgHom R S i).toAlgebra
+  have (i : ι) : IsLocalization.Away ((fun i ↦ Pi.single i (1 : S i)) i) ((fun i ↦ S i) i) := by
+    apply IsLocalization.away_of_isIdempotentElem
+    · simp [IsIdempotentElem, ← Pi.single_mul_left]
+    · apply RingHom.ker_evalRingHom
+    · apply (Pi.evalRingHom S i).surjective
+  apply of_span_eq_top _ _ (fun i ↦ Pi.single i (1 : S i)) _ fun i ↦ S i
+  apply Ideal.span_single_eq_top
+
 instance refl : IsLocalIso R R :=
-    instOfIsStandardOpenImmersion R R
+  instOfIsStandardOpenImmersion R R
 
 end Algebra.IsLocalIso
 
