@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.RingTheory.RingHom.OpenImmersion
+import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 
 /-!
 # Local isomorphisms
@@ -21,10 +22,13 @@ variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 namespace Algebra.IsLocalIso
 
-instance [IsStandardOpenImmersion R S] : IsLocalIso R S where
+instance (priority := 100) [IsStandardOpenImmersion R S] : IsLocalIso R S where
   exists_notMem_isStandardOpenImmersion q hq := by
     use 1, hq.one_notMem
     exact IsStandardOpenImmersion.trans _ S _
+
+instance refl : IsLocalIso R R :=
+    instOfIsStandardOpenImmersion R R
 
 end Algebra.IsLocalIso
 

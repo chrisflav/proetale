@@ -51,9 +51,20 @@ lemma trans [Algebra S T] [IsScalarTower R S T] [Algebra.IndZariski R S] [Algebr
 instance prod [Algebra.IndZariski R S] [Algebra.IndZariski R T] : Algebra.IndZariski R (S × T) :=
   sorry
 
+instance pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
+    [∀ i, Algebra R (S i)] [∀ i, Algebra.IndZariski R (S i)] : Algebra.IndZariski R (∀ i, S i) :=
+  sorry
+
+instance function {ι : Type u} [_root_.Finite ι] (S : Type u) [CommRing S]
+    [Algebra R S] [Algebra.IndZariski R S] : Algebra.IndZariski R (ι → S) :=
+  pi R (fun _ ↦ S)
+
 variable {R}
 
 instance (priority := 100) of_isLocalIso [Algebra.IsLocalIso R S] : Algebra.IndZariski R S := sorry
+
+instance refl : Algebra.IndZariski R R :=
+  Algebra.IndZariski.of_isLocalIso _
 
 lemma of_isLocalization (M : Submonoid R) [IsLocalization M S] : Algebra.IndZariski R S :=
   sorry
@@ -113,15 +124,22 @@ lemma iff_exists {R S : CommRingCat.{u}} (f : R ⟶ S) :
       (_ : IsColimit (.mk _ c)), ∀ i, (t.app i).hom.IsLocalIso ∧ t.app i ≫ c.app i = f :=
   RingHom.IndZariski.iff_ind_isLocalIso _
 
+lemma id : (RingHom.id R).IndZariski :=
+  Algebra.IndZariski.refl
+
 variable {f : R →+* S} {g : S →+* T}
 
 lemma comp (hg : g.IndZariski) (hf : f.IndZariski) : (g.comp f).IndZariski := by
   algebraize [f, g, g.comp f]
   exact Algebra.IndZariski.trans R S T
 
-instance prod {g : R →+* T} (hf : f.IndZariski) (hg : g.IndZariski) : (f.prod g).IndZariski := by
+lemma prod {g : R →+* T} (hf : f.IndZariski) (hg : g.IndZariski) : (f.prod g).IndZariski := by
   algebraize [f, g]
   exact Algebra.IndZariski.prod R S T
+
+lemma pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
+    (f : ∀ i, R →+* (S i)) (hf : ∀ i, (f i).IndZariski) : (Pi.ringHom f).IndZariski := by
+  sorry
 
 lemma flat (h : f.IndZariski) : f.Flat := by
   algebraize [f]

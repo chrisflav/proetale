@@ -56,8 +56,11 @@ import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
+import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
+import Proetale.Mathlib.RingTheory.Spectrum.Prime.Topology
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
+import Proetale.Mathlib.Topology.Constructions
 import Proetale.Mathlib.Topology.Inseparable
 import Proetale.Mathlib.Topology.JacobsonSpace
 import Proetale.Mathlib.Topology.QuasiSeparated

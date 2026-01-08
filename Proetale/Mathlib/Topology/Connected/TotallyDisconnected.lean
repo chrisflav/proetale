@@ -113,6 +113,7 @@ noncomputable def ConnectedComponents.prodMap :
   IsHomeomorph.homeomorph (Continuous.connectedComponentsLift
     (by continuity)) (isHomeomorph_connectedComponentsLift_prod S T)
 
+-- TODO: unbundle this
 def ConnectedComponents.mkHomeomorph [TotallyDisconnectedSpace S] : S ≃ₜ ConnectedComponents S where
   toFun := mk
   invFun := continuous_id.connectedComponentsLift

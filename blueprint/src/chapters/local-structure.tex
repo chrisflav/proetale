@@ -190,6 +190,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -547,7 +548,10 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
   A finite product of ind-Zariski algebras is ind-Zariski.
   \label{lemma:ind-Zariski-products}
   \uses{def:ind-Zariski}
-  \lean{Algebra.IndZariski.prod,RingHom.IndZariski.prod}
+  \lean{Algebra.IndZariski.prod,
+        RingHom.IndZariski.prod,
+        Algebra.IndZariski.pi,
+        RingHom.IndZariski.pi}
   \leanok
 \end{lemma}
 
@@ -1988,6 +1992,8 @@ In the following series of constructions, we will modify the connected component
 \begin{definition}
   \label{def:modify-pi0-finite}
   \uses{def:colim-open-closed-localizations,thm:pi0-prod,thm:pi0-isom}
+  \lean{WContractification.Pullback}
+  \leanok
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let 
   $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) be a finite discrete quotient of 
   \(T\) with quotient map \(q : T \to S\).  Define the ring $A^f_{q}$ as follow: 
@@ -2000,6 +2006,8 @@ In the following series of constructions, we will modify the connected component
 \begin{lemma}
   \label{thm:modify-pi0-finite-properties}
   \uses{def:modify-pi0-finite,def:ind-Zariski,def:identify-local-rings}
+  \lean{WContractification.Pullback.indZariski,
+        WContractification.Pullback.bijectiveOnStalks_algebraMap}
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) be a finite discrete quotient of \(T\) with quotient map \(q : T \to S\). Then the $A^S$-algebra defined in \Cref{def:modify-pi0-finite} viewed as $A$-algebra through $A \to A^S \to A^f_{q}$ is ind-Zariski. In particular, it identifies local rings. The map $A^S \to A^f_{q}$ induces a homeomorphism of $\Spec (A^f_{q})$ onto \((X \times S) \times_{\pi_0(X) \times S} Z = X \times_{\pi_0(X)} Z\).
 \end{lemma}
 
