@@ -154,8 +154,10 @@ noncomputable instance {ι : Type*} [Small.{u} ι] [Finite ι] :
       AffineScheme.forgetToScheme
   refine ⟨fun {K} ↦ ?_⟩
   have : CreatesColimit (Discrete.functor (K.obj ∘ Discrete.mk))
-      AffineScheme.forgetToScheme :=
-    createsColimitOfFullyFaithfulOfIso (.mk (∐ fun i ↦ (K.obj ⟨i⟩).1) inferInstance) (Iso.refl _)
+      AffineScheme.forgetToScheme := by
+    apply createsColimitOfFullyFaithfulOfIso (.mk (∐ fun i ↦ (K.obj ⟨i⟩).1) inferInstance)
+    apply HasColimit.isoOfNatIso
+    exact Discrete.natIso fun i ↦ Iso.refl _
   exact createsColimitOfIsoDiagram AffineScheme.forgetToScheme Discrete.natIsoFunctor.symm
 
 instance : FinitaryExtensive AffineScheme.{u} :=

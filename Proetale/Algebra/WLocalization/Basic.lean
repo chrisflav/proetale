@@ -68,12 +68,12 @@ def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
 /-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
 the generalization hull of `D(f) ∩ V(I)`. -/
 lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
-    Set.range (algebraMap A (Generalization f I)).specComap =
+    Set.range (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) =
     generalizationHull (locClosedSubset f I) :=
   sorry
 
 lemma bijOn_algebraMap_generalization_specComap_zeroLocus_ideal (f : A) (I : Ideal A) :
-    Set.BijOn (algebraMap A (Generalization f I)).specComap (zeroLocus (ideal f I))
+    Set.BijOn (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) (zeroLocus (ideal f I))
     (locClosedSubset f I) :=
   sorry
 
@@ -176,7 +176,7 @@ noncomputable def ProdStrata.ideal (E : Finset A) : Ideal (ProdStrata E) :=
 
 -- wrong
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
-    Set.BijOn (algebraMap A (ProdStrata E)).specComap
+    Set.BijOn (PrimeSpectrum.comap <| algebraMap A (ProdStrata E))
     (zeroLocus (ProdStrata.ideal E)) .univ :=
   sorry
 
@@ -202,7 +202,8 @@ noncomputable def ProdStrata.map {E F : Finset A} (h : E ⊆ F) :
       (Pi.evalAlgHom _ _ (i.restrict h))
 
 lemma ProdStrata.mapsTo_map_specComap {E F : Finset A} (h : E ⊆ F) :
-    Set.MapsTo (map h).specComap (zeroLocus (ideal F)) (zeroLocus (ideal E)) := by
+    Set.MapsTo (PrimeSpectrum.comap (map h).toRingHom)
+      (zeroLocus (ideal F)) (zeroLocus (ideal E)) := by
   sorry
 
 variable (A) in
@@ -244,7 +245,8 @@ noncomputable def ideal : Ideal (WLocalization A) :=
   ⨆ E : Finset A, Ideal.map (colimitPresentation.ι.app E).hom (ProdStrata.ideal E)
 
 lemma bijOn_algebraMap_specComap_zeroLocus_ideal :
-    Set.BijOn (algebraMap A (WLocalization A)).specComap (zeroLocus (ideal A)) .univ :=
+    Set.BijOn (PrimeSpectrum.comap <| algebraMap A (WLocalization A))
+      (zeroLocus (ideal A)) .univ :=
   sorry
 
 lemma exists_mem_zeroLocus_ideal_specializes (x : PrimeSpectrum (WLocalization A)) :

@@ -109,17 +109,6 @@ alias exists_isPushout_of_isFiltered_of_hom := IndSpreads.exists_isPushout_of_ho
 variable (Q : MorphismProperty C)
 
 -- in a PR to mathlib
-lemma ind_iff_exists {X Y : C} {f : X ⟶ Y} (hf : ind.{w} (isFinitelyPresentable _) f) :
-    ind.{w} P f ↔ ∀ {Z : C} (p : X ⟶ Z) (g : Z ⟶ Y) (hp : isFinitelyPresentable.{w} _ p) (hpg : p ≫ g = f),
-      ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ Y), u ≫ v = g ∧ P (p ≫ u) := by
-  refine ⟨fun ⟨J, _, _, D, t, s, hs, hst⟩ Z p g hp hpg ↦ ?_, ?_⟩
-  · obtain ⟨j, u, hu, hpu⟩ := exists_hom_of_isFinitelyPresentable hs hp t g (by simp [hpg, hst])
-    exact ⟨D.obj j, u, s.app j, hpu, by simp [hu, hst]⟩
-  · intro hfac
-    obtain ⟨J, _, _, D, t, s, hs, hst⟩ := hf
-    sorry
-
--- in a PR to mathlib
 instance [P.IsStableUnderComposition] [PreIndSpreads.{w} P] : IsStableUnderComposition (ind.{w} P) where
   comp_mem {X Y Z} f g :=
       fun ⟨If, _, _, Df, tf, sf, hsf, hstf⟩ ⟨Ig, _, _, Dg, tg, sg, hsg, hstg⟩ ↦ by

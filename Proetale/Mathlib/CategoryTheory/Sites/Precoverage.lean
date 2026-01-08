@@ -8,7 +8,7 @@ lemma Precoverage.mem_coverings_singleton_of_isPullback [K.IsStableUnderBaseChan
     {X Y Z P : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z)
     (h : IsPullback fst snd f g) (hg : Presieve.singleton g ∈ K Z) :
     Presieve.singleton fst ∈ K X := by
-  rw [← Presieve.ofArrows_pUnit] at hg ⊢
+  rw [← Presieve.ofArrows_pUnit.{_, _, 0}] at hg ⊢
   apply K.mem_coverings_of_isPullback _ hg
   intro _
   apply h

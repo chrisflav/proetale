@@ -11,7 +11,7 @@ lemma ofSequence_map_of_isMultiplicative {C : Type*} [Category C] {X : ℕ → C
   induction k with
   | zero => simpa using P.id_mem _
   | succ n ih =>
-    rw [← homOfLE_comp (show m ≤ m + n by cutsat) (show m + n ≤ m + (n + 1) by cutsat),
+    rw [← homOfLE_comp (show m ≤ m + n by lia) (show m + n ≤ m + (n + 1) by lia),
       Functor.map_comp]
     apply P.comp_mem
     · apply ih
@@ -25,7 +25,7 @@ lemma ofOpSequence_map_of_isMultiplicative {C : Type*} [Category C] {X : ℕ →
   induction k with
   | zero => simpa using P.id_mem _
   | succ n ih =>
-    rw [← homOfLE_comp (show m ≤ m + n by cutsat) (show m + n ≤ m + (n + 1) by cutsat),
+    rw [← homOfLE_comp (show m ≤ m + n by lia) (show m + n ≤ m + (n + 1) by lia),
       op_comp, Functor.map_comp]
     apply P.comp_mem
     · simp [H]

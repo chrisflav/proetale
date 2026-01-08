@@ -25,7 +25,7 @@ private lemma isEmpty_of_commSq_sigmaι_of_ne_aux {ι : Type u} {X : ι → Sche
   fapply eq_bot_iff.mp <| disjoint_iff.mp <| disjoint_opensRange_sigmaι X i j hij
   · exact (f ≫ Sigma.ι X i).base z
   · refine ⟨⟨f.base z, rfl⟩, ⟨g.base z, ?_⟩⟩
-    rw [← Scheme.comp_base_apply, h.w]
+    rw [← Scheme.Hom.comp_apply, h.w]
 
 lemma isEmpty_of_commSq_sigmaι_of_ne {ι : Type v} [Small.{u} ι] {X : ι → Scheme.{u}}
     {i j : ι} {Z : Scheme.{u}} {f : Z ⟶ X i} {g : Z ⟶ X j}

@@ -83,7 +83,7 @@ private def submersivePresentationS (f : R[X]) : SubmersivePresentation R (S f) 
   jacobian_isUnit := by
     let f' := (mk (idealJ f) (toMvPolynomial (0 : Fin 2) f.derivative))
     have unit_f' : IsUnit f' := by
-      apply isUnit_of_mul_eq_one f' (mk (idealJ f) (X 1))
+      apply IsUnit.of_mul_eq_one (mk (idealJ f) (X 1))
       rw [← map_mul, ← map_one (Ideal.Quotient.mk _), mk_eq_mk_iff_sub_mem]
       apply Ideal.subset_span
       simp

@@ -44,18 +44,6 @@ lemma ind_inverseImage_eq_of_isEquivalence
 
 variable (P : ObjectProperty C)
 
-lemma ind_iff_exists {X : C} (hf : ind.{w} (isFinitelyPresentable _) X) :
-    ind.{w} P X ↔ ∀ {Z : C} (g : Z ⟶ X) (hp : isFinitelyPresentable.{w} _ Z),
-      ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ X), u ≫ v = g ∧ P W := by
-  refine ⟨?_, ?_⟩
-  · intro ⟨J, _, _, pres, h⟩ Z g hZ
-    have : IsFinitelyPresentable Z := hZ
-    obtain ⟨j, u, hcomp⟩ := IsFinitelyPresentable.exists_hom_of_isColimit pres.isColimit g
-    exact ⟨_, u, pres.ι.app j, hcomp, h j⟩
-  · intro hfac
-    obtain ⟨J, _, _, pres, h⟩ := hf
-    sorry
-
 end ObjectProperty
 
 end CategoryTheory

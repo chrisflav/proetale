@@ -7,6 +7,6 @@ lemma Module.FaithfullyFlat.of_nontrivial_tensor_quotient
     [Module.Flat R M] (H : ∀ (m : Ideal R), m.IsMaximal → Nontrivial ((R ⧸ m) ⊗[R] M)) :
     Module.FaithfullyFlat R M where
   submodule_ne_top m hm := by
-    rw [ne_eq, ← Submodule.subsingleton_quotient_iff_eq_top, not_subsingleton_iff_nontrivial,
+    rw [ne_eq, ← Submodule.Quotient.subsingleton_iff, not_subsingleton_iff_nontrivial,
       (TensorProduct.quotTensorEquivQuotSMul M m).symm.nontrivial_congr]
     exact H m hm

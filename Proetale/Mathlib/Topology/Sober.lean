@@ -2,8 +2,8 @@ import Mathlib.Topology.Sober
 
 -- after `quasiSober_iff`
 -- `by copilot`
-theorem Homeomorph.quasiSober {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [QuasiSober X] (f : X ≃ₜ Y) : QuasiSober Y := by
-  classical
+theorem Homeomorph.quasiSober {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [QuasiSober X] (f : X ≃ₜ Y) : QuasiSober Y := by
   -- Prove quasi-sobriety of `Y` by producing generic points for irreducible closed sets.
   refine ⟨?_⟩
   intro S hSirr hSclosed
@@ -41,7 +41,7 @@ theorem Homeomorph.quasiSober {X Y : Type*} [TopologicalSpace X] [TopologicalSpa
         refine ⟨f.symm y, ?_, by simp⟩
         exact ⟨y, hyS, by simp⟩
     -- Since `S` is closed, `closure S = S`.
-    simpa [himage, closure_eq_iff_isClosed.mpr hSclosed]
+    simp [himage]
 
   -- Convert the generic-point target set using `hclosure`.
   have : IsGenericPoint (f hTirr.genericPoint) S := by

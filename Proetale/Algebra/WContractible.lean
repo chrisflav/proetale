@@ -109,11 +109,12 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap A (Restriction T))
 variable {T}
 
 lemma range_algebraMap_specComap (h : IsClosed T) :
-    Set.range (algebraMap A (Restriction T)).specComap = ConnectedComponents.mk ⁻¹' T :=
+    Set.range (PrimeSpectrum.comap <| algebraMap A (Restriction T)) =
+      ConnectedComponents.mk ⁻¹' T :=
   sorry
 
 lemma isClosedEmbedding_algebraMap_specComap (h : IsClosed T) :
-    IsClosedEmbedding (algebraMap A (Restriction T)).specComap :=
+    IsClosedEmbedding (PrimeSpectrum.comap <| algebraMap A (Restriction T)) :=
   sorry
 
 end Restriction
@@ -192,7 +193,8 @@ theorem IsWContractibleRing.exists_retraction [IsWContractibleRing R]
   have : Module.FaithfullyFlat R S' :=
     Ideal.WLocalization.faithfullyFlat_map_algebraMap hI
   have : Algebra.IndEtale R S' := Algebra.IndEtale.trans R S S'
-  have : zeroLocus (I.map (algebraMap R S')) = closedPoints (PrimeSpectrum S') := Ideal.WLocalization.algebraMap_specComap_preimage_closedPoints_eq hI (fun _ _ ↦ inferInstance)
+  have : zeroLocus (I.map (algebraMap R S')) = closedPoints (PrimeSpectrum S') :=
+    Ideal.WLocalization.algebraMap_specComap_preimage_closedPoints_eq hI (fun _ _ ↦ inferInstance)
   obtain ⟨g, hg⟩ := IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints hI this
   use g.comp (algebraMap S S')
   simp only [RingHom.comp_assoc]

@@ -21,16 +21,12 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C]
 
-lemma MorphismProperty.Over.forget_comp_forget_map
-    {C : Type*} [Category C] {S : C}
-    {P Q : MorphismProperty C} [Q.IsMultiplicative] {X Y : P.Over Q S} (f : X ⟶ Y) :
-    (MorphismProperty.Over.forget P Q S ⋙ CategoryTheory.Over.forget S).map f = f.left := rfl
-
 lemma Limits.ClosedUnderColimitsOfShape.discrete {ι : Type*} {P : ObjectProperty C}
     [P.IsClosedUnderIsomorphisms]
     (h : ∀ {f : ι → C} [HasColimit (Discrete.functor f)], (∀ j, P (f j)) → P (∐ f)) :
-    ClosedUnderColimitsOfShape (Discrete ι) P := by
-  refine closedUnderColimitsOfShape_of_colimit fun {F} _ hF ↦ ?_
+    P.IsClosedUnderColimitsOfShape (Discrete ι) := by
+  refine .mk' fun X ↦ ?_
+  rintro ⟨F, hF⟩
   have : HasColimit (Discrete.functor (F.obj ∘ Discrete.mk)) :=
     hasColimit_of_iso Discrete.natIsoFunctor.symm
   rw [P.prop_iff_of_iso <| HasColimit.isoOfNatIso Discrete.natIsoFunctor]
@@ -52,7 +48,7 @@ instance {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
     [ReflectsColimitsOfShape WalkingParallelPair F] :
     F.ReflectsEffectiveEpis where
   reflects {X Y} f hf := by
-    apply effectiveEpiOfKernelPair
+    apply effectiveEpi_of_kernelPair
     apply isColimitOfReflects F
     let n : parallelPair (pullback.fst f f) (pullback.snd f f) ⋙ F ≅
         parallelPair ((pullback.fst (F.map f) (F.map f))) (pullback.snd (F.map f) (F.map f)) := by
@@ -66,7 +62,8 @@ instance {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
         Cofork.ofπ (F.map f) pullback.condition := by
       refine Cocones.ext (Iso.refl _) fun j ↦ ?_
       cases j <;> simp [n]
-    exact RegularEpi.isColimit.ofIsoColimit e.symm
+    refine .ofIsoColimit ?_ e.symm
+    exact (regularEpiOfEffectiveEpi (F.map f)).isColimit
 
 lemma Preregular.of_hasPullbacks_of_effectiveEpi_fst {C : Type*} [Category C] [HasPullbacks C]
     (h : ∀ {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S), EffectiveEpi g → EffectiveEpi (pullback.fst f g)) :
@@ -96,7 +93,7 @@ instance {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ Over S)
   hasColimit_of_created _ (Over.forget S)
 
 noncomputable
-instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
+instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
     [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
     [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
     [Quiver.IsThin J] [Small.{u} J] :
@@ -116,11 +113,11 @@ instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J �
     preservesColimitIso (Over.forget S) _
   let 𝒰 : (colimit (F ⋙ MorphismProperty.Over.forget P ⊤ S)).left.OpenCover :=
     (Scheme.IsLocallyDirected.openCover _).pushforwardIso e.inv
-  rw [IsLocalAtSource.iff_of_openCover (P := P) 𝒰]
+  rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) 𝒰]
   intro i
   simpa [𝒰, e] using (F.obj i).prop
 
-instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
+instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
     [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
     [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
     [Quiver.IsThin J] [Small.{u} J] :
@@ -134,7 +131,7 @@ instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J �
     hasColimit_of_created _ (Over.forget S)
   hasColimit_of_created _ (MorphismProperty.Over.forget P ⊤ S)
 
-instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
+instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
     [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
     [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
     [Quiver.IsThin J] [Small.{u} J] :
@@ -146,7 +143,7 @@ instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J �
       Scheme.forget).IsLocallyDirected := ‹_›
   inferInstance
 
-instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
+instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
     [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
     [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
     [Quiver.IsThin J] [Small.{u} J] (j : J) :
@@ -165,75 +162,48 @@ instance [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J �
   change IsOpenImmersion (colimit.ι ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) j)
   infer_instance
 
-instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
-    (i : WalkingPair) : Mono ((span f g ⋙ Scheme.forget).map (WidePushoutShape.Hom.init i)) := by
-  rw [mono_iff_injective]
-  cases i
-  · simpa using f.injective
-  · simpa using g.injective
-
-instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
-    {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
-  obtain (a|(a|a)) := t
-  · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
-    infer_instance
-  · simpa
-  · simpa
-
-instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
-    [IsOpenImmersion f.left] [IsOpenImmersion g.left] (i : WalkingPair) :
-    Mono ((span f g ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).map
-      (WidePushoutShape.Hom.init i)) := by
-  rw [mono_iff_injective]
-  cases i
-  · simpa using f.left.injective
-  · simpa using g.left.injective
-
-instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
-    [IsOpenImmersion f.left] [IsOpenImmersion g.left]
-    {i j : WalkingSpan} (t : i ⟶ j) :
-      IsOpenImmersion ((span f g).map t).left := by
-  obtain (a|(a|a)) := t
-  · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
-    infer_instance
-  · simpa
-  · simpa
-
-example [IsLocalAtSource P] {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
+example [IsZariskiLocalAtSource P] {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f.left] [IsOpenImmersion g.left] :
     PreservesColimit (span f g) (MorphismProperty.Over.forget P ⊤ S) :=
   inferInstance
 
-lemma IsLocalAtSource.closedUnderColimitsOfShape_discrete (J : Type*) [Small.{u} J]
-    [IsLocalAtSource P] :
-    ClosedUnderColimitsOfShape (Discrete J) (fun Y : Over X ↦ P Y.hom) := by
+instance IsZariskiLocalAtSource.closedUnderColimitsOfShape_discrete (J : Type*) [Small.{u} J]
+    [IsZariskiLocalAtSource P] :
+    (P.overObj (X := X)).IsClosedUnderColimitsOfShape (Discrete J) := by
   refine Limits.ClosedUnderColimitsOfShape.discrete fun {f} _ hf ↦ ?_
   have : (PreservesCoproduct.iso (Over.forget X) _).inv ≫ (∐ f).hom =
       Sigma.desc fun j ↦ (f j).hom := by
     refine Limits.Sigma.hom_ext _ _ fun j ↦ ?_
     rw [PreservesCoproduct.inv_hom, Limits.ι_comp_sigmaComparison_assoc]
     simp
+  rw [MorphismProperty.overObj]
   rw [← P.cancel_left_of_respectsIso (PreservesCoproduct.iso (Over.forget X) _).inv, this]
-  exact IsLocalAtSource.sigmaDesc hf
+  exact IsZariskiLocalAtSource.sigmaDesc hf
 
-noncomputable instance IsLocalAtSource.createsColimitsOfShape_forget (J : Type*) [Small.{u} J]
-    [IsLocalAtSource P] :
-    CreatesColimitsOfShape (Discrete J) (MorphismProperty.Over.forget P ⊤ X) :=
-  MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed _
-    (IsLocalAtSource.closedUnderColimitsOfShape_discrete _ _ _)
+noncomputable instance IsZariskiLocalAtSource.createsColimitsOfShape_forget (J : Type*) [Small.{u} J]
+    [IsZariskiLocalAtSource P] :
+    CreatesColimitsOfShape (Discrete J) (MorphismProperty.Over.forget P ⊤ X) := by
+  -- TODO: this is bad, improve this by for example adding a version of
+  -- `MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed` for `Over`
+  convert-- (config := { allowSynthFailures := true })
+    MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed
+      (L := 𝟭 Scheme.{u}) (R := Functor.fromPUnit.{0} X) P (Discrete J)
+  apply IsZariskiLocalAtSource.closedUnderColimitsOfShape_discrete
 
-noncomputable instance (J : Type*) [Small.{u} J] [IsLocalAtSource P] :
-    HasCoproductsOfShape J (MorphismProperty.Over P ⊤ X) :=
-  MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape _
-    (IsLocalAtSource.closedUnderColimitsOfShape_discrete _ _ _)
+noncomputable instance (J : Type*) [Small.{u} J] [IsZariskiLocalAtSource P] :
+    HasCoproductsOfShape J (MorphismProperty.Over P ⊤ X) := by
+  convert MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
+    (L := 𝟭 Scheme.{u}) (R := Functor.fromPUnit.{0} X) P
+  · infer_instance
+  · apply IsZariskiLocalAtSource.closedUnderColimitsOfShape_discrete
 
-noncomputable instance [IsLocalAtSource P] : HasFiniteCoproducts (MorphismProperty.Over P ⊤ X) where
+noncomputable instance [IsZariskiLocalAtSource P] : HasFiniteCoproducts (MorphismProperty.Over P ⊤ X) where
   out := inferInstance
 
 instance : FinitaryExtensive (Over X) :=
   finitaryExtensive_of_preserves_and_reflects_isomorphism (Over.forget X)
 
-instance [IsLocalAtSource P] [P.IsStableUnderBaseChange] [P.IsStableUnderComposition]
+instance [IsZariskiLocalAtSource P] [P.IsStableUnderBaseChange] [P.IsStableUnderComposition]
     [P.HasOfPostcompProperty P] :
     FinitaryExtensive (MorphismProperty.Over P ⊤ X) :=
   finitaryExtensive_of_preserves_and_reflects_isomorphism (MorphismProperty.Over.forget P ⊤ X)
@@ -336,7 +306,7 @@ lemma inl_ne_inr_of_isOpenImmersion_of_not_surjective {U X Y : Scheme} (f : U �
   · simpa
 
 lemma exists_hom_ne_of_not_surjective
-    {P : MorphismProperty Scheme.{u}} [IsLocalAtSource P]
+    {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
     {S : Scheme} {X : P.Over ⊤ S}
     {U : P.Over ⊤ S} (i : U ⟶ X) [IsOpenImmersion i.left]
     (hi : ¬ Function.Surjective i.left.base) :
@@ -374,12 +344,12 @@ lemma IsOpenImmersion.liftOver_fac {P : MorphismProperty Scheme.{u}}
   exact IsOpenImmersion.lift_fac _ _ _
 
 /-- Any open epimorphism is surjective. -/
-lemma Over.surjective_of_epi_of_isOpenMap {P : MorphismProperty Scheme} [IsLocalAtSource P]
+lemma Over.surjective_of_epi_of_isOpenMap {P : MorphismProperty Scheme} [IsZariskiLocalAtSource P]
     {S : Scheme} {X Y : P.Over ⊤ S}
     {f : X ⟶ Y} [Epi f] (hf : IsOpenMap f.left.base) :
     Surjective f.left := by
   let U : Y.left.Opens := ⟨Set.range f.left.base, hf.isOpen_range⟩
-  let i : MorphismProperty.Over.mk _ (U.ι ≫ Y.hom) (IsLocalAtSource.comp Y.prop _) ⟶ Y :=
+  let i : MorphismProperty.Over.mk _ (U.ι ≫ Y.hom) (IsZariskiLocalAtSource.comp Y.prop _) ⟶ Y :=
     MorphismProperty.Over.homMk U.ι rfl trivial
   have : IsOpenImmersion i.left := inferInstanceAs <| IsOpenImmersion U.ι
   suffices h : Function.Surjective i.left.base by

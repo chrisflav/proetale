@@ -59,32 +59,32 @@ A cover of a scheme is quasi-compact if every affine open of the base can be cov
 by a finite union of images of quasi-compact opens of the components.
 -/
 @[stacks 022B, mk_iff]
-class Scheme.Cover.QuasiCompact (𝒰 : Cover.{v} P S) : Prop where
+class Scheme.Cover.QuasiCompact (𝒰 : Cover.{v} (precoverage P) S) : Prop where
   isCompactOpenCovered_of_isAffineOpen {U : S.Opens} (hU : IsAffineOpen U) :
     IsCompactOpenCovered (fun i ↦ (𝒰.f i).base) U.1
 
-variable (𝒰 : Scheme.Cover.{v} P S)
+variable (𝒰 : Scheme.Cover.{v} (precoverage P) S)
 
-lemma IsAffineOpen.isCompactOpenCovered (𝒰 : S.Cover P) [𝒰.QuasiCompact]
+lemma IsAffineOpen.isCompactOpenCovered (𝒰 : S.Cover (Scheme.precoverage P)) [𝒰.QuasiCompact]
     {U : S.Opens} (hU : IsAffineOpen U) :
     IsCompactOpenCovered (fun i ↦ (𝒰.f i).base) U.1 :=
   Scheme.Cover.QuasiCompact.isCompactOpenCovered_of_isAffineOpen hU
 
-lemma Scheme.Cover.isCompactOpenCovered_of_isCompact (𝒰 : S.Cover P) [𝒰.QuasiCompact]
-    {U : S.Opens} (hU : IsCompact U.1) :
+lemma Scheme.Cover.isCompactOpenCovered_of_isCompact (𝒰 : S.Cover (Scheme.precoverage P))
+    [𝒰.QuasiCompact] {U : S.Opens} (hU : IsCompact U.1) :
     IsCompactOpenCovered (fun i ↦ (𝒰.f i).base) U.1 := by
-  obtain ⟨Us, hUs, hUf, hUc⟩ := (isBasis_affine_open S).exists_finite_of_isCompact hU
+  obtain ⟨Us, hUs, hUf, hUc⟩ := S.isBasis_affineOpens.exists_finite_of_isCompact hU
   refine .of_iUnion_eq_of_finite (SetLike.coe '' Us) (by aesop) (hUf.image _) ?_
   simpa using fun t ht ↦ IsAffineOpen.isCompactOpenCovered 𝒰 (hUs ht)
 
 namespace Scheme.Cover.QuasiCompact
 
-variable {𝒰 : Cover.{v} P S}
+variable {𝒰 : Cover.{v} (Scheme.precoverage P) S}
 
 open TopologicalSpace.Opens
 
 @[simp]
-lemma weaken_iff {Q : MorphismProperty Scheme.{u}} (hPQ : P ≤ Q) {𝒰 : Cover.{v} P S} :
+lemma weaken_iff {Q : MorphismProperty Scheme.{u}} (hPQ : P ≤ Q) {𝒰 : Cover.{v} (Scheme.precoverage P) S} :
     (𝒰.weaken hPQ).QuasiCompact ↔ 𝒰.QuasiCompact := by
   simp_rw [quasiCompact_iff]
 
@@ -94,7 +94,7 @@ lemma exists_isAffineOpen_of_isCompact [𝒰.QuasiCompact] {U : S.Opens} (hU : I
       (∀ i, IsAffineOpen (V i)) ∧
       ⋃ i, (𝒰.f (f i)).base '' (V i) = U := by
   obtain ⟨n, a, V, ha, heq⟩ := (𝒰.isCompactOpenCovered_of_isCompact hU).exists_mem_of_isBasis
-    (fun i ↦ isBasis_affine_open (𝒰.X i)) (fun _ _ h ↦ h.isCompact)
+    (fun i ↦ isBasis_affineOpens (𝒰.X i)) (fun _ _ h ↦ h.isCompact)
   exact ⟨n, a, V, ha, heq⟩
 
 /-- If the component maps of `𝒰` are open, `𝒰` is quasi-compact. This in particular
@@ -111,13 +111,14 @@ instance (𝒰 : S.OpenCover) : 𝒰.QuasiCompact :=
 
 open TopologicalSpace Opens
 
-instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover P) [𝒰.QuasiCompact] {T : Scheme.{u}} (f : T ⟶ S) :
-    (𝒰.pullbackCover f).QuasiCompact := by
+instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover (Scheme.precoverage P))
+    [𝒰.QuasiCompact] {T : Scheme.{u}} (f : T ⟶ S) :
+    Scheme.Cover.QuasiCompact (𝒰.pullback₁ f) := by
   refine ⟨fun {U'} hU' ↦ ?_⟩
   wlog h : ∃ (U : S.Opens), IsAffineOpen U ∧ f.base '' U' ⊆ U generalizing U'
   · refine .of_isCompact_of_forall_exists hU'.isCompact fun x hxU ↦ ?_
-    obtain ⟨W, hW, hx, _⟩ := isBasis_iff_nbhd.mp (isBasis_affine_open S) (mem_top (f.base x))
-    obtain ⟨W', hW', hx', hle⟩ := isBasis_iff_nbhd.mp (isBasis_affine_open T)
+    obtain ⟨W, hW, hx, _⟩ := isBasis_iff_nbhd.mp S.isBasis_affineOpens (mem_top (f.base x))
+    obtain ⟨W', hW', hx', hle⟩ := isBasis_iff_nbhd.mp T.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ W ⊓ U' from ⟨hx, hxU⟩)
     refine ⟨W', le_trans hle inf_le_right, by simpa [hx], W'.2, ?_⟩
     exact this hW' ⟨W, hW, by simpa using le_trans hle inf_le_left⟩
@@ -136,20 +137,21 @@ instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover P) [𝒰.QuasiCompact] {T :
     obtain ⟨z, hzl, hzr⟩ := Pullback.exists_preimage_pullback x y heq.symm
     refine ⟨i, hi, z, ⟨by simpa [hzl], by simpa [hzr]⟩, hzl⟩
 
-instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover P) [𝒰.QuasiCompact] {T : Scheme.{u}} (f : T ⟶ S) :
-    (𝒰.pullbackCover' f).QuasiCompact := by
+instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover (Scheme.precoverage P))
+    [𝒰.QuasiCompact] {T : Scheme.{u}} (f : T ⟶ S) :
+    Scheme.Cover.QuasiCompact (𝒰.pullback₂ f) := by
   sorry
 
 /-- If `𝒱` is a refinement of `𝒰` such that `𝒱` is quasicompact, also `𝒰` is quasicompact. -/
 @[stacks 03L8]
-lemma of_hom [P.IsMultiplicative] {𝒰 𝒱 : S.Cover P} (f : 𝒱 ⟶ 𝒰) [𝒱.QuasiCompact] :
+lemma of_hom [P.IsMultiplicative] {𝒰 𝒱 : S.Cover (Scheme.precoverage P)} (f : 𝒱 ⟶ 𝒰) [𝒱.QuasiCompact] :
     𝒰.QuasiCompact := by
   refine ⟨fun {U} hU ↦ ?_⟩
   exact .of_comp (a := f.idx) (fun i ↦ (𝒱.f i).base) (fun i ↦ (f.app i).base)
-    (fun _ ↦ Hom.continuous _) (fun i ↦ funext <| by simp [← Scheme.comp_base_apply])
+    (fun _ ↦ Hom.continuous _) (fun i ↦ funext <| by simp [← Scheme.Hom.comp_apply])
     (fun _ ↦ Hom.continuous _) U.2 (hU.isCompactOpenCovered 𝒱)
 
-lemma iff_sigma {𝒰 : Cover.{u} P S} [IsLocalAtSource P] :
+lemma iff_sigma {𝒰 : Cover.{u} (Scheme.precoverage P) S} [IsZariskiLocalAtSource P] :
     𝒰.QuasiCompact ↔ 𝒰.sigma.QuasiCompact := by
   wlog hP : P = ⊤
   · rw [← weaken_iff le_top (𝒰 := 𝒰), ← weaken_iff le_top (𝒰 := 𝒰.sigma)]
@@ -166,7 +168,7 @@ lemma iff_sigma {𝒰 : Cover.{u} P S} [IsLocalAtSource P] :
     have heq : (fun a ↦ (𝒰.f a.1).base a.2) ∘ (sigmaMk 𝒰.X).symm = (𝒰.sigma.f ⟨⟩).base := by
       apply (Equiv.comp_symm_eq _ _ _).mpr
       ext ⟨i, y⟩
-      simp [← Scheme.comp_base_apply]
+      simp [← Scheme.Hom.comp_apply]
     refine ⟨⟨(sigmaMk 𝒰.X).symm '' V.1, by simpa using V.2⟩, by simpa, ?_⟩
     simp only [sigma_I₀, PUnit.default_eq_unit, sigma_X, carrier_eq_coe, ← Set.image_comp]
     convert hU
@@ -175,8 +177,8 @@ instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} {f : X ⟶ Y}
     (coverOfIsIso (P := P) f).QuasiCompact :=
   of_isOpenMap (fun _ ↦ f.homeomorph.isOpenMap)
 
-instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} P X) [𝒰.QuasiCompact]
-    (f : ∀ (x : 𝒰.I₀), (𝒰.X x).Cover P) [∀ x, (f x).QuasiCompact] :
+instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) [𝒰.QuasiCompact]
+    (f : ∀ (x : 𝒰.I₀), (𝒰.X x).Cover (precoverage P)) [∀ x, (f x).QuasiCompact] :
     QuasiCompact (𝒰.bind f) := by
   constructor
   intro U hU
@@ -194,7 +196,7 @@ instance {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] [AlgebraicGe
     (f.cover hf).QuasiCompact :=
   sorry
 
-lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover P)
+lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P))
     [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [𝒰.QuasiCompact] :
     ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),
       Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.app j) := by
@@ -210,7 +212,7 @@ lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover P)
         idx s := ⟨idx s⟩
         covers s := by
           use (hV _).isoSpec.hom.base ⟨x s, hmem s⟩
-          rw [← Scheme.comp_base_apply, ← IsAffineOpen.isoSpec_inv_ι, Category.assoc,
+          rw [← Scheme.Hom.comp_apply, ← IsAffineOpen.isoSpec_inv_ι, Category.assoc,
             Iso.hom_inv_id_assoc]
           simp [hx]
         map_prop i :=

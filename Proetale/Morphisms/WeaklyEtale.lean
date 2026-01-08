@@ -46,7 +46,7 @@ instance isStableUnderBaseChange : IsStableUnderBaseChange @WeaklyEtale := by
   rw [eq_inf]
   infer_instance
 
-instance : IsLocalAtTarget @WeaklyEtale := by
+instance : IsZariskiLocalAtTarget @WeaklyEtale := by
   rw [eq_inf]
   infer_instance
 

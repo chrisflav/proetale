@@ -95,24 +95,26 @@ theorem quotientMap_algebraMap_bijective :
   sorry
 
 variable (I) in
-theorem bijOn_zeroLocus_map : Set.BijOn (algebraMap A I.WLocalization).specComap
+theorem bijOn_zeroLocus_map : Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLocalization))
     (zeroLocus (I.map (algebraMap A I.WLocalization))) (zeroLocus I) := by
     rw [← mk_ker (I := I.map _)]
     conv =>
       enter [3, 1, 1]
       rw [← mk_ker (I := I)]
-    rw [← range_specComap_of_surjective _ _ Quotient.mk_surjective,
-      ← range_specComap_of_surjective _ _ Quotient.mk_surjective,
+    rw [← range_comap_of_surjective _ _ Quotient.mk_surjective,
+      ← range_comap_of_surjective _ _ Quotient.mk_surjective,
       ← Set.image_univ, ← Set.image_univ]
-    apply Set.bijOn_image_image (f := (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map).specComap)
+    apply Set.bijOn_image_image
+        (f := PrimeSpectrum.comap (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map))
     · intro
-      simp only [mk.injEq, comap_comap, Quotient.mk_comp_algebraMap]
+      ext1
+      simp only [comap_asIdeal, comap_comap, Quotient.mk_comp_algebraMap]
       congr 1
-    · rw [← Set.bijective_iff_bijOn_univ]
+    · rw [Set.bijOn_univ]
       exact (PrimeSpectrum.comapEquiv (RingEquiv.ofBijective _ (quotientMap_algebraMap_bijective I))).symm.bijective
     · apply Set.InjOn.image_of_comp
-      rw [← Set.injective_iff_injOn_univ, ← PrimeSpectrum.specComap_comp]
-      apply PrimeSpectrum.specComap_injective_of_surjective
+      rw [Set.injOn_univ, ← PrimeSpectrum.comap_comp]
+      apply PrimeSpectrum.comap_injective_of_surjective
       rw [← Ideal.quotientMap_comp_mk I.le_comap_map]
       simp
       apply Function.Surjective.comp
@@ -137,20 +139,20 @@ theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.Fai
   Module.FaithfullyFlat A (I.map (algebraMap A B)).WLocalization := by
   have : Module.Flat A (I.map (algebraMap A B)).WLocalization :=
     Module.Flat.trans A B (I.map (algebraMap A B)).WLocalization
-  apply Module.FaithfullyFlat.of_specComap_surjective
+  apply Module.FaithfullyFlat.of_comap_surjective
   apply Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage
   rw [← hI]
   calc
-    zeroLocus I ⊆ (algebraMap A B).specComap '' zeroLocus (I.map (algebraMap A B)) := by
+    zeroLocus I ⊆ PrimeSpectrum.comap (algebraMap A B) '' zeroLocus (I.map (algebraMap A B)) := by
       -- This should be separated as a lemma
       intro p hp
       simp only [mem_zeroLocus, SetLike.coe_subset_coe, Set.mem_image] at hp ⊢
-      obtain ⟨q, hq⟩ := PrimeSpectrum.specComap_surjective_of_faithfullyFlat p (B := B)
+      obtain ⟨q, hq⟩ := PrimeSpectrum.comap_surjective_of_faithfullyFlat p (B := B)
       refine ⟨q, ?_, hq⟩
-      simp only [← hq, specComap_asIdeal] at hp
+      simp only [← hq, comap_asIdeal] at hp
       exact Ideal.map_le_of_le_comap hp
-    _ ⊆ (algebraMap A B).specComap ''
-        ((algebraMap B (I.map (algebraMap A B)).WLocalization).specComap ''
+    _ ⊆ PrimeSpectrum.comap (algebraMap A B) ''
+        (PrimeSpectrum.comap (algebraMap B (I.map (algebraMap A B)).WLocalization) ''
         zeroLocus (I.map ((algebraMap B (I.map (algebraMap A B)).WLocalization).comp
         (algebraMap A B)))) := by
       apply Set.image_mono
@@ -159,7 +161,7 @@ theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.Fai
       rw [(bijOn_zeroLocus_map (map (algebraMap A B) I)).image_eq]
       exact hp
     _ ⊆ _ := by
-      rw [← Set.image_comp, ← specComap_comp]
+      rw [← Set.image_comp, ← comap_comp]
       exact Set.image_subset_range _ _
 
 end Ideal.WLocalization

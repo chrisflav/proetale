@@ -37,7 +37,7 @@ lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
   sorry
 
 lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
-    (hb : Function.Bijective f.specComap) : Function.Bijective f :=
+    (hb : Function.Bijective <| PrimeSpectrum.comap f) : Function.Bijective f :=
   sorry
 
 lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T} :

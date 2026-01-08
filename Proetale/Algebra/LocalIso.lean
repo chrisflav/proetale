@@ -15,40 +15,6 @@ A ring homomorphism is a local isomorphism if source locally (in the geometric s
 it is a standard open immersion.
 -/
 
--- remove after bumping
-lemma Pi.single_induction' {ι : Type*} [DecidableEq ι] [Finite ι] {M : ι → Type*}
-    [∀ i, AddCommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
-    (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
-    (single : ∀ i m, p (Pi.single i m)) : p f := by
-  cases nonempty_fintype ι
-  rw [← Finset.univ_sum_single f]
-  exact Finset.sum_induction _ _ add zero (by simp [single])
-
--- remove after bumping
-lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
-    [∀ i, CommRing (R i)] (i : ι) :
-    RingHom.ker (Pi.evalRingHom R i) = Ideal.span {1 - Pi.single i 1} := by
-  apply le_antisymm
-  · intro x hx
-    simp only [mem_ker, Pi.evalRingHom_apply] at hx
-    rw [Ideal.mem_span_singleton]
-    use x + Pi.single i 1
-    simp [mul_add, sub_mul, one_mul, ← Pi.single_mul_left, hx]
-  · simp [Ideal.span_le]
-
--- remove after bumping
-lemma Ideal.span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)
-    [∀ i, Ring (R i)] : Ideal.span (Set.range fun i ↦ (Pi.single i 1 : Π i, R i)) = ⊤ := by
-  rw [eq_top_iff]
-  rintro x -
-  induction x using Pi.single_induction' with
-  | zero => simp
-  | add f g hf hg => exact Ideal.add_mem _ hf hg
-  | single i r =>
-      have : Pi.single i r = Pi.single i r * Pi.single i 1 := by simp [← Pi.single_mul_left]
-      rw [this]
-      exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)
-
 /-- An `R`-algebra `S` is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
 class Algebra.IsLocalIso (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] : Prop where

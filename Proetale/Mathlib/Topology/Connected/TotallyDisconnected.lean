@@ -7,7 +7,7 @@ variable {X : Type*} [TopologicalSpace X]
 
 -- after `IsPreconnected.eqOn_const_of_mapsTo` if the proof need some lemma of the form IsPreconnected.foo
 -- `by copilot`
-theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpace X] (x : X)
+theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpace X]
     {Y : Type*} [TopologicalSpace Y] [TotallyDisconnectedSpace Y] {f : X → Y} (hf : Continuous f)
     (h : ∀ y : Y, IsPreconnected (f ⁻¹' {y})) : Function.Injective (hf.connectedComponentsLift) := by
   intro a b hEq
@@ -20,7 +20,7 @@ theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpa
   -- We show t is preconnected by identifying it with the image of a preconnected set under the projection.
   have h_apply_coe : ∀ x : X, g (((↑) : X → ConnectedComponents X) x) = f x := by
     intro x'
-    simpa [g] using hf.connectedComponentsLift_apply_coe x'
+    simp [g]
   have ht_eq_image : t = ((↑) : X → ConnectedComponents X) '' (f ⁻¹' {y}) := by
     ext z; constructor
     · intro hz
@@ -33,7 +33,7 @@ theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpa
       have hx'y : f x' = y := by
         simpa [Set.mem_preimage, Set.mem_singleton_iff] using hx'
       have : g (((↑) : X → ConnectedComponents X) x') = y := by
-        simpa [h_apply_coe x', hx'y]
+        simp [h_apply_coe x', hx'y]
       simpa [t, Set.mem_preimage, Set.mem_singleton_iff]
   have ht_pre : IsPreconnected t := by
     have : IsPreconnected (((↑) : X → ConnectedComponents X) '' (f ⁻¹' {y})) :=

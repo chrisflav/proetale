@@ -171,7 +171,7 @@ instance : faithfullyFlat.IsStableUnderCobaseChange := by
   exact RingHom.FaithfullyFlat.isStableUnderBaseChange
 
 instance : surjectiveSpec.IsMultiplicative where
-  id_mem R := by simp [Function.surjective_id]
+  id_mem R := Function.surjective_id
   comp_mem _ _ h1 h2 := by simpa using h1.comp h2
 
 instance : faithfullyFlat.IsMultiplicative where

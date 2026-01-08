@@ -41,30 +41,35 @@ lemma IsCompact.isOpen_constructibleTopology_of_isClosed {s : Set X}
   apply TopologicalSpace.isOpen_generateFrom_of_mem
   simp [ho, hs]
 
+lemma compactSpace_generateFrom_of_compl_mem {X : Type*} [T : TopologicalSpace X]
+    (𝔅 : Set (Set X)) (hT : T = TopologicalSpace.generateFrom 𝔅)
+    (h𝔅 : ∀ s ∈ 𝔅, sᶜ ∈ 𝔅)
+    (h : ∀ P ⊆ 𝔅, (∀ Q ⊆ P, Q.Finite → (⋂₀ Q).Nonempty) → (⋂₀ P).Nonempty) :
+    CompactSpace X := by
+  apply compactSpace_generateFrom hT
+  intro P hP𝔅 hP
+  contrapose! hP
+  simp_rw [← Set.nonempty_compl, Set.compl_sUnion] at hP ⊢
+  apply h
+  · rintro _ ⟨S, hS, rfl⟩
+    exact h𝔅 _ (hP𝔅 hS)
+  · intro Q hQP hQ
+    specialize @hP (compl '' Q)
+    replace hP : Q ⊆ compl '' P → (compl '' Q).Finite → (⋂₀ Q).Nonempty := by
+      simpa only [Set.image_subset_iff, Set.sInter_image, Set.mem_image, Set.iInter_exists,
+        Set.biInter_and', Set.iInter_iInter_eq_right, compl_compl, Set.nonempty_iInter,
+        Set.mem_iInter, ← compl_involutive.image_eq_preimage_symm] using hP
+    exact hP hQP (hQ.image _)
+
 /-- A spectral space is compact in the constructible topology. -/
 @[stacks 0901]
 instance compactSpace_withConstructibleTopology [SpectralSpace X] :
     CompactSpace (WithConstructibleTopology X) := by
   let 𝔅 := { s : Set X | IsOpen s ∧ IsCompact s } ∪ { s | IsClosed s ∧ IsCompact sᶜ }
-  apply compactSpace_generateFrom (T := constructibleTopology X) (S := 𝔅) rfl
-  -- TODO: abstract this into standalone lemma
-  suffices ∀ P ⊆ 𝔅, (∀ Q ⊆ P, Q.Finite → (⋂₀ Q).Nonempty) → (⋂₀ P).Nonempty by
-    intro P hP𝔅 hP
-    contrapose! hP
-    simp_rw [← Set.nonempty_compl, Set.compl_sUnion] at hP ⊢
-    apply this
-    · rintro _ ⟨S, hS, rfl⟩
-      specialize hP𝔅 hS
-      refine (Or.symm hP𝔅).imp ?_ (by simp)
-      simp_all only [Set.nonempty_sInter, subset_refl, Set.mem_union, Set.mem_setOf_eq,
-        isOpen_compl_iff, and_self, implies_true, 𝔅]
-    · intro Q hQP hQ
-      specialize @hP (compl '' Q)
-      replace hP : Q ⊆ compl '' P → (compl '' Q).Finite → (⋂₀ Q).Nonempty := by
-        simpa only [Set.image_subset_iff, Set.sInter_image, Set.mem_image, Set.iInter_exists,
-          Set.biInter_and', Set.iInter_iInter_eq_right, compl_compl, Set.nonempty_iInter,
-          Set.mem_iInter, ← compl_involutive.image_eq_preimage] using hP
-      exact hP hQP (hQ.image _)
+  apply compactSpace_generateFrom_of_compl_mem (T := constructibleTopology X) 𝔅 rfl
+  · intro s hs
+    refine (Or.symm hs).imp ?_ (by simp)
+    simp_all only [Set.mem_union, Set.mem_setOf_eq, isOpen_compl_iff, and_self, implies_true, 𝔅]
   let 𝒮 := {P : Set (Set X) | P ⊆ 𝔅 ∧ (∀ Q ⊆ P, Q.Finite → (⋂₀ Q).Nonempty) ∧ (⋂₀ P) = ∅}
   suffices 𝒮 = ∅ by
     contrapose! this
@@ -157,8 +162,18 @@ instance compactSpace_withConstructibleTopology [SpectralSpace X] :
     simp only [hZ_nonempty, true_and, not_forall] at hZ_irred
     rcases hZ_irred with ⟨U₁, U₂, hU₁, hU₂, hU₁Z, hU₂Z, hU₁₂⟩
     rw [Set.not_nonempty_iff_eq_empty, ← Set.subset_empty_iff] at hU₁₂
-    obtain ⟨x₁, hx₁⟩ : ∃ x₁ ∈ U₁, x₁ ∈ Z ∧ x₁ ∉ U₂ := by obtain ⟨x, hx⟩ := hU₁Z; grind
-    obtain ⟨x₂, hx₂⟩ : ∃ x₂ ∈ U₂, x₂ ∈ Z ∧ x₂ ∉ U₁ := by obtain ⟨x, hx⟩ := hU₂Z; grind
+    obtain ⟨x₁, hx₁⟩ : ∃ x₁ ∈ U₁, x₁ ∈ Z ∧ x₁ ∉ U₂ := by
+      obtain ⟨x, hx⟩ := hU₁Z
+      -- on `4.24.0-rc1` this was `grind`
+      use x, hx.2, hx.1
+      intro h₂
+      exact hU₁₂ ⟨hx.1, hx.2, h₂⟩
+    obtain ⟨x₂, hx₂⟩ : ∃ x₂ ∈ U₂, x₂ ∈ Z ∧ x₂ ∉ U₁ := by
+      obtain ⟨x, hx⟩ := hU₂Z
+      -- on `4.24.0-rc1` this was `grind`
+      use x, hx.2, hx.1
+      intro h₁
+      exact hU₁₂ ⟨hx.1, h₁, hx.2⟩
     have psp_X : PrespectralSpace X := inferInstance
     rw [prespectralSpace_iff] at psp_X
     rw [psp_X.isOpen_iff] at hU₁ hU₂
@@ -195,8 +210,14 @@ instance compactSpace_withConstructibleTopology [SpectralSpace X] :
       and_true, true_and, not_forall, Set.not_nonempty_iff_eq_empty, hY₂, hY₂_inter_B] at hY₁B hY₂B
     rcases hY₁B with ⟨A₁, hA₁, hA₁', hA₁''⟩
     rcases hY₂B with ⟨A₂, hA₂, hA₂', hA₂''⟩
-    have : Z ⊆ Y₁ ∪ Y₂ := by grind
-    have : Z ∩ ⋂₀ ((A₁ \ {Y₁}) ∪ (A₂ \ {Y₂})) = ∅ := by grind
+    have : Z ⊆ Y₁ ∪ Y₂ := by
+      -- on `4.24.0-rc1` this was `grind`
+      intro z hz
+      by_contra! hc
+      simp only [Set.mem_union, Set.mem_compl_iff, not_or, not_not, Y₁, Y₂] at hc
+      exact hU₁₂ ⟨hz, hW₁.2.2 hc.1, hW₂.2.2 hc.2⟩
+    have : Z ∩ ⋂₀ ((A₁ \ {Y₁}) ∪ (A₂ \ {Y₂})) = ∅ := by
+      grind
     rw [← Set.not_nonempty_iff_eq_empty] at this
     have H' : ∀ A : Set (Set X), A ⊆ {U | IsOpen U ∧ IsCompact U} → A.Finite → IsCompact (⋂₀ A) := by
       intro A hA hA_fin

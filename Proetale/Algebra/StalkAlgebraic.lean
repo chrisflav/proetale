@@ -28,7 +28,8 @@ lemma Ideal.IsMaximal.of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Al
     ext
     simp only [RingHom.coe_comp, Function.comp_apply, RingHom.algebraMap_toAlgebra lf, lf,
       IsLocalization.lift_eq]
-    rw [algebraMap_mk, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply _ B]
+    rw [Ideal.algebraMap_quotient_residueField_mk, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply _ B]
     rfl
   have h : FaithfulSMul (B ⧸ q) q.ResidueField := by
     rw [faithfulSMul_iff_algebraMap_injective]
@@ -45,7 +46,7 @@ lemma PrimeSpectrum.zeroLocus_subset_closedPoints_of_isAlgebraic {A B : Type*} [
   intro q hq
   let p := q.comap (algebraMap A B)
   have hi : p ∈ PrimeSpectrum.zeroLocus I := by
-    simpa [Ideal.map, ← PrimeSpectrum.preimage_specComap_zeroLocus] using hq
+    simpa [Ideal.map, ← PrimeSpectrum.preimage_comap_zeroLocus] using hq
   have hm : Ideal.IsMaximal p.asIdeal := by
     rw [← PrimeSpectrum.isClosed_singleton_iff_isMaximal]
     exact hc hi

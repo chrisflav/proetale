@@ -45,7 +45,7 @@ namespace RingHom.IsWLocal
 bijective on connected components is bijective. -/
 lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (hw : f.IsWLocal)
     (hs : f.BijectiveOnStalks)
-    (hb : (PrimeSpectrum.comap f).continuous.connectedComponentsMap.Bijective) :
+    (hb : (PrimeSpectrum.continuous_comap f).connectedComponentsMap.Bijective) :
     Function.Bijective f :=
   sorry
 

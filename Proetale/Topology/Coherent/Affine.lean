@@ -58,29 +58,35 @@ variable [P.IsStableUnderBaseChange]
   [PreservesLimitsOfShape WalkingCospan F] [HasPullbacks C] [HasPullbacks D]
 
 lemma closedUnderLimitsOfShape_walkingCospan :
-    ClosedUnderLimitsOfShape WalkingCospan (fun f : CostructuredArrow F X ↦ P f.hom) := by
-  intro K c hc hf
-  have h : IsPullback (F.map (c.π.app .left).left) (F.map (c.π.app .right).left)
-      (F.map (K.map WalkingCospan.Hom.inl).left) (F.map (K.map WalkingCospan.Hom.inr).left) :=
-    IsPullback.of_isLimit_cone <| isLimitOfPreserves
-      (CategoryTheory.CostructuredArrow.toOver F X ⋙ CategoryTheory.Over.forget X) hc
-  rw [show c.pt.hom = F.map (c.π.app .left).left ≫ (K.obj .left).hom by simp]
-  apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (hf _)
-  exact P.of_postcomp _ (K.obj WalkingCospan.one).hom (hf .one) (by simpa using hf .right)
+    (P.costructuredArrowObj F (X := X)).IsClosedUnderLimitsOfShape WalkingCospan where
+  limitsOfShape_le := by
+    rintro Y ⟨pres, hpres⟩
+    have h : IsPullback (F.map (pres.π.app .left).left) (F.map (pres.π.app .right).left)
+        (F.map (pres.diag.map WalkingCospan.Hom.inl).left)
+          (F.map (pres.diag.map WalkingCospan.Hom.inr).left) :=
+      IsPullback.of_isLimit_cone <| isLimitOfPreserves
+        (CategoryTheory.CostructuredArrow.toOver F X ⋙ CategoryTheory.Over.forget X) pres.isLimit
+    rw [costructuredArrowObj_iff]
+    rw [show Y.hom = F.map (pres.π.app .left).left ≫ (pres.diag.obj .left).hom by simp]
+    apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (hpres _)
+    exact P.of_postcomp _ (pres.diag.obj WalkingCospan.one).hom (hpres .one)
+      (by simpa using hpres .right)
 
 noncomputable
 instance createsLimitsOfShape_walkingCospan [HasPullbacks C] [HasPullbacks D] :
     CreatesLimitsOfShape WalkingCospan (CostructuredArrow.forget P ⊤ F X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma F (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (CostructuredArrow F X)
+  have : (commaObj F (Functor.fromPUnit X) P).IsClosedUnderLimitsOfShape WalkingCospan := by
+    apply closedUnderLimitsOfShape_walkingCospan
   Comma.forgetCreatesLimitsOfShapeOfClosed P
-    (closedUnderLimitsOfShape_walkingCospan P F X)
 
 instance hasPullbacks : HasPullbacks (P.CostructuredArrow ⊤ F X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma F (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (CostructuredArrow F X)
+  have : (commaObj F (Functor.fromPUnit X) P).IsClosedUnderLimitsOfShape WalkingCospan := by
+    apply closedUnderLimitsOfShape_walkingCospan
   Comma.hasLimitsOfShape_of_closedUnderLimitsOfShape P
-    (closedUnderLimitsOfShape_walkingCospan P F X)
 
 instance : PreservesLimitsOfShape WalkingCospan (CostructuredArrow.toOver P F X) := by
   have : PreservesLimitsOfShape WalkingCospan
@@ -111,13 +117,14 @@ def affineOverMk {P : MorphismProperty Scheme.{u}} {R : CommRingCat.{u}}
   .mk ⊤ f hf
 
 instance isCoverDense_toOver_Spec (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative]
-    [IsLocalAtSource P] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
+    [IsZariskiLocalAtSource P] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
     (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S).IsCoverDense
       (smallGrothendieckTopology P) where
   is_cover U := by
     rw [Scheme.mem_smallGrothendieckTopology]
-    let 𝒰 : Cover.{u} P U.left := U.left.affineCover.changeProp _
-      (fun _ ↦ IsLocalAtSource.of_isOpenImmersion _)
+    let 𝒰 : Cover.{u} (precoverage P) U.left :=
+      U.left.affineCover.changeProp
+      (fun _ ↦ IsZariskiLocalAtSource.of_isOpenImmersion _)
     let _ (i : 𝒰.I₀) : (𝒰.X i).Over S := ⟨𝒰.f i ≫ U.hom⟩
     refine ⟨𝒰, ?_, ?_, ?_⟩
     · exact ⟨fun i ↦ inferInstance, fun i ↦ ⟨rfl⟩⟩
@@ -134,24 +141,28 @@ instance isCoverDense_toOver_Spec (P : MorphismProperty Scheme.{u}) [P.IsMultipl
       · ext
         simp
 
-variable {P : MorphismProperty Scheme.{u}} [IsLocalAtSource P]
+variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
 
-lemma IsLocalAtSource.stableUnderColimitsOfShape_discrete {ι : Type*} [Small.{u} ι] :
-    MorphismProperty.StableUnderColimitsOfShape (Discrete ι) P := by
-  fapply MorphismProperty.StableUnderColimitsOfShape.mk
-  · intro D
+instance IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
+    {ι : Type*} [Small.{u} ι] {C : Type*} [Category C] [HasColimitsOfShape (Discrete ι) C]
+    (L : C ⥤ Scheme.{u}) [PreservesColimitsOfShape (Discrete ι) L] (X : Scheme.{u}) :
+    (P.costructuredArrowObj L (X := X)).IsClosedUnderColimitsOfShape (Discrete ι) := by
+  refine CostructuredArrow.isClosedUnderColimitsOfShape ?_ ?_ ?_ _
+  · intro D _
     exact Sigma.cocone _
   · intro D
     exact coproductIsCoproduct' _
   · intro D _ X s h
-    exact IsLocalAtSource.sigmaDesc (h ⟨·⟩)
+    exact IsZariskiLocalAtSource.sigmaDesc (h ⟨·⟩)
 
 variable [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] [P.IsMultiplicative]
 
 instance : HasFiniteCoproducts (P.CostructuredArrow ⊤ Scheme.Spec S) where
   out n := by
-    apply MorphismProperty.CostructuredArrow.hasColimitsOfShape
-    apply IsLocalAtSource.stableUnderColimitsOfShape_discrete
+    have : (MorphismProperty.commaObj Scheme.Spec (.fromPUnit S) P).IsClosedUnderColimitsOfShape
+        (Discrete (Fin n)) := by
+      apply IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
+    apply MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
 
 instance : PreservesColimitsOfShape (Discrete WalkingPair)
     (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S) :=
@@ -168,12 +179,13 @@ instance : Preregular (P.CostructuredArrow ⊤ Scheme.Spec S) := by
 end
 
 noncomputable
-def Cover.etaleAffineRefinement (𝒰 : S.Cover @IsEtale) : S.AffineCover @IsEtale where
-  I₀ := (𝒰.bind fun j ↦ (𝒰.X j).affineCover.changeProp _ (fun _ ↦ inferInstance)).I₀
+def Cover.etaleAffineRefinement (𝒰 : S.Cover (precoverage @IsEtale)) :
+    S.AffineCover @IsEtale where
+  I₀ := (𝒰.bind fun j ↦ (𝒰.X j).affineCover.changeProp (fun _ ↦ inferInstance)).I₀
   X _ := _
-  f := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp _ fun _ ↦ inferInstance).f
-  idx := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp _ fun _ ↦ inferInstance).idx
-  covers := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp _ fun _ ↦ inferInstance).covers
+  f := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance).f
+  idx := Cover.idx (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance)
+  covers := Cover.covers (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance)
   map_prop j := by
     simp [Cover.changeProp]
     have : IsEtale (𝒰.f j.fst) := 𝒰.map_prop _

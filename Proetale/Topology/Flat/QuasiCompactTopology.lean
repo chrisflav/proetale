@@ -64,7 +64,8 @@ open Scheme
 variable {P : MorphismProperty Scheme.{u}}
 
 @[simp]
-lemma Scheme.Cover.ofArrows_sigma {S : Scheme.{u}} (𝒰 : S.Cover P) [IsLocalAtSource P] :
+lemma Scheme.Cover.ofArrows_sigma {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P))
+    [IsZariskiLocalAtSource P] :
     Presieve.ofArrows 𝒰.sigma.X 𝒰.sigma.f = Presieve.singleton (Sigma.desc 𝒰.f) := by
   refine le_antisymm ?_ ?_
   · intro T g ⟨i⟩
@@ -76,16 +77,17 @@ lemma Scheme.Cover.ofArrows_sigma {S : Scheme.{u}} (𝒰 : S.Cover P) [IsLocalAt
 given by quasi compact covers satisfying `P`. -/
 def qcPretopology (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative]
     [P.IsStableUnderBaseChange] : Pretopology Scheme.{u} where
-  coverings Y S := ∃ (𝒰 : Cover.{u} P Y) (h : 𝒰.QuasiCompact), S = Presieve.ofArrows 𝒰.X 𝒰.f
+  coverings Y S := ∃ (𝒰 : Cover.{u} (precoverage P) Y) (h : 𝒰.QuasiCompact),
+    S = Presieve.ofArrows 𝒰.X 𝒰.f
   has_isos _ _ f _ := ⟨coverOfIsIso f, inferInstance, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨𝒰, h𝒰, rfl⟩
-    exact ⟨𝒰.pullbackCover' f, inferInstance, (Presieve.ofArrows_pullback _ _ _).symm⟩
+    exact ⟨𝒰.pullback₂ f, inferInstance, (Presieve.ofArrows_pullback _ _ _).symm⟩
   transitive := by
     rintro X _ T ⟨𝒰, h𝒰, rfl⟩ H
     choose 𝒱 hc𝒱 h𝒱 using H
     refine ⟨𝒰.bind (fun j ↦ 𝒱 (𝒰.f j) ⟨j⟩), inferInstance, ?_⟩
-    simpa only [Cover.bind, ← h𝒱] using Presieve.ofArrows_bind 𝒰.X 𝒰.f _
+    simpa only [← h𝒱] using Presieve.ofArrows_bind 𝒰.X 𝒰.f _
       (fun _ f H => (𝒱 f H).X) (fun _ f H => (𝒱 f H).f)
 
 abbrev qcTopology (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative]
@@ -108,15 +110,15 @@ lemma Scheme.Hom.generate_singleton_mem_qcTopology [P.IsMultiplicative] [P.IsSta
 
 @[simp]
 lemma Scheme.Cover.generate_ofArrows_mem_qcTopology [P.IsMultiplicative]
-    [P.IsStableUnderBaseChange] {S : Scheme.{u}} (𝒰 : Cover.{u} P S) [𝒰.QuasiCompact] :
+    [P.IsStableUnderBaseChange] {S : Scheme.{u}} (𝒰 : Cover.{u} (precoverage P) S) [𝒰.QuasiCompact] :
     .generate (.ofArrows 𝒰.X 𝒰.f) ∈ qcTopology P S := by
   rw [qcTopology, Pretopology.mem_toGrothendieck]
   exact ⟨.ofArrows 𝒰.X 𝒰.f, ⟨𝒰, ‹_›, rfl⟩, Sieve.le_generate _⟩
 
 -- This holds more generally if `𝒰.J` is `u`-small, but we don't need that for now.
-lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type*} [IsLocalAtSource P]
+lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type*} [IsZariskiLocalAtSource P]
     (hF : Presieve.IsSheaf Scheme.zariskiTopology F)
-    {S : Scheme.{u}} (𝒰 : S.Cover P) [Finite 𝒰.I₀] :
+    {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P)) [Finite 𝒰.I₀] :
     Presieve.IsSheafFor F (.ofArrows 𝒰.sigma.X 𝒰.sigma.f) ↔
       Presieve.IsSheafFor F (.ofArrows 𝒰.X 𝒰.f) := by
   have : PreservesFiniteProducts F := preservesFiniteProducts_of_isSheaf_zariskiTopology hF
@@ -126,14 +128,17 @@ lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type*} [IsLoca
 
 variable (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative] [P.IsStableUnderBaseChange]
 
-lemma zariskiTopology_le_qcTopology [IsLocalAtSource P] :
+lemma zariskiTopology_le_qcTopology [IsZariskiLocalAtSource P] :
     zariskiTopology ≤ qcTopology P := by
-  rw [qcTopology, zariskiTopology, (Pretopology.gi _).gc.le_iff_le]
-  rintro S R ⟨𝒰, rfl⟩
-  rw [GrothendieckTopology.mem_toPretopology]
-  let 𝒰' : Cover P S := 𝒰.changeProp P (fun j ↦ IsLocalAtSource.of_isOpenImmersion _)
+  rintro S R hR
+  rw [Scheme.mem_grothendieckTopology_iff] at hR
+  obtain ⟨𝒰, hle⟩ := hR
+  refine ⟨𝒰.presieve₀, ?_, hle⟩
+  let 𝒰' : Cover.{u} (precoverage P) S :=
+     𝒰.changeProp (fun j ↦ IsZariskiLocalAtSource.of_isOpenImmersion _)
   have : 𝒰'.QuasiCompact := ⟨(inferInstanceAs <| 𝒰.QuasiCompact).1⟩
-  exact 𝒰'.generate_ofArrows_mem_qcTopology
+  use 𝒰', this
+  rfl
 
 open Opposite
 
@@ -141,17 +146,18 @@ open Opposite
 noncomputable
 def Scheme.affineCover' (X : Scheme.{u}) : X.OpenCover :=
   .mkOfCovers X.affineOpens (fun i ↦ i.1) (fun i ↦ i.1.ι) fun x ↦ by
-    obtain ⟨U, hU, hx, -⟩ := TopologicalSpace.Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X)
+    obtain ⟨U, hU, hx, -⟩ := TopologicalSpace.Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
       (show x ∈ ⊤ from trivial)
     exact ⟨⟨U, hU⟩, ⟨x, hx⟩, rfl⟩
 
 variable {P}
 
-lemma Scheme.Cover.Hom.isSheafFor {F : Scheme.{u}ᵒᵖ ⥤ Type*} {S : Scheme.{u}} {𝒰 𝒱 : S.Cover P}
+lemma Scheme.Cover.Hom.isSheafFor {F : Scheme.{u}ᵒᵖ ⥤ Type*} {S : Scheme.{u}}
+    {𝒰 𝒱 : S.Cover (precoverage P)}
     (f : 𝒰 ⟶ 𝒱)
     (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
     (H₂ : ∀ {X : Scheme.{u}} (f : X ⟶ S),
-      Presieve.IsSeparatedFor F (.ofArrows (𝒰.pullbackCover' f).X (𝒰.pullbackCover' f).f)) :
+      Presieve.IsSeparatedFor F (.ofArrows (𝒰.pullback₂ f).X (𝒰.pullback₂ f).f)) :
     Presieve.IsSheafFor F (.ofArrows 𝒱.X 𝒱.f) := by
   rw [Presieve.isSheafFor_iff_generate]
   apply Presieve.isSheafFor_subsieve_aux (S := .generate (.ofArrows 𝒰.X 𝒰.f))
@@ -170,7 +176,7 @@ lemma Scheme.Cover.Hom.isSheafFor {F : Scheme.{u}ᵒᵖ ⥤ Type*} {S : Scheme.{
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`.-/
 @[stacks 022H]
-nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtSource P] :
+nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsZariskiLocalAtSource P] :
     Presieve.IsSheaf (qcTopology P) F ↔
       Presieve.IsSheaf Scheme.zariskiTopology F ∧
         ∀ {R S : CommRingCat.{u}} (f : R ⟶ S), P (Spec.map f) → Surjective (Spec.map f) →
@@ -185,14 +191,14 @@ nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtS
     wlog hT : ∃ (R : CommRingCat.{u}), T = Spec R generalizing T
     · let 𝒱 : T.OpenCover := T.affineCover
       have h (j : T.affineCover.I₀) : Presieve.IsSheafFor F
-          (.ofArrows (𝒰.pullbackCover' (𝒱.f j)).X (𝒰.pullbackCover' (𝒱.f j)).f) :=
+          (.ofArrows (𝒰.pullback₂ (𝒱.f j)).X (𝒰.pullback₂ (𝒱.f j)).f) :=
         this _ inferInstance ⟨_, rfl⟩
       refine .of_isSheafFor_pullback' F (.ofArrows 𝒱.X 𝒱.f) _ ?_ ?_ ?_ ?_
       · exact hzar.isSheafFor _ _ 𝒱.generate_ofArrows_mem_grothendieckTopology
       · intro Y f
         refine (hzar.isSheafFor _ _ ?_).isSeparatedFor
         rw [Sieve.generate_sieve, ← Sieve.pullbackArrows_comm, Cover.pullbackArrows_ofArrows]
-        exact (Cover.pullbackCover' 𝒱 f).generate_ofArrows_mem_grothendieckTopology
+        exact Scheme.Cover.generate_ofArrows_mem_grothendieckTopology (𝒱.pullback₂ f)
       · rintro - - - - ⟨i⟩ ⟨j⟩
         use .ofArrows (pullback (𝒱.f i) (𝒱.f j)).affineCover.X
           (pullback (𝒱.f i) (𝒱.f j)).affineCover.f
@@ -202,23 +208,23 @@ nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtS
           rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate]
           apply Presieve.IsSheafFor.isSeparatedFor
           rw [← Presieve.ofArrows_pullback]
-          exact this (𝒰.pullbackCover' _) inferInstance ⟨_, rfl⟩
+          exact this (𝒰.pullback₂ _) inferInstance ⟨_, rfl⟩
       · rintro - - ⟨i⟩
         rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
           ← Presieve.isSheafFor_iff_generate]
-        exact this (𝒰.pullbackCover' (𝒱.f i)) inferInstance ⟨_, rfl⟩
+        exact this (𝒰.pullback₂ (𝒱.f i)) inferInstance ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hT
     wlog h𝒰 : (∀ i, IsAffine (𝒰.X i)) ∧ Finite 𝒰.I₀ generalizing R 𝒰
     · obtain ⟨𝒱, f, hfin, ho⟩ := Cover.QuasiCompact.exists_hom 𝒰
       have H (V : Scheme.{u}) (f : V ⟶ Spec R) : Presieve.IsSheafFor F
-          (.ofArrows (𝒱.cover.pullbackCover' f).X (𝒱.cover.pullbackCover' f).f) := by
+          (.ofArrows (𝒱.cover.pullback₂ f).X (𝒱.cover.pullback₂ f).f) := by
         let 𝒰V := V.affineCover
         refine .of_isSheafFor_pullback' F (.ofArrows 𝒰V.X 𝒰V.f) _ ?_ ?_ ?_ ?_
         · exact hzar.isSheafFor _ _ 𝒰V.generate_ofArrows_mem_grothendieckTopology
         · intro Y f
           refine (hzar.isSheafFor _ _ ?_).isSeparatedFor
           rw [Sieve.generate_sieve, ← Sieve.pullbackArrows_comm, Cover.pullbackArrows_ofArrows]
-          exact (Cover.pullbackCover' 𝒰V f).generate_ofArrows_mem_grothendieckTopology
+          exact Scheme.Cover.generate_ofArrows_mem_grothendieckTopology (𝒰V.pullback₂ f)
         · rintro - - - - ⟨i⟩ ⟨j⟩
           refine ⟨.ofArrows _ (pullback (𝒰V.f i) (𝒰V.f j)).affineCover.f, ?_, ?_⟩
           · exact hzar.isSheafFor _ _
@@ -226,13 +232,13 @@ nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtS
           · rintro - - ⟨k⟩
             rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
               ← Presieve.isSeparatedFor_iff_generate]
-            refine (this _ ((𝒱.cover.pullbackCover' f).pullbackCover' _) inferInstance
+            refine (this _ ((𝒱.cover.pullback₂ f).pullback₂ _) inferInstance
               ⟨fun l ↦ ?_, hfin⟩).isSeparatedFor
             exact .of_isIso (pullbackLeftPullbackSndIso (𝒱.f l) f _).hom
         · rintro - - ⟨i⟩
           rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
             ← Presieve.isSheafFor_iff_generate]
-          let 𝒰' := (𝒱.cover.pullbackCover' f).pullbackCover' (𝒰V.f i)
+          let 𝒰' := (𝒱.cover.pullback₂ f).pullback₂ (𝒰V.f i)
           refine this _ 𝒰' inferInstance
             ⟨fun j ↦ .of_isIso (pullbackLeftPullbackSndIso (𝒱.f j) f (𝒰V.f i)).hom, hfin⟩
       refine f.isSheafFor ?_ fun f ↦ (H _ f).isSeparatedFor
@@ -245,7 +251,7 @@ nonrec lemma isSheaf_qcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) [IsLocalAtS
     obtain ⟨φ, hφ⟩ := Spec.map_surjective f
     rw [isSheafFor_singleton_iff_of_iso _ (Spec.map φ) (𝒰.sigma.X default).isoSpec (by simp [hφ, f])]
     refine hff _ ?_ ?_
-    · simpa only [hφ, f] using IsLocalAtSource.comp (𝒰.sigma.map_prop _) _
+    · simpa only [hφ, f] using IsZariskiLocalAtSource.comp (𝒰.sigma.map_prop _) _
     · simp only [hφ, f, Cover.sigma_I₀, PUnit.default_eq_unit, Cover.sigma_X, Cover.sigma_f, f]
       infer_instance
 

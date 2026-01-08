@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 
 universe v
 
