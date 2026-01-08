@@ -12,6 +12,7 @@ import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+import Upstreamer
 
 /-!
 # Quasi-compact covers
@@ -58,18 +59,20 @@ variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
 A cover of a scheme is quasi-compact if every affine open of the base can be covered
 by a finite union of images of quasi-compact opens of the components.
 -/
-@[stacks 022B, mk_iff]
+@[stacks 022B, mk_iff, upstreamed mathlib 32042]
 class Scheme.Cover.QuasiCompact (𝒰 : Cover.{v} (precoverage P) S) : Prop where
   isCompactOpenCovered_of_isAffineOpen {U : S.Opens} (hU : IsAffineOpen U) :
     IsCompactOpenCovered (fun i ↦ (𝒰.f i).base) U.1
 
 variable (𝒰 : Scheme.Cover.{v} (precoverage P) S)
 
+@[upstreamed mathlib 32042]
 lemma IsAffineOpen.isCompactOpenCovered (𝒰 : S.Cover (Scheme.precoverage P)) [𝒰.QuasiCompact]
     {U : S.Opens} (hU : IsAffineOpen U) :
     IsCompactOpenCovered (fun i ↦ (𝒰.f i).base) U.1 :=
   Scheme.Cover.QuasiCompact.isCompactOpenCovered_of_isAffineOpen hU
 
+@[upstreamed mathlib 32042]
 lemma Scheme.Cover.isCompactOpenCovered_of_isCompact (𝒰 : S.Cover (Scheme.precoverage P))
     [𝒰.QuasiCompact] {U : S.Opens} (hU : IsCompact U.1) :
     IsCompactOpenCovered (fun i ↦ (𝒰.f i).base) U.1 := by
@@ -89,6 +92,7 @@ lemma weaken_iff {Q : MorphismProperty Scheme.{u}} (hPQ : P ≤ Q) {𝒰 : Cover
   simp_rw [quasiCompact_iff]
 
 variable (𝒰) in
+@[upstreamed mathlib 32042]
 lemma exists_isAffineOpen_of_isCompact [𝒰.QuasiCompact] {U : S.Opens} (hU : IsCompact U.1) :
     ∃ (n : ℕ) (f : Fin n → 𝒰.I₀) (V : ∀ i, (𝒰.X (f i)).Opens),
       (∀ i, IsAffineOpen (V i)) ∧
@@ -100,17 +104,19 @@ lemma exists_isAffineOpen_of_isCompact [𝒰.QuasiCompact] {U : S.Opens} (hU : I
 /-- If the component maps of `𝒰` are open, `𝒰` is quasi-compact. This in particular
 applies if `P` is flat and locally of finite presentation (fppf) and hence in particular
 for (weakly)-étale and open covers. -/
-@[stacks 022C]
+@[stacks 022C, upstreamed mathlib 32042]
 lemma of_isOpenMap (h : ∀ i, IsOpenMap (𝒰.f i).base) :
     QuasiCompact 𝒰 where
   isCompactOpenCovered_of_isAffineOpen {U} hU := .of_isOpenMap
     (fun i ↦ (𝒰.f i).continuous) h (fun x _ ↦ ⟨𝒰.idx x, 𝒰.covers x⟩) U.2 hU.isCompact
 
+@[upstreamed mathlib 32042]
 instance (𝒰 : S.OpenCover) : 𝒰.QuasiCompact :=
   of_isOpenMap fun i ↦ (𝒰.f i).isOpenEmbedding.isOpenMap
 
 open TopologicalSpace Opens
 
+@[upstreamed mathlib 32042]
 instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover (Scheme.precoverage P))
     [𝒰.QuasiCompact] {T : Scheme.{u}} (f : T ⟶ S) :
     Scheme.Cover.QuasiCompact (𝒰.pullback₁ f) := by
@@ -137,13 +143,14 @@ instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover (Scheme.precoverage P))
     obtain ⟨z, hzl, hzr⟩ := Pullback.exists_preimage_pullback x y heq.symm
     refine ⟨i, hi, z, ⟨by simpa [hzl], by simpa [hzr]⟩, hzl⟩
 
+@[upstreamed mathlib 32042]
 instance [P.IsStableUnderBaseChange] (𝒰 : S.Cover (Scheme.precoverage P))
     [𝒰.QuasiCompact] {T : Scheme.{u}} (f : T ⟶ S) :
     Scheme.Cover.QuasiCompact (𝒰.pullback₂ f) := by
   sorry
 
 /-- If `𝒱` is a refinement of `𝒰` such that `𝒱` is quasicompact, also `𝒰` is quasicompact. -/
-@[stacks 03L8]
+@[stacks 03L8, upstreamed mathlib 32042]
 lemma of_hom [P.IsMultiplicative] {𝒰 𝒱 : S.Cover (Scheme.precoverage P)} (f : 𝒱 ⟶ 𝒰) [𝒱.QuasiCompact] :
     𝒰.QuasiCompact := by
   refine ⟨fun {U} hU ↦ ?_⟩
@@ -173,10 +180,12 @@ lemma iff_sigma {𝒰 : Cover.{u} (Scheme.precoverage P) S} [IsZariskiLocalAtSou
     simp only [sigma_I₀, PUnit.default_eq_unit, sigma_X, carrier_eq_coe, ← Set.image_comp]
     convert hU
 
+@[upstreamed mathlib 32042]
 instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} {f : X ⟶ Y} [IsIso f] :
     (coverOfIsIso (P := P) f).QuasiCompact :=
   of_isOpenMap (fun _ ↦ f.homeomorph.isOpenMap)
 
+@[upstreamed mathlib 32042]
 instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) [𝒰.QuasiCompact]
     (f : ∀ (x : 𝒰.I₀), (𝒰.X x).Cover (precoverage P)) [∀ x, (f x).QuasiCompact] :
     QuasiCompact (𝒰.bind f) := by
@@ -192,6 +201,7 @@ instance [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰 : Cover.{v} (precov
     (fun p ↦ hcW ..) ?_
   simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using hU
 
+@[upstreamed mathlib 32042]
 instance {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] [AlgebraicGeometry.QuasiCompact f] :
     (f.cover hf).QuasiCompact :=
   sorry
