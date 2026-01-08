@@ -7,6 +7,7 @@ import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.RingHom.Etale
 import Proetale.Algebra.IndZariski
+import Proetale.Algebra.Etale
 
 /-!
 # Ind-étale algebras
@@ -80,11 +81,11 @@ lemma algebraMap_iff : (algebraMap R S).IndEtale ↔ Algebra.IndEtale R S :=
   toAlgebra_algebraMap (R := R) (S := S).symm ▸ Iff.rfl
 
 lemma iff_ind_etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
-    f.IndEtale ↔ MorphismProperty.ind.{u}
-      (RingHom.toMorphismProperty RingHom.Etale) (CommRingCat.ofHom f) := by
+    f.IndEtale ↔ MorphismProperty.ind.{u} CommRingCat.etale (CommRingCat.ofHom f) := by
   algebraize [f]
   rw [RingHom.IndEtale, Algebra.IndEtale.iff_ind_etale, ← f.algebraMap_toAlgebra,
-    RingHom.Etale.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty, CommAlgCat.etale_eq]
+    CommRingCat.etale, RingHom.Etale.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty,
+    CommAlgCat.etale_eq]
 
 /-- A ring hom is ind-étale if and only if it can be written as a colimit of étale ring homs. -/
 lemma iff_exists {R S : CommRingCat.{u}} (f : R ⟶ S) :

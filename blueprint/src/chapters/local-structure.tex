@@ -190,6 +190,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -239,14 +240,24 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:closed-subspace-spectral}
-  \lean{Topology.IsClosedEmbedding.quasiSeparatedSpace,Topology.IsClosedEmbedding.spectralSpace,SpectralSpace.of_isClosed}
+  \lean{Topology.IsClosedEmbedding.isOpen_and_isCompact_and_preimage_eq,
+    Topology.IsClosedEmbedding.spectralSpace,SpectralSpace.of_isClosed}
   \leanok
   Let $X$ be a spectral space. Let $Y \subset X$ be a closed subspace. Then $Y$ is spectral.
 \end{lemma}
 
 \begin{proof}
-  (The only remaining part in Lean is quasi-separatedness.)
-  The only thing remaining to show is that $Y$ is sober. Let $Z \subset Y$ be a closed irreducible subset, then $Z$ is also closed in $X$. $Z$ is irreducible in $X$ since any nontrivial closed subset decomposition in $X$ will give a nontrivial closed subset decomposition in $Y$, thus $Z$ has a unique generic point $z \in X$. Since $Z \subset Y$ we have $z \in Y$ with the closure of $z$ in $Y$ is $Z$. This shows that $Y$ is sober.
+  \leanok
+  The only remaining part in Lean is quasi-separatedness.
+  Suppose that \(V\) is open compact in \(Y\), we show that there exists open compact \(U\) in 
+  \(X\) such that \(V = U \cap Y\). We can find \(U'\) in \(X\) such that \(V = U' \cap Y\). Write
+  \(U' = \bigcup_{i \in I} U_i\) as a union of compact opens, then a finite subset \(i \in I_0\) 
+  of \(U_i\) already covers \(V\). Take \(U := \bigcup_{i \in I\_0} U_i\) as desired.
+  
+  For any compact opens \(V_1,\, V_2 \subset Y\), 
+  there exists compact open \(U_1, U_2 \subset X\) s.t. \(V_i = U_i \cap Y_i\). Then 
+  \(V_1 \cap V_2 = (U_1 \cap U_2) \cap Y \), is still open compact in \(Y\). Here \(U_1 \cap U_2\)
+  is quasi-compact since \(X\) is quasi-separated.
 \end{proof}
 
 \begin{lemma}
@@ -318,9 +329,12 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 
 \begin{lemma}
   \label{thm:pullback-spectral} 
-  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,QuasiSeparatedSpace.pullback,QuasiSober.pullback,CompactSpace.pullback,CategoryTheory.IsPullback.t0Space,CategoryTheory.IsPullback.quasiSober,CategoryTheory.IsPullback.quasiSeparatedSpace,CategoryTheory.IsPullback.compactSpace,CategoryTheory.IsPullback.prespectralSpace,CategoryTheory.IsPullback.spectralSpace}
+  \lean{T0Space.pullback,PrespectralSpace.pullback,SpectralSpace.pullback,
+    QuasiSober.pullback,CompactSpace.pullback,CategoryTheory.IsPullback.t0Space,
+    CategoryTheory.IsPullback.quasiSober,CategoryTheory.IsPullback.compactSpace,
+    CategoryTheory.IsPullback.prespectralSpace,CategoryTheory.IsPullback.spectralSpace}
   \leanok
-  (This is wrong!!!!!!!) Let \(X\) and \(Y\) be spectral spaces. Let \(S\) be a Hausdorff topological space. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
+  Let \(X\) and \(Y\) be spectral spaces. Let \(S\) be a Hausdorff topological space. Let \(f : X \to S\) and \(g : Y \to S\) be continuous maps. Then the fiber product \(X \times_S Y\) is spectral.
 \end{lemma}
 
 \begin{proof}
@@ -364,7 +378,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \begin{proof}
   \uses{thm:profinite-spectral,thm:pullback-spectral,thm:pi0-profinite,def:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
   By \Cref{thm:profinite-spectral}, \(T\) is spectral. By \Cref{thm:pi0-profinite} \(\pi_0(X)\) is Hausdorff.
-  By \Cref{thm:pullback-spectral}, \(Y\) is spectral. (This is wrong!!!!!!!)
+  By \Cref{thm:pullback-spectral}, \(Y\) is spectral.
   Let $Y \to \pi_0(Y) \to T$ be the canonical factorization in \Cref{def:pi0-to-totally-disconnected}. It is clear that $\pi_0(Y) \to T$ is surjective. The fibres of $Y \to T$ are homeomorphic to the fibres of $X \to \pi_0(X)$. Hence these fibres are connected. It follows that $\pi_0(Y) \to T$ is injective by \Cref{thm:pi0-to-totally-disconnected-injective}. We conclude that $\pi_0(Y) \to T$ is a homeomorphism since it is a bijective map from a quasi-compact space to a Hausdorff space by \verb`isHomeomorph_iff_continuous_bijective`.
 \end{proof}
 
@@ -534,7 +548,10 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
   A finite product of ind-Zariski algebras is ind-Zariski.
   \label{lemma:ind-Zariski-products}
   \uses{def:ind-Zariski}
-  \lean{Algebra.IndZariski.prod,RingHom.IndZariski.prod}
+  \lean{Algebra.IndZariski.prod,
+        RingHom.IndZariski.prod,
+        Algebra.IndZariski.pi,
+        RingHom.IndZariski.pi}
   \leanok
 \end{lemma}
 
@@ -670,7 +687,7 @@ The following example shows that our definition agrees with the one in
   Since \(f_\m\) is étale and \(s_\m\) is a section of \(f_\m\), it follows that \(s_\m\) is also étale by the cancellation property of étale maps. Thus \(s'\), being a composition of a localization and an étale map, is flat. As a flat local ring homomorphism, \(s'\) is faithfully flat and hence injective. Since \(s'\) is also a section of \(f'\), it is surjective. Therefore, \(s'\) is an isomorphism, and the composition \(A \to B_\n\) is an isomorphism.
 \end{proof}
 
-\section{Ind-etale and weakly etale ring maps}
+\section{Ind-etale ring maps}
 
 \begin{definition}[Ind-étale algebras, {\cite[\href{https://stacks.math.columbia.edu/tag/097I}{Tag 097I}]{stacks-project}}]
     An $R$-algebra $S$ is \emph{ind-étale} if it is a filtered colimit of étale $R$-algebras.
@@ -1726,17 +1743,40 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     We call the $A$-algebra $T(A) = \colim_{E \in S(A)} \bigotimes_{B \in E} B$ the \emph{étale precontraction} of
     $A$.
     \label{def:etale-precontraction}
+    \lean{CategoryTheory.MorphismProperty.precontraction}
+    \leanok
 \end{definition}
 
 \begin{lemma}
     \uses{def:etale-precontraction}
     \label{lemma:etale-precontraction-semi-retraction}
     For every faithfully flat étale ring map $A \to B$, there exists an $A$-algebra map $B \to T(A)$.
+    \lean{CategoryTheory.MorphismProperty.Precontraction.π}
+    \leanok
 \end{lemma}
 
 \begin{proof}
     $\{B\}$ is an element of $S(A)$, hence $B$ itself is part of the diagram defining $T(A)$.
+    \leanok
 \end{proof}
+
+\begin{lemma}
+    Let $R$ be a commutative ring.
+    \begin{itemize}
+        \item The forgetful functors from commutative $R$-algebras to $R$-algebras and
+            from $R$-algebras to $R$-modules preserve filtered colimits.
+        \item The forgetful functor from commutative $R$-algebras to commutative rings
+            preserves colimits.
+        \item Tensoring on the left with an $R$-algebra preserves colimits on the
+            category of commutative $R$-algebras.
+    \end{itemize}
+    \label{lemma:commalgcat-colimits}
+    \lean{CommAlgCat.preservesColimitsOfShape_tensorLeft,
+        CommAlgCat.preservesColimitsOfSize_forget_commRingCat,
+        CommAlgCat.preservesFilteredColimitsOfSize_forget_algCat,
+        AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat}
+    \leanok
+\end{lemma}
 
 \begin{lemma}
     Let $B = \colim_i B_i$ be a filtered colimit of (faithfully) flat $A$-algebras. Then
@@ -1750,18 +1790,23 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:commalgcat-colimits}
     Because colimits commute with tensor products, ind-flat is flat. One also checks
     that pro-surjective is surjective, hence the claim.
+    \leanok
 \end{proof}
 
 \begin{lemma}
     $T(A)$ is ind-étale and faithfully flat over $A$.
     \label{lemma:etale-precontraction-ind-etale}
     \uses{def:etale-precontraction, def:ind-etale}
+    \lean{CategoryTheory.MorphismProperty.pro_precontraction_hom}
+    \leanok
 \end{lemma}
 
 \begin{proof}
     \uses{lemma:ind-faithfully-flat}
+    \leanok
     For every $E \in S(A)$, the $A$-algebra $\bigotimes_{B \in E} B$ is étale and faithfully flat. Hence
     the result follows from the definition of ind-étale and \Cref{lemma:ind-faithfully-flat}.
 \end{proof}
@@ -1772,15 +1817,20 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     the \emph{étale contraction of $A$}.
     \uses{def:etale-precontraction}
     \label{def:etale-contraction}
+    \lean{IndEtaleContraction}
+    \leanok
 \end{definition}
 
 \begin{lemma}
     $T^{\infty}(A)$ is ind-étale and faithfully flat over $A$.
     \uses{def:etale-contraction,def:ind-etale}
     \label{lemma:etale-contraction-ind-etale}
+    \lean{faithfullyFlat_indEtaleContraction, indEtale_indEtaleContraction}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:etale-precontraction-ind-etale, lemma:ind-faithfully-flat, lemma:ind-ind-etale}
     This follows from \Cref{lemma:etale-precontraction-ind-etale}, \Cref{lemma:ind-faithfully-flat}
     and \Cref{lemma:ind-ind-etale}.
@@ -1791,9 +1841,11 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     it has a retraction.
     \uses{def:etale-contraction}
     \label{prop:etale-contraction-retraction}
+    \lean{RingHom.Etale.exists_comp_eq_id_indContraction}
 \end{proposition}
 
 \begin{proof}
+    \leanok
     \uses{lemma:etale-ind-spreads, lemma:etale-precontraction-semi-retraction}
     By \Cref{lemma:etale-ind-spreads}
     there exists $n \in \N$ and a faithfully flat, étale $T^n(A)$-algebra $B'$ such that
@@ -1940,6 +1992,8 @@ In the following series of constructions, we will modify the connected component
 \begin{definition}
   \label{def:modify-pi0-finite}
   \uses{def:colim-open-closed-localizations,thm:pi0-prod,thm:pi0-isom}
+  \lean{WContractification.Pullback}
+  \leanok
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let 
   $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) be a finite discrete quotient of 
   \(T\) with quotient map \(q : T \to S\).  Define the ring $A^f_{q}$ as follow: 
@@ -1952,6 +2006,8 @@ In the following series of constructions, we will modify the connected component
 \begin{lemma}
   \label{thm:modify-pi0-finite-properties}
   \uses{def:modify-pi0-finite,def:ind-Zariski,def:identify-local-rings}
+  \lean{WContractification.Pullback.indZariski,
+        WContractification.Pullback.bijectiveOnStalks_algebraMap}
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) be a finite discrete quotient of \(T\) with quotient map \(q : T \to S\). Then the $A^S$-algebra defined in \Cref{def:modify-pi0-finite} viewed as $A$-algebra through $A \to A^S \to A^f_{q}$ is ind-Zariski. In particular, it identifies local rings. The map $A^S \to A^f_{q}$ induces a homeomorphism of $\Spec (A^f_{q})$ onto \((X \times S) \times_{\pi_0(X) \times S} Z = X \times_{\pi_0(X)} Z\).
 \end{lemma}
 
@@ -2164,3 +2220,34 @@ this we will perform a series of reductions.
     \uses{thm:ind-etale-w-contractible-cover-exists, thm:w-contractible-retraction}
     This follows from \Cref{thm:ind-etale-w-contractible-cover-exists} and \Cref{thm:w-contractible-retraction}.
 \end{proof}
+
+\section{Weakly étale algebras}
+
+Ind-étale is a practical notion, since it usually allows reducing proofs to the étale case. Geometrically,
+ind-étale is badly behaved though, since it is not local on the (geometric) target. For this reason, when we later
+define the pro-étale site of a scheme, we use the notion of weakly étale ring maps instead.
+
+\begin{definition}[Weakly étale algebras]
+    An $R$-algebra $S$ is \emph{weakly étale} if it is flat over $R$ and flat over $S \otimes_{R} S$.
+    A ring homorphism $f \colon R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra.
+    \label{def:weakly-etale-algebra}
+\end{definition}
+
+\begin{lemma}
+    Every étale algebra is weakly étale.
+    \label{lemma:etale-weakly-etale-algebra}
+\end{lemma}
+
+\begin{proof}
+    Let $S$ be an étale $R$-algebra. Then $S$ is $R$-flat. Also
+    $S \otimes_{R} S \cong S × T$ for some ring $T$, in particular $\spec{S \otimes_{R} S} \to \spec{S}$ is
+    an open immersion, hence flat.
+\end{proof}
+
+The following theorem is difficult to prove and we will try to avoid it for now.
+
+\begin{theorem}
+    Let $R \to S$ be weakly étale. Then there exists a faithfully flat ind-étale morphism
+    $S \to T$ such that the composition $R \to T$ is ind-étale.
+    \label{thm:weakly-etale-ind-etale}
+\end{theorem}

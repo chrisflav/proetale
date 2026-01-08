@@ -21,4 +21,41 @@ lemma ObjectProperty.ind_iff_of_equivalence (e : C ≌ D) (P : ObjectProperty D)
     exact P.prop_of_iso ((e.counitIso.app _).symm) (h i)
   · refine ⟨.ofIso (pres.map e.functor) (e.counitIso.app X), fun i ↦ h i⟩
 
+namespace ObjectProperty
+
+lemma ind_inverseImage_le
+    {C : Type*} [Category C] {D : Type*} [Category D]
+    (F : C ⥤ D) (P : ObjectProperty D)
+    [PreservesFilteredColimitsOfSize.{w, w} F] :
+    ind.{w} (P.inverseImage F) ≤ (ind.{w} P).inverseImage F := by
+  intro X ⟨J, _, _, pres, h⟩
+  simp only [prop_inverseImage_iff]
+  use J, inferInstance, inferInstance, pres.map F, h
+
+lemma ind_inverseImage_eq_of_isEquivalence
+    {C : Type*} [Category C] {D : Type*} [Category D]
+    (F : C ⥤ D) (P : ObjectProperty D) [P.IsClosedUnderIsomorphisms]
+    [F.IsEquivalence] :
+    ind.{w} (P.inverseImage F) = (ind.{w} P).inverseImage F := by
+  refine le_antisymm (ind_inverseImage_le _ _) fun X ⟨J, _, _, pres, h⟩ ↦ ?_
+  refine ⟨J, ‹_›, ‹_›, .ofIso (pres.map F.asEquivalence.inverse) ?_, fun j ↦ ?_⟩
+  · exact (F.asEquivalence.unitIso.app X).symm
+  · exact P.prop_of_iso ((F.asEquivalence.counitIso.app _).symm) (h j)
+
+variable (P : ObjectProperty C)
+
+lemma ind_iff_exists {X : C} (hf : ind.{w} (isFinitelyPresentable _) X) :
+    ind.{w} P X ↔ ∀ {Z : C} (g : Z ⟶ X) (hp : isFinitelyPresentable.{w} _ Z),
+      ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ X), u ≫ v = g ∧ P W := by
+  refine ⟨?_, ?_⟩
+  · intro ⟨J, _, _, pres, h⟩ Z g hZ
+    have : IsFinitelyPresentable Z := hZ
+    obtain ⟨j, u, hcomp⟩ := IsFinitelyPresentable.exists_hom_of_isColimit pres.isColimit g
+    exact ⟨_, u, pres.ι.app j, hcomp, h j⟩
+  · intro hfac
+    obtain ⟨J, _, _, pres, h⟩ := hf
+    sorry
+
+end ObjectProperty
+
 end CategoryTheory

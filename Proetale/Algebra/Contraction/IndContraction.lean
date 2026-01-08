@@ -21,7 +21,7 @@ open Limits
 
 variable {C : Type u} [Category.{v} C] (P : MorphismProperty C)
 
-alias exists_isPushout := IndSpreads.exists_isPushout
+alias exists_isPushout := PreIndSpreads.exists_isPushout
 
 namespace IndContraction
 
@@ -193,126 +193,6 @@ lemma exists_costructuredArrow_aux [HasPushouts C] [IndSpreads P]
         CategoryTheory.Under.homMk (pushout.inl _ _) rfl ≫ su⟩
   use T''
   rfl
-
-/--
-Think: `P = étale` and `Q = surjective on Spec`. Assume that for every `X : C`
-there exists `S : C` and `X ⟶ S` satisfying `Q` that is contractible
-wrt. `P ⊓ Q`-covers (i.e. étale, faithfully flat).
-
-Then also the ind-contraction is contractible wrt. `P ⊓ Q`-covers.
--/
-lemma exists_comp_eq_id [HasPushouts C]
-    [IndSpreads.{v, max u v} P]
-    {S : Under X}
-    (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
-      ∃ (s : T ⟶ S), g ≫ s = 𝟙 S)
-    [IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S)]
-    [P.IsMultiplicative] [P.IsStableUnderCobaseChange] [Q.IsStableUnderCobaseChange]
-    {T : Under X} (f : (indContraction P X).obj S ⟶ T) (hPf : P f.right) (hQf : Q f.right) :
-    ∃ (g : T ⟶ (indContraction P X).obj S),
-      f ≫ g = 𝟙 ((indContraction P X).obj S) := by
-  let c := ((CategoryTheory.Under.forget X).mapCocone (indContractionCocone P S))
-  obtain ⟨j, T', f', g, h, hf'⟩ :=
-    IndSpreads.exists_isPushout (P := P) (J := (CostructuredArrow (Under.forget P ⊤ X) S))
-    (D := (CostructuredArrow.proj ((Under.forget P ⊤ X)) S ⋙
-      ((Under.forget P ⊤ X))) ⋙ CategoryTheory.Under.forget X) c
-    (isColimitOfPreserves _ <| isColimitIndContractionCocone P S) f.right hPf
-  let Pt : Under X :=
-    CategoryTheory.Under.mk (T.hom ≫ pushout.inl f.right (fromIndContraction P S).right)
-  let gu : S ⟶ Pt := CategoryTheory.Under.homMk (pushout.inr _ _)
-    (by
-      rw [← CategoryTheory.Under.w (fromIndContraction P S), Category.assoc]
-      simp [← pushout.condition, Pt])
-  obtain ⟨su, hsu⟩ := hS gu (P.pushout_inr _ _ hPf) (Q.pushout_inr _ _ hQf)
-  let T'' : CostructuredArrow (Under.forget P ⊤ X) S :=
-      ⟨MorphismProperty.Under.mk ⊤ (j.1.hom ≫ f') (P.comp_mem _ _ j.1.2 hf'), ⟨⟨⟩⟩,
-      CategoryTheory.Under.homMk g (by simp [← h.w, c]) ≫
-        CategoryTheory.Under.homMk (pushout.inl _ _) rfl ≫ su⟩
-  refine ⟨CategoryTheory.Under.homMk (h.desc (𝟙 _) (c.ι.app T'') ?_) ?_, ?_⟩
-  · let f'' : j ⟶ T'' := CostructuredArrow.homMk (Under.homMk f' rfl) ?_
-    · simpa using (c.w f'').symm
-    · ext
-      simp only [Comma.forget_obj, Functor.id_obj, Functor.const_obj_obj, Comma.forget_map,
-        Under.homMk_hom, Under.comp_right, Under.homMk_right, T'']
-      rw [← h.w_assoc, pushout.condition_assoc]
-      have : pushout.inr f.right (fromIndContraction P S).right ≫ su.right = 𝟙 _ :=
-        congr($(hsu).right)
-      simp only [Functor.comp_obj, CostructuredArrow.proj_obj, Comma.forget_obj, Under.forget_obj,
-        Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app, Under.forget_map,
-        this, Category.comp_id, c]
-      apply congr($(ι_fromIndContraction P X S j).right)
-  · have : T.hom = j.1.hom ≫ f' ≫ g := by
-      have : c.ι.app j = ((indContractionCocone P S).ι.app j).right := rfl
-      simp [← h.w, this]
-    rw [this]
-    simp only [Functor.const_obj_obj, Functor.id_obj, Category.assoc, IsPushout.inr_desc]
-    rw [← Category.assoc]
-    exact CategoryTheory.Under.w ((indContractionCocone P S).ι.app T'')
-  · apply (CategoryTheory.Under.forget _).map_injective
-    exact h.inl_desc _ _ _
-
-lemma exists_comp_eq_id' [HasPushouts C]
-    [IndSpreads.{v, max u v} P] {S : Under X}
-    (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
-      ∃ (s : T ⟶ S), g ≫ s = 𝟙 S)
-    [IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S)]
-    [P.IsMultiplicative] [P.IsStableUnderCobaseChange] [Q.IsStableUnderCobaseChange]
-    {T : C} (f : ((indContraction P X).obj S).right ⟶ T) (hPf : P f) (hQf : Q f) :
-    ∃ (g : T ⟶ ((indContraction P X).obj S).right),
-      f ≫ g = 𝟙 (((indContraction P X).obj S)).right := by
-  let T' : Under X := CategoryTheory.Under.mk (((indContraction P X).obj S).hom ≫ f)
-  let f' : ((indContraction P X).obj S) ⟶ T' := CategoryTheory.Under.homMk f rfl
-  obtain ⟨g, hg⟩ := exists_comp_eq_id P Q X hS f' hPf hQf
-  use g.right, congr($(hg).right)
-
-/--
-Think: `P = étale` and `Q = surjective on Spec`. Assume that
-
-- for every `X : C`
-  there exists `S : C` and `X ⟶ S` satisfying `Q` that is contractible
-  wrt. `P ⊓ Q`-covers (i.e. étale, faithfully flat).
-- `Q` has a cancellation property (satisfied for e.g. `Q = surjective on Spec`).
-
-Then the ind-contraction is contractible wrt. ind-`P`-covers that also satisfy `Q`.
--/
-lemma exists_comp_eq_id_of_ind
-    [Q.HasOfPostcompProperty ⊤]
-    [HasPushouts C]
-    [IndSpreads.{v, max u v} P] {S : Under X}
-    (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
-      ∃ (s : T ⟶ S), g ≫ s = 𝟙 S)
-    [IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S)]
-    [P.IsMultiplicative] [P.IsStableUnderCobaseChange] [Q.IsStableUnderCobaseChange]
-    {T : Under X} (f : (indContraction P X).obj S ⟶ T) (hPf : P.ind f.right) (hQf : Q f.right) :
-    ∃ (g : T ⟶ (indContraction P X).obj S),
-      f ≫ g = 𝟙 ((indContraction P X).obj S) := by
-  obtain ⟨J, _, _, D, t, s, hc, h⟩ := hPf
-  choose g hg using fun j : J ↦ exists_comp_eq_id' P Q X hS (t.app j) (h j).1
-    (Q.of_postcomp (W' := ⊤) _ (s.app j) trivial (by rwa [(h j).2]))
-  obtain ⟨j⟩ := IsFiltered.nonempty (C := J)
-  let st : Cocone D :=
-  { pt := ((indContraction P X).obj S).right,
-    ι.app := g
-    ι.naturality {i j} u := by
-      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
-      let c := ((CategoryTheory.Under.forget X).mapCocone (indContractionCocone P S))
-      -- this is probably wrong
-      sorry
-    }
-  have hsection : f.right ≫ hc.desc st = 𝟙 ((indContraction P X).obj S).right := by
-    dsimp only [Under.comp_right, Under.homMk_right, Under.id_right]
-    rw [← (h j).2]
-    rw [← hg j]
-    simp only [Functor.const_obj_obj, Category.assoc]
-    congr 1
-    apply hc.fac
-  refine ⟨?_, ?_⟩
-  · fapply CategoryTheory.Under.homMk
-    · exact hc.desc st
-    · rw [← CategoryTheory.Under.w f, Category.assoc, hsection]
-      simp
-  · ext
-    exact hsection
 
 end IndContraction
 

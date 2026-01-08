@@ -8,6 +8,8 @@ import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndZariski
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
+import Proetale.Mathlib.RingTheory.Spectrum.Prime.Topology
+import Proetale.Mathlib.Topology.Constructions
 
 /-!
 # w-contractible rings
@@ -77,7 +79,7 @@ def map {W₁ W₂ : Clopens (PrimeSpectrum A)} (h : W₁ ≤ W₂) :
 end RestrictClopen
 
 open scoped CategoryTheory
-open CategoryTheory.Limits Topology
+open CategoryTheory.Limits Topology PrimeSpectrum ConnectedComponents Continuous
 
 section Restriction
 variable (T : Set (ConnectedComponents (PrimeSpectrum A)))
@@ -123,12 +125,39 @@ section Pullback
 variable {T : Type*} [TopologicalSpace T] [CompactSpace T] (S : DiscreteQuotient T)
   (f : C(T, ConnectedComponents (PrimeSpectrum A)))
 
--- #synth Finite S
--- #synth Ring (S → A)
--- #check (S : Type _)
--- #check PrimeSpectrum.sigmaToPi
--- def Z := Set.range fun t ↦ (S.proj t, f t)
--- def Pullback := S → A
+def Z := Set.range fun t ↦ connectedComponentsMap (PrimeSpectrum.continuous_sigmaToPi fun _ ↦ A) <|
+  connectedComponentsMap Prod.continuous_toSigma (prodMap.symm (mkHomeomorph _ (S.proj t), f t))
+
+def Pullback := Restriction (Z S f)
+
+namespace Pullback
+
+instance commRing : CommRing (Pullback S f) := fast_instance%
+  inferInstanceAs <| CommRing <| Restriction (Z S f)
+
+instance algebra' : Algebra (S → A) (Pullback S f) := fast_instance%
+  inferInstanceAs <| Algebra (S → A) <| Restriction (Z S f)
+
+instance algebra : Algebra A (Pullback S f) := Algebra.compHom _ (Pi.ringHom fun _ : S ↦ RingHom.id A)
+
+instance isScalarTower : IsScalarTower A (S → A) (Pullback S f) :=
+  .of_algebraMap_eq' rfl
+
+variable {T : Type u} [TopologicalSpace T] [CompactSpace T] (S : DiscreteQuotient T)
+  (f : C(T, ConnectedComponents (PrimeSpectrum A)))
+
+instance indZariski' : Algebra.IndZariski (S → A) (Pullback S f) :=
+  inferInstanceAs <| Algebra.IndZariski (S → A) <| Restriction (Z S f)
+
+instance indZariski : Algebra.IndZariski A (Pullback S f) :=
+  .trans A (S → A) (Pullback S f)
+
+theorem bijectiveOnStalks_algebraMap : (algebraMap A (Pullback S f)).BijectiveOnStalks :=
+  Algebra.IndZariski.bijectiveOnStalks_algebraMap _ _
+
+-- Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting for 1.123
+
+end Pullback
 
 end Pullback
 
