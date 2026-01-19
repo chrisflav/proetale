@@ -40,39 +40,41 @@ instance isContinuous_toProEtale :
 
 namespace ProEt
 
-/-- The direct image functor from pro-étale sheafs to étale sheafs. -/
-abbrev sheafPushforward :
-    Sheaf (ProEt.topology S) Ab.{u} ⥤ Sheaf (smallEtaleTopology S) Ab.{u} :=
-  (toProEtale S).sheafPushforwardContinuous Ab.{u} (smallEtaleTopology S) (ProEt.topology S)
+variable (A : Type*) [Category A]
 
-instance (F : S.Etaleᵒᵖ ⥤ Ab.{u}) : (toProEtale S).op.HasPointwiseLeftKanExtension F :=
-  sorry
+/-- The direct image functor from pro-étale sheafs to étale sheafs. -/
+@[simps! obj_val]
+abbrev sheafPushforward :
+    Sheaf (ProEt.topology S) A ⥤ Sheaf (smallEtaleTopology S) A :=
+  (toProEtale S).sheafPushforwardContinuous _ _ _
+
+instance (F : S.Etaleᵒᵖ ⥤ Ab.{u + 1}) : (toProEtale S).op.HasPointwiseLeftKanExtension F :=
+  inferInstance
 
 /-- The direct image functor from pro-étale sheafs to étale sheafs has a left-adjoint. -/
-instance : (ProEt.sheafPushforward S).IsRightAdjoint := inferInstance
+instance : (ProEt.sheafPushforward S Ab.{u + 1}).IsRightAdjoint := inferInstance
+
+variable [(sheafPushforward S A).IsRightAdjoint]
 
 /-- The inverse image functor from étale sheafs to pro-étale sheafs. -/
 noncomputable abbrev sheafPullback :
-    Sheaf (smallEtaleTopology S) Ab.{u} ⥤ Sheaf (ProEt.topology S) Ab.{u} :=
-  (toProEtale S).sheafPullback Ab.{u} (smallEtaleTopology S) (ProEt.topology S)
+    Sheaf (smallEtaleTopology S) A ⥤ Sheaf (ProEt.topology S) A :=
+  (toProEtale S).sheafPullback _ _ _
 
 /-- The inverse image - direct image adjunction for the pro-étale site. -/
 noncomputable abbrev sheafAdjunction :
-    ProEt.sheafPullback S ⊣ ProEt.sheafPushforward S :=
-  (toProEtale S).sheafAdjunctionContinuous Ab.{u} (smallEtaleTopology S) (ProEt.topology S)
+    ProEt.sheafPullback S A ⊣ ProEt.sheafPushforward S A :=
+  (toProEtale S).sheafAdjunctionContinuous _ _ _
 
-instance preservesFilteredColimits_sheafPullback_obj (F : Sheaf (smallEtaleTopology S) Ab.{u}) :
-    PreservesFilteredColimits ((sheafPullback S).obj F).val :=
+-- needs more assumptions on `A`
+instance isIso_unit_sheafAdjunction : IsIso (sheafAdjunction S A).unit :=
   sorry
 
-instance isIso_unit_sheafAdjunction : IsIso (sheafAdjunction S).unit :=
-  sorry
+instance faithful_sheafPullback : (sheafPullback S A).Faithful :=
+  (sheafAdjunction S A).faithful_L_of_mono_unit_app
 
-instance faithful_sheafPullback : (sheafPullback S).Faithful :=
-  (sheafAdjunction S).faithful_L_of_mono_unit_app
-
-instance full_sheafPullback : (sheafPullback S).Full :=
-  (sheafAdjunction S).full_L_of_isSplitEpi_unit_app
+instance full_sheafPullback : (sheafPullback S A).Full :=
+  (sheafAdjunction S A).full_L_of_isSplitEpi_unit_app
 
 end ProEt
 

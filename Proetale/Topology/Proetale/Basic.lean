@@ -33,6 +33,9 @@ instance : Category (ProEt X) :=
 def topology : GrothendieckTopology (ProEt X) :=
   smallGrothendieckTopology @WeaklyEtale
 
+def zariskiTopology : GrothendieckTopology (ProEt X) :=
+  smallGrothendieckTopologyOfLE (P := @IsOpenImmersion) _ fun _ _ _ _ ↦ inferInstance
+
 end ProEt
 
 end AlgebraicGeometry.Scheme
