@@ -1,3 +1,4 @@
+import Upstreamer
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
@@ -27,6 +28,7 @@ lemma Presieve.EffectiveEpimorphic.of_subcanonical (J : GrothendieckTopology C) 
   exact Presieve.IsSheaf.isSheafFor J
     (GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable (yoneda.obj Y)) _ h
 
+@[upstreamed mathlib 3145]
 instance GrothendieckTopology.preservesLimitsOfShape_yoneda (J : GrothendieckTopology C)
     [J.Subcanonical] {I : Type*} [Category I] :
     PreservesLimitsOfShape I J.yoneda :=
@@ -45,6 +47,7 @@ lemma Limits.IsTerminal.subsingleton_forget [HasForget C]
     Subsingleton ((forget C).obj X) :=
   (Types.isTerminalEquivIsoPUnit _ <| h.isTerminalObj (forget C) X).toEquiv.subsingleton
 
+@[upstreamed mathlib 3145]
 lemma eq_of_eq
     (s : Cofan fun i ↦ J.yoneda.obj (X i))
     {Y : C} {i j : ι} (a : Y ⟶ X i) (b : Y ⟶ X j)
@@ -61,23 +64,26 @@ lemma eq_of_eq
   · obtain ⟨h⟩ := Hdisj h a b hab
     exact (Sheaf.isTerminalOfBotCover s.pt _ (hempty Y h)).subsingleton_forget.elim _ _
 
-@[simps]
+@[simps, upstreamed mathlib 3145]
 def Sieve.toFunctor {X : C} (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
     yoneda.obj Y ⟶ S.functor where
   app Z g := ⟨g ≫ f, S.downward_closed hf g⟩
 
+@[upstreamed mathlib 3145]
 def Limits.Cofan.isColimitMapCoconeEquiv {D : Type*} [Category D] (F : C ⥤ D)
     {ι : Type*} (X : ι → C) (c : Cofan X) :
     IsColimit (F.mapCocone c) ≃ IsColimit (Cofan.mk _ fun i ↦ F.map (c.inj i)) :=
   (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm (F.mapCocone c)).symm.trans <|
     IsColimit.equivIsoColimit (Cocones.ext (Iso.refl _))
 
+@[upstreamed mathlib 3145]
 def Limits.Fan.isLimitMapConeEquiv {D : Type*} [Category D] (F : C ⥤ D)
     {ι : Type*} (X : ι → C) (c : Fan X) :
     IsLimit (F.mapCone c) ≃ IsLimit (Fan.mk _ fun i ↦ F.map (c.proj i)) :=
   (IsLimit.postcomposeHomEquiv Discrete.natIsoFunctor (F.mapCone c)).symm.trans <|
     IsLimit.equivIsoLimit (Cones.ext (Iso.refl _))
 
+@[upstreamed mathlib 3145]
 noncomputable
 def isColimit_cofanMk_yoneda
     [∀ (i : ι), Mono (c.inj i)]
@@ -116,6 +122,7 @@ def isColimit_cofanMk_yoneda
 
 /-- If the coproduct inclusios form a covering of `J` and coproducts are disjoint,
 the yoneda embedding preserves coproducts. -/
+@[upstreamed mathlib 3145]
 lemma GrothendieckTopology.preservesColimitsOfShape_yoneda_of_ofArrows_inj_mem
     [MonoCoprod C] [∀ {κ : Type u}, HasColimitsOfShape (Discrete κ) C] {ι : Type u}
     (hcov : ∀ {X : ι → C} {c : Cofan X} (_ : IsColimit c), Sieve.ofArrows X c.inj ∈ J c.pt)
