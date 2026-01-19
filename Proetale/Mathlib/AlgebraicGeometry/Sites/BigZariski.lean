@@ -62,7 +62,7 @@ lemma preservesFiniteProducts_of_isSheaf_zariskiTopology {F : Scheme.{u}ᵒᵖ �
         have : IsEmpty s.pt := isEmpty_of_commSq_sigmaι_of_ne ⟨s.condition⟩ hij
         intro x y
         apply isInitialOfIsEmpty.hom_ext
-  · exact hF.isSheafFor _ _ (sigmaOpenCover' X').generate_ofArrows_mem_grothendieckTopology
+  · exact hF.isSheafFor _ _ (sigmaOpenCover X').generate_ofArrows_mem_grothendieckTopology
 
 lemma Scheme.IsLocallyDirected.ofArrows_mem_grothendieckTopology {J : Type*} [Category J]
     (F : J ⥤ Scheme.{u})

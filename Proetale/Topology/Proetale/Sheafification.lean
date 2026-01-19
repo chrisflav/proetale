@@ -16,12 +16,12 @@ open CategoryTheory MorphismProperty
 
 namespace AlgebraicGeometry.Scheme.ProEt
 
-/-- The pro-étale site on `S : Scheme.{u}` has sheafification for `Type u`-valued sheafs. -/
-instance (S : Scheme.{u}) : HasSheafify (ProEt.topology S) (Type u) :=
-  sorry
+/-- The pro-étale site on `S : Scheme.{u}` has sheafification for `Type (u + 1)`-valued sheafs. -/
+instance (S : Scheme.{u}) : HasSheafify (ProEt.topology S) (Type (u + 1)) :=
+  inferInstance
 
-/-- The pro-étale site on `S : Scheme.{u}` has sheafification for `Ab.{u}`-valued sheafs. -/
-instance (S : Scheme.{u}) : HasSheafify (ProEt.topology S) Ab.{u} :=
-  sorry
+/-- The pro-étale site on `S : Scheme.{u}` has sheafification for `Ab.{u + 1}`-valued sheafs. -/
+instance (S : Scheme.{u}) : HasSheafify (ProEt.topology S) Ab.{u + 1} :=
+  inferInstance
 
 end AlgebraicGeometry.Scheme.ProEt
