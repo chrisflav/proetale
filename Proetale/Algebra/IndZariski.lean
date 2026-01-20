@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.RingTheory.RingHom.Flat
 import Proetale.Algebra.Ind
 import Proetale.Algebra.StalkIso
+import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 
 /-!
 # Ind-Zariski algebras and ring homomorphisms
@@ -26,6 +27,10 @@ variable [Algebra R S] [Algebra R T]
 def CommAlgCat.isLocalIso : ObjectProperty (CommAlgCat.{u} R) :=
   fun S ↦ Algebra.IsLocalIso R S
 
+instance (ι : Type*) [Finite ι] :
+    (CommAlgCat.isLocalIso R).IsClosedUnderLimitsOfShape (Discrete ι) := by
+  sorry
+
 lemma CommAlgCat.isLocalIso_eq : isLocalIso R = RingHom.toObjectProperty RingHom.IsLocalIso R := by
   ext S
   exact RingHom.isLocalIso_algebraMap.symm
@@ -44,15 +49,27 @@ lemma iff_ind_isLocalIso :
     Algebra.IndZariski R S ↔ ObjectProperty.ind.{u} (CommAlgCat.isLocalIso R) (.of R S) :=
   Algebra.indZariski_iff R S
 
+lemma of_equiv (e : S ≃ₐ[R] T) [IndZariski R S] : IndZariski R T := by
+  rwa [iff_ind_isLocalIso, (CommAlgCat.isLocalIso R).ind.prop_iff_of_iso (CommAlgCat.isoMk e.symm),
+    ← iff_ind_isLocalIso]
+
 lemma trans [Algebra S T] [IsScalarTower R S T] [Algebra.IndZariski R S] [Algebra.IndZariski S T] :
     Algebra.IndZariski R T :=
   sorry
 
-instance prod [Algebra.IndZariski R S] [Algebra.IndZariski R T] : Algebra.IndZariski R (S × T) :=
-  sorry
-
 instance pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
-    [∀ i, Algebra R (S i)] [∀ i, Algebra.IndZariski R (S i)] : Algebra.IndZariski R (∀ i, S i) :=
+    [∀ i, Algebra R (S i)] [∀ i, Algebra.IndZariski R (S i)] : Algebra.IndZariski R (∀ i, S i) := by
+  rw [iff_ind_isLocalIso]
+  apply ObjectProperty.LimitOfShape.prop (J := Discrete ι)
+  refine ⟨⟨Discrete.functor fun i ↦ .of R (S i),
+      Discrete.natTrans fun i ↦ CommAlgCat.ofHom (Pi.evalAlgHom _ _ _), ?_⟩, ?_⟩
+  · exact CommAlgCat.isLimitPiFan fun i ↦ .of R (S i)
+  · intro j
+    dsimp
+    rw [← iff_ind_isLocalIso]
+    infer_instance
+
+instance prod [Algebra.IndZariski R S] [Algebra.IndZariski R T] : Algebra.IndZariski R (S × T) :=
   sorry
 
 instance function {ι : Type u} [_root_.Finite ι] (S : Type u) [CommRing S]
@@ -139,7 +156,9 @@ lemma prod {g : R →+* T} (hf : f.IndZariski) (hg : g.IndZariski) : (f.prod g).
 
 lemma pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
     (f : ∀ i, R →+* (S i)) (hf : ∀ i, (f i).IndZariski) : (Pi.ringHom f).IndZariski := by
-  sorry
+  let (i : ι) : Algebra R (S i) := (f i).toAlgebra
+  have (i : ι) : Algebra.IndZariski R (S i) := hf i
+  exact Algebra.IndZariski.pi R S
 
 lemma flat (h : f.IndZariski) : f.Flat := by
   algebraize [f]
