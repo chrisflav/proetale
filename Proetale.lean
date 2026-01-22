@@ -84,6 +84,7 @@ import Proetale.Topology.Comparison.Affine
 import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Comparison.Pullback
 import Proetale.Topology.Flat.CompactOpenCovered
+import Proetale.Topology.Flat.ConstantSheaf
 import Proetale.Topology.Flat.QuasiCompactCover
 import Proetale.Topology.Flat.QuasiCompactTopology
 import Proetale.Topology.Flat.Sheaf
