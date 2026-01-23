@@ -10,7 +10,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Etale
 import Mathlib.AlgebraicGeometry.Morphisms.FlatMono
 
 /-!
-#### Weakly étale morphisms
+# Weakly étale morphisms
 
 -/
 
