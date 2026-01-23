@@ -20,13 +20,10 @@ theorem quasiSeparatedSpace_of_quasiCompact_diagonal (h : QuasiCompact (fun x : 
     QuasiSeparatedSpace X := by
   rw [quasiSeparatedSpace_iff]
   intro U V hUopen hUcomp hVopen hVcomp
-  have hpre :
-      (fun x : X ↦ (x, x)) ⁻¹' (U ×ˢ V) = U ∩ V := by
+  have hpre : (fun x : X ↦ (x, x)) ⁻¹' (U ×ˢ V) = U ∩ V := by
     ext x
     simp
-  have : IsCompact ((fun x : X ↦ (x, x)) ⁻¹' (U ×ˢ V)) :=
-    h (U ×ˢ V) (hUopen.prod hVopen) (hUcomp.prod hVcomp)
-  simpa [hpre] using this
+  simpa [hpre] using h (U ×ˢ V) (hUopen.prod hVopen) (hUcomp.prod hVcomp)
 
 theorem quasiCompact_diagonal_of_quasiSeparatedSpace [QuasiSeparatedSpace X] [PrespectralSpace X] :
     QuasiCompact (fun x : X ↦ (x, x)) := by

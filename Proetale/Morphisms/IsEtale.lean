@@ -19,3 +19,11 @@ lemma Algebra.isEtaleAt_of_flat_of_unramified [FinitePresentation R S]
   sorry
 
 end ring
+
+namespace AlgebraicGeometry
+
+theorem IsEtale.of_flat_of_locallyOfFinitePresentation_of_formallyUnramified {X Y : Scheme.{u}}
+    (f : X ⟶ Y) [Flat f] [LocallyOfFinitePresentation f] [FormallyUnramified f] : IsEtale f := by
+  sorry
+
+end AlgebraicGeometry
