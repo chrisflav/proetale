@@ -1,7 +1,9 @@
 import Mathlib.Topology.Spectral.Prespectral
 
 -- after `PrespectralSpace.of_isTopologicalBasis'`
-theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y := sorry
+theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y := by
+  sorry
 
 -- after `PrespectralSpace.sigma`
 instance PrespectralSpace.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
