@@ -218,7 +218,7 @@ lemma WLocalSpace.isHomeomorph_connectedComponents_closedPoints (X : Type*) [Top
     have hxy' : (⟨x, hx⟩ : closedPoints X) ≠ ⟨y, hy⟩ := by
       intro h
       apply hxy
-      sorry
+      exact h
     -- 使用 TotallySeparatedSpace 得到分离 x 和 y 的 clopen 集
     obtain ⟨U₀, hU₀_clopen, hxU₀, hyU₀⟩ := exists_isClopen_of_totally_separated hxy'
     -- U₀ 是 closedPoints X 的 clopen 子集，x ∈ U₀，y ∈ U₀ᶜ
