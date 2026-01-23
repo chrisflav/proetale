@@ -2,12 +2,12 @@ import Mathlib.Topology.Spectral.Prespectral
 
 -- after `PrespectralSpace.of_isTopologicalBasis'`
 theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y := by
-  sorry
+    [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y :=
+  PrespectralSpace.of_isClosedEmbedding f.symm f.symm.isClosedEmbedding
 
 -- after `PrespectralSpace.sigma`
 instance PrespectralSpace.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [PrespectralSpace X] [PrespectralSpace Y] : PrespectralSpace (X × Y) :=
+    [PrespectralSpace X] [PrespectralSpace Y] : PrespectralSpace (X × Y) := by
   sorry
 
 -- end of file
