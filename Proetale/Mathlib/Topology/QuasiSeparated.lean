@@ -1,5 +1,5 @@
 import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Spectral.Prespectral
+import Proetale.Mathlib.Topology.Spectral.Prespectral
 
 open Set TopologicalSpace Topology
 
@@ -13,6 +13,58 @@ theorem Homeomorph.quasiSeparatedSpace [QuasiSeparatedSpace α] (f : α ≃ₜ �
 are compact. -/
 def QuasiCompact {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) : Prop :=
   ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f ⁻¹' U)
+
+theorem QuasiCompact.prod_map {X₁ Y₁ X₂ Y₂ : Type*} [TopologicalSpace X₁] [TopologicalSpace Y₁]
+    [TopologicalSpace X₂] [TopologicalSpace Y₂] [PrespectralSpace Y₁] [PrespectralSpace Y₂]
+    {f : X₁ → Y₁} {g : X₂ → Y₂} (hf : QuasiCompact f) (hg : QuasiCompact g) :
+    QuasiCompact (Prod.map f g) := by
+  classical
+  let b :
+      ({ U : Set Y₁ // IsOpen U ∧ IsCompact U } × { V : Set Y₂ // IsOpen V ∧ IsCompact V }) →
+        Set (Y₁ × Y₂) := fun i ↦ (i.1.1 : Set Y₁) ×ˢ (i.2.1 : Set Y₂)
+  have hb₁ :
+      IsTopologicalBasis ({ U : Set Y₁ | IsOpen U ∧ IsCompact U } : Set (Set Y₁)) :=
+    PrespectralSpace.isTopologicalBasis (X := Y₁)
+  have hb₂ :
+      IsTopologicalBasis ({ V : Set Y₂ | IsOpen V ∧ IsCompact V } : Set (Set Y₂)) :=
+    PrespectralSpace.isTopologicalBasis (X := Y₂)
+  have hbprod :
+      IsTopologicalBasis
+        (Set.image2 (· ×ˢ ·) ({ U : Set Y₁ | IsOpen U ∧ IsCompact U } : Set (Set Y₁))
+          ({ V : Set Y₂ | IsOpen V ∧ IsCompact V } : Set (Set Y₂))) :=
+    hb₁.prod hb₂
+  have hrange :
+      Set.range b =
+        Set.image2 (· ×ˢ ·) ({ U : Set Y₁ | IsOpen U ∧ IsCompact U } : Set (Set Y₁))
+          ({ V : Set Y₂ | IsOpen V ∧ IsCompact V } : Set (Set Y₂)) := by
+    ext s
+    constructor
+    · rintro ⟨i, rfl⟩
+      exact ⟨i.1.1, i.1.2, i.2.1, i.2.2, rfl⟩
+    · rintro ⟨u, hu, v, hv, rfl⟩
+      exact ⟨(⟨u, hu⟩, ⟨v, hv⟩), rfl⟩
+  have hb : IsTopologicalBasis (Set.range b) := by
+    simpa [hrange] using hbprod
+  have aux :=
+    isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis b hb fun i ↦ by
+      simpa [b] using i.1.2.2.prod i.2.2.2
+  intro s hsOpen hsCompact
+  obtain ⟨t, ht, rfl⟩ := (aux s).1 ⟨hsCompact, hsOpen⟩
+  have hs_pre :
+      (Prod.map f g) ⁻¹' (⋃ i ∈ t, b i) = ⋃ i ∈ t, (Prod.map f g) ⁻¹' b i := by
+    ext x
+    simp [b]
+  have hcomp : IsCompact (⋃ i ∈ t, (Prod.map f g) ⁻¹' b i) := by
+    refine ht.isCompact_biUnion ?_
+    intro i hi
+    have hpre :
+        (Prod.map f g) ⁻¹' b i = (f ⁻¹' (i.1.1 : Set Y₁)) ×ˢ (g ⁻¹' (i.2.1 : Set Y₂)) := by
+      ext x
+      simp [b, Set.mem_prod, Prod.map]
+    have h1 : IsCompact (f ⁻¹' (i.1.1 : Set Y₁)) := hf _ i.1.2.1 i.1.2.2
+    have h2 : IsCompact (g ⁻¹' (i.2.1 : Set Y₂)) := hg _ i.2.2.1 i.2.2.2
+    simpa [hpre] using h1.prod h2
+  simpa [hs_pre] using hcomp
 
 variable {X : Type*} [TopologicalSpace X]
 
@@ -111,37 +163,51 @@ theorem quasiCompact_diagonal_of_quasiSeparatedSpace [QuasiSeparatedSpace X] [Pr
 instance QuasiSeparatedSpace.prod [QuasiSeparatedSpace α] [PrespectralSpace α]
     [QuasiSeparatedSpace β] [PrespectralSpace β] : QuasiSeparatedSpace (α × β) := by
   classical
-  let b :
-      ({ U : Set α // IsOpen U ∧ IsCompact U } × { V : Set β // IsOpen V ∧ IsCompact V }) →
-        Set (α × β) := fun i ↦ (i.1.1 : Set α) ×ˢ (i.2.1 : Set β)
-  refine QuasiSeparatedSpace.of_isTopologicalBasis (b := b) ?_ ?_
-  · have hbα :
-        IsTopologicalBasis ({ U : Set α | IsOpen U ∧ IsCompact U } : Set (Set α)) :=
-      PrespectralSpace.isTopologicalBasis (X := α)
-    have hbβ :
-        IsTopologicalBasis ({ V : Set β | IsOpen V ∧ IsCompact V } : Set (Set β)) :=
-      PrespectralSpace.isTopologicalBasis (X := β)
-    have hbprod :
-        IsTopologicalBasis
-          (Set.image2 (· ×ˢ ·) ({ U : Set α | IsOpen U ∧ IsCompact U } : Set (Set α))
-            ({ V : Set β | IsOpen V ∧ IsCompact V } : Set (Set β))) :=
-      hbα.prod hbβ
-    have hrange :
-        Set.range b =
-          Set.image2 (· ×ˢ ·) ({ U : Set α | IsOpen U ∧ IsCompact U } : Set (Set α))
-            ({ V : Set β | IsOpen V ∧ IsCompact V } : Set (Set β)) := by
-      ext s
-      constructor
-      · rintro ⟨i, rfl⟩
-        exact ⟨i.1.1, i.1.2, i.2.1, i.2.2, rfl⟩
-      · rintro ⟨u, hu, v, hv, rfl⟩
-        exact ⟨(⟨u, hu⟩, ⟨v, hv⟩), rfl⟩
-    simpa [hrange] using hbprod
-  · intro i j
-    have hA : IsCompact ((i.1.1 : Set α) ∩ (j.1.1 : Set α)) :=
-      IsCompact.inter_of_isOpen (U := (i.1.1 : Set α)) (V := (j.1.1 : Set α))
-        i.1.2.2 j.1.2.2 i.1.2.1 j.1.2.1
-    have hB : IsCompact ((i.2.1 : Set β) ∩ (j.2.1 : Set β)) :=
-      IsCompact.inter_of_isOpen (U := (i.2.1 : Set β)) (V := (j.2.1 : Set β))
-        i.2.2.2 j.2.2.2 i.2.2.1 j.2.2.1
-    simpa [b, Set.prod_inter_prod] using hA.prod hB
+  refine quasiSeparatedSpace_of_quasiCompact_diagonal (X := α × β) ?_
+  have hδα : QuasiCompact (fun a : α ↦ (a, a)) :=
+    quasiCompact_diagonal_of_quasiSeparatedSpace (X := α)
+  have hδβ : QuasiCompact (fun b : β ↦ (b, b)) :=
+    quasiCompact_diagonal_of_quasiSeparatedSpace (X := β)
+  let e : ((α × β) × (α × β)) ≃ₜ ((α × α) × (β × β)) :=
+    { toEquiv :=
+        { toFun := fun p ↦ ((p.1.1, p.2.1), (p.1.2, p.2.2))
+          invFun := fun q ↦ ((q.1.1, q.2.1), (q.1.2, q.2.2))
+          left_inv := by intro p; rfl
+          right_inv := by intro q; rfl }
+      continuous_toFun := by
+        have c11 : Continuous fun p : (α × β) × (α × β) ↦ p.1.1 := continuous_fst.fst
+        have c21 : Continuous fun p : (α × β) × (α × β) ↦ p.2.1 := continuous_snd.fst
+        have c12 : Continuous fun p : (α × β) × (α × β) ↦ p.1.2 := continuous_fst.snd
+        have c22 : Continuous fun p : (α × β) × (α × β) ↦ p.2.2 := continuous_snd.snd
+        exact (c11.prodMk c21).prodMk (c12.prodMk c22)
+      continuous_invFun := by
+        have c11 : Continuous fun q : (α × α) × (β × β) ↦ q.1.1 := continuous_fst.fst
+        have c21 : Continuous fun q : (α × α) × (β × β) ↦ q.2.1 := continuous_snd.fst
+        have c12 : Continuous fun q : (α × α) × (β × β) ↦ q.1.2 := continuous_fst.snd
+        have c22 : Continuous fun q : (α × α) × (β × β) ↦ q.2.2 := continuous_snd.snd
+        exact (c11.prodMk c21).prodMk (c12.prodMk c22) }
+  have hprod :
+      QuasiCompact (Prod.map (fun a : α ↦ (a, a)) (fun b : β ↦ (b, b))) :=
+    QuasiCompact.prod_map (f := fun a : α ↦ (a, a)) (g := fun b : β ↦ (b, b)) hδα hδβ
+  intro s hsOpen hsCompact
+  have hsOpen' : IsOpen (e '' s) := e.isOpenMap _ hsOpen
+  have hsCompact' : IsCompact (e '' s) := hsCompact.image e.continuous
+  have hcomp :
+      IsCompact
+        ((Prod.map (fun a : α ↦ (a, a)) (fun b : β ↦ (b, b))) ⁻¹' (e '' s)) :=
+    hprod _ hsOpen' hsCompact'
+  have hpre :
+      (fun x : α × β ↦ (x, x)) ⁻¹' s =
+        (Prod.map (fun a : α ↦ (a, a)) (fun b : β ↦ (b, b))) ⁻¹' (e '' s) := by
+    ext x
+    change (x, x) ∈ s ↔ Prod.map (fun a : α ↦ (a, a)) (fun b : β ↦ (b, b)) x ∈ e '' s
+    constructor
+    · intro hx
+      refine ⟨(x, x), hx, ?_⟩
+      rfl
+    · rintro ⟨y, hy, hy'⟩
+      have : y = (x, x) := by
+        apply e.injective
+        simpa [e, Prod.map] using hy'
+      simpa [this] using hy
+  simpa [hpre] using hcomp
