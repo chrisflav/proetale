@@ -1,4 +1,4 @@
-import Mathlib.Topology.Inseparable
+import Mathlib
 
 /-- The generalization hull of `s` is the smallest set containing `s` that is stable
 under generalization.
@@ -36,3 +36,7 @@ lemma Topology.IsEmbedding.specializes_iff {X Y : Type*} [TopologicalSpace X]
     f x ⤳ f y ↔ x ⤳ y := by
   rw [specializes_iff_mem_closure, ← Set.mem_preimage, ← Set.image_singleton,
     ← hf.closure_eq_preimage_closure_image, specializes_iff_mem_closure]
+
+theorem generalizationHull.eq_sUnion_of_isCompact [SpectralSpace X] {s : Set X} (hs : IsCompact s) :
+    ∃ S ⊆ {U : Set X | IsOpen U ∧ IsCompact U}, (generalizationHull s) = ⋃₀ S :=
+  sorry

@@ -6,8 +6,3 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : β →
 
 -- after `quasiSeparatedSpace_iff`
 theorem Homeomorph.quasiSeparatedSpace [QuasiSeparatedSpace α] (f : α ≃ₜ β) : QuasiSeparatedSpace β := sorry
-
--- after `NoetherianSpace.to_quasiSeparatedSpace`
-instance QuasiSeparatedSpace.prod [QuasiSeparatedSpace α] [QuasiSeparatedSpace β] :
-    QuasiSeparatedSpace (α × β) := by
-  sorry
