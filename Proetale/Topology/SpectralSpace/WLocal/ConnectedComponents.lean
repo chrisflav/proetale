@@ -20,9 +20,6 @@ in w-local spaces.
 * `WLocalSpace.closedPointsHomeomorph`: The closed points of a w-local space are
   homeomorphic to the connected components.
 
-## References
-
-* [Bhatt, Scholze, *The pro-étale topology for schemes*][BS]
 -/
 
 /-- If `X` is w-local, the composition `closedPoints X → X → ConnectedComponents X` is
