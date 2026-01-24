@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jiedong Jiang, Christian Merten
+Authors: Jiedong Jiang, Christian Merten, Yiming Fu
 -/
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.Topology.JacobsonSpace
@@ -32,6 +32,30 @@ class WLocalSpace (X : Type*) [TopologicalSpace X] : Prop extends SpectralSpace 
 
 attribute [instance] WLocalSpace.isClosed_closedPoints
 
+section closedPoints
+
+variable {X : Type*} [TopologicalSpace X]
+
+namespace WLocalSpace
+
+instance spectralSpace_closedPoints [WLocalSpace X] : SpectralSpace (closedPoints X) :=
+  SpectralSpace.of_isClosed X
+
+instance t2Space_closedPoints [WLocalSpace X] :
+    T2Space (closedPoints X) :=
+  SpectralSpace.t2Space_of_isClosed_singleton  closedPoints.isClosed_singleton
+
+instance CompactSpace_closedPoints [WLocalSpace X] :
+    CompactSpace (closedPoints X) :=
+  (IsClosed.isClosedEmbedding_subtypeVal inferInstance).compactSpace
+
+instance totallyDisconnected_closedPoints [WLocalSpace X] :
+    TotallyDisconnectedSpace (closedPoints X) :=
+  SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton closedPoints.isClosed_singleton
+
+end WLocalSpace
+
+end closedPoints
 
 /-- A w-local map is a spectral map that maps closed points to closed points. -/
 @[mk_iff]
@@ -94,14 +118,9 @@ lemma Topology.IsClosedEmbedding.wLocalSpace {f : X → Y} (hf : IsClosedEmbeddi
   Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range
     hf.isEmbedding hf.isClosed_range.stableUnderSpecialization
 
-lemma generalizationHull.eq_sUnion_of_isCompact' (X : Type*) [TopologicalSpace X] [SpectralSpace X]
-    {s : Set X} (hs : IsCompact s) :
-    ∃ S ⊆ {U | IsOpen U ∧ IsCompact U}, generalizationHull s = ⋂₀ S := by
-  sorry
-
 lemma isClosed_generalizationHull_of_wLocalSpace [WLocalSpace X] {s : Set X} (hs : IsClosed s) :
     IsClosed (generalizationHull s) := by
-  obtain ⟨S, hS_sub, heq⟩ := generalizationHull.eq_sUnion_of_isCompact' X hs.isCompact
+  obtain ⟨S, hS_sub, heq⟩ := generalizationHull.eq_sInter_of_isCompact X hs.isCompact
   apply IsClosed.of_isClosed_constructibleTopology
   · rw [heq]
     apply @isClosed_sInter _ (constructibleTopology X) S
@@ -110,27 +129,6 @@ lemma isClosed_generalizationHull_of_wLocalSpace [WLocalSpace X] {s : Set X} (hs
     have hUc : IsCompact Uᶜᶜ := by simp [(hS_sub hU).2]
     exact hUc.isOpen_constructibleTopology_of_isClosed (isClosed_compl_iff.mpr (hS_sub hU).1)
   · exact hs.stableUnderSpecialization.generalizationHull_of_wLocalSpace
-
-variable {X : Type*} [TopologicalSpace X]
-
-namespace WLocalSpace
-
-instance spectralSpace_closedPoints [WLocalSpace X] : SpectralSpace (closedPoints X) :=
-  SpectralSpace.of_isClosed X
-
-instance t2Space_closedPoints [WLocalSpace X] :
-    T2Space (closedPoints X) :=
-  SpectralSpace.t2Space_of_isClosed_singleton  closedPoints.isClosed_singleton
-
-instance CompactSpace_closedPoints [WLocalSpace X] :
-    CompactSpace (closedPoints X) :=
-  (IsClosed.isClosedEmbedding_subtypeVal inferInstance).compactSpace
-
-instance totallyDisconnected_closedPoints [WLocalSpace X] :
-    TotallyDisconnectedSpace (closedPoints X) :=
-  SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton closedPoints.isClosed_singleton
-
-end WLocalSpace
 
 /-- If `X` is w-local, the composition `closedPoints X → X → ConnectedComponents X` is
 a homeomorphism. -/
@@ -150,8 +148,10 @@ lemma WLocalSpace.isHomeomorph_connectedComponents_closedPoints (X : Type*) [Top
       IsClosed.isClosedEmbedding_subtypeVal WLocalSpace.isClosed_closedPoints
     let U := generalizationHull (Subtype.val '' U₀)
     let V := generalizationHull (Subtype.val '' U₀ᶜ)
-    have hU_closed : IsClosed U := isClosed_generalizationHull_of_wLocalSpace (hce.isClosedMap U₀ hU₀_clopen.1)
-    have hV_closed : IsClosed V := isClosed_generalizationHull_of_wLocalSpace (hce.isClosedMap U₀ᶜ hU₀_clopen.compl.1)
+    have hU_closed : IsClosed U :=
+      isClosed_generalizationHull_of_wLocalSpace (hce.isClosedMap U₀ hU₀_clopen.1)
+    have hV_closed : IsClosed V :=
+      isClosed_generalizationHull_of_wLocalSpace (hce.isClosedMap U₀ᶜ hU₀_clopen.compl.1)
     have hX_eq : (Set.univ : Set X) = U ∪ V := by
       ext z; simp only [Set.mem_univ, true_iff]
       obtain ⟨c, hc_closed, hzc⟩ := exists_isClosed_specializes z
