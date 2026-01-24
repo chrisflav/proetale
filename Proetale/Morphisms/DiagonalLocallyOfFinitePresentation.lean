@@ -1,9 +1,10 @@
-import Mathlib
+import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 
 open CategoryTheory Limits MorphismProperty
 
 namespace AlgebraicGeometry
 
+/-- The cancellation theorem for morphisms locally of finite presentation. -/
 theorem LocallyOfFinitePresentation.of_comp_locallyOfFiniteType {X Y Z : Scheme} (f : X ⟶ Y)
     (g : Y ⟶ Z) [hfg : LocallyOfFinitePresentation (f ≫ g)] [hg : LocallyOfFiniteType g] :
     LocallyOfFinitePresentation f :=
