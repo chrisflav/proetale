@@ -81,5 +81,3 @@ noncomputable def
     WLocalSpace.closedPointsHomeomorph {X : Type*} [TopologicalSpace X] [WLocalSpace X] :
     closedPoints X ≃ₜ ConnectedComponents X :=
   (WLocalSpace.isHomeomorph_connectedComponents_closedPoints X).homeomorph
-
-#min_imports
