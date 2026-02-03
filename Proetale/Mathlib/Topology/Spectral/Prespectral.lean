@@ -1,12 +1,21 @@
 import Mathlib.Topology.Spectral.Prespectral
 
 -- after `PrespectralSpace.of_isTopologicalBasis'`
-theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y := sorry
+theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y :=
+  PrespectralSpace.of_isClosedEmbedding f.symm f.symm.isClosedEmbedding
 
 -- after `PrespectralSpace.sigma`
 instance PrespectralSpace.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [PrespectralSpace X] [PrespectralSpace Y] : PrespectralSpace (X × Y) :=
-  sorry
+    [PrespectralSpace X] [PrespectralSpace Y] : PrespectralSpace (X × Y) := by
+  refine PrespectralSpace.of_isTopologicalBasis
+    (B := Set.image2 (· ×ˢ ·) { U : Set X | IsOpen U ∧ IsCompact U }
+      { V : Set Y | IsOpen V ∧ IsCompact V }) ?_ ?_
+  · simpa using TopologicalSpace.IsTopologicalBasis.prod
+      PrespectralSpace.isTopologicalBasis PrespectralSpace.isTopologicalBasis
+  · intro W hW
+    rcases Set.mem_image2.1 hW with ⟨U, hU, V, hV, rfl⟩
+    exact IsCompact.prod hU.2 hV.2
 
 -- end of file
 theorem Topology.IsClosedEmbedding.isOpen_and_isCompact_and_preimage_eq {X Z : Type*}
