@@ -14,7 +14,7 @@ noncomputable def extensionByZero
 
 end
 
-universe w v₂ u₂ v u
+universe w' w v₂ u₂ v u
 
 @[simps]
 def ContinuousMap.uliftEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] :
@@ -238,51 +238,6 @@ lemma PreOneHypercover.sieve₁'_eq_pullback_functorPushforward {C D : Type*} [C
       map_lift_pullbackComparison]
     exact Sieve.ofArrows_mk _ _ k
 
-lemma foobar {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
-    (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    (H : ∀ ⦃X : C⦄ (S : Sieve X), S ∈ J X → S.functorPushforward F ∈ K (F.obj X)) :
-    F.PreservesOneHypercovers J K := by
-  intro X E
-  refine ⟨?_, ?_⟩
-  · rw [PreOneHypercover.sieve₀_map]
-    apply H
-    exact E.mem₀
-  · intro i₁ i₂ W p₁ p₂ h
-    have : HasPullback (E.f i₁) (E.f i₂) := sorry
-    have : HasPullback ((E.1.map F).f i₁) ((E.1.map F).f i₂) := sorry
-    rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _ h]
-    have : PreservesLimit (cospan (E.f i₁) (E.f i₂)) F := sorry
-    have : HasPullback (F.map (E.f i₁)) (F.map (E.f i₂)) := sorry
-    rw [PreOneHypercover.sieve₁'_eq_pullback_functorPushforward]
-    apply GrothendieckTopology.pullback_stable
-    apply GrothendieckTopology.pullback_stable
-    apply H
-    rw [PreOneHypercover.sieve₁'_eq_sieve₁]
-    exact E.mem₁ _ _ _ _ pullback.condition
-
-lemma foo {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
-    (J : Precoverage C) (K : Precoverage D)
-    [J.IsStableUnderComposition] [J.IsStableUnderBaseChange] [J.HasPullbacks] [J.HasIsos]
-    [K.IsStableUnderComposition] [K.IsStableUnderBaseChange] [K.HasPullbacks] [K.HasIsos]
-    (h₁ : J ≤ K.comap F) :
-    F.PreservesOneHypercovers J.toGrothendieck K.toGrothendieck := by
-  intro X E
-  refine ⟨?_, ?_⟩
-  · rw [PreOneHypercover.sieve₀_map]
-    exact Precoverage.functorPushforward_mem_toGrothendieck _ h₁ _ E.mem₀
-  · intro i₁ i₂ W p₁ p₂ h
-    have : HasPullback (E.f i₁) (E.f i₂) := sorry
-    have : HasPullback ((E.1.map F).f i₁) ((E.1.map F).f i₂) := sorry
-    rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _ h]
-    have : PreservesLimit (cospan (E.f i₁) (E.f i₂)) F := sorry
-    have : HasPullback (F.map (E.f i₁)) (F.map (E.f i₂)) := sorry
-    rw [PreOneHypercover.sieve₁'_eq_pullback_functorPushforward]
-    apply GrothendieckTopology.pullback_stable
-    apply GrothendieckTopology.pullback_stable
-    apply Precoverage.functorPushforward_mem_toGrothendieck _ h₁
-    rw [PreOneHypercover.sieve₁'_eq_sieve₁]
-    exact E.mem₁ _ _ _ _ pullback.condition
-
 lemma Precoverage.hasPairwisePullbacks_of_mem {C : Type*} [Category* C] (J : Precoverage C)
     [J.HasPullbacks] {X : C} {R : Presieve X} (hR : R ∈ J X) :
     R.HasPairwisePullbacks where
@@ -426,8 +381,17 @@ lemma zariskiPrecoverage_le_comap_uliftFunctor :
     apply Topology.IsOpenEmbedding.uliftMap
     apply isOpenEmbedding_f_zeroHypercover
 
-instance : PreservesLimitsOfShape WalkingCospan uliftFunctor :=
-  sorry
+instance [UnivLE.{w, u}] : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} := by
+  suffices PreservesLimitsOfSize.{w', u} uliftFunctor.{v, u} from
+    preservesLimitsOfSize_of_univLE.{w', u} _
+  refine ⟨⟨fun {K} ↦ ?_⟩⟩
+  refine preservesLimit_of_preserves_limit_cone (limitConeIsLimit _) ?_
+  refine .ofIsoLimit (limitConeIsLimit (K ⋙ uliftFunctor)) (.symm ?_)
+  refine Cones.ext ?_ ?_
+  · refine isoOfHomeo (Homeomorph.trans Homeomorph.ulift ?_)
+    refine (Homeomorph.piCongr (.refl _) fun i ↦ Homeomorph.ulift.symm).subtype ?_
+    simp [uliftFunctor, ULift.map, Homeomorph.ulift]
+  · cat_disch
 
 instance : uliftFunctor.IsContinuous zariskiTopology zariskiTopology := by
   apply Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy
