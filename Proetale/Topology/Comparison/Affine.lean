@@ -21,10 +21,6 @@ variable {C D : Type*} [Category* C] [Category D]
   (L : C ⥤ D) (R : D ⥤ C)
   {A : Type*} [Category A]
 
-@[upstreamed mathlib 33932]
-instance : (⊤ : MorphismProperty C).HasOfPostcompProperty ⊤ where
-  of_postcomp _ _ _ _ := trivial
-
 namespace MorphismProperty
 
 variable {J : Type*} [Category* J] {C : Type*} [Category* C]

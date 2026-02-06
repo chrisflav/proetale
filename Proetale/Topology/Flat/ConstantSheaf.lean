@@ -46,14 +46,6 @@ lemma Functor.op_comp_isSheaf_of_isSheaf {C D : Type*} [Category* C] [Category* 
     Presheaf.IsSheaf J (F.op ⋙ P) :=
   F.op_comp_isSheaf J K ⟨P, h⟩
 
-@[upstreamed mathlib 34272]
-lemma Precoverage.comap_morphismProperty {C D : Type*} [Category* C] [Category* D]
-    (P : MorphismProperty D) (F : C ⥤ D) :
-    P.precoverage.comap F = (P.inverseImage F).precoverage := by
-  ext X R
-  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
-  simp
-
 lemma MorphismProperty.IsStableUnderBaseChange.of_forall_exists_isPullback {C : Type*} [Category* C]
     {P : MorphismProperty C} [P.RespectsIso]
     (H : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] (_ : P g),
@@ -383,7 +375,7 @@ instance : Scheme.forgetToTop.{u}.IsContinuous zariskiTopology TopCat.zariskiTop
   rw [TopCat.zariskiPrecoverage, Precoverage.comap_inf, precoverage]
   gcongr
   · rw [← Precoverage.comap_comp, forgetToTop_comp_forget]
-  · rw [Precoverage.comap_morphismProperty]
+  · rw [MorphismProperty.comap_precoverage]
     exact MorphismProperty.precoverage_monotone fun X Y f hf ↦ f.isOpenEmbedding
 
 variable (S : Scheme.{u}) (T : Type v) [TopologicalSpace T]
