@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 
 namespace CategoryTheory.Limits

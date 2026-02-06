@@ -30,18 +30,18 @@ open Opposite
 
 variable {P}
 
-abbrev fpqcPretopology : Pretopology Scheme.{u} := qcPretopology @Flat
+abbrev fpqcPrecoverage : Precoverage Scheme.{u} := propqcPrecoverage @Flat
 
 /-- The fpqc-topology on the category of schemes is the Grothendieck topology associated
 to the pretopology given by fpqc-covers. -/
-abbrev fpqcTopology : GrothendieckTopology Scheme.{u} := fpqcPretopology.toGrothendieck
+abbrev fpqcTopology : GrothendieckTopology Scheme.{u} := fpqcPrecoverage.toGrothendieck
 
 lemma isSheaf_fpqcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) :
     Presieve.IsSheaf fpqcTopology F ↔
       Presieve.IsSheaf Scheme.zariskiTopology F ∧
         ∀ {R S : CommRingCat.{u}} (f : R ⟶ S) (_ : f.hom.Flat) (_ : Surjective (Spec.map f)),
           Presieve.IsSheafFor F (Presieve.singleton (Spec.map f)) := by
-  rw [isSheaf_qcTopology_iff]
+  rw [isSheaf_propqcTopology_iff]
   congr!
   exact HasRingHomProperty.Spec_iff
 
@@ -49,8 +49,8 @@ lemma isSheaf_fpqcTopology_iff (F : Scheme.{u}ᵒᵖ ⥤ Type*) :
 lemma Scheme.Hom.generate_singleton_mem_fpqcTopology_of_locallyOfFinitePresentation
     {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f] [LocallyOfFinitePresentation f] :
     Sieve.generate (Presieve.singleton f) ∈ fpqcTopology Y := by
-  refine ⟨Presieve.singleton f, ?_, ?_⟩
-  · refine ⟨f.cover ‹_›, ⟨fun {U} hU ↦ .of_isOpenMap ?_ ?_ ?_ ?_ ?_⟩, ?_⟩
+  have : QuasiCompactCover (cover f ‹Flat f›).toPreZeroHypercover := by
+    refine ⟨fun {U} hU ↦ .of_isOpenMap ?_ ?_ ?_ ?_ ?_⟩
     · intro
       exact f.continuous
     · intro
@@ -60,8 +60,8 @@ lemma Scheme.Hom.generate_singleton_mem_fpqcTopology_of_locallyOfFinitePresentat
       exact f.surjective x
     · exact U.2
     · exact hU.isCompact
-    · exact (ofArrows_homCover f _).symm
-  · exact Sieve.le_generate _
+  rw [← Presieve.ofArrows_pUnit.{u}]
+  exact (f.cover _).generate_ofArrows_mem_propqcTopology
 
 lemma effectiveEpi_of_flat {R S : CommRingCat.{u}} (f : R ⟶ S) (hf : f.hom.Flat)
     (hs : Surjective (Spec.map f)) :
@@ -88,16 +88,16 @@ instance subcanonical_fpqcTopology : fpqcTopology.Subcanonical := by
 /-- A quasi-compact flat cover is an effective epimorphism family. -/
 lemma Scheme.Cover.effectiveEpiFamily_of_quasiCompact {X : Scheme.{u}}
     (𝒰 : Cover.{u} (precoverage @Flat) X)
-    [𝒰.QuasiCompact] : EffectiveEpiFamily 𝒰.X 𝒰.f := by
+    [QuasiCompactCover 𝒰.1] : EffectiveEpiFamily 𝒰.X 𝒰.f := by
   rw [← Sieve.effectiveEpimorphic_family]
   refine .of_subcanonical fpqcTopology _ ?_
-  exact 𝒰.generate_ofArrows_mem_qcTopology
+  exact 𝒰.generate_ofArrows_mem_propqcTopology
 
 /-- Any surjective, quasi-compact and flat morphism is an effective epimorphism. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [QuasiCompact f] [Surjective f] [Flat f] : EffectiveEpi f := by
   rw [← Sieve.effectiveEpimorphic_singleton]
   refine .of_subcanonical fpqcTopology _ ?_
-  exact f.generate_singleton_mem_qcTopology ‹_›
+  exact f.generate_singleton_mem_propqcTopology ‹_›
 
 /-- Any surjective, flat morphism locally of finite presentation is an effective epimorphism.
 In particular, étale surjections satisfy this.-/

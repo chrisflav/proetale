@@ -54,14 +54,6 @@ lemma Precoverage.comap_morphismProperty {C D : Type*} [Category* C] [Category* 
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   simp
 
-@[upstreamed mathlib 34272]
-lemma Precoverage.comap_comp {C D E : Type*} [Category* C] [Category* D] [Category* E]
-    (F : C ⥤ D) (G : D ⥤ E) (J : Precoverage E) :
-    J.comap (F ⋙ G) = (J.comap G).comap F := by
-  ext X R
-  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
-  simp
-
 lemma MorphismProperty.IsStableUnderBaseChange.of_forall_exists_isPullback {C : Type*} [Category* C]
     {P : MorphismProperty C} [P.RespectsIso]
     (H : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] (_ : P g),
@@ -70,74 +62,6 @@ lemma MorphismProperty.IsStableUnderBaseChange.of_forall_exists_isPullback {C : 
   refine .mk' fun X Y S f g _ hg ↦ ?_
   obtain ⟨T, fst, snd, h, hfst⟩ := H f g hg
   rwa [← h.isoPullback_inv_fst, P.cancel_left_of_respectsIso]
-
-@[simp, upstreamed mathlib 34272]
-lemma Sieve.arrows_top {C : Type*} [Category* C] (X : C) : (⊤ : Sieve X).arrows = ⊤ := rfl
-
-@[upstreamed mathlib 34272]
-lemma Presieve.ofArrows_le_iff {C : Type*} [Category* C] {X : C} {ι : Type*} {Y : ι → C}
-    {f : ∀ i, Y i ⟶ X} {R : Presieve X} :
-    Presieve.ofArrows Y f ≤ R ↔ ∀ i, R (f i) :=
-  ⟨fun hle i ↦ hle _ ⟨i⟩, fun h _ g ⟨i⟩ ↦ h i⟩
-
-@[upstreamed mathlib 34272]
-lemma Sieve.functorPushforward_le_iff_le_functorPullback {C D : Type*} [Category* C] [Category* D]
-    (F : C ⥤ D) {X : C} (S : Sieve X) (R : Sieve (F.obj X)) :
-    S.functorPushforward F ≤ R ↔ S ≤ R.functorPullback F :=
-  (Sieve.functor_galoisConnection F X).le_iff_le
-
-@[upstreamed mathlib 34272]
-lemma Sieve.functorPushforward_pullback_le {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
-    {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
-    (S.pullback f).functorPushforward F ≤ (S.functorPushforward F).pullback (F.map f) := by
-  rw [Sieve.functorPushforward_le_iff_le_functorPullback, Sieve.functorPullback_pullback]
-  apply Sieve.pullback_monotone
-  exact Sieve.le_functorPushforward_pullback _ _
-
-@[upstreamed mathlib 34272]
-lemma Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition {C : Type*} [Category* C]
-    {J : Precoverage C} [IsStableUnderComposition J] [IsStableUnderBaseChange J]
-    [J.HasPullbacks] [HasIsos J] {X : C} {S : Sieve X} :
-    S ∈ J.toGrothendieck X ↔ ∃ R ∈ J X, R ≤ S := by
-  refine ⟨fun hS ↦ ?_, fun ⟨R, hR, hle⟩ ↦ ?_⟩
-  · induction hS with
-    | of X R hR =>
-      use R, hR
-      exact Sieve.le_generate R
-    | top X =>
-      exact ⟨Presieve.singleton (𝟙 X), mem_coverings_of_isIso (𝟙 X), by simp⟩
-    | pullback X S hS Y f h =>
-      obtain ⟨R, hR, hle⟩ := h
-      have : R.HasPullbacks f := J.hasPullbacks_of_mem f hR
-      refine ⟨R.pullbackArrows f, pullbackArrows_mem f hR, ?_⟩
-      rw [← Sieve.generate_le_iff, Sieve.pullbackArrows_comm]
-      apply Sieve.pullback_monotone
-      rwa [Sieve.generate_le_iff]
-    | transitive X S T hS hT hleS hleT =>
-      obtain ⟨R, hR, hle⟩ := hleS
-      rw [mem_iff_exists_zeroHypercover] at hR
-      obtain ⟨E, rfl⟩ := hR
-      replace hleT (i : E.I₀) : ∃ (F : J.ZeroHypercover (E.X i)),
-          F.presieve₀ ≤ (Sieve.pullback (E.f i) T).arrows := by
-        obtain ⟨R', hR', hle'⟩ := hleT (hle _ ⟨i⟩)
-        rw [mem_iff_exists_zeroHypercover] at hR'
-        obtain ⟨F, rfl⟩ := hR'
-        use F
-      choose F hle' using hleT
-      refine ⟨(E.bind F).presieve₀, (E.bind F).mem₀, ?_⟩
-      rw [Presieve.ofArrows_le_iff]
-      intro i
-      exact hle' _ _ ⟨i.snd⟩
-  · rw [← Sieve.generate_le_iff] at hle
-    apply GrothendieckTopology.superset_covering _ hle
-    exact generate_mem_toGrothendieck hR
-
-@[upstreamed mathlib 34272]
-lemma Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck {C : Type*} [Category* C]
-    {J : Precoverage C} [IsStableUnderComposition J] [IsStableUnderBaseChange J]
-    [Limits.HasPullbacks C] [HasIsos J] : J.toPretopology.toGrothendieck = J.toGrothendieck := by
-  ext
-  exact J.mem_toGrothendieck_iff_of_isStableUnderComposition.symm
 
 lemma Precoverage.functorPushforward_mem_toGrothendieck {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) {J : Precoverage C} {K : Precoverage D}

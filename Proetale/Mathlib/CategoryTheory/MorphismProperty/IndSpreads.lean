@@ -20,37 +20,12 @@ variable {C : Type u} [Category.{v} C] (P : MorphismProperty C)
 
 namespace MorphismProperty
 
-/--
-A property of morphisms `P` is said to ind-spread if `P`-morphisms out of filtered colimits
-descend to a finite level. More precisely, let `Dᵢ` be a filtered family of objects.
-Then:
-
-- if `f : colim Dᵢ ⟶ T` satisfies `P`, there exists an index `j` and a pushout square
-  ```
-    Dⱼ ----f'---> T'
-    |             |
-    |             |
-    v             v
-  colim Dᵢ --f--> T
-  ```
-  such that `f'` satisfies `P`.
-
--/
-class PreIndSpreads (P : MorphismProperty C) : Prop where
-  exists_isPushout {J : Type w} [SmallCategory J] [IsFiltered J] {D : J ⥤ C}
-    (c : Cocone D) (_ : IsColimit c) {T : C} (f : c.pt ⟶ T) :
-    P f →
-    ∃ (j : J) (T' : C) (f' : D.obj j ⟶ T') (g : T' ⟶ T),
-      IsPushout (c.ι.app j) f' f g ∧ P f'
-
-alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
-
 lemma PreIndSpreads.inf (Q : MorphismProperty C) [PreIndSpreads.{w} P]
     [PreIndSpreads.{w} Q] :
     PreIndSpreads.{w} (P ⊓ Q) where
   exists_isPushout {J} _ _ D c hc T f hf := by
-    obtain ⟨j₁, T'₁, f'₁, g₁, hg₁⟩ := P.exists_isPushout_of_isFiltered c hc f hf.1
-    obtain ⟨j₂, T'₂, f'₂, g₂, hg₂⟩ := Q.exists_isPushout_of_isFiltered c hc f hf.2
+    obtain ⟨j₁, T'₁, f'₁, g₁, hg₁⟩ := P.exists_isPushout_of_isFiltered hc f hf.1
+    obtain ⟨j₂, T'₂, f'₂, g₂, hg₂⟩ := Q.exists_isPushout_of_isFiltered hc f hf.2
     sorry
 
 variable {P} in
@@ -108,11 +83,11 @@ alias exists_isPushout_of_isFiltered_of_hom := IndSpreads.exists_isPushout_of_ho
 
 variable (Q : MorphismProperty C)
 
--- in a PR to mathlib
+-- TODO: this is in mathlib with the correct assumptions, fix this one
 instance [P.IsStableUnderComposition] [PreIndSpreads.{w} P] : IsStableUnderComposition (ind.{w} P) where
   comp_mem {X Y Z} f g :=
       fun ⟨If, _, _, Df, tf, sf, hsf, hstf⟩ ⟨Ig, _, _, Dg, tg, sg, hsg, hstg⟩ ↦ by
-    choose σ T' f' u h hf' using fun i ↦ P.exists_isPushout_of_isFiltered _ hsf (tg.app i) (hstg i).1
+    choose σ T' f' u h hf' using fun i ↦ P.exists_isPushout_of_isFiltered hsf (tg.app i) (hstg i).1
     sorry
 
 instance [P.IsMultiplicative] [PreIndSpreads.{w} P] : (ind.{w} P).IsMultiplicative where
@@ -146,7 +121,7 @@ lemma PreProSpreads.op_iff (P : MorphismProperty C) :
   refine ⟨fun h ↦ ⟨fun {J} _ _ D c hc T f hf ↦ ?_⟩, fun h ↦ ⟨fun {J} _ _ D c hc T f hf ↦ ?_⟩⟩
   · obtain ⟨j, T', f', g, h, hf'⟩ := P.op.exists_isPullback_of_isCofiltered c.op hc.op f.op hf
     exact ⟨j.unop, T'.unop, f'.unop, g.unop, h.unop.flip, hf'⟩
-  · obtain ⟨j, T', f', g, h, hf'⟩ := P.exists_isPushout_of_isFiltered (coconeLeftOpOfCone c)
+  · obtain ⟨j, T', f', g, h, hf'⟩ := P.exists_isPushout_of_isFiltered
       (isColimitCoconeLeftOpOfCone _ hc) f.unop hf
     exact ⟨j.unop, Opposite.op T', f'.op, g.op, h.op.flip, hf'⟩
 
@@ -185,11 +160,11 @@ class ProSpreads (P : MorphismProperty C) : Prop extends PreProSpreads.{w} P whe
 
 alias exists_isPullback_of_isCofiltered_of_hom := ProSpreads.exists_isPullback_of_hom
 
--- in a PR to mathlib
+-- TODO: this is in mathlib with the correct assumptions, fix this one
 instance [P.IsStableUnderComposition] [PreProSpreads.{w} P] : IsStableUnderComposition (pro.{w} P) :=
     sorry
 
--- in a PR to mathlib
+-- TODO: this is in mathlib with the correct assumptions, fix this one
 instance [P.IsMultiplicative] [PreProSpreads.{w} P] : (pro.{w} P).IsMultiplicative where
 
 end MorphismProperty

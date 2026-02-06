@@ -21,7 +21,7 @@ namespace AlgebraicGeometry.Scheme
 def ProEt (X : Scheme.{u}) := MorphismProperty.Over @WeaklyEtale ⊤ X
 
 def proetaleTopology : GrothendieckTopology Scheme.{u} :=
-  qcTopology @WeaklyEtale
+  propqcTopology @WeaklyEtale
 
 namespace ProEt
 

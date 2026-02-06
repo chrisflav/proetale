@@ -34,14 +34,14 @@ lemma isFiltered_costructuredArrow_forget' [HasPushouts C]
     IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S) := by
   have : Nonempty (CostructuredArrow (Under.forget P ⊤ X) S) := by
     constructor
-    fapply CostructuredArrow.mk
+    fapply CategoryTheory.CostructuredArrow.mk
     · exact (Under.mk ⊤ (𝟙 X) (P.id_mem X))
     · fapply CategoryTheory.Under.homMk
       exact S.hom
       simp
   have : IsFilteredOrEmpty (CostructuredArrow (Under.forget P ⊤ X) S) := by
     refine ⟨fun u v ↦ ⟨?_, ?_, ?_, trivial⟩, fun u v f g ↦ ?_⟩
-    · fapply CostructuredArrow.mk
+    · fapply CategoryTheory.CostructuredArrow.mk
       · apply Under.mk ⊤ (u.left.hom ≫ pushout.inl u.left.hom v.left.hom)
           (P.comp_mem _ _ u.left.2 (P.pushout_inl _ _ v.left.2))
       · fapply CategoryTheory.Under.homMk
@@ -50,14 +50,14 @@ lemma isFiltered_costructuredArrow_forget' [HasPushouts C]
           · exact v.hom.right
           · simp
         · simp
-    · fapply CostructuredArrow.homMk
+    · fapply CategoryTheory.CostructuredArrow.homMk
       fapply Under.homMk
       · exact pushout.inl _ _
       · simp
       · simp
       · ext
         simp
-    · fapply CostructuredArrow.homMk
+    · fapply CategoryTheory.CostructuredArrow.homMk
       fapply Under.homMk
       · exact pushout.inr _ _
       · simp [pushout.condition]
@@ -65,7 +65,7 @@ lemma isFiltered_costructuredArrow_forget' [HasPushouts C]
       · ext
         simp
     · refine ⟨?_, ?_, ?_⟩
-      · fapply CostructuredArrow.mk
+      · fapply CategoryTheory.CostructuredArrow.mk
         · exact coequalizer f.left g.left
         · let hc : IsColimit ((Under.forget P ⊤ X).mapCocone (coequalizer.cofork f.left g.left)) :=
             isColimitOfPreserves _ <| colimit.isColimit (parallelPair f.left g.left)
@@ -81,7 +81,7 @@ lemma isFiltered_costructuredArrow_forget' [HasPushouts C]
               · simp
           }
           exact hc.desc s
-      · fapply CostructuredArrow.homMk
+      · fapply CategoryTheory.CostructuredArrow.homMk
         · apply coequalizer.π
         · show (Under.forget P ⊤ X).map _ ≫ _ = _
           apply
@@ -96,23 +96,24 @@ lemma isFiltered_costructuredArrow_forget [HasPushouts C] [P.IsMultiplicative]
     {S : Under X} (hS : IsTerminal S) :
     IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S) := by
   have : Nonempty (CostructuredArrow (Under.forget P ⊤ X) S) :=
-    ⟨CostructuredArrow.mk (hS.from ((Under.forget P ⊤ X).obj (Under.mk ⊤ (𝟙 X) (P.id_mem X))))⟩
+    ⟨CategoryTheory.CostructuredArrow.mk (hS.from ((Under.forget P ⊤ X).obj
+      (Under.mk ⊤ (𝟙 X) (P.id_mem X))))⟩
   have : IsFilteredOrEmpty (CostructuredArrow (Under.forget P ⊤ X) S) := by
     refine ⟨fun u v ↦ ⟨?_, ?_, ?_, trivial⟩, fun u v f g ↦ ?_⟩
-    · exact CostructuredArrow.mk <| hS.from
+    · exact CategoryTheory.CostructuredArrow.mk <| hS.from
         ((Under.forget P ⊤ X).obj <| Under.mk ⊤ (u.left.hom ≫ pushout.inl u.left.hom v.left.hom)
           (P.comp_mem _ _ u.left.2 (P.pushout_inl _ _ v.left.2)))
-    · apply CostructuredArrow.homMk
+    · apply CategoryTheory.CostructuredArrow.homMk
       · apply hS.hom_ext
       · exact Under.homMk (pushout.inl _ _)
-    · apply CostructuredArrow.homMk
+    · apply CategoryTheory.CostructuredArrow.homMk
       · apply hS.hom_ext
       · exact Under.homMk (pushout.inr _ _) (by simp [pushout.condition])
     · refine ⟨?_, ?_, ?_⟩
-      · apply CostructuredArrow.mk
+      · apply CategoryTheory.CostructuredArrow.mk
         · exact hS.from _
         · exact coequalizer f.left g.left
-      · apply CostructuredArrow.homMk
+      · apply CategoryTheory.CostructuredArrow.homMk
         · apply hS.hom_ext
         · exact coequalizer.π f.left g.left
       · simpa using coequalizer.condition f.left g.left

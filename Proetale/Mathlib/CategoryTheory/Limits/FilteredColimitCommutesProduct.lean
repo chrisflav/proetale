@@ -150,12 +150,6 @@ def IsIPCOfShape.isColimitCoconePointwiseProduct' [IsIPCOfShape.{w} ι C]
     IsColimit (coconePointwiseProduct' c) :=
   (IsIPCOfShape.nonempty_isColimit hc).some
 
-lemma IsColimit.nonempty_isColimit_iff_isIso_desc {J : Type*} [Category* J] {C : Type*} [Category* C]
-    {F : J ⥤ C} {s t : Cocone F} (hs : IsColimit s) :
-    Nonempty (IsColimit t) ↔ IsIso (hs.desc t) :=
-  ⟨fun ⟨ht⟩ ↦ ⟨ht.desc s, hs.hom_ext (by simp), ht.hom_ext (by simp)⟩,
-    fun h ↦ ⟨hs.ofPointIso⟩⟩
-
 lemma IsIPC.of_isIPCOfShape [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w, w} C]
     (h : ∀ (ι : Type w), IsIPCOfShape.{w} ι C) :
     IsIPC.{w} C where

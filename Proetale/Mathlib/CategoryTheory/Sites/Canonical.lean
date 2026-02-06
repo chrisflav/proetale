@@ -1,6 +1,6 @@
 import Upstreamer
 import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Sites.Canonical
+import Mathlib.CategoryTheory.Sites.Subcanonical
 import Proetale.Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 universe u
@@ -64,25 +64,6 @@ lemma eq_of_eq
   · obtain ⟨h⟩ := Hdisj h a b hab
     exact (Sheaf.isTerminalOfBotCover s.pt _ (hempty Y h)).subsingleton_forget.elim _ _
 
-@[simps, upstreamed mathlib 3145]
-def Sieve.toFunctor {X : C} (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
-    yoneda.obj Y ⟶ S.functor where
-  app Z g := ⟨g ≫ f, S.downward_closed hf g⟩
-
-@[upstreamed mathlib 3145]
-def Limits.Cofan.isColimitMapCoconeEquiv {D : Type*} [Category D] (F : C ⥤ D)
-    {ι : Type*} (X : ι → C) (c : Cofan X) :
-    IsColimit (F.mapCocone c) ≃ IsColimit (Cofan.mk _ fun i ↦ F.map (c.inj i)) :=
-  (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm (F.mapCocone c)).symm.trans <|
-    IsColimit.equivIsoColimit (Cocones.ext (Iso.refl _))
-
-@[upstreamed mathlib 3145]
-def Limits.Fan.isLimitMapConeEquiv {D : Type*} [Category D] (F : C ⥤ D)
-    {ι : Type*} (X : ι → C) (c : Fan X) :
-    IsLimit (F.mapCone c) ≃ IsLimit (Fan.mk _ fun i ↦ F.map (c.proj i)) :=
-  (IsLimit.postcomposeHomEquiv Discrete.natIsoFunctor (F.mapCone c)).symm.trans <|
-    IsLimit.equivIsoLimit (Cones.ext (Iso.refl _))
-
 @[upstreamed mathlib 3145]
 noncomputable
 def isColimit_cofanMk_yoneda
@@ -119,23 +100,5 @@ def isColimit_cofanMk_yoneda
     apply Presieve.IsSheafFor.unique_extend
     ext Y ⟨g, hg⟩
     simp [← hm (Sieve.ofArrows.i hg)]
-
-/-- If the coproduct inclusios form a covering of `J` and coproducts are disjoint,
-the yoneda embedding preserves coproducts. -/
-@[upstreamed mathlib 3145]
-lemma GrothendieckTopology.preservesColimitsOfShape_yoneda_of_ofArrows_inj_mem
-    [MonoCoprod C] [∀ {κ : Type u}, HasColimitsOfShape (Discrete κ) C] {ι : Type u}
-    (hcov : ∀ {X : ι → C} {c : Cofan X} (_ : IsColimit c), Sieve.ofArrows X c.inj ∈ J c.pt)
-    (hdisj : ∀ {X : ι → C} {c : Cofan X} (_ : IsColimit c) {i j : ι}, i ≠ j →
-      ∀ {Y : C} (a : Y ⟶ X i) (b : Y ⟶ X j),
-      a ≫ c.inj i = b ≫ c.inj j → Nonempty (IsInitial Y))
-    (htriv : ∀ (Y : C), IsInitial Y → ⊥ ∈ J Y) :
-    PreservesColimitsOfShape (Discrete ι) J.yoneda := by
-  apply (config := { allowSynthFailures := true }) preservesColimitsOfShape_of_discrete
-  refine fun X ↦ ⟨fun {c : Cofan X} hc ↦ ⟨?_⟩⟩
-  refine (Limits.Cofan.isColimitMapCoconeEquiv _ _ _).symm ?_
-  have (i : ι) : Mono (c.inj i) :=
-    CategoryTheory.Limits.MonoCoprod.mono_inj _ _ hc _
-  exact isColimit_cofanMk_yoneda _ _ (hcov hc) htriv (hdisj hc)
 
 end CategoryTheory
