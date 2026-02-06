@@ -31,11 +31,6 @@ section
 
 variable {S ι : Type*} {X : ι → Type*} {f : ∀ i, X i → S} [∀ i, TopologicalSpace (X i)] {U : Set S}
 
---lemma IsCompactOpenCovered.exists_nat_iUnion_eq {U : Set S} (hU : IsCompactOpenCovered S) :
---    ∃ (n : ℕ) (a : Fin n → ι) (V : ∀ i, Opens (X (a i))) (hV : ∀ i, _) :
---    True :=
---  sorry
-
 def IsCompactOpenCovered.Idx {U : Set S} (hU : IsCompactOpenCovered f U) : Type 0 :=
   haveI : Finite hU.choose := hU.choose_spec.choose
   Shrink.{0} hU.choose
