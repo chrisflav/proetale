@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib
-import Proetale.FromPi1.Etale
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Topology.Flat.Sheaf
@@ -79,94 +78,6 @@ variable (X : Scheme.{u})
 
 variable (P : MorphismProperty Scheme.{u})
 
-noncomputable
-instance {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ Over S)
-    [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
-    [(F ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
-    [Quiver.IsThin J] [Small.{u} J] :
-    HasColimit F :=
-  have {i j} (f : i ⟶ j) : IsOpenImmersion ((F ⋙ Over.forget S).map f) :=
-    inferInstanceAs <| IsOpenImmersion (F.map f).left
-  have : ((F ⋙ Over.forget S) ⋙ Scheme.forget).IsLocallyDirected := ‹_›
-  have : HasColimit (F ⋙ Over.forget S) :=
-    inferInstance
-  hasColimit_of_created _ (Over.forget S)
-
-noncomputable
-instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
-    [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
-    [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
-    [Quiver.IsThin J] [Small.{u} J] :
-    CreatesColimit F (MorphismProperty.Over.forget P ⊤ S) := by
-  have {i j} (f : i ⟶ j) : IsOpenImmersion <|
-      ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S).map f :=
-    inferInstanceAs <| IsOpenImmersion (F.map f).left
-  have : (((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) ⋙
-      Scheme.forget).IsLocallyDirected := ‹_›
-  have : HasColimit (F ⋙ MorphismProperty.Over.forget P ⊤ S) :=
-    hasColimit_of_created _ (Over.forget S)
-  refine createsColimitOfFullyFaithfulOfIso
-      { toComma := colimit (F ⋙ MorphismProperty.Over.forget P ⊤ S)
-        prop := ?_ } (Iso.refl _)
-  let e : (colimit (F ⋙ MorphismProperty.Over.forget P ⊤ S)).left ≅
-      colimit ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) :=
-    preservesColimitIso (Over.forget S) _
-  let 𝒰 : (colimit (F ⋙ MorphismProperty.Over.forget P ⊤ S)).left.OpenCover :=
-    (Scheme.IsLocallyDirected.openCover _).pushforwardIso e.inv
-  rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) 𝒰]
-  intro i
-  simpa [𝒰, e] using (F.obj i).prop
-
-instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
-    [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
-    [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
-    [Quiver.IsThin J] [Small.{u} J] :
-    HasColimit F :=
-  have {i j} (f : i ⟶ j) : IsOpenImmersion <|
-      ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S).map f :=
-    inferInstanceAs <| IsOpenImmersion (F.map f).left
-  have : (((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) ⋙
-      Scheme.forget).IsLocallyDirected := ‹_›
-  have : HasColimit (F ⋙ MorphismProperty.Over.forget P ⊤ S) :=
-    hasColimit_of_created _ (Over.forget S)
-  hasColimit_of_created _ (MorphismProperty.Over.forget P ⊤ S)
-
-instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
-    [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
-    [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
-    [Quiver.IsThin J] [Small.{u} J] :
-    PreservesColimit F (MorphismProperty.Over.forget P ⊤ S) :=
-  have {i j} (f : i ⟶ j) : IsOpenImmersion <|
-      ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S).map f :=
-    inferInstanceAs <| IsOpenImmersion (F.map f).left
-  have : (((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) ⋙
-      Scheme.forget).IsLocallyDirected := ‹_›
-  inferInstance
-
-instance [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
-    [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
-    [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
-    [Quiver.IsThin J] [Small.{u} J] (j : J) :
-    IsOpenImmersion (colimit.ι F j).left := by
-  change IsOpenImmersion <|
-    (MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S).map (colimit.ι F j)
-  have {i j} (f : i ⟶ j) : IsOpenImmersion <|
-      ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S).map f :=
-    inferInstanceAs <| IsOpenImmersion (F.map f).left
-  have : (((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) ⋙
-      Scheme.forget).IsLocallyDirected := ‹_›
-  let e : (colimit F).left ≅ colimit (F ⋙ _) :=
-    preservesColimitIso (MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S) F
-  rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsOpenImmersion) _ e.hom]
-  simp only [e, CategoryTheory.ι_preservesColimitIso_hom]
-  change IsOpenImmersion (colimit.ι ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) j)
-  infer_instance
-
-example [IsZariskiLocalAtSource P] {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
-    [IsOpenImmersion f.left] [IsOpenImmersion g.left] :
-    PreservesColimit (span f g) (MorphismProperty.Over.forget P ⊤ S) :=
-  inferInstance
-
 instance IsZariskiLocalAtSource.closedUnderColimitsOfShape_discrete (J : Type*) [Small.{u} J]
     [IsZariskiLocalAtSource P] :
     (P.overObj (X := X)).IsClosedUnderColimitsOfShape (Discrete J) := by
@@ -179,26 +90,6 @@ instance IsZariskiLocalAtSource.closedUnderColimitsOfShape_discrete (J : Type*) 
   rw [MorphismProperty.overObj]
   rw [← P.cancel_left_of_respectsIso (PreservesCoproduct.iso (Over.forget X) _).inv, this]
   exact IsZariskiLocalAtSource.sigmaDesc hf
-
-noncomputable instance IsZariskiLocalAtSource.createsColimitsOfShape_forget (J : Type*) [Small.{u} J]
-    [IsZariskiLocalAtSource P] :
-    CreatesColimitsOfShape (Discrete J) (MorphismProperty.Over.forget P ⊤ X) := by
-  -- TODO: this is bad, improve this by for example adding a version of
-  -- `MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed` for `Over`
-  convert-- (config := { allowSynthFailures := true })
-    MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed
-      (L := 𝟭 Scheme.{u}) (R := Functor.fromPUnit.{0} X) P (Discrete J)
-  apply IsZariskiLocalAtSource.closedUnderColimitsOfShape_discrete
-
-noncomputable instance (J : Type*) [Small.{u} J] [IsZariskiLocalAtSource P] :
-    HasCoproductsOfShape J (MorphismProperty.Over P ⊤ X) := by
-  convert MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
-    (L := 𝟭 Scheme.{u}) (R := Functor.fromPUnit.{0} X) P
-  · infer_instance
-  · apply IsZariskiLocalAtSource.closedUnderColimitsOfShape_discrete
-
-noncomputable instance [IsZariskiLocalAtSource P] : HasFiniteCoproducts (MorphismProperty.Over P ⊤ X) where
-  out := inferInstance
 
 instance : FinitaryExtensive (Over X) :=
   finitaryExtensive_of_preserves_and_reflects_isomorphism (Over.forget X)
