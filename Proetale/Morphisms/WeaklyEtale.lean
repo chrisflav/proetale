@@ -7,6 +7,7 @@ import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
 import Proetale.FromPi1.Etale
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
+import Mathlib.AlgebraicGeometry.Morphisms.FlatMono
 
 /-!
 # Weakly étale morphisms
@@ -59,7 +60,14 @@ instance : IsMultiplicative @WeaklyEtale where
 instance (priority := 900) of_isEtale [IsEtale f] : WeaklyEtale f where
   flat_diagonal := inferInstance
 
-instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f] : IsEtale f :=
+theorem diagonal_locallyOfFinitePresentation {X Y : Scheme} (f : X ⟶ Y)
+    [LocallyOfFinitePresentation f] : LocallyOfFinitePresentation (pullback.diagonal f) := sorry
+
+instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f] : IsEtale f := by
+  have : IsOpenImmersion (pullback.diagonal f) := by
+    have := diagonal_locallyOfFinitePresentation f
+    have : Flat (pullback.diagonal f) := WeaklyEtale.flat_diagonal
+    exact AlgebraicGeometry.IsOpenImmersion.of_flat_of_mono (pullback.diagonal f)
   sorry
 
 end WeaklyEtale
