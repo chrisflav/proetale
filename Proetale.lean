@@ -8,6 +8,7 @@ import Proetale.Algebra.IndZariski
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
 import Proetale.Algebra.ProEtaleContraction
+import Proetale.Algebra.PureIdeal
 import Proetale.Algebra.StalkAlgebraic
 import Proetale.Algebra.StalkIso
 import Proetale.Algebra.WContractible
@@ -39,6 +40,7 @@ import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
@@ -61,8 +63,10 @@ import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
+import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.Topology
+import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 import Proetale.Mathlib.Topology.Constructions

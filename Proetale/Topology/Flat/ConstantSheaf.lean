@@ -81,6 +81,7 @@ lemma PreOneHypercover.sieve₀_map {C D : Type*} [Category* C] [Category* D]
     PreOneHypercover.map_toPreZeroHypercover, PreZeroHypercover.presieve₀_map,
     Sieve.generate_map_eq_functorPushforward]
 
+@[upstreamed mathlib 34977]
 class Functor.PreservesPairwisePullbacks {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
     {X : C} (R : Presieve X) : Prop where
   preservesLimit (R) ⦃Y Z : C⦄ ⦃f : Y ⟶ X⦄ ⦃g : Z ⟶ X⦄ : R f → R g →
@@ -88,22 +89,27 @@ class Functor.PreservesPairwisePullbacks {C D : Type*} [Category* C] [Category* 
 
 alias Functor.preservesLimit_cospan_of_mem_presieve := Functor.PreservesPairwisePullbacks.preservesLimit
 
+@[upstreamed mathlib 34977]
 instance {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] {X : C} (R : Presieve X) :
     F.PreservesPairwisePullbacks R where
 
+@[upstreamed mathlib 34977]
 class Precoverage.PullbacksPreservedBy {C D : Type*} [Category* C] [Category* D] (J : Precoverage C)
     (F : C ⥤ D) : Prop where
   preservesPairwisePullbacks_of_mem ⦃X : C⦄ ⦃R : Presieve X⦄ :
     R ∈ J X → F.PreservesPairwisePullbacks R := by infer_instance
 
+@[upstreamed mathlib 34977]
 alias Precoverage.preservesPairwisePullbacks_of_mem :=
   Precoverage.PullbacksPreservedBy.preservesPairwisePullbacks_of_mem
 
+@[upstreamed mathlib 34977]
 instance {C D : Type*} [Category* C] [Category* D] (J : Precoverage C) (F : C ⥤ D)
     [PreservesLimitsOfShape WalkingCospan F] :
     J.PullbacksPreservedBy F where
 
+@[upstreamed mathlib 34977]
 lemma Presieve.HasPairwisePullbacks.map_of_preservesPairwisePullbacks
     {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {X : C} (R : Presieve X)
     [F.PreservesPairwisePullbacks R] [R.HasPairwisePullbacks] :
@@ -113,6 +119,7 @@ lemma Presieve.HasPairwisePullbacks.map_of_preservesPairwisePullbacks
     have := F.preservesLimit_cospan_of_mem_presieve _ hf hg
     exact hasPullback_of_preservesPullback F _ _
 
+@[upstreamed mathlib 34977]
 lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks {C D : Type*} [Category* C]
     [Category* D] (F : C ⥤ D) (P : Dᵒᵖ ⥤ Type*) {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
     [F.PreservesPairwisePullbacks R] :
@@ -154,11 +161,13 @@ lemma PreOneHypercover.sieve₁'_eq_pullback_functorPushforward {C D : Type*} [C
       map_lift_pullbackComparison]
     exact Sieve.ofArrows_mk _ _ k
 
+@[upstreamed mathlib 34977]
 lemma Precoverage.hasPairwisePullbacks_of_mem {C : Type*} [Category* C] (J : Precoverage C)
     [J.HasPullbacks] {X : C} {R : Presieve X} (hR : R ∈ J X) :
     R.HasPairwisePullbacks where
   has_pullbacks h f _ := (J.hasPullbacks_of_mem f hR).hasPullback h
 
+@[upstreamed mathlib 34977]
 lemma Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy {C D : Type*} [Category* C]
     [Category* D] (F : C ⥤ D) (J : Precoverage C) (K : Precoverage D) [J.IsStableUnderBaseChange]
     [J.HasPullbacks] [K.IsStableUnderBaseChange] [K.HasPullbacks] [J.PullbacksPreservedBy F]
@@ -182,17 +191,20 @@ lemma Topology.IsOpenEmbedding.uliftMap {X Y : Type*} [TopologicalSpace X] [Topo
 namespace TopCat
 
 /-- The morphism property on the category of topological spaces given by open embeddings. -/
+@[upstreamed mathlib 34979]
 def isOpenEmbedding : MorphismProperty TopCat :=
   fun _ _ f ↦ Topology.IsOpenEmbedding f
 
-@[simp]
+@[simp, upstreamed mathlib 34979]
 lemma isOpenEmbedding_iff {X Y : TopCat} (f : X ⟶ Y) :
     isOpenEmbedding f ↔ Topology.IsOpenEmbedding f := .rfl
 
+@[upstreamed mathlib 34979]
 instance : isOpenEmbedding.IsMultiplicative where
   id_mem _ := .id
   comp_mem _ _ hf hg := hg.comp hf
 
+@[upstreamed mathlib 34979]
 instance : isOpenEmbedding.RespectsIso :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦
     (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
@@ -212,6 +224,7 @@ lemma isPullback_restrictPreimage {X Y : TopCat} (f : X ⟶ Y) (U : Set Y) :
     ext x
     simpa using congr($(hm1) x)
 
+@[upstreamed mathlib 34979]
 instance : isOpenEmbedding.IsStableUnderBaseChange := by
   refine .of_forall_exists_isPullback fun {X Y Z} f g _ hg ↦ ?_
   let e : Y ≃ₜ Set.range g := hg.isEmbedding.toHomeomorph
@@ -226,6 +239,7 @@ instance : isOpenEmbedding.IsStableUnderBaseChange := by
     simp [e]
   · exact IsOpen.isOpenEmbedding_subtypeVal (hg.isOpen_range.preimage f.hom.continuous)
 
+@[upstreamed mathlib 34979]
 def zariskiPrecoverage : Precoverage TopCat.{u} :=
   Types.jointlySurjectivePrecoverage.comap (forget TopCat) ⊓ isOpenEmbedding.precoverage
   deriving Precoverage.HasIsos, Precoverage.IsStableUnderBaseChange,
@@ -233,19 +247,23 @@ def zariskiPrecoverage : Precoverage TopCat.{u} :=
 
 /-- The Zariski topology on the category of topological spaces is the topology given by
 jointly surjective open embeddings. -/
+@[upstreamed mathlib 34979]
 def zariskiTopology : GrothendieckTopology TopCat.{u} :=
   zariskiPrecoverage.toGrothendieck
 
+@[upstreamed mathlib 34979]
 lemma exists_mem_zeroHypercover_range {X : TopCat} (E : zariskiPrecoverage.ZeroHypercover X)
     (x : X) : ∃ (i : E.I₀), x ∈ Set.range (E.f i) := by
   revert x
   simpa using E.mem₀.left
 
+@[upstreamed mathlib 34979]
 lemma isOpenEmbedding_f_zeroHypercover {X : TopCat} (E : zariskiPrecoverage.ZeroHypercover X)
     (i : E.I₀) : Topology.IsOpenEmbedding (E.f i) := by
   revert i
   simpa using E.mem₀.right
 
+@[upstreamed mathlib 34979]
 instance : Precoverage.Small.{u} zariskiPrecoverage.{u} where
   zeroHypercoverSmall {X} E := by
     choose i y hy using exists_mem_zeroHypercover_range E
@@ -313,6 +331,7 @@ instance : uliftFunctor.IsContinuous zariskiTopology zariskiTopology := by
   apply Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy
   apply zariskiPrecoverage_le_comap_uliftFunctor
 
+@[upstreamed mathlib 34979]
 instance : zariskiTopology.Subcanonical := by
   refine .of_isSheaf_yoneda_obj _ fun X ↦ ?_
   rw [zariskiTopology, ← Precoverage.toGrothendieck_toCoverage, Presieve.isSheaf_coverage]

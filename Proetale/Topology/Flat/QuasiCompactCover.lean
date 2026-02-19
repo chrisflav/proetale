@@ -31,14 +31,6 @@ open CategoryTheory Limits MorphismProperty
 
 namespace AlgebraicGeometry
 
-instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [QuasiCompact f] [CompactSpace Y] : CompactSpace ↑(pullback f g) :=
-  QuasiCompact.compactSpace_of_compactSpace (pullback.snd _ _)
-
-instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [QuasiCompact g] [CompactSpace X] : CompactSpace ↑(pullback f g) :=
-  QuasiCompact.compactSpace_of_compactSpace (pullback.fst _ _)
-
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
 
 variable (𝒰 : Scheme.Cover.{v} (precoverage P) S)

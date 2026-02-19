@@ -13,6 +13,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Ind
 import Mathlib.RingTheory.Flat.CategoryTheory
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
+import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
@@ -152,14 +153,6 @@ def faithfullyFlat : MorphismProperty CommRingCat.{u} :=
 @[simp]
 lemma faithfullyFlat_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     faithfullyFlat f ↔ f.hom.FaithfullyFlat := .rfl
-
-/-- The morphism property of flat ring maps. -/
-def flat : MorphismProperty CommRingCat.{u} :=
-  RingHom.toMorphismProperty fun f ↦ f.Flat
-
-@[simp]
-lemma flat_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    flat f ↔ f.hom.Flat := .rfl
 
 lemma faithfullyFlat_eq : faithfullyFlat = flat ⊓ surjectiveSpec := by
   ext X Y f
