@@ -21,21 +21,21 @@ namespace AlgebraicGeometry.Scheme
 
 /-- The inclusion of the étale site into the pro-étale site. -/
 @[simps! obj_toComma]
-def toProEtale (S : Scheme.{u}) : Etale S ⥤ ProEt S :=
-  MorphismProperty.Over.changeProp _ isEtale_le_weaklyEtale le_rfl
+def toProEtale (S : Scheme.{u}) : S.Etale ⥤ ProEt S :=
+  MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl
 
 variable (S : Scheme.{u})
 
 instance : (toProEtale S).Full :=
-  inferInstanceAs <| (MorphismProperty.Over.changeProp _ isEtale_le_weaklyEtale le_rfl).Full
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Full
 
 instance : (toProEtale S).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Over.changeProp _ isEtale_le_weaklyEtale le_rfl).Faithful
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Faithful
 
 /-- The inclusion of the étale site into the pro-étale site is continuous. -/
 instance isContinuous_toProEtale :
     (toProEtale S).IsContinuous (smallEtaleTopology S) (ProEt.topology S) :=
-  inferInstanceAs <| (Over.changeProp _ isEtale_le_weaklyEtale _).IsContinuous
+  inferInstanceAs <| (Over.changeProp _ etale_le_weaklyEtale _).IsContinuous
     (smallGrothendieckTopology _) (smallGrothendieckTopology _)
 
 namespace ProEt

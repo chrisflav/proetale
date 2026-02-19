@@ -7,14 +7,15 @@ import Proetale.Topology.Preliminaries.Profinite
 import Proetale.Topology.Preliminaries.Pullback
 import Mathlib.Topology.Spectral.Basic
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
 # Connected Component in Spectral Space
 
-Profiniteness is expressed as [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
+Profiniteness is expressed as [TopologicalSpace X] [CompactSpace X] [T2Space X]
+[TotallyDisconnectedSpace X]
 
 -/
 

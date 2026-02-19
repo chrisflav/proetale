@@ -32,10 +32,4 @@ variable (J : GrothendieckTopology C) [J.Subcanonical]
 variable {ι : Type*} (X : ι → C)
 variable {c : Cofan X} (hc : IsColimit c) (H : (Sieve.ofArrows _ c.inj) ∈ J c.pt)
 
-lemma Limits.IsTerminal.subsingleton_forget [HasForget C]
-    [PreservesLimit (Functor.empty.{0} C) (forget C)]
-    {X : C} (h : IsTerminal X) :
-    Subsingleton ((forget C).obj X) :=
-  (Types.isTerminalEquivIsoPUnit _ <| h.isTerminalObj (forget C) X).toEquiv.subsingleton
-
 end CategoryTheory

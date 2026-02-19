@@ -385,8 +385,8 @@ lemma Scheme.Etale.forget_map {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y) :
     (Scheme.Etale.forget S).map f = f.hom :=
   rfl
 
-instance {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y) : IsEtale f.left :=
-  MorphismProperty.of_postcomp @IsEtale f.left Y.hom Y.prop (by simp [X.prop])
+instance {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y) : Etale f.left :=
+  MorphismProperty.of_postcomp @Etale f.left Y.hom Y.prop (by simp [X.prop])
 
 /-- A morphism in the small étale site is an epimorphism if and only if it is surjective. -/
 instance Scheme.Etale.effectiveEpi_of_surjective {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y)

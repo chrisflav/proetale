@@ -179,8 +179,8 @@ instance : Preregular (P.CostructuredArrow ⊤ Scheme.Spec S) := by
 end
 
 noncomputable
-def Cover.etaleAffineRefinement (𝒰 : S.Cover (precoverage @IsEtale)) :
-    S.AffineCover @IsEtale where
+def Cover.etaleAffineRefinement (𝒰 : S.Cover (precoverage @Etale)) :
+    S.AffineCover @Etale where
   I₀ := (𝒰.bind fun j ↦ (𝒰.X j).affineCover.changeProp (fun _ ↦ inferInstance)).I₀
   X _ := _
   f := (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance).f
@@ -188,16 +188,16 @@ def Cover.etaleAffineRefinement (𝒰 : S.Cover (precoverage @IsEtale)) :
   covers := Cover.covers (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance)
   map_prop j := by
     simp [Cover.changeProp]
-    have : IsEtale (𝒰.f j.fst) := 𝒰.map_prop _
+    have : Etale (𝒰.f j.fst) := 𝒰.map_prop _
     infer_instance
 
 def AffineEtale (S : Scheme.{u}) : Type (u + 1) :=
-  MorphismProperty.CostructuredArrow @IsEtale.{u} ⊤ Scheme.Spec.{u} S
+  MorphismProperty.CostructuredArrow @Etale.{u} ⊤ Scheme.Spec.{u} S
 
 namespace AffineEtale
 
 @[simps!]
-protected def mk {R : CommRingCat} (f : Spec R ⟶ S) [IsEtale f] : AffineEtale S :=
+protected def mk {R : CommRingCat} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
   MorphismProperty.CostructuredArrow.mk ⊤ f ‹_›
 
 instance : Category S.AffineEtale :=
@@ -218,7 +218,7 @@ instance : (AffineEtale.Spec S).IsCoverDense S.smallEtaleTopology :=
     (smallGrothendieckTopology _)
 
 variable (S) in
-def topology : GrothendieckTopology S.AffineEtale :=
+noncomputable def topology : GrothendieckTopology S.AffineEtale :=
   (AffineEtale.Spec S).inducedTopology (smallEtaleTopology S)
 
 /-- The category of sheafs on the small, affine étale site is equivalent to the category of

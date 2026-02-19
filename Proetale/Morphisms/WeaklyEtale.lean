@@ -56,15 +56,15 @@ instance : ContainsIdentities @WeaklyEtale := by
 
 instance : IsMultiplicative @WeaklyEtale where
 
-instance (priority := 900) of_isEtale [IsEtale f] : WeaklyEtale f where
+instance (priority := 900) of_etale [Etale f] : WeaklyEtale f where
   flat_diagonal := inferInstance
 
-instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f] : IsEtale f :=
+instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f] : Etale f :=
   sorry
 
 end WeaklyEtale
 
-lemma isEtale_le_weaklyEtale : @IsEtale ≤ @WeaklyEtale :=
+lemma etale_le_weaklyEtale : @Etale ≤ @WeaklyEtale :=
   fun _ _ _ _ ↦ inferInstance
 
 end AlgebraicGeometry

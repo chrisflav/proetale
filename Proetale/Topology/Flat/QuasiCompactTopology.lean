@@ -66,64 +66,6 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C] {X : C}
 
-@[simps]
-def PreZeroHypercover.restrictIndexHom (E : PreZeroHypercover.{w} X) {ι : Type w'}
-    (f : ι → E.I₀) :
-    (E.restrictIndex f).Hom E where
-  s₀ := f
-  h₀ _ := 𝟙 _
-
-lemma Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange
-    {J : Precoverage C} [J.HasPullbacks] [J.IsStableUnderBaseChange] (P : Cᵒᵖ ⥤ Type*) :
-    Presieve.IsSheaf J.toGrothendieck P ↔ ∀ ⦃X : C⦄ (R : Presieve X),
-      R ∈ J X → Presieve.IsSheafFor P R := by
-  rw [← J.toCoverage_toPrecoverage, Coverage.toGrothendieck_toPrecoverage,
-    Presieve.isSheaf_coverage]
-
-@[simp]
-lemma PreZeroHypercover.presieve₀_restrictIndex_le {X : C} (E : PreZeroHypercover X) {ι : Type*}
-    (f : ι → E.I₀) :
-    (E.restrictIndex f).presieve₀ ≤ E.presieve₀ := by
-  rw [Presieve.ofArrows_le_iff]
-  intro i
-  exact .mk _
-
-lemma Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange_of_small
-    {J : Precoverage C} [J.IsStableUnderBaseChange] [J.HasPullbacks]
-    [Small.{w} J] (P : Cᵒᵖ ⥤ Type*) :
-    Presieve.IsSheaf J.toGrothendieck P ↔
-      ∀ ⦃X : C⦄ (E : ZeroHypercover.{w} J X), Presieve.IsSheafFor P E.presieve₀ := by
-  rw [Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange]
-  refine ⟨fun h X E ↦ ?_, fun h X R hR ↦ ?_⟩
-  · apply h
-    exact E.mem₀
-  · obtain ⟨E₀, rfl⟩ := R.exists_eq_preZeroHypercover
-    rw [Presieve.isSheafFor_iff_generate]
-    let E : ZeroHypercover J X := ⟨E₀, hR⟩
-    apply Presieve.isSheafFor_subsieve
-      (S := .generate <| (ZeroHypercover.restrictIndexOfSmall.{w} E).presieve₀)
-    · exact Sieve.generate_mono (by simp [E])
-    · intro Y f
-      rw [← Sieve.pullbackArrows_comm, ← Presieve.isSheafFor_iff_generate,
-        ← PreZeroHypercover.presieve₀_pullback₁, ← ZeroHypercover.pullback₂_toPreZeroHypercover]
-      apply h
-
-lemma Presieve.isSheafFor_ofArrows_comp_iff {F : Cᵒᵖ ⥤ Type*} {ι : Type*} {Y Z : ι → C}
-    (g : ∀ i, Z i ⟶ X)
-    (e : ∀ i, Y i ≅ Z i) :
-    Presieve.IsSheafFor F (.ofArrows _ (fun i ↦ (e i).hom ≫ g i)) ↔
-      Presieve.IsSheafFor F (.ofArrows _ g) := by
-  have : Sieve.generate (.ofArrows _ g) =
-      Sieve.generate (.ofArrows _ (fun i ↦ (e i).hom ≫ g i)) := by
-    refine le_antisymm ?_ ?_
-    · rw [Sieve.generate_le_iff]
-      rintro - - ⟨i⟩
-      exact ⟨_, (e i).inv, (e i).hom ≫ g i, ⟨i⟩, by simp⟩
-    · rw [Sieve.generate_le_iff]
-      rintro - - ⟨i⟩
-      exact ⟨_, (e i).hom, _, ⟨i⟩, by simp⟩
-  rw [Presieve.isSheafFor_iff_generate, ← this, ← Presieve.isSheafFor_iff_generate]
-
 lemma isSheafFor_singleton_iff_of_iso
     {F : Cᵒᵖ ⥤ Type*} {S X Y : C} (f : X ⟶ S) (g : Y ⟶ S)
     (e : X ≅ Y) (he : e.hom ≫ g = f) :
@@ -131,23 +73,6 @@ lemma isSheafFor_singleton_iff_of_iso
   subst he
   rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
     Presieve.isSheafFor_ofArrows_comp_iff]
-
-@[gcongr]
-lemma Pretopology.toGrothendieck_mono {C : Type*} [Category C] [HasPullbacks C]
-    {J K : Pretopology C} (h : J ≤ K) : J.toGrothendieck ≤ K.toGrothendieck :=
-  fun _ _ ⟨R, hR, hle⟩ ↦ ⟨R, h _ hR, hle⟩
-
-attribute [grind .] GrothendieckTopology.pullback_stable GrothendieckTopology.transitive
-
-@[gcongr]
-lemma Precoverage.toGrothendieck_mono {C : Type*} [Category C]
-    {J K : Precoverage C} (h : J ≤ K) : J.toGrothendieck ≤ K.toGrothendieck := by
-  intro X S hS
-  induction hS with
-  | of X S hS => exact generate_mem_toGrothendieck (h _ hS)
-  | top X => simp
-  | pullback X S _ Y f _ => grind
-  | transitive X S R _ _ _ _ => grind
 
 @[gcongr]
 lemma Precoverage.toPretopology_mono {C : Type*} [Category C] [Limits.HasPullbacks C]
@@ -184,25 +109,6 @@ instance {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} (𝒰 : Scheme.Cover
   rw [← Scheme.presieve₀_mem_qcPrecoverage_iff]
   exact 𝒰.mem₀.1
 
-@[simps toPreZeroHypercover]
-abbrev Scheme.Cover.forgetQc {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
-    (𝒰 : Scheme.Cover (propqcPrecoverage P) S) :
-    S.Cover (precoverage P) where
-  __ := 𝒰.toPreZeroHypercover
-  mem₀ := 𝒰.mem₀.2
-
-instance {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
-    (𝒰 : Scheme.Cover (propqcPrecoverage P) S) :
-    QuasiCompactCover 𝒰.forgetQc.toPreZeroHypercover := by
-  dsimp; infer_instance
-
-@[simps toPreZeroHypercover]
-def Scheme.Cover.ofQuasiCompactCover {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
-    (𝒰 : Scheme.Cover (precoverage P) S) [qc : QuasiCompactCover 𝒰.1] :
-    Scheme.Cover (propqcPrecoverage P) S where
-  __ := 𝒰.toPreZeroHypercover
-  mem₀ := ⟨Scheme.presieve₀_mem_qcPrecoverage_iff.mpr ‹_›, 𝒰.mem₀⟩
-
 namespace QuasiCompactCover
 
 def uliftaux {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
@@ -212,25 +118,6 @@ def uliftaux {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover �
 structure IdxAux {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] : Type u where
   affineOpen : S.affineOpens
   idx : Fin (exists_isAffineOpen_of_isCompact 𝒰 affineOpen.2.isCompact).choose
-
-noncomputable def ulift {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
-    PreZeroHypercover.{u} S :=
-  𝒰.restrictIndex fun i : IdxAux 𝒰 ↦
-    (exists_isAffineOpen_of_isCompact 𝒰 i.affineOpen.2.isCompact).choose_spec.choose i.idx
-
-noncomputable
-def uliftHom {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
-    (ulift 𝒰).Hom 𝒰 :=
-  𝒰.restrictIndexHom _
-
-instance {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
-    QuasiCompactCover (ulift 𝒰) where
-  isCompactOpenCovered_of_isAffineOpen {U} hU :=
-    let H := exists_isAffineOpen_of_isCompact 𝒰 hU.isCompact
-    .of_finite (fun i : Fin H.choose ↦ ⟨⟨U, hU⟩, i⟩)
-      (fun _ ↦ H.choose_spec.choose_spec.choose _)
-      (fun _ ↦ H.choose_spec.choose_spec.choose_spec.left _ |>.isCompact)
-      H.choose_spec.choose_spec.choose_spec.right
 
 end QuasiCompactCover
 
@@ -276,21 +163,6 @@ lemma mem_propqcPrecoverage_iff_exists_quasiCompactCover {P : MorphismProperty S
 abbrev propqcTopology (P : MorphismProperty Scheme.{u}) : GrothendieckTopology Scheme.{u} :=
   (propqcPrecoverage P).toGrothendieck
 
-@[simp]
-lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S)
-    (hf : P f) [Surjective f] :
-    (f.cover hf).presieve₀ = Presieve.singleton f := by
-  simp [cover]
-
-lemma Scheme.Hom.singleton_mem_qcPrecoverage {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [Surjective f] [QuasiCompact f] :
-    Presieve.singleton f ∈ qcPrecoverage Y := by
-  let E : Cover.{u} _ _ := f.cover (P := ⊤) trivial
-  rw [qcPrecoverage, PreZeroHypercoverFamily.mem_precoverage_iff]
-  refine ⟨(f.cover (P := ⊤) trivial).toPreZeroHypercover, ?_, by simp⟩
-  simp only [qcCoverFamily_property, quasiCompactCover_iff]
-  infer_instance
-
 attribute [grind .] Scheme.Hom.surjective
 
 @[simp]
@@ -331,9 +203,7 @@ variable (P : MorphismProperty Scheme.{u})
 
 lemma zariskiTopology_le_propqcTopology [P.IsMultiplicative] [IsZariskiLocalAtSource P] :
     zariskiTopology ≤ propqcTopology P := by
-  rw [zariskiTopology, grothendieckTopology, pretopology,
-    Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck]
-  --rw [zariskiTopology, propqcTopology, grothendieckTopology]
+  rw [zariskiTopology, grothendieckTopology]
   apply Precoverage.toGrothendieck_mono
   rw [le_inf_iff]
   refine ⟨?_, ?_⟩

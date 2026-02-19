@@ -1,3 +1,4 @@
+import Mathlib.Topology.Category.TopCat.GrothendieckTopology
 import Proetale.Topology.Flat.Sheaf
 
 open CategoryTheory Limits
@@ -27,14 +28,6 @@ def TopCat.Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) whe
   toFun f := f.hom
   invFun f := ofHom f
 
-@[simp]
-lemma Topology.IsEmbedding.toHomeomorph_symm_apply {X Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} (hf : IsEmbedding f) (x : X) :
-    hf.toHomeomorph.symm ⟨f x, by simp⟩ = x := by
-  apply hf.toHomeomorph.injective
-  ext
-  simp
-
 namespace CategoryTheory
 
 open Limits
@@ -45,15 +38,6 @@ lemma Functor.op_comp_isSheaf_of_isSheaf {C D : Type*} [Category* C] [Category* 
     [IsContinuous.{w} F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
     Presheaf.IsSheaf J (F.op ⋙ P) :=
   F.op_comp_isSheaf J K ⟨P, h⟩
-
-lemma MorphismProperty.IsStableUnderBaseChange.of_forall_exists_isPullback {C : Type*} [Category* C]
-    {P : MorphismProperty C} [P.RespectsIso]
-    (H : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] (_ : P g),
-      ∃ (T : C) (fst : T ⟶ X) (snd : T ⟶ Y), IsPullback fst snd f g ∧ P fst) :
-    P.IsStableUnderBaseChange := by
-  refine .mk' fun X Y S f g _ hg ↦ ?_
-  obtain ⟨T, fst, snd, h, hfst⟩ := H f g hg
-  rwa [← h.isoPullback_inv_fst, P.cancel_left_of_respectsIso]
 
 lemma Precoverage.functorPushforward_mem_toGrothendieck {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) {J : Precoverage C} {K : Precoverage D}
@@ -81,65 +65,6 @@ lemma PreOneHypercover.sieve₀_map {C D : Type*} [Category* C] [Category* D]
     PreOneHypercover.map_toPreZeroHypercover, PreZeroHypercover.presieve₀_map,
     Sieve.generate_map_eq_functorPushforward]
 
-@[upstreamed mathlib 34977]
-class Functor.PreservesPairwisePullbacks {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
-    {X : C} (R : Presieve X) : Prop where
-  preservesLimit (R) ⦃Y Z : C⦄ ⦃f : Y ⟶ X⦄ ⦃g : Z ⟶ X⦄ : R f → R g →
-    PreservesLimit (cospan f g) F := by infer_instance
-
-alias Functor.preservesLimit_cospan_of_mem_presieve := Functor.PreservesPairwisePullbacks.preservesLimit
-
-@[upstreamed mathlib 34977]
-instance {C D : Type*} [Category* C] [Category* D]
-    (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] {X : C} (R : Presieve X) :
-    F.PreservesPairwisePullbacks R where
-
-@[upstreamed mathlib 34977]
-class Precoverage.PullbacksPreservedBy {C D : Type*} [Category* C] [Category* D] (J : Precoverage C)
-    (F : C ⥤ D) : Prop where
-  preservesPairwisePullbacks_of_mem ⦃X : C⦄ ⦃R : Presieve X⦄ :
-    R ∈ J X → F.PreservesPairwisePullbacks R := by infer_instance
-
-@[upstreamed mathlib 34977]
-alias Precoverage.preservesPairwisePullbacks_of_mem :=
-  Precoverage.PullbacksPreservedBy.preservesPairwisePullbacks_of_mem
-
-@[upstreamed mathlib 34977]
-instance {C D : Type*} [Category* C] [Category* D] (J : Precoverage C) (F : C ⥤ D)
-    [PreservesLimitsOfShape WalkingCospan F] :
-    J.PullbacksPreservedBy F where
-
-@[upstreamed mathlib 34977]
-lemma Presieve.HasPairwisePullbacks.map_of_preservesPairwisePullbacks
-    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {X : C} (R : Presieve X)
-    [F.PreservesPairwisePullbacks R] [R.HasPairwisePullbacks] :
-    (R.map F).HasPairwisePullbacks where
-  has_pullbacks {Y Z} := fun {f} ⟨hf⟩ g ⟨hg⟩ ↦ by
-    have := HasPairwisePullbacks.has_pullbacks hf hg
-    have := F.preservesLimit_cospan_of_mem_presieve _ hf hg
-    exact hasPullback_of_preservesPullback F _ _
-
-@[upstreamed mathlib 34977]
-lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks {C D : Type*} [Category* C]
-    [Category* D] (F : C ⥤ D) (P : Dᵒᵖ ⥤ Type*) {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
-    [F.PreservesPairwisePullbacks R] :
-    Presieve.IsSheafFor (F.op ⋙ P) R ↔ Presieve.IsSheafFor P (R.map F) := by
-  have : (R.map F).HasPairwisePullbacks := .map_of_preservesPairwisePullbacks _ _
-  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
-  rw [map_ofArrows] at this ⊢
-  simp_rw [Presieve.isSheafFor_arrows_iff_pullbacks]
-  dsimp [Arrows.PullbackCompatible]
-  congr! 4 with x i j
-  have : PreservesLimit (cospan (f i) (f j)) F :=
-    F.preservesLimit_cospan_of_mem_presieve (ofArrows _ f) ⟨i⟩ ⟨j⟩
-  have : HasPullback (F.map (f i)) (F.map (f j)) := hasPullback_of_preservesPullback _ _ _
-  rw [← pullbackComparison_comp_fst, op_comp, Functor.map_comp,
-    ← pullbackComparison_comp_snd, op_comp, Functor.map_comp]
-  have : Function.Bijective (P.map (pullbackComparison F (f i) (f j)).op) := by
-    rw [← isIso_iff_bijective]
-    infer_instance
-  exact this.1.eq_iff
-
 lemma PreOneHypercover.sieve₁'_eq_pullback_functorPushforward {C D : Type*} [Category* C]
     [Category* D] (F : C ⥤ D) {X : C} (E : PreOneHypercover X) (i j : E.I₀)
     [HasPullback ((E.map F).f i) ((E.map F).f j)] [HasPullback (E.f i) (E.f j)]
@@ -162,12 +87,6 @@ lemma PreOneHypercover.sieve₁'_eq_pullback_functorPushforward {C D : Type*} [C
     exact Sieve.ofArrows_mk _ _ k
 
 @[upstreamed mathlib 34977]
-lemma Precoverage.hasPairwisePullbacks_of_mem {C : Type*} [Category* C] (J : Precoverage C)
-    [J.HasPullbacks] {X : C} {R : Presieve X} (hR : R ∈ J X) :
-    R.HasPairwisePullbacks where
-  has_pullbacks h f _ := (J.hasPullbacks_of_mem f hR).hasPullback h
-
-@[upstreamed mathlib 34977]
 lemma Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy {C D : Type*} [Category* C]
     [Category* D] (F : C ⥤ D) (J : Precoverage C) (K : Precoverage D) [J.IsStableUnderBaseChange]
     [J.HasPullbacks] [K.IsStableUnderBaseChange] [K.HasPullbacks] [J.PullbacksPreservedBy F]
@@ -184,30 +103,7 @@ lemma Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy {C D : Typ
 
 end CategoryTheory
 
-lemma Topology.IsOpenEmbedding.uliftMap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} (hf : Topology.IsOpenEmbedding f) : Topology.IsOpenEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf <| Homeomorph.ulift.isOpenEmbedding)
-
 namespace TopCat
-
-/-- The morphism property on the category of topological spaces given by open embeddings. -/
-@[upstreamed mathlib 34979]
-def isOpenEmbedding : MorphismProperty TopCat :=
-  fun _ _ f ↦ Topology.IsOpenEmbedding f
-
-@[simp, upstreamed mathlib 34979]
-lemma isOpenEmbedding_iff {X Y : TopCat} (f : X ⟶ Y) :
-    isOpenEmbedding f ↔ Topology.IsOpenEmbedding f := .rfl
-
-@[upstreamed mathlib 34979]
-instance : isOpenEmbedding.IsMultiplicative where
-  id_mem _ := .id
-  comp_mem _ _ hf hg := hg.comp hf
-
-@[upstreamed mathlib 34979]
-instance : isOpenEmbedding.RespectsIso :=
-  MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦
-    (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
 lemma isPullback_restrictPreimage {X Y : TopCat} (f : X ⟶ Y) (U : Set Y) :
     IsPullback (ofHom <| ⟨(Subtype.val : f ⁻¹' U → X), by fun_prop⟩)
@@ -224,81 +120,19 @@ lemma isPullback_restrictPreimage {X Y : TopCat} (f : X ⟶ Y) (U : Set Y) :
     ext x
     simpa using congr($(hm1) x)
 
-@[upstreamed mathlib 34979]
-instance : isOpenEmbedding.IsStableUnderBaseChange := by
-  refine .of_forall_exists_isPullback fun {X Y Z} f g _ hg ↦ ?_
-  let e : Y ≃ₜ Set.range g := hg.isEmbedding.toHomeomorph
-  refine ⟨of (f ⁻¹' (Set.range g)), ?_, ?_, ?_, ?_⟩
-  · exact (ofHom ⟨Subtype.val, by fun_prop⟩)
-  · exact ofHom ⟨Set.restrictPreimage _ f, by fun_prop⟩ ≫ (isoOfHomeo e).inv
-  · have := isPullback_restrictPreimage f (Set.range g)
-    refine this.of_iso (Iso.refl _) (Iso.refl _) (isoOfHomeo e).symm (Iso.refl _)
-      (by simp) (by simp) (by simp) ?_
-    simp only [Iso.refl_hom, Category.comp_id, Iso.symm_hom, Iso.eq_inv_comp]
-    ext
-    simp [e]
-  · exact IsOpen.isOpenEmbedding_subtypeVal (hg.isOpen_range.preimage f.hom.continuous)
-
-@[upstreamed mathlib 34979]
-def zariskiPrecoverage : Precoverage TopCat.{u} :=
-  Types.jointlySurjectivePrecoverage.comap (forget TopCat) ⊓ isOpenEmbedding.precoverage
-  deriving Precoverage.HasIsos, Precoverage.IsStableUnderBaseChange,
-    Precoverage.IsStableUnderComposition
-
-/-- The Zariski topology on the category of topological spaces is the topology given by
-jointly surjective open embeddings. -/
-@[upstreamed mathlib 34979]
-def zariskiTopology : GrothendieckTopology TopCat.{u} :=
-  zariskiPrecoverage.toGrothendieck
-
-@[upstreamed mathlib 34979]
-lemma exists_mem_zeroHypercover_range {X : TopCat} (E : zariskiPrecoverage.ZeroHypercover X)
-    (x : X) : ∃ (i : E.I₀), x ∈ Set.range (E.f i) := by
-  revert x
-  simpa using E.mem₀.left
-
-@[upstreamed mathlib 34979]
-lemma isOpenEmbedding_f_zeroHypercover {X : TopCat} (E : zariskiPrecoverage.ZeroHypercover X)
-    (i : E.I₀) : Topology.IsOpenEmbedding (E.f i) := by
-  revert i
-  simpa using E.mem₀.right
-
-@[upstreamed mathlib 34979]
-instance : Precoverage.Small.{u} zariskiPrecoverage.{u} where
-  zeroHypercoverSmall {X} E := by
-    choose i y hy using exists_mem_zeroHypercover_range E
-    refine ⟨X, i, ?_⟩
-    refine ⟨?_, ?_⟩
-    · dsimp
-      simp only [Precoverage.mem_comap_iff, Presieve.map_ofArrows,
-        PreZeroHypercover.restrictIndex_I₀, PreZeroHypercover.restrictIndex_X, Function.comp_apply,
-        PreZeroHypercover.restrictIndex_f, ConcreteCategory.forget_map_eq_coe,
-        Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, Set.mem_range]
-      intro x
-      use x, y x, hy x
-    · simp only [MorphismProperty.ofArrows_mem_precoverage, PreZeroHypercover.restrictIndex_I₀,
-        PreZeroHypercover.restrictIndex_X, Function.comp_apply, PreZeroHypercover.restrictIndex_f,
-        isOpenEmbedding_iff]
-      intro x
-      have := E.mem₀.2
-      simp only [MorphismProperty.ofArrows_mem_precoverage, isOpenEmbedding_iff] at this
-      exact this _
-
-lemma mem_zariskiTopology_iff {X : TopCat.{u}} {S : Sieve X} :
-    S ∈ zariskiTopology X ↔
-      ∃ E : Precoverage.ZeroHypercover.{u} zariskiPrecoverage X, E.presieve₀ ≤ S := by
-  rw [zariskiTopology, Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition]
+lemma mem_grothendieckTopology_iff {X : TopCat.{u}} {S : Sieve X} :
+    S ∈ grothendieckTopology X ↔
+      ∃ E : Precoverage.ZeroHypercover.{u} precoverage X, E.presieve₀ ≤ S := by
+  rw [grothendieckTopology, Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition]
   refine ⟨fun ⟨R, hR, hle⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ?_⟩
   · obtain ⟨E, rfl⟩ := R.exists_eq_preZeroHypercover
-    let E' : zariskiPrecoverage.ZeroHypercover X := ⟨E, hR⟩
+    let E' : precoverage.ZeroHypercover X := ⟨E, hR⟩
     refine ⟨E'.restrictIndexOfSmall, le_trans (fun Y f ⟨i⟩ ↦ ?_) hle⟩
     exact Presieve.ofArrows.mk _
   · use E.presieve₀, E.mem₀
 
-attribute [-simp] Lake.FamilyOut.fam_eq
-
-lemma zariskiPrecoverage_le_comap_uliftFunctor :
-    zariskiPrecoverage.{u} ≤ zariskiPrecoverage.comap uliftFunctor.{v} := by
+lemma precoverage_le_comap_uliftFunctor :
+    precoverage.{u} ≤ precoverage.comap uliftFunctor.{v} := by
   refine Precoverage.le_of_zeroHypercover fun X E ↦ ?_
   refine ⟨?_, ?_⟩
   · simp only [Presieve.map_ofArrows, Precoverage.mem_comap_iff,
@@ -315,67 +149,9 @@ lemma zariskiPrecoverage_le_comap_uliftFunctor :
     apply Topology.IsOpenEmbedding.uliftMap
     apply isOpenEmbedding_f_zeroHypercover
 
-instance [UnivLE.{w, u}] : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} := by
-  suffices PreservesLimitsOfSize.{w', u} uliftFunctor.{v, u} from
-    preservesLimitsOfSize_of_univLE.{w', u} _
-  refine ⟨⟨fun {K} ↦ ?_⟩⟩
-  refine preservesLimit_of_preserves_limit_cone (limitConeIsLimit _) ?_
-  refine .ofIsoLimit (limitConeIsLimit (K ⋙ uliftFunctor)) (.symm ?_)
-  refine Cones.ext ?_ ?_
-  · refine isoOfHomeo (Homeomorph.trans Homeomorph.ulift ?_)
-    refine (Homeomorph.piCongr (.refl _) fun i ↦ Homeomorph.ulift.symm).subtype ?_
-    simp [uliftFunctor, ULift.map, Homeomorph.ulift]
-  · cat_disch
-
-instance : uliftFunctor.IsContinuous zariskiTopology zariskiTopology := by
+instance : uliftFunctor.IsContinuous grothendieckTopology grothendieckTopology := by
   apply Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy
-  apply zariskiPrecoverage_le_comap_uliftFunctor
-
-@[upstreamed mathlib 34979]
-instance : zariskiTopology.Subcanonical := by
-  refine .of_isSheaf_yoneda_obj _ fun X ↦ ?_
-  rw [zariskiTopology, ← Precoverage.toGrothendieck_toCoverage, Presieve.isSheaf_coverage]
-  intro Y R hR
-  rw [Precoverage.mem_iff_exists_zeroHypercover] at hR
-  obtain ⟨𝒰, rfl⟩ := hR
-  rw [Presieve.isSheafFor_arrows_iff]
-  intro x hx
-  refine ⟨?_, ?_, ?_⟩
-  · refine TopCat.ofHom <| ContinuousMap.liftCover (fun i ↦ Set.range (𝒰.f i)) ?_ ?_ ?_
-    · intro i
-      exact ⟨(x i).hom ∘ (isOpenEmbedding_f_zeroHypercover 𝒰 i).toHomeomorph.symm, by fun_prop⟩
-    · intro i j y
-      simp only [Precoverage.toCoverage_toPrecoverage, Set.mem_range, ContinuousMap.coe_mk,
-        Function.comp_apply, forall_exists_index]
-      intro xi hi xj hj
-      conv_lhs => simp only [← hi]
-      conv_rhs => simp only [← hj]
-      rw [Topology.IsEmbedding.toHomeomorph_symm_apply]
-      have := hx i j _ (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).fst
-        (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).snd (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).condition
-      dsimp at this
-      simpa using congr($(this) ⟨(xi, xj), hi ▸ hj.symm⟩)
-    · intro x
-      obtain ⟨i, hi⟩ := exists_mem_zeroHypercover_range 𝒰 x
-      exact ⟨i, (isOpenEmbedding_f_zeroHypercover 𝒰 i).isOpen_range.mem_nhds hi⟩
-  · intro i
-    dsimp
-    ext x
-    simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply]
-    have : 𝒰.f i x = (Subtype.val : Set.range (𝒰.f i) → Y) ⟨𝒰.f i x, by simp⟩ := rfl
-    rw [this, ContinuousMap.liftCover_coe]
-    simp
-  · intro f hf
-    dsimp
-    ext x
-    obtain ⟨i, y, rfl⟩ := exists_mem_zeroHypercover_range 𝒰 x
-    have := congr($(hf i).hom y)
-    dsimp at this
-    rw [this]
-    have : 𝒰.f i y = (Subtype.val : Set.range (𝒰.f i) → Y) ⟨𝒰.f i y, by simp⟩ := rfl
-    dsimp
-    rw [this, ContinuousMap.liftCover_coe]
-    simp
+  apply precoverage_le_comap_uliftFunctor
 
 end TopCat
 
@@ -383,15 +159,14 @@ namespace AlgebraicGeometry.Scheme
 
 lemma forgetToTop_comp_forget : forgetToTop ⋙ CategoryTheory.forget TopCat = forget := rfl
 
-instance : Scheme.forgetToTop.{u}.IsContinuous zariskiTopology TopCat.zariskiTopology := by
-  rw [zariskiTopology, grothendieckTopology, pretopology,
-    Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck]
+instance : Scheme.forgetToTop.{u}.IsContinuous zariskiTopology TopCat.grothendieckTopology := by
+  rw [zariskiTopology, grothendieckTopology]
   have : (precoverage IsOpenImmersion).PullbacksPreservedBy forgetToTop := by
     refine ⟨fun _ _ hR ↦ ⟨fun _ _ f _ hf _ ↦ ?_⟩⟩
     have : IsOpenImmersion f := hR.2 hf
     infer_instance
   apply Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy
-  rw [TopCat.zariskiPrecoverage, Precoverage.comap_inf, precoverage]
+  rw [TopCat.precoverage, Precoverage.comap_inf, precoverage]
   gcongr
   · rw [← Precoverage.comap_comp, forgetToTop_comp_forget]
   · rw [MorphismProperty.comap_precoverage]
@@ -419,10 +194,10 @@ def topYonedaIsoUlift :
       (TopCat.uliftFunctor.obj <| forgetToTop.obj U.1)
       (TopCat.uliftFunctor.obj (TopCat.of T))).symm
 
-lemma isSheaf_zariskiTopology_topYoneda : Presheaf.IsSheaf zariskiTopology (topYoneda T) := by
+lemma isSheaf_grothendieckTopology_topYoneda : Presheaf.IsSheaf zariskiTopology (topYoneda T) := by
   rw [Presheaf.isSheaf_of_iso_iff (topYonedaIsoUlift T)]
-  apply forgetToTop.op_comp_isSheaf_of_isSheaf _ TopCat.zariskiTopology
-  apply TopCat.uliftFunctor.op_comp_isSheaf_of_isSheaf _ TopCat.zariskiTopology
+  apply forgetToTop.op_comp_isSheaf_of_isSheaf _ TopCat.grothendieckTopology
+  apply TopCat.uliftFunctor.op_comp_isSheaf_of_isSheaf _ TopCat.grothendieckTopology
   rw [isSheaf_iff_isSheaf_of_type]
   exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable _
 
@@ -431,7 +206,7 @@ lemma isSheaf_fpqcTopology_topYoneda : Presheaf.IsSheaf fpqcTopology (topYoneda 
   rw [isSheaf_iff_isSheaf_of_type, isSheaf_fpqcTopology_iff]
   refine ⟨?_, fun {R S} f hf₁ hf₂ ↦ ?_⟩
   · rw [← isSheaf_iff_isSheaf_of_type]
-    exact isSheaf_zariskiTopology_topYoneda T
+    exact isSheaf_grothendieckTopology_topYoneda T
   · rw [Presieve.isSheafFor_singleton]
     have : Flat (Spec.map f) := by rwa [HasRingHomProperty.Spec_iff (P := @Flat)]
     have : Topology.IsQuotientMap (Spec.map f) := Flat.isQuotientMap_of_surjective _

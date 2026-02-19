@@ -139,10 +139,10 @@ instance : (toProEt S).LocallyCoverDense (ProEt.topology S) :=
 instance : (toProEt S).LocallyCoverDense (ProEt.zariskiTopology S) :=
   sorry
 
-def topology : GrothendieckTopology S.AffineProEt :=
+noncomputable def topology : GrothendieckTopology S.AffineProEt :=
   (toProEt S).inducedTopology (ProEt.topology S)
 
-def zariskiTopology : GrothendieckTopology S.AffineProEt :=
+noncomputable def zariskiTopology : GrothendieckTopology S.AffineProEt :=
   (toProEt S).inducedTopology (ProEt.zariskiTopology S)
 
 instance : (toProEt S).IsContinuous (topology S) (ProEt.topology S) :=

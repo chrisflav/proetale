@@ -20,7 +20,6 @@ import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Algebra.Ind
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 
 /-!
 # Ind-(faithfully flat) is faithfully flat
