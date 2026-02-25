@@ -43,7 +43,10 @@ namespace ObjectProperty
 
 lemma ind_of_univLE (P : ObjectProperty C) [UnivLE.{w', w}] :
     ind.{w'} P ≤ ind.{w} P := by
-  sorry
+  intro X ⟨J, _, _, pres, H⟩
+  haveI : EssentiallySmall.{w} J :=
+    @essentiallySmall_of_small_of_locallySmall J _ (UnivLE.small J) inferInstance
+  exact of_essentiallySmall_index pres H
 
 @[gcongr]
 lemma ind_mono {P Q : ObjectProperty C} (h : P ≤ Q) :
@@ -59,7 +62,9 @@ instance [P.ContainsIdentities] : (ind.{w} P).ContainsIdentities where
   id_mem X := le_ind _ _ (P.id_mem X)
 
 lemma ind_of_univLE [UnivLE.{w', w}] : ind.{w'} P ≤ ind.{w} P := by
-  sorry
+  intro X Y f hf
+  rw [MorphismProperty.ind_iff_ind_underMk] at hf ⊢
+  exact ObjectProperty.ind_of_univLE P.underObj _ hf
 
 @[gcongr]
 lemma underObj_mono {P Q : MorphismProperty C} (h : P ≤ Q) (X : C) :
@@ -81,11 +86,21 @@ lemma ind_coconeι {J : Type w} [SmallCategory J] [IsFiltered J]
       ?_, ?_, ?_, fun k ↦ ⟨?_, ?_⟩⟩
   · exact
       { app i := D.map i.hom
-        naturality := by simp [← Functor.map_comp] }
+        naturality := by
+          intro X Y f
+          simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+          show D.map Y.hom = D.map X.hom ≫ ((Under.post D).map f).right
+          change D.map Y.hom = D.map X.hom ≫ D.map f.right
+          rw [← D.map_comp]; congr 1
+          have := StructuredArrow.w f
+          simp only [Functor.id_map] at this
+          exact this.symm }
   · exact ((CategoryTheory.Under.forget _).mapCocone (c.underPost j)).ι
   · exact isColimitOfPreserves (CategoryTheory.Under.forget _) (hc.underPost j)
   · apply H
-  · simp
+  · have := c.ι.naturality k.hom
+    simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] at this
+    exact this
 
 variable {P}
 
@@ -113,7 +128,18 @@ lemma pro_eq_unop_ind_op : pro.{w} P = (ind.{w} P.op).unop := by
       op_injective (hst _).2⟩⟩
 
 lemma ind_eq_unop_pro_op : ind.{w} P = (pro.{w} P.op).unop := by
-  sorry
+  ext X Y f
+  refine ⟨fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_, fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_⟩
+  · -- ind P f → (pro P.op).unop f = pro P.op f.op
+    -- Use D.op, NatTrans.op t, NatTrans.op s, hs.op
+    exact ⟨Jᵒᵖ, inferInstance, inferInstance, D.op, NatTrans.op t,
+      NatTrans.op s, hs.op, fun j ↦ ⟨(hst j.unop).1, by simp [← (hst j.unop).2]⟩⟩
+  · -- (pro P.op).unop f → ind P f
+    -- D : J ⥤ Cᵒᵖ, t : D ⟶ const(op X), s : const(op Y) ⟶ D, hs : IsLimit (Cone.mk _ s)
+    -- Use D.leftOp, NatTrans.leftOp t, NatTrans.leftOp s, isColimitCoconeLeftOpOfCone D hs
+    exact ⟨Jᵒᵖ, inferInstance, inferInstance, D.leftOp, NatTrans.leftOp t,
+      NatTrans.leftOp s, isColimitCoconeLeftOpOfCone D hs, fun j ↦ ⟨(hst j.unop).1,
+      Quiver.Hom.op_inj (hst j.unop).2⟩⟩
 
 @[gcongr]
 lemma unop_mono {P Q : MorphismProperty Cᵒᵖ} (h : P ≤ Q) : P.unop ≤ Q.unop :=
@@ -144,7 +170,8 @@ lemma pro_pro [LocallySmall.{w} C] (H :P ≤ isFinitelyPresentable.{w} C) :
 
 lemma pro_of_univLE [UnivLE.{w', w}] :
     pro.{w'} P ≤ pro.{w} P := by
-  sorry
+  grw [pro_eq_unop_ind_op, pro_eq_unop_ind_op]
+  exact unop_mono (ind_of_univLE P.op)
 
 @[gcongr]
 lemma pro_mono {P Q : MorphismProperty C} (h : P ≤ Q) : pro.{w} P ≤ pro.{w} Q := by

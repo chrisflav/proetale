@@ -174,7 +174,9 @@ theorem henselian_if_exists_section (R : Type u)
         _ = (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0))) - (Ideal.Quotient.mk I) a₀ := by simp
         _ = ((Ideal.Quotient.mk I).comp σ.toRingHom) ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp
         _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
-        _ = 0 := sorry
+        _ = 0 := by
+          simp only [g, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Ideal.Quotient.liftₐ_apply,
+            Ideal.Quotient.lift_mk, MvPolynomial.aeval_X, Matrix.cons_val_zero, sub_self]
 
 -- Success
 

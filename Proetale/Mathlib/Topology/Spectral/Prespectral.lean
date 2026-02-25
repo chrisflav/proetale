@@ -1,12 +1,28 @@
 import Mathlib.Topology.Spectral.Prespectral
 
 -- after `PrespectralSpace.of_isTopologicalBasis'`
-theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y := sorry
+theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y := by
+  -- Pull back the compact open basis of Y to X via f.symm
+  have hbasis : TopologicalSpace.IsTopologicalBasis
+      (Set.preimage f.symm '' { U : Set X | IsOpen U ∧ IsCompact U }) :=
+    PrespectralSpace.isTopologicalBasis.isInducing f.symm.isInducing
+  apply PrespectralSpace.of_isTopologicalBasis hbasis
+  intro U hU
+  simp only [Set.mem_image, Set.mem_setOf_eq] at hU
+  obtain ⟨V, ⟨_, hVc⟩, rfl⟩ := hU
+  -- f.symm ⁻¹' V = f '' V, which is compact as image of compact under continuous
+  rw [show f.symm ⁻¹' V = f '' V from (f.toEquiv.image_eq_preimage_symm V).symm]
+  exact hVc.image f.continuous
 
 -- after `PrespectralSpace.sigma`
 instance PrespectralSpace.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [PrespectralSpace X] [PrespectralSpace Y] : PrespectralSpace (X × Y) :=
-  sorry
+  .of_isTopologicalBasis
+    (PrespectralSpace.isTopologicalBasis.prod PrespectralSpace.isTopologicalBasis)
+    (fun _U hU => by
+      obtain ⟨U₁, hU₁, U₂, hU₂, rfl⟩ := Set.mem_image2.mp hU
+      exact hU₁.2.prod hU₂.2)
 
 -- end of file
 theorem Topology.IsClosedEmbedding.isOpen_and_isCompact_and_preimage_eq {X Z : Type*}

@@ -26,7 +26,7 @@ variable {R S : Type*} [CommRing R] [CommRing S]
 
 lemma IsWLocalRing.of_surjective {f : R →+* S} (hf : Function.Surjective f) [IsWLocalRing R] :
     IsWLocalRing S :=
-  sorry
+  ⟨(PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _ hf).wLocalSpace⟩
 
 /-- A ring homomorphism is w-local if the induced map on spectra is w-local. -/
 def RingHom.IsWLocal {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) : Prop :=

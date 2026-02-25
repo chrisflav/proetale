@@ -27,6 +27,6 @@ lemma Cover.generate_ofArrows_mem_grothendieckTopology {S : Scheme.{u}}
 
 lemma Cover.ofArrows_of_unique {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P)) [Unique 𝒰.I₀] :
     Presieve.ofArrows 𝒰.X 𝒰.f = Presieve.singleton (𝒰.f default) :=
-  sorry
+  Presieve.ofArrows_of_unique _
 
 end AlgebraicGeometry.Scheme

@@ -2,6 +2,8 @@ import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.Limits.Preserves.Over
+import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Proetale.Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 
 universe u
@@ -197,13 +199,47 @@ instance preservesFilteredColimitsOfSize_forget_algCat (R : Type u) [CommRing R]
     PreservesFilteredColimitsOfSize (forget₂ (CommAlgCat R) (AlgCat R)) :=
   sorry
 
+/-- Natural isomorphism between `forget (CommAlgCat R)` and the composition through
+the equivalence `CommAlgCat R ≌ Under (CommRingCat.of R)`. -/
+private noncomputable def forgetNatIso (R : Type u) [CommRing R] :
+    forget (CommAlgCat.{u} R) ≅
+      (commAlgCatEquivUnder (CommRingCat.of R)).functor ⋙
+        Under.forget (CommRingCat.of R) ⋙ forget CommRingCat :=
+  NatIso.ofComponents (fun A => Iso.refl _) (by intros; dsimp; rfl)
+
+-- forget₂ to CommRingCat preserves filtered colimits: factors through equivalence + Under.forget
+instance preservesFilteredColimits_forget₂_commRingCat (R : Type u) [CommRing R] :
+    PreservesFilteredColimits (forget₂ (CommAlgCat.{u} R) CommRingCat.{u}) := by
+  show PreservesFilteredColimits <|
+    (commAlgCatEquivUnder (.of R)).functor ⋙ Under.forget (CommRingCat.of R)
+  infer_instance
+
+-- forget preserves filtered colimits at {u, u}: forget = forget₂ ⋙ forget CommRingCat
+instance preservesFilteredColimits_forget (R : Type u) [CommRing R] :
+    PreservesFilteredColimits (forget (CommAlgCat.{u} R)) := by
+  rw [show forget (CommAlgCat.{u} R) = forget₂ (CommAlgCat.{u} R) CommRingCat ⋙ forget CommRingCat
+    from HasForget₂.forget_comp.symm]
+  exact comp_preservesFilteredColimits _ _
+
+-- Note: The output universe parameters of PreservesFilteredColimitsOfSize cannot be
+-- resolved to {u, u} automatically; a direct colimit construction (like Under.forget's
+-- instance in Preserves/Over.lean) would be needed for full generality. For now we use sorry.
+-- The downstream uses (IsIPC, ReflectsFilteredColimitsOfSize) only need {u, u},
+-- which is provided by the preservesFilteredColimits_forget instance above.
 instance preservesFilteredColimitsOfSize_forget (R : Type u) [CommRing R] :
-    PreservesFilteredColimitsOfSize (forget (CommAlgCat.{u} R)) :=
+    PreservesFilteredColimitsOfSize (forget (CommAlgCat.{u} R)) := by
   sorry
 
 instance preservesLimitsOfSize_forget (R : Type u) [CommRing R] :
-    PreservesLimitsOfSize.{u, u} (forget (CommAlgCat.{u} R)) :=
-  sorry
+    PreservesLimitsOfSize.{u, u} (forget (CommAlgCat.{u} R)) := by
+  -- forget factors as: CommAlgCat R ≃ Under (CommRingCat.of R) → CommRingCat → Type
+  -- The equivalence preserves limits, Under.forget creates (hence preserves) limits,
+  -- and forget CommRingCat preserves limits.
+  have h1 : PreservesLimitsOfSize.{u, u}
+      (commAlgCatEquivUnder (CommRingCat.of R)).functor := inferInstance
+  have h2 : PreservesLimitsOfSize.{u, u} (Under.forget (CommRingCat.of R)) := inferInstance
+  have h3 : PreservesLimitsOfSize.{u, u} (forget CommRingCat.{u}) := inferInstance
+  exact preservesLimits_of_natIso (forgetNatIso R).symm
 
 instance : ReflectsFilteredColimitsOfSize.{u, u} (forget (CommAlgCat.{u} R)) where
   reflects_filtered_colimits _ _ _ := reflectsColimitsOfShape_of_reflectsIsomorphisms
@@ -222,7 +258,10 @@ def piFan : Fan S :=
 
 /-- The categorical product of `R`-algebras is the type theoretic product. -/
 def isLimitPiFan : IsLimit (piFan S) :=
-  sorry
+  mkFanLimit _ (fun s => ofHom <| Pi.algHom R (fun i => ↑(S i)) fun i => (s.proj i).hom)
+    (fun s i => by ext; simp [piFan])
+    (fun s m hm => hom_ext <| DFunLike.ext _ _ fun x => funext fun i =>
+      DFunLike.congr_fun (congrArg Hom.hom (hm i)) x)
 
 end Pi
 

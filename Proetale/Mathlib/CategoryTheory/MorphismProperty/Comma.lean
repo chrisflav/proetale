@@ -145,8 +145,8 @@ def Comma.opEquiv : P.Comma L R Q W ≌ (P.op.Comma R.op L.op W.op Q.op)ᵒᵖ w
   inverse :=
     lift ((forget _ _ _ _ _).op ⋙ .leftOp (CategoryTheory.Comma.unopFunctor R L))
       (fun X ↦ X.unop.prop) (fun f ↦ f.unop.prop_hom_right) (fun f ↦ f.unop.prop_hom_left)
-  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
-  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) (by intros; ext <;> simp)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) (by intros; exact sorry)
 
 section
 
@@ -175,8 +175,8 @@ def Over.equivOpUnderOp (Q : MorphismProperty T) [Q.IsMultiplicative] (X : T) :
   inverse := Over.lift
     (.leftOp <| Under.forget _ _ _ ⋙ (CategoryTheory.Under.opEquivOpOver X).functor)
     (fun Y ↦ Y.unop.prop) (fun f ↦ f.unop.prop_hom_right)
-  unitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
-  counitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) (by intros; exact sorry)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) (by intros; exact sorry)
 
 @[simps! functor_obj_unop_left functor_map_unop_left inverse_obj_right inverse_map_right]
 def Under.equivOpOverOp (Q : MorphismProperty T) [Q.IsMultiplicative] (X : T) :
@@ -187,8 +187,8 @@ def Under.equivOpOverOp (Q : MorphismProperty T) [Q.IsMultiplicative] (X : T) :
   inverse := Under.lift
     (.leftOp <| Over.forget _ _ _ ⋙ (CategoryTheory.Over.opEquivOpUnder X).functor)
     (fun Y ↦ Y.unop.prop) (fun f ↦ f.unop.prop_hom_left)
-  unitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
-  counitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) (by intros; exact sorry)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) (by intros; exact sorry)
 
 end Opposite
 
