@@ -67,10 +67,19 @@ lemma closedUnderLimitsOfShape_walkingCospan :
       IsPullback.of_isLimit_cone <| isLimitOfPreserves
         (CategoryTheory.CostructuredArrow.toOver F X ⋙ CategoryTheory.Over.forget X) pres.isLimit
     rw [costructuredArrowObj_iff]
-    rw [show Y.hom = F.map (pres.π.app .left).left ≫ (pres.diag.obj .left).hom by simp]
+    have hw1 : Y.hom = F.map (pres.π.app .left).left ≫ (pres.diag.obj .left).hom := by
+      have := (pres.π.app WalkingCospan.left).w
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] at this
+      exact this.symm
+    rw [hw1]
     apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (hpres _)
+    have hw2 : F.map (pres.diag.map WalkingCospan.Hom.inr).left ≫
+        (pres.diag.obj WalkingCospan.one).hom = (pres.diag.obj WalkingCospan.right).hom := by
+      have := (pres.diag.map WalkingCospan.Hom.inr).w
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] at this
+      exact this
     exact P.of_postcomp _ (pres.diag.obj WalkingCospan.one).hom (hpres .one)
-      (by simpa using hpres .right)
+      (hw2 ▸ hpres .right)
 
 noncomputable
 instance createsLimitsOfShape_walkingCospan [HasPullbacks C] [HasPullbacks D] :
@@ -135,11 +144,10 @@ instance isCoverDense_toOver_Spec (P : MorphismProperty Scheme.{u}) [P.IsMultipl
     · rintro X f ⟨i⟩
       simp only [Sieve.coverByImage]
       refine ⟨⟨affineOverMk (𝒰.f i ≫ U.hom) (P.comp_mem _ _ (𝒰.map_prop i) U.prop), ?_, ?_, ?_⟩⟩
-      · exact MorphismProperty.CostructuredArrow.homMk (𝟙 _) ⟨⟩ rfl
+      · exact MorphismProperty.CostructuredArrow.homMk (𝟙 _) ⟨⟩ (Category.id_comp _)
       · dsimp
         exact MorphismProperty.Over.homMk (𝒰.f i) (by simp) trivial
-      · ext
-        simp
+      · ext; dsimp; exact Category.id_comp _
 
 variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
 
@@ -164,9 +172,44 @@ instance : HasFiniteCoproducts (P.CostructuredArrow ⊤ Scheme.Spec S) where
       apply IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
     apply MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
 
+/-- `CostructuredArrow.toOver Scheme.Spec S` preserves binary coproducts.
+This follows because `proj ⋙ Spec` preserves coproducts (as `proj` creates and `Spec`
+preserves), `Over.forget S` reflects colimits (since it creates them), and
+`toOver ⋙ Over.forget = proj ⋙ Spec`. -/
+noncomputable instance : PreservesColimitsOfShape (Discrete WalkingPair)
+    (CategoryTheory.CostructuredArrow.toOver Scheme.Spec S) := by
+  have : PreservesColimitsOfShape (Discrete WalkingPair)
+      (CategoryTheory.CostructuredArrow.toOver Scheme.Spec S ⋙
+        CategoryTheory.Over.forget S) := by
+    show PreservesColimitsOfShape (Discrete WalkingPair) <|
+      CategoryTheory.CostructuredArrow.proj Scheme.Spec S ⋙ Scheme.Spec
+    infer_instance
+  exact preservesColimitsOfShape_of_reflects_of_preserves _
+    (CategoryTheory.Over.forget S)
+
 instance : PreservesColimitsOfShape (Discrete WalkingPair)
-    (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S) :=
-  sorry
+    (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S) := by
+  haveI : (MorphismProperty.commaObj Scheme.Spec (.fromPUnit S) P).IsClosedUnderColimitsOfShape
+      (Discrete WalkingPair) := by
+    apply IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
+  haveI : HasColimitsOfShape (Discrete WalkingPair)
+      (P.CostructuredArrow ⊤ Scheme.Spec S) := inferInstance
+  haveI : HasColimitsOfShape (Discrete WalkingPair)
+      (Comma Scheme.Spec (Functor.fromPUnit S)) :=
+    inferInstanceAs <| HasColimitsOfShape _ (CostructuredArrow Scheme.Spec S)
+  haveI : CreatesColimitsOfShape (Discrete WalkingPair)
+      (MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec S) :=
+    MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed
+      (L := Scheme.Spec) (R := Functor.fromPUnit S) P (Discrete WalkingPair)
+  have : PreservesColimitsOfShape (Discrete WalkingPair)
+      (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S ⋙
+        MorphismProperty.Over.forget P ⊤ S) := by
+    show PreservesColimitsOfShape (Discrete WalkingPair) <|
+      MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec S ⋙
+        CategoryTheory.CostructuredArrow.toOver Scheme.Spec S
+    infer_instance
+  exact preservesColimitsOfShape_of_reflects_of_preserves _
+    (MorphismProperty.Over.forget P ⊤ S)
 
 instance : FinitaryExtensive (P.CostructuredArrow ⊤ Scheme.Spec S) :=
   CategoryTheory.finitaryExtensive_of_preserves_and_reflects_isomorphism
@@ -174,7 +217,34 @@ instance : FinitaryExtensive (P.CostructuredArrow ⊤ Scheme.Spec S) :=
 
 instance : Preregular (P.CostructuredArrow ⊤ Scheme.Spec S) := by
   apply Preregular.of_hasPullbacks_of_effectiveEpi_fst
-  sorry
+  intro X Y Z f g hg
+  let F := MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S
+  -- The key step: show the underlying scheme map of g is surjective.
+  -- This requires: EffectiveEpi g in P.CostructuredArrow → Surjective (F.map g).left
+  -- which is non-trivial in general.
+  haveI hsur_g : Surjective (F.map g).left := by
+    sorry
+  -- Show the underlying scheme morphism of pullback.fst in the Over category is surjective.
+  haveI : Surjective (pullback.fst (F.map f) (F.map g)).left := by
+    show Surjective ((MorphismProperty.Over.forget P ⊤ S ⋙ CategoryTheory.Over.forget S).map
+      (pullback.fst (F.map f) (F.map g)))
+    rw [← pullbackComparison_comp_fst]
+    exact (MorphismProperty.cancel_left_of_respectsIso (P := @Surjective) _ _).mpr (by
+      dsimp
+      haveI : Surjective ((CategoryTheory.Over.forget S).map
+        ((MorphismProperty.Over.forget P ⊤ S).map (F.map g))) := hsur_g
+      infer_instance)
+  -- pullback.fst in Over category is EffectiveEpi (from Surjective → EffectiveEpi)
+  -- NOTE: This step needs EffectiveEpi from Surjective for general P, which may not hold.
+  -- For P = @Etale, this is Scheme.Etale.effectiveEpi_of_surjective.
+  haveI : EffectiveEpi (pullback.fst (F.map f) (F.map g)) := by
+    sorry
+  -- F preserves pullbacks and reflects effective epis, so transfer back
+  apply F.effectiveEpi_of_map
+  rw [show F.map (pullback.fst f g) =
+    (PreservesPullback.iso F f g).hom ≫ pullback.fst (F.map f) (F.map g)
+    from (PreservesPullback.iso_hom_fst F f g).symm]
+  infer_instance
 
 end
 
@@ -188,8 +258,9 @@ def Cover.etaleAffineRefinement (𝒰 : S.Cover (precoverage @Etale)) :
   covers := Cover.covers (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance)
   map_prop j := by
     simp [Cover.changeProp]
+    have : IsOpenImmersion ((𝒰.X j.fst).affineCover.f j.snd) := inferInstance
     have : Etale (𝒰.f j.fst) := 𝒰.map_prop _
-    infer_instance
+    exact MorphismProperty.comp_mem _ _ _ (IsZariskiLocalAtSource.of_isOpenImmersion _) ‹_›
 
 def AffineEtale (S : Scheme.{u}) : Type (u + 1) :=
   MorphismProperty.CostructuredArrow @Etale.{u} ⊤ Scheme.Spec.{u} S
@@ -241,12 +312,15 @@ instance : HasPullbacks S.AffineEtale :=
   inferInstanceAs <| HasPullbacks (MorphismProperty.CostructuredArrow _ _ _ _)
 
 -- Question: What are the effective epimorphisms of `AffineEtale S`?
+-- See blueprint remark:et-not-precoherent-topology for discussion.
+-- The `Preregular` instance for the general `P.CostructuredArrow ⊤ Scheme.Spec S`
+-- (defined above, with sorry for the key surjectivity step) provides this.
 
-instance preregular : Preregular (AffineEtale S) := by
-  sorry
+instance preregular : Preregular (AffineEtale S) :=
+  inferInstanceAs <| Preregular (MorphismProperty.CostructuredArrow _ _ _ _)
 
 instance precoherent : Precoherent (AffineEtale S) :=
-  sorry
+  inferInstanceAs <| Precoherent (MorphismProperty.CostructuredArrow _ _ _ _)
 
 end AffineEtale
 

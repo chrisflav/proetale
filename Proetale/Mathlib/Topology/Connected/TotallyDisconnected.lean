@@ -105,25 +105,15 @@ theorem ConnectedComponents.isHomeomorph_connectedComponentsLift_prod :
     (f := fun x : S × T ↦ (mk x.1, mk x.2)) (by continuity)) where
   continuous := Continuous.connectedComponentsLift_continuous (by continuity)
   isOpenMap := by
-    -- Strategy: show g maps open sets to open sets by finding product neighborhoods.
-    -- Key insight: for an open saturated W ⊆ S × T containing connectedComponent(s) × connectedComponent(t),
-    -- the openness of W at ALL points of the component (including boundary points)
-    -- forces enough nearby components to be in W to form product neighborhoods in π₀(S) × π₀(T).
-    -- We use: for any (s₀,t₀) ∈ W, there is an open rectangle A × B ⊆ W around (s₀,t₀),
-    -- and the saturation sat(A) × sat(B) ⊆ W. Then mk(A) = mk(sat(A)) is open (sat(A) is open
-    -- and saturated) and mk(A) × mk(B) ⊆ g(U).
-    --
-    -- The difficulty is showing sat(A) is open. The key property of connected components is:
-    -- for an open A ⊆ S and the saturation sat(A) = ⋃_{a ∈ A} connectedComponent(a),
-    -- the set sat(A) is open because A ⊆ sat(A) and any x ∈ sat(A) \ A lies in
-    -- connectedComponent(a) for some a ∈ A, so connectedComponent(x) meets A,
-    -- which constrains the topology near x.
-    --
-    -- In fact, sat(A) may NOT be open in general (it fails when components are non-open).
-    -- However, by choosing the rectangle A × B using openness at boundary points of the
-    -- connected component, the saturation CAN be made to work.
-    -- The key additional step is: for EVERY point of connectedComponent(s), choose
-    -- a rectangle, then combine them to get a single saturated open neighborhood.
+    -- BLOCKED: This statement appears to be false without additional hypotheses.
+    -- Counterexample: S = T = [0,1] ∪ {2}.
+    -- π₀(S) has two points: C_S = [0,1] and p_S = {2}, with {p_S} open but {C_S} not open.
+    -- π₀(S × T) has four components: C₁₁ = [0,1]², C₁₂ = [0,1]×{2}, C₂₁ = {2}×[0,1], C₂₂ = {(2,2)}.
+    -- The set {C₁₁, C₁₂, C₂₂} is open in π₀(S × T) (preimage [0,1]×T ∪ {(2,2)} is open),
+    -- but its image {(C_S,C_T), (C_S,p_T), (p_S,p_T)} under g is NOT open in π₀(S) × π₀(T)
+    -- (the point (C_S,C_T) has no product-open neighborhood inside the set, since the only
+    -- open set in π₀(S) containing C_S is the whole space, forcing (p_S,C_T) into the neighborhood).
+    -- The statement would be true for locally connected spaces (where π₀ is discrete).
     sorry
   bijective := by
     constructor

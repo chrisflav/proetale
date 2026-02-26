@@ -16,10 +16,5 @@ scope = "leanprover-community"
 name = "checkdecls"
 git = "https://github.com/PatrickMassot/checkdecls.git"
 
-[[require]]
-name = "upstreamer"
-git = "https://github.com/chrisflav/upstreamer"
-rev = "main"
-
 [[lean_lib]]
 name = "Proetale"

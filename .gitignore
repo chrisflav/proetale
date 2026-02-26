@@ -1,4 +1,6 @@
 /.lake
+/.claude/
+*.bak
 blueprint/print
 blueprint/web
 blueprint/lean_decls

@@ -42,7 +42,8 @@ theorem image_closure_image_subset_closure_image {I : Type*} [Category I]
     (F.map f) '' (closure ((C.π.app i) '' s)) ⊆ closure ((C.π.app j) '' s) := by
   have hnat : C.π.app i ≫ F.map f = C.π.app j := by
     have := C.π.naturality f
-    simp at this
+    dsimp [Functor.const] at this
+    rw [Category.id_comp] at this
     exact this.symm
   have himg : (C.π.app j) '' s = (F.map f) '' ((C.π.app i) '' s) := by
     rw [← hnat, ← Set.image_comp]

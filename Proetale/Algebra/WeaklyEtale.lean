@@ -81,8 +81,11 @@ lemma RingHom.Flat.iff_comp_ringEquiv {R S T : Type*} [CommRing R] [CommRing S]
 lemma RingHom.Flat.ulift_iff {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} :
     (ulift.{u₁, u₂} f).Flat ↔ f.Flat := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · rwa [← RingHom.comp_ulift_eq.{u₁, u₂} f,
-      RingHom.Flat.iff_ringEquiv_comp, RingHom.Flat.iff_comp_ringEquiv]
+  · have : f = ULift.ringEquiv.toRingHom.comp
+        (f.ulift.comp ULift.ringEquiv.symm.toRingHom) := rfl
+    rw [this]
+    exact .comp (.comp (.of_bijective ULift.ringEquiv.symm.bijective) hf)
+      (.of_bijective ULift.ringEquiv.bijective)
   · exact .comp (.comp (.of_bijective <| Equiv.bijective _) hf)
       (.of_bijective <| Equiv.bijective _)
 
@@ -248,7 +251,45 @@ lemma RingHom.Flat.lift_includeLeft_includeRight {R S : Type u} (T A : Type u)
           (by simp [IsScalarTower.algebraMap_eq R S A]) ≪≫
         (CommRingCat.isPushout_tensorProduct R T A).isoPushout.symm
     · exact (CommRingCat.isPushout_tensorProduct S T A).isoPushout.symm
-    all_goals ext <;> simp
+    -- All 4 goals: diagram commutativity in CommRingCat.
+    -- Goal 5 (commf)
+    · apply pushout.hom_ext
+      · simp only [Category.assoc, pushout.inl_desc_assoc, Category.id_comp, Iso.trans_hom,
+          Iso.symm_hom, pushout.congrHom, asIso_hom, pushout.inl_desc_assoc]
+        -- LHS: algebraMap S T ≫ pushout.inl ≫ isoPushout(R,T,A).inv
+        -- RHS: pushout.inl ≫ isoPushout(R,S,S).inv ≫ map(...)
+        rw [(CommRingCat.isPushout_tensorProduct R T A).inl_isoPushout_inv,
+            reassoc_of% (CommRingCat.isPushout_tensorProduct R S S).inl_isoPushout_inv]
+        ext x; simp
+      · simp only [Category.assoc, pushout.inr_desc_assoc, Category.id_comp, Iso.trans_hom,
+          Iso.symm_hom, pushout.congrHom, asIso_hom, pushout.inr_desc_assoc]
+        rw [(CommRingCat.isPushout_tensorProduct R T A).inr_isoPushout_inv,
+            reassoc_of% (CommRingCat.isPushout_tensorProduct R S S).inr_isoPushout_inv]
+        ext x; simp
+    -- Goal 6 (commg)
+    · apply pushout.hom_ext
+      · simp only [Iso.refl_hom, Category.comp_id, Iso.symm_hom]
+        rw [reassoc_of% (CommRingCat.isPushout_tensorProduct R S S).inl_isoPushout_inv]
+        ext x; simp
+      · simp only [Iso.refl_hom, Category.comp_id, Iso.symm_hom]
+        rw [reassoc_of% (CommRingCat.isPushout_tensorProduct R S S).inr_isoPushout_inv]
+        ext x; simp
+    -- Goal 7 (comminl)
+    · apply pushout.hom_ext
+      · simp only [Category.assoc, pushout.inl_desc_assoc, Category.id_comp, Iso.trans_hom,
+          Iso.symm_hom, pushout.congrHom, asIso_hom, pushout.inl_desc_assoc]
+        rw [(CommRingCat.isPushout_tensorProduct S T A).inl_isoPushout_inv,
+            reassoc_of% (CommRingCat.isPushout_tensorProduct R T A).inl_isoPushout_inv]
+        ext x; simp
+      · simp only [Category.assoc, pushout.inr_desc_assoc, Category.id_comp, Iso.trans_hom,
+          Iso.symm_hom, pushout.congrHom, asIso_hom, pushout.inr_desc_assoc]
+        rw [(CommRingCat.isPushout_tensorProduct S T A).inr_isoPushout_inv,
+            reassoc_of% (CommRingCat.isPushout_tensorProduct R T A).inr_isoPushout_inv]
+        ext x; simp
+    -- Goal 8 (comminr)
+    · rw [Iso.refl_hom, Category.id_comp, Iso.symm_hom, Category.assoc,
+        (CommRingCat.isPushout_tensorProduct S T A).inl_isoPushout_inv]
+      ext x; simp
 
 namespace Algebra
 
@@ -310,9 +351,69 @@ end
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
+-- Helper: a flat surjective ring map has idempotent kernel.
+-- If f : A → B is flat surjective with I = ker f, then I/I² ≅ I ⊗_A B and
+-- the map I ⊗_A B → A ⊗_A B ≅ B is injective (flat) and zero, so I/I² = 0.
+private lemma RingHom.isIdempotentElem_ker_of_flat_surjective {A B : Type*} [CommRing A]
+    [CommRing B] (f : A →+* B) (hf : f.Flat) (hsurj : Function.Surjective f) :
+    IsIdempotentElem (RingHom.ker f) := by
+  rw [← Ideal.cotangent_subsingleton_iff]
+  -- Get Module.Flat A B from RingHom.Flat f
+  letI := f.toAlgebra
+  haveI : Module.Flat A B := by rwa [← RingHom.flat_algebraMap_iff, RingHom.algebraMap_toAlgebra]
+  -- Step 1: Get Module.Flat A (A ⧸ ker f) via AlgEquiv with B
+  have e_alg : (A ⧸ RingHom.ker f) ≃ₐ[A] B :=
+    Ideal.quotientKerAlgEquivOfSurjective (f := Algebra.ofId A B) hsurj
+  haveI : Module.Flat A (A ⧸ RingHom.ker f) := .of_linearEquiv e_alg.toLinearEquiv
+  -- Step 2: By flatness, (A/ker f) ⊗_A (ker f) → (A/ker f) ⊗_A A is injective
+  have hinj : Function.Injective
+      ((RingHom.ker f : Submodule A A).subtype.lTensor (A ⧸ RingHom.ker f)) :=
+    Module.Flat.lTensor_preserves_injective_linearMap _
+      (Submodule.injective_subtype _)
+  -- Step 3: Show every cotangent element is zero
+  rw [subsingleton_iff_forall_eq 0]
+  intro y
+  obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ y
+  rw [Ideal.toCotangent_eq_zero]
+  -- Goal: x ∈ (ker f) ^ 2
+  -- Show 1 ⊗ₜ ⟨x, hx⟩ maps to 0 in (A/ker f) ⊗ A under subtype.lTensor
+  have hzero : (RingHom.ker f : Submodule A A).subtype.lTensor (A ⧸ RingHom.ker f)
+      ((1 : A ⧸ RingHom.ker f) ⊗ₜ[A]
+        (⟨x, hx⟩ : (RingHom.ker f : Submodule A A))) = 0 := by
+    simp only [LinearMap.lTensor_tmul, Submodule.subtype_apply]
+    apply (AlgebraTensorModule.rid A A (A ⧸ RingHom.ker f)).injective
+    simp only [map_zero, AlgebraTensorModule.rid_tmul]
+    show x • (1 : A ⧸ RingHom.ker f) = 0
+    rw [show x • (1 : A ⧸ RingHom.ker f) =
+      Ideal.Quotient.mk (RingHom.ker f) (x * 1) from rfl]
+    simp [Ideal.Quotient.eq_zero_iff_mem.mpr hx]
+  -- By injectivity, 1 ⊗ₜ ⟨x, hx⟩ = 0 in (A/ker f) ⊗[A] (ker f)
+  have hzero' : (1 : A ⧸ RingHom.ker f) ⊗ₜ[A]
+      (⟨x, hx⟩ : (RingHom.ker f : Submodule A A)) = 0 := hinj hzero
+  -- By ker_tensorProductMk, ⟨x, hx⟩ ∈ (ker f) • ⊤, hence x ∈ (ker f) ^ 2
+  rw [pow_two]
+  refine (Submodule.mem_smul_top_iff _ _ ⟨x, hx⟩).mp ?_
+  -- ker_tensorProductMk needs Module A ↥I which requires explicit instances
+  -- to avoid a diamond with the Ideal vs Submodule coercion
+  have hker := @LinearMap.ker_tensorProductMk A _
+    (↥(RingHom.ker f : Submodule A A))
+    (Submodule.addCommGroup _) (Submodule.module _) (RingHom.ker f)
+  -- hzero' and the goal have matching Module instances (from earlier in the proof)
+  -- but hker uses the explicitly provided instances. Use `convert` to bridge.
+  have : (⟨x, hx⟩ : (RingHom.ker f : Submodule A A)) ∈
+      ((TensorProduct.mk A (A ⧸ RingHom.ker f)
+        (↥(RingHom.ker f : Submodule A A))) 1).ker := by
+    change ((TensorProduct.mk A (A ⧸ RingHom.ker f) (↥(RingHom.ker f : Submodule A A))) 1)
+      ⟨x, hx⟩ = 0
+    exact hzero'
+  exact hker ▸ this
+
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
-    FormallyUnramified R S :=
-  sorry
+    FormallyUnramified R S := by
+  rw [formallyUnramified_iff]
+  show Subsingleton (KaehlerDifferential.ideal R S).Cotangent
+  rw [Ideal.cotangent_subsingleton_iff]
+  exact RingHom.isIdempotentElem_ker_of_flat_surjective _ h (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
 
 /-- `S` is a weakly-étale `R`-algebra if both `R → S` and `S ⊗[R] S → R` are flat. -/
 @[stacks 092B, mk_iff]
@@ -333,11 +434,17 @@ lemma Module.Flat.ulift_iff {R M : Type*} [CommRing R] [AddCommGroup M] [Module 
     have : Module.Flat (ULift.{u₁} R) M := .trans _ R _
     exact .ulift
 
+-- Pre-existing: `ext <;> simp` hits a CoeT timeout. Sorry'd to allow the file to compile.
+set_option synthInstance.maxHeartbeats 400000 in
+set_option maxHeartbeats 400000 in
 lemma TensorProduct.lmul'_ulift (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] :
     TensorProduct.lmul' (S := ULift.{u₂} S) (ULift.{u₁} R) =
       AlgHom.comp (TensorProduct.lmul' (S := S) R).ulift
         (uliftEquiv R R S S).symm.toAlgHom := by
-  ext <;> simp
+  apply Algebra.TensorProduct.ext'
+  intro ⟨a⟩ ⟨b⟩
+  change (⟨a * b⟩ : ULift.{u₂} S) = _
+  rfl
 
 namespace WeaklyEtale
 
@@ -345,7 +452,15 @@ lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale 
   rw [weaklyEtale_iff, weaklyEtale_iff, Module.Flat.ulift_iff]
   congr!
   conv_rhs => rw [← RingHom.Flat.ulift_iff.{u₁, u₂}]
-  rw [TensorProduct.lmul'_ulift, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
+  -- Goal: (lmul' (ULift R)).Flat ↔ (lmul' R).toRingHom.ulift.Flat
+  -- The .Flat on an AlgHom goes through toRingHom coercion
+  -- lmul'(ULift R) = (lmul' R).ulift.comp (uliftEquiv ...).symm.toAlgHom
+  -- So (lmul' (ULift R)).toRingHom = ((lmul' R).ulift.comp ...).toRingHom
+  --                                 = (lmul' R).ulift.toRingHom.comp (uliftEquiv ...).symm.toRingHom
+  -- And (lmul' R).ulift.toRingHom = (lmul' R).toRingHom.ulift (they're definitionally equal)
+  -- So goal becomes: ((lmul' R).toRingHom.ulift.comp e.toRingHom).Flat ↔ (lmul' R).toRingHom.ulift.Flat
+  -- which is RingHom.Flat.iff_comp_ringEquiv
+  conv_lhs => rw [TensorProduct.lmul'_ulift]
   exact RingHom.Flat.iff_comp_ringEquiv
 
 @[stacks 092N "(2)"]
@@ -390,7 +505,14 @@ lemma trans (R : Type u₁) (S : Type u₂) [CommRing R] [CommRing S] [Algebra R
             (TensorProduct.includeLeft)
             (TensorProduct.includeRight.restrictScalars (ULift.{max u₁ u₂ u₃} R))
             fun _ _ ↦ .all _ _) := by
-      ext <;> simp
+      apply Algebra.TensorProduct.ext'
+      intro a b
+      simp only [AlgHom.comp_apply, AlgHom.restrictScalars_apply,
+        Algebra.TensorProduct.lift_tmul, Algebra.TensorProduct.includeRight_apply]
+      show a * b = (Algebra.TensorProduct.lmul' (ULift.{max u₁ u₂ u₃} S))
+        (Algebra.TensorProduct.includeLeft a * (1 : ULift T) ⊗ₜ[ULift.{max u₁ u₂ u₃} S] b)
+      rw [Algebra.TensorProduct.includeLeft_apply, Algebra.TensorProduct.tmul_mul_tmul,
+        mul_one, one_mul, Algebra.TensorProduct.lmul'_apply_tmul]
     rw [heq]
     refine .comp ?_ ?_
     · exact (flat_lmul' (ULift R) (ULift S)).lift_includeLeft_includeRight

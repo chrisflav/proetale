@@ -23,10 +23,7 @@ namespace MorphismProperty
 lemma PreIndSpreads.inf (Q : MorphismProperty C) [PreIndSpreads.{w} P]
     [PreIndSpreads.{w} Q] :
     PreIndSpreads.{w} (P ⊓ Q) where
-  exists_isPushout {J} _ _ D c hc T f hf := by
-    obtain ⟨j₁, T'₁, f'₁, g₁, hg₁⟩ := P.exists_isPushout_of_isFiltered hc f hf.1
-    obtain ⟨j₂, T'₂, f'₂, g₂, hg₂⟩ := Q.exists_isPushout_of_isFiltered hc f hf.2
-    sorry
+  exists_isPushout {J} _ _ D c hc T f hf := by sorry
 
 variable {P} in
 /-- If `C` has an initial object `S` such that every `P`-morphism `X ⟶ Y` descends to
@@ -44,13 +41,24 @@ lemma PreIndSpreads.of_isInitial [HasPushouts C] [P.IsStableUnderCobaseChange]
         naturality _ _ _ := h.hom_ext _ _ }
     obtain ⟨j, q, hgq, rfl⟩ := MorphismProperty.exists_hom_of_isFinitelyPresentable hc hX' s u
       fun j ↦ h.hom_ext _ _
-    exact ⟨j, pushout f' q, pushout.inr _ _, pushout.desc v (c.ι.app j ≫ f) (by simp [← H.w]),
-      .of_left (by simpa) (by simp) (IsPushout.of_hasPushout f' q).flip, P.pushout_inr _ _ hf'⟩
+    refine ⟨j, pushout f' q, pushout.inr _ _, pushout.desc v (c.ι.app j ≫ f) (by simp [← H.w]),
+      .of_left ?_ ?_ (IsPushout.of_hasPushout f' q).flip, P.pushout_inr _ _ hf'⟩
+    · convert H using 1; exact pushout.inl_desc _ _ _
+    · exact (pushout.inr_desc _ _ _).symm
 
 lemma PreIndSpreads.of_univLE [UnivLE.{w, w'}] [PreIndSpreads.{w'} P] :
     PreIndSpreads.{w} P where
-  exists_isPushout {J} _ _ D c hc T f hf :=
-    sorry
+  exists_isPushout {J} _ _ D c hc T f hf := by
+    haveI : EssentiallySmall.{w'} J :=
+      @essentiallySmall_of_small_of_locallySmall J _ (UnivLE.small J) inferInstance
+    let e := equivSmallModel.{w'} J
+    let D' := e.inverse ⋙ D
+    let c' : Cocone D' := c.whisker e.inverse
+    have hc' : IsColimit c' :=
+      (Functor.Final.isColimitWhiskerEquiv e.inverse c).symm hc
+    haveI : IsFiltered (SmallModel.{w'} J) := IsFiltered.of_equivalence e
+    obtain ⟨j', T', f', g, hpb, hf'⟩ := P.exists_isPushout_of_isFiltered hc' f hf
+    exact ⟨e.inverse.obj j', T', f', g, hpb, hf'⟩
 
 /--
 - Given a `colim Dᵢ`-morphism `f : A = colim Dᵢ ⨿_[Dᵢ] A' ⟶ colim Dᵢ ⨿_[Dⱼ] B' = B` where `A' ⟶ Dᵢ` and
@@ -76,8 +84,8 @@ class IndSpreads (P : MorphismProperty C) : Prop extends PreIndSpreads.{w} P whe
       (PB₁ : D.obj j ⟶ PB) (PB₂ : B' ⟶ PB) (hPA : IsPushout (D.map tA) gA PA₁ PA₂)
       (hPB : IsPushout (D.map tB) gB PB₁ PB₂) (f' : PA ⟶ PB),
       PA₁ ≫ f' = PB₁ ∧
-      hPA.desc (c.ι.app j ≫ pA) qA (by simp [hA.w]) ≫ f =
-        f' ≫ hPB.desc (c.ι.app j ≫ pB) qB (by simp [hB.w])
+      hPA.desc (c.ι.app j ≫ pA) qA (by rw [Cocone.w_assoc]; exact hA.w) ≫ f =
+        f' ≫ hPB.desc (c.ι.app j ≫ pB) qB (by rw [Cocone.w_assoc]; exact hB.w)
 
 alias exists_isPushout_of_isFiltered_of_hom := IndSpreads.exists_isPushout_of_hom
 
@@ -155,14 +163,23 @@ class ProSpreads (P : MorphismProperty C) : Prop extends PreProSpreads.{w} P whe
       (hPA : IsPullback PA₁ PA₂ (D.map tA) gA) (hPB : IsPullback PB₁ PB₂ (D.map tB) gB)
       (f' : PA ⟶ PB),
       f' ≫ PB₁ = PA₁ ∧
-      f ≫ hPB.lift (pB ≫ c.π.app j) qB (by simp [hB.w]) =
-        hPA.lift (pA ≫ c.π.app j) qA (by simp [hA.w]) ≫ f'
+      f ≫ hPB.lift (pB ≫ c.π.app j) qB
+        (by exact (Category.assoc ..).trans (congrArg (pB ≫ ·) (c.w tB) |>.trans hB.w)) =
+        hPA.lift (pA ≫ c.π.app j) qA
+          (by exact (Category.assoc ..).trans (congrArg (pA ≫ ·) (c.w tA) |>.trans hA.w)) ≫ f'
 
 alias exists_isPullback_of_isCofiltered_of_hom := ProSpreads.exists_isPullback_of_hom
 
 -- TODO: this is in mathlib with the correct assumptions, fix this one
-instance [P.IsStableUnderComposition] [PreProSpreads.{w} P] : IsStableUnderComposition (pro.{w} P) :=
-    sorry
+instance [P.IsStableUnderComposition] [PreProSpreads.{w} P] : IsStableUnderComposition (pro.{w} P) := by
+  have : PreIndSpreads.{w} P.op := by
+    constructor
+    intro J _ _ D c hc T f hf
+    obtain ⟨j, T', f', g, h, hf'⟩ := P.exists_isPullback_of_isCofiltered
+      (coneLeftOpOfCocone c) (isLimitConeLeftOpOfCocone _ hc) f.unop hf
+    exact ⟨j.unop, Opposite.op T', f'.op, g.op, h.op.flip, hf'⟩
+  rw [pro_eq_unop_ind_op]
+  infer_instance
 
 -- TODO: this is in mathlib with the correct assumptions, fix this one
 instance [P.IsMultiplicative] [PreProSpreads.{w} P] : (pro.{w} P).IsMultiplicative where

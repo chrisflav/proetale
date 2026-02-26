@@ -13,7 +13,6 @@ import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
-import Upstreamer
 
 /-!
 # Quasi-compact covers
@@ -55,7 +54,11 @@ lemma iff_sigma {𝒰 : Cover.{u} (Scheme.precoverage P) S} [IsZariskiLocalAtSou
     have heq : (fun a ↦ (𝒰.f a.1).base a.2) ∘ (sigmaMk 𝒰.X).symm = (𝒰.sigma.f ⟨⟩).base := by
       apply (Equiv.comp_symm_eq _ _ _).mpr
       ext ⟨i, y⟩
-      simp [← Scheme.Hom.comp_apply]
+      show (𝒰.f i).base y = _
+      simp only [sigma_f, Function.comp_apply,
+        show (sigmaMk 𝒰.X).toEquiv ⟨i, y⟩ = (Sigma.ι 𝒰.X i) y from sigmaMk_mk 𝒰.X i y]
+      show (𝒰.f i).base y = (Sigma.ι 𝒰.X i ≫ Sigma.desc 𝒰.f).base y
+      rw [Sigma.ι_desc]
     refine ⟨⟨(sigmaMk 𝒰.X).symm '' V.1, by simpa using V.2⟩, by simpa, ?_⟩
     simp only [sigma_I₀, PUnit.default_eq_unit, sigma_X, carrier_eq_coe, ← Set.image_comp]
     convert hU
@@ -85,10 +88,15 @@ lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover (precover
       { s₀ i := f i.down
         h₀ i := (hV i.down).fromSpec }
   · infer_instance
-  · infer_instance
+  · exact fun j => inferInstanceAs (IsOpenImmersion (hV j.down).fromSpec)
 
 instance {S : Scheme.{u}} [IsAffine S] (𝒰 : S.AffineCover P) [Finite 𝒰.I₀] :
     QuasiCompactCover 𝒰.cover.toPreZeroHypercover :=
-  sorry
+  { isCompactOpenCovered_of_isAffineOpen := fun {U} hU => by
+      haveI : Finite 𝒰.cover.I₀ := show Finite 𝒰.I₀ from inferInstance
+      haveI (i : 𝒰.I₀) : IsAffine (𝒰.cover.X i) := isAffine_Spec _
+      haveI (i : 𝒰.I₀) : QuasiCompact (𝒰.cover.f i) := inferInstance
+      exact .of_finite_of_isSpectralMap (fun i => (𝒰.cover.f i).isSpectralMap)
+        (fun x _ => ⟨𝒰.idx x, 𝒰.covers x⟩) U.2 hU.isCompact }
 
 end AlgebraicGeometry.Scheme.Cover.QuasiCompact
