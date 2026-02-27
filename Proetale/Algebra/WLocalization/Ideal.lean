@@ -293,7 +293,6 @@ private lemma ideal_one_eq_map (J : Ideal (WLocalization A)) :
     -- toLocQuotient(algebraMap b) = algebraMap_to_(B/J)_1 (b) = 0 since b ∈ J
     rw [AlgHom.commutes, IsScalarTower.algebraMap_apply B (B ⧸ J)]
     rw [Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem.mpr hb, map_zero]
-    rfl
 
 variable (I) in
 @[stacks 097A "(2)(a)"]

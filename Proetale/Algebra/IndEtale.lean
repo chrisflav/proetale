@@ -389,7 +389,6 @@ private lemma isSeparable_image_of_indEtale [Algebra.IndEtale R S]
   have hΦ : Φ (1 ⊗ₜ[R] a) = algebraMap S (Ideal.ResidueField q) ((P.ι.app i).hom a) := by
     show (Algebra.ofId (Ideal.ResidueField p) (Ideal.ResidueField q)) 1 * φ a = _
     simp [Algebra.ofId_apply, φ, AlgHom.comp_apply, IsScalarTower.toAlgHom_apply]
-    rfl
   rw [← hΦ]
   -- κ(p) ⊗[R] Aᵢ is étale over κ(p) (base change of étale along R → κ(p) is étale)
   -- All instances (rightAlgebra, scalar towers, IsPushout) are built inside the by block
