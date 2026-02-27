@@ -106,9 +106,16 @@ lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower
         -- By (hst₂ j).2: s₂.app j ≫ t₂.app j = ofHom (algebraMap S T)
         -- So LHS = ofHom (algebraMap R S) ≫ ofHom (algebraMap S T) = ofHom (algebraMap R T)
         -- by IsScalarTower.
-        simp only [NatTrans.comp_app, Functor.const_obj_obj, Functor.const_map_app,
-          Category.assoc, (hst₂ j).2]
-        exact RingHom.ext (fun x => IsScalarTower.algebraMap_apply R S T x)⟩⟩
+        show ((Functor.const J).map (CommRingCat.ofHom (algebraMap R S)) ≫ s₂).app j ≫ t₂.app j =
+          CommRingCat.ofHom (algebraMap R T)
+        simp only [NatTrans.comp_app, Functor.const_obj_obj, Functor.const_map_app, Category.assoc]
+        -- after simp, the goal should be in a simplified form
+        -- try to just use (hst₂ j).2 at the element level
+        ext x
+        show (t₂.app j).hom ((s₂.app j).hom ((algebraMap R S) x)) = (algebraMap R T) x
+        have h := RingHom.congr_fun (CommRingCat.hom_ext_iff.mp (hst₂ j).2) ((algebraMap R S) x)
+        simp only [CommRingCat.comp_apply] at h
+        rw [h]; exact (IsScalarTower.algebraMap_apply R S T x).symm⟩⟩
   -- By ind_ind: ind(ind(etale)) = ind(etale).
   have key : MorphismProperty.ind.{u} (MorphismProperty.ind.{u} CommRingCat.etale) =
       MorphismProperty.ind.{u} CommRingCat.etale :=
