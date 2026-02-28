@@ -105,15 +105,7 @@ theorem ConnectedComponents.isHomeomorph_connectedComponentsLift_prod :
     (f := fun x : S × T ↦ (mk x.1, mk x.2)) (by continuity)) where
   continuous := Continuous.connectedComponentsLift_continuous (by continuity)
   isOpenMap := by
-    -- BLOCKED: This statement appears to be false without additional hypotheses.
-    -- Counterexample: S = T = [0,1] ∪ {2}.
-    -- π₀(S) has two points: C_S = [0,1] and p_S = {2}, with {p_S} open but {C_S} not open.
-    -- π₀(S × T) has four components: C₁₁ = [0,1]², C₁₂ = [0,1]×{2}, C₂₁ = {2}×[0,1], C₂₂ = {(2,2)}.
-    -- The set {C₁₁, C₁₂, C₂₂} is open in π₀(S × T) (preimage [0,1]×T ∪ {(2,2)} is open),
-    -- but its image {(C_S,C_T), (C_S,p_T), (p_S,p_T)} under g is NOT open in π₀(S) × π₀(T)
-    -- (the point (C_S,C_T) has no product-open neighborhood inside the set, since the only
-    -- open set in π₀(S) containing C_S is the whole space, forcing (p_S,C_T) into the neighborhood).
-    -- The statement would be true for locally connected spaces (where π₀ is discrete).
+    -- ⊇ direction: uses that π₀(X × Y) ≅ π₀(X) × π₀(Y) as topological spaces (blueprint: thm:pi0-prod)
     sorry
   bijective := by
     constructor
