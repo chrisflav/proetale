@@ -37,7 +37,7 @@ attribute [instance] WLocalSpace.isClosed_closedPoints
 @[mk_iff]
 structure IsWLocalMap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) : Prop
     extends IsSpectralMap f where
-  preimage_closedPoints : f ⁻¹' (closedPoints Y) ⊆ closedPoints X
+  image_closedPoints : closedPoints X ⊆ f ⁻¹' (closedPoints Y)
 
 open Topology
 
@@ -47,9 +47,9 @@ lemma IsWLocalMap.comp {Z : Type*} [TopologicalSpace Z] {f : X → Y} {g : Y →
     (hf : IsWLocalMap f) (hg : IsWLocalMap g) :
     IsWLocalMap (g ∘ f) where
   toIsSpectralMap := hg.toIsSpectralMap.comp hf.toIsSpectralMap
-  preimage_closedPoints := by
+  image_closedPoints := by
     intro x hx
-    exact hf.preimage_closedPoints (hg.preimage_closedPoints hx)
+    exact hg.image_closedPoints (hf.image_closedPoints hx)
 
 lemma Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range {f : X → Y}
     (hf : IsEmbedding f) (h : StableUnderSpecialization (Set.range f))

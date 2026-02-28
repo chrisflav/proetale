@@ -255,10 +255,7 @@ lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (
       -- and by π₀ bijection no other component covers the gap.
       -- To show comap f n₀ = pm, we note n₀ is maximal and the stalk map
       -- is bijective. This should yield comap f n₀ maximal via the w-local map
-      -- IMAGE condition (closed points map to closed points), which is the
-      -- Stacks project definition. The current Lean definition uses the
-      -- PREIMAGE condition instead; the equivalence (isWLocal_iff_isMaximal_of_isMaximal)
-      -- has sorry. This sorry blocks the proof.
+      -- condition (closed points map to closed points).
       sorry
     -- Step 3: Apply going-down surjectivity.
     exact Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage

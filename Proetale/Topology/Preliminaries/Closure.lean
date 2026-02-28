@@ -16,7 +16,7 @@ import Mathlib.Order.Filter.Finite
 
 open CategoryTheory Limits Filter Topology
 
-theorem TopCat.closure_eq_iInter_preimage_closure_image {I : Type*} [Category I] [IsFiltered I]
+theorem TopCat.closure_eq_iInter_preimage_closure_image {I : Type*} [Category I] [IsCofiltered I]
     {F : Functor I TopCat} {C : Cone F} (hC : IsLimit C) (s : Set C.pt) :
     closure s = ⋂ (i : I), (C.π.app i)⁻¹' (closure ((C.π.app i)'' s)) := by
   apply Set.Subset.antisymm
@@ -28,12 +28,7 @@ theorem TopCat.closure_eq_iInter_preimage_closure_image {I : Type*} [Category I]
       exact subset_closure ⟨x, hx, rfl⟩
     · exact isClosed_iInter fun i =>
         (isClosed_closure.preimage (C.π.app i).hom.continuous)
-  · -- ⊇ direction: uses the initial topology characterization and IsFiltered
-    -- NOTE: This statement likely requires [IsCofiltered I] instead of [IsFiltered I].
-    -- With IsFiltered, the forward maps F.map(i→m) : F.obj i → F.obj m go the wrong direction
-    -- for pulling back neighborhoods. A concrete counterexample:
-    -- I = {0,1,m} with 0→m, 1→m; F(0)={a,b}, F(1)={c,d}, F(m)={p} (all discrete);
-    -- s = {(a,c),(b,d)}; then closure(s) = s but the RHS = {a,b}×{c,d} ⊋ s.
+  · -- ⊇ direction: uses the initial topology characterization and IsCofiltered
     sorry
 
 

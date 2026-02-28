@@ -288,6 +288,6 @@ theorem ConnectedComponents.isWLocalMap_of_isPullback {f : C(Y, X)} {g : C(Y, T)
         rw [heq]; exact hcomp_proper
       intro s hs hsc
       exact hf_proper.isSpectralMap.isCompact_preimage_of_isOpen hs hsc
-  preimage_closedPoints := by
+  image_closedPoints := by
     intro y hy
-    rwa [preimage_closedPoints_eq_closedPoints_of_isPullback pb] at hy
+    rwa [preimage_closedPoints_eq_closedPoints_of_isPullback pb]

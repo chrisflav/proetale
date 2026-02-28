@@ -36,7 +36,8 @@ variable {S ι : Type*} {X : ι → Type v} {f : ∀ i, X i → S} [∀ i, Topol
 lemma comp {σ : ι → Type*} {Y : ∀ (i : ι) (k : σ i), Type*}
     (g : ∀ (i : ι) (k : σ i), Y i k → X i)
     [∀ i k, TopologicalSpace (Y i k)]
-    {U : Set S} (hU : IsCompactOpenCovered f U) :
+    {U : Set S} (hU : IsCompactOpenCovered f U)
+    (hg : ∀ i k, Function.Surjective (g i k)) :
     IsCompactOpenCovered (fun (p : Σ (i : ι), σ i) ↦ f p.1 ∘ g p.1 p.2) U :=
   sorry
 
