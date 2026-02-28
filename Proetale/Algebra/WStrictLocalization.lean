@@ -39,18 +39,22 @@ The key mathematical results needed for `WStrictLocalization`:
    Combined with (1), (2), and the fact that `m.comap` is maximal (which follows from the
    closed point structure of the WLocalization), this gives strictly Henselian stalks.
 
-The full proof requires `lemma:retractions-strictly-henselian`, which is a deep result depending on:
-etale-ind-spreads, prime avoidance, and construction of faithfully flat etale covers.
+The full proof uses `lemma:retractions-strictly-henselian` (etale-ind-spreads, prime avoidance,
+faithfully flat etale covers); see the docstring on the private lemma below for the outline.
 -/
 
 variable {A : Type u} [CommRing A]
 
 /-- **lemma:retractions-strictly-henselian** (Blueprint): If every faithfully flat etale ring map
-`A -> B` has a retraction, then every local ring of `A` at a maximal ideal is strictly Henselian.
+`A -> B` has a retraction, then every local ring `A_m` at a maximal ideal is strictly Henselian.
 
-This is the deep result that requires: etale-ind-spreads (descending etale algebras from filtered
-colimits of localizations), prime avoidance to isolate primes lying over the maximal ideal,
-construction of faithfully flat etale covers, and the retraction hypothesis. -/
+Blueprint proof outline (local-structure.tex, lines 1701–1740):
+1. Factor `A_m → B → κ(m)^sep` where `A_m → B` is etale.
+2. Descend `B` to an etale `A_f`-algebra `B'` via etale-ind-spreads (`A_m = colim A_f`).
+3. Use prime avoidance to find `g` isolating a unique prime `q` of `B'_g` lying over `m`.
+4. Construct the faithfully flat etale cover `A → B'_g × ∏ A_{aᵢ}`.
+5. Apply the retraction hypothesis to obtain `σ`.
+6. Localize `σ` at `q` to get `B'_q → A_m`, then extend to `B → A_m`. -/
 private lemma isStrictlyHenselianLocalRing_of_exists_retraction
     (A : Type u) [CommRing A]
     (hret : ∀ (B : Type u) [CommRing B] [Algebra A B] [Algebra.Etale A B]
