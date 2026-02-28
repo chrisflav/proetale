@@ -35,3 +35,4 @@ theorem Homeomorph.quasiSeparatedSpace [QuasiSeparatedSpace α] (f : α ≃ₜ �
 instance QuasiSeparatedSpace.prod [QuasiSeparatedSpace α] [QuasiSeparatedSpace β] :
     QuasiSeparatedSpace (α × β) := by
   sorry
+  -- Blueprint: thm:spectral-product. Intersection of compact open rectangles is compact.

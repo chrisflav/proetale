@@ -45,4 +45,5 @@ instance SpectralSpace.prod [SpectralSpace X] [SpectralSpace Y] : SpectralSpace 
 theorem
  generalizationHull.eq_sInter_of_isCompact [SpectralSpace X] {s : Set X} (hs : IsCompact s) :
     ∃ S ⊆ {U : Set X | IsOpen U ∧ IsCompact U}, (generalizationHull s) = ⋂₀ S :=
+  -- Blueprint: lemma:spectral-generalization-intersection-open (Stacks 0A31). Generalization of compact set = ⋂ of compact opens.
   sorry

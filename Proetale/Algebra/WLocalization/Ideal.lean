@@ -375,6 +375,7 @@ theorem quotientMap_algebraMap_bijective :
     rw [← this]
     exact Ideal.mem_comap.mpr ha_J
   · -- Surjectivity
+    -- Blueprint: lemma:closed-closed-points-tilde-w-local (item 2). A/I → A_{w,I}/IA_{w,I} is bijective.
     sorry
 
 variable (I) in

@@ -115,6 +115,7 @@ property. -/
 private lemma of_indZariski_isLocalIso (A : Type u) [CommRing A] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [Algebra.IndZariski R S] [Algebra.IsLocalIso S A] :
     Algebra.IndZariski R A := by
+  -- Blueprint: thm:ind-Zariski-composition. Internal helper: ind-Zariski ∘ IsLocalIso ⊆ ind-Zariski.
   sorry
 
 instance pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]

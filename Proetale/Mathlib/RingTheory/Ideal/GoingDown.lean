@@ -21,4 +21,5 @@ theorem Algebra.HasGoingDown.localization_bijective_of_subsingleton {R S : Type*
     [q.LiesOver p]
     (h : ∀ (p : Ideal R) [p.IsPrime], Subsingleton {q : Ideal S // q.IsPrime ∧ q.LiesOver p}) :
     IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) (Localization.AtPrime q) :=
+  -- Blueprint: thm:localization-isom-of-going-down (Stacks 00EA). B_{pB} → B_q is iso when going-down + unique primes above.
   sorry

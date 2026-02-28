@@ -39,6 +39,7 @@ def RingHom.IsWLocal {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+
 lemma RingHom.isWLocal_iff_isMaximal_of_isMaximal (f : R →+* S) :
     IsWLocal f ↔ ∀ (m : Ideal S) [m.IsMaximal], (m.comap f).IsMaximal := by
   rw [IsWLocal, isWLocalMap_iff]
+  -- Blueprint: def:w-local-ring-map. w-local iff maximal ideals pull back to maximal ideals.
   refine ⟨fun ⟨_, h⟩ m hm ↦ ?_, ?_⟩
   · sorry
   · sorry
@@ -256,6 +257,7 @@ lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (
       -- To show comap f n₀ = pm, we note n₀ is maximal and the stalk map
       -- is bijective. This should yield comap f n₀ maximal via the w-local map
       -- condition (closed points map to closed points).
+      -- Blueprint: thm:isom-of-identifies-local-rings-bijective (Stacks 097E).
       sorry
     -- Step 3: Apply going-down surjectivity.
     exact Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage

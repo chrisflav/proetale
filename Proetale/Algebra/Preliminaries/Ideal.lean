@@ -52,4 +52,5 @@ theorem specComap_preimage_zeroLocus_subset {ι : Type*} [Category ι]
     {Iι : (i : ι) → Ideal (F.obj i)} (h : Iι j ≤ (Iι i).map (F.map f).hom) :
     (PrimeSpectrum.comap (C.ι.app i).hom) ⁻¹' (zeroLocus (Iι i)) ⊆
       (PrimeSpectrum.comap (C.ι.app j).hom) ⁻¹' (zeroLocus (Iι j)):=
+  -- Blueprint: thm:colim-ideal-lim-zero-locus. Monotonicity of preimage under transition maps.
   sorry

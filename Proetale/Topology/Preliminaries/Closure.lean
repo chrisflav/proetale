@@ -29,6 +29,7 @@ theorem TopCat.closure_eq_iInter_preimage_closure_image {I : Type*} [Category I]
     · exact isClosed_iInter fun i =>
         (isClosed_closure.preimage (C.π.app i).hom.continuous)
   · -- ⊇ direction: uses the initial topology characterization and IsCofiltered
+    -- Blueprint: lemma:closure-limit-intersection. Use initial topology: x ∈ closure s iff π_i(x) ∈ closure(π_i(s)) for all i.
     sorry
 
 

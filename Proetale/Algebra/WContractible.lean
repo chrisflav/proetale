@@ -451,6 +451,7 @@ private lemma exists_retraction_of_bijectiveOnStalks [IsWLocalRing R]
   -- 5. Compose to get retraction
   -- All steps except (4) use formalized infrastructure.
   -- Step (4) depends on the sorry'd RingHom.IsWLocal.bijective_of_bijective.
+  -- Blueprint: thm:ff-identifies-local-rings-plus-c-has-retraction-if. Blocked on RingHom.IsWLocal.bijective_of_bijective.
   sorry
 
 theorem IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints [IsWContractibleRing R]
@@ -532,6 +533,7 @@ that is stated as an admitted helper lemma below.
 private lemma exists_wContractibleCover (A : Type u) [CommRing A] [IsWStrictlyLocalRing A] :
     ∃ (D : Type u) (_ : CommRing D) (_ : Algebra A D),
       Algebra.IndZariski A D ∧ Module.FaithfullyFlat A D ∧ IsWContractibleRing D := by
+  -- Blueprint: thm:ind-etale-w-contractible-cover-of-w-strictly-local (Stacks 0983).
   sorry
 
 /-- Any w-strictly-local ring has an ind-Zariski, faithfully flat cover that is w-contractible. -/

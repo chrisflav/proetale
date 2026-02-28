@@ -317,6 +317,7 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
 lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) :
     RingHom.BijectiveOnStalks (f.prod g) :=
+  -- Blueprint: thm:finite-product-identifies-local-rings. A→∏Aᵢ identifies local rings if each A→Aᵢ does.
   sorry
 
 end RingHom.BijectiveOnStalks

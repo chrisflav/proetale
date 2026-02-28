@@ -184,6 +184,7 @@ instance preservesColimitsOfShape_tensorLeft
       simpa using (descFun_inr s).symm
 
 instance preservesColimitsOfSize_forget_commRingCat :
+  -- Blueprint: lemma:commalgcat-colimits. forget₂ CommAlgCat CommRingCat preserves colimits.
     PreservesColimits (forget₂ (CommAlgCat R) CommRingCat) :=
   sorry
 
@@ -395,6 +396,7 @@ instance preservesFilteredColimits_forget (R : Type u) [CommRing R] :
 -- which is provided by the preservesFilteredColimits_forget instance above.
 instance preservesFilteredColimitsOfSize_forget (R : Type u) [CommRing R] :
     PreservesFilteredColimitsOfSize (forget (CommAlgCat.{u} R)) :=
+  -- Blueprint: lemma:commalgcat-colimits. forget CommAlgCat preserves filtered colimits.
   sorry
 
 instance preservesLimitsOfSize_forget (R : Type u) [CommRing R] :
@@ -436,4 +438,5 @@ end CommAlgCat
 
 instance AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat (R : Type u) [CommRing R] :
     PreservesFilteredColimitsOfSize (forget₂ (AlgCat R) (ModuleCat R)) :=
+  -- Blueprint: lemma:commalgcat-colimits. forget₂ AlgCat ModuleCat preserves filtered colimits.
   sorry

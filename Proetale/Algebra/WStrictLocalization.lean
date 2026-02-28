@@ -104,7 +104,7 @@ lemma isStrictlyHenselianLocalRing_WLocalization_IndEtaleContraction
   -- If m.comap algebraMap is maximal in IndEtaleContraction A, then by
   -- isStrictlyHenselianLocalRing_IndEtaleContraction, the source is strictly Henselian.
   -- Transfer through the ring isomorphism.
-  -- Both the maximality of m.comap and the transfer require significant infrastructure.
+  -- Blueprint: cor:strictly-henselian-etale-contraction. Uses ind-Zariski stalk bijection + maximality transfer.
   sorry
 
 end StrictlyHenselianWLocalizationOfIndEtaleContraction
