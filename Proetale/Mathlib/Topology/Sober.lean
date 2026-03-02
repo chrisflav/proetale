@@ -49,7 +49,51 @@ theorem Homeomorph.quasiSober {X Y : Type*} [TopologicalSpace X] [TopologicalSpa
 
   exact ⟨f hTirr.genericPoint, this⟩
 
+/-- The product of two quasi-sober spaces is quasi-sober. The proof projects an irreducible closed
+set `S ⊆ X × Y` onto each factor, obtains generic points `x₀`, `y₀` of the projected closures,
+shows `(x₀, y₀) ∈ S` by an irreducibility argument, and verifies it is the generic point of `S`. -/
 -- put this at end of the file
 instance QuasiSober.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [QuasiSober X] [QuasiSober Y] : QuasiSober (X × Y) :=
-  sorry
+    [QuasiSober X] [QuasiSober Y] : QuasiSober (X × Y) := by
+  refine ⟨fun {S} hS hSclosed => ?_⟩
+  have hX : IsIrreducible (Prod.fst '' S : Set X) :=
+    hS.image Prod.fst continuous_fst.continuousOn
+  have hY : IsIrreducible (Prod.snd '' S : Set Y) :=
+    hS.image Prod.snd continuous_snd.continuousOn
+  let x₀ := hX.genericPoint
+  let y₀ := hY.genericPoint
+  have hx₀ : IsGenericPoint x₀ (closure (Prod.fst '' S)) :=
+    hX.isGenericPoint_genericPoint_closure
+  have hy₀ : IsGenericPoint y₀ (closure (Prod.snd '' S)) :=
+    hY.isGenericPoint_genericPoint_closure
+  have hmem : (x₀, y₀) ∈ S := by
+    by_contra hmem
+    have hSc_open : IsOpen Sᶜ := hSclosed.isOpen_compl
+    rw [isOpen_prod_iff] at hSc_open
+    obtain ⟨U, V, hU, hV, hx₀U, hy₀V, hUV⟩ := hSc_open x₀ y₀ hmem
+    have hcover : S ⊆ (Uᶜ ×ˢ Set.univ) ∪ (Set.univ ×ˢ Vᶜ) := by
+      intro ⟨a, b⟩ hab
+      simp only [Set.mem_union, Set.mem_prod, Set.mem_compl_iff, Set.mem_univ, and_true, true_and]
+      by_contra h
+      push_neg at h
+      exact hUV (Set.mk_mem_prod h.1 h.2) hab
+    rcases isPreirreducible_iff_isClosed_union_isClosed.mp hS.isPreirreducible
+      _ _ (hU.isClosed_compl.prod isClosed_univ) (isClosed_univ.prod hV.isClosed_compl)
+      hcover with h | h
+    · have hfst : Prod.fst '' S ⊆ Uᶜ := by
+        rintro a ⟨⟨a', b'⟩, hab', rfl⟩; exact (h hab').1
+      exact (closure_minimal hfst hU.isClosed_compl)
+        (hx₀.def ▸ subset_closure (Set.mem_singleton x₀)) hx₀U
+    · have hsnd : Prod.snd '' S ⊆ Vᶜ := by
+        rintro b ⟨⟨a', b'⟩, hab', rfl⟩; exact (h hab').2
+      exact (closure_minimal hsnd hV.isClosed_compl)
+        (hy₀.def ▸ subset_closure (Set.mem_singleton y₀)) hy₀V
+  refine ⟨(x₀, y₀), ?_⟩
+  apply Set.Subset.antisymm
+  · exact closure_minimal (Set.singleton_subset_iff.mpr hmem) hSclosed
+  · have hcl : closure ({(x₀, y₀)} : Set (X × Y)) =
+        closure ({x₀} : Set X) ×ˢ closure ({y₀} : Set Y) := by
+      rw [← Set.singleton_prod_singleton, closure_prod_eq]
+    rw [hcl, hx₀.def, hy₀.def]
+    intro ⟨a, b⟩ hab
+    exact ⟨subset_closure ⟨(a, b), hab, rfl⟩, subset_closure ⟨(a, b), hab, rfl⟩⟩
