@@ -11,7 +11,7 @@ theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [Topologi
   intro U hU
   simp only [Set.mem_image, Set.mem_setOf_eq] at hU
   obtain ⟨V, ⟨_, hVc⟩, rfl⟩ := hU
-  rw [show f.symm ⁻¹' V = f '' V from (f.toEquiv.image_eq_preimage_symm V).symm]
+  rw [f.preimage_symm]
   exact hVc.image f.continuous
 
 /-- The product of two prespectral spaces is prespectral. -/
