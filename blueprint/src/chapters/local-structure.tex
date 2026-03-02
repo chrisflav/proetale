@@ -395,8 +395,8 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/00EA}{Tag 00EA}, (1) + (2)(a)]{stacks-project}}]
   \label{thm:localization-isom-of-going-down}
-  \lean{Algebra.HasGoingDown.factor_bijective_of_subsingleton}
-  \leanok
+  \lean{Algebra.HasGoingDown.localization_bijective_of_subsingleton}
+  % \leanok % current statement by claude code is not correct % by jjd
   Let $A \to B$ be a ring map which has going down. Let $\p \subset A$ be a prime ideal and let 
   $\q \subset B$ be a prime ideal lying over $\p$. Assume that and there is at most one prime
   of $B$ above every prime of $A$. Then the natural map $B_{\p B} \to B_{\q}$ is an isomorphism.
@@ -909,7 +909,7 @@ The following example shows that our definition agrees with the one in
   Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then the generalization $E^g$ is an intersection of quasi-compact open subsets.
   \label{lemma:spectral-generalization-intersection-open}
   \uses{def:generalization}
-  \lean{generalizationHull.eq_sUnion_of_isCompact}
+  \lean{generalizationHull.eq_sInter_of_isCompact}
   \leanok
 \end{lemma}
 
