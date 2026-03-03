@@ -49,9 +49,7 @@ theorem Homeomorph.quasiSober {X Y : Type*} [TopologicalSpace X] [TopologicalSpa
 
   exact ⟨f hTirr.genericPoint, this⟩
 
-/-- The product of two quasi-sober spaces is quasi-sober. The proof projects an irreducible closed
-set `S ⊆ X × Y` onto each factor, obtains generic points `x₀`, `y₀` of the projected closures,
-shows `(x₀, y₀) ∈ S` by an irreducibility argument, and verifies it is the generic point of `S`. -/
+/-- The product of two quasi-sober spaces is quasi-sober. -/
 -- put this at end of the file
 instance QuasiSober.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [QuasiSober X] [QuasiSober Y] : QuasiSober (X × Y) := by
