@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib
+import Proetale.Mathlib.CategoryTheory.NatIso
 
 /-!
 # Local properties of sheafs
@@ -17,14 +18,6 @@ variable {C : Type*} [Category C] (K : GrothendieckTopology C)
 variable {A : Type*} [Category A] {FA : A → A → Type*} {CA : A → Type*}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
 variable {J : Type*} [Category J]
-
-/-- Naturality of pointwise inverses: if components of a natural transformation are isos,
-the inverses satisfy a naturality condition. -/
-lemma NatTrans.naturality_inv {D : Type*} [Category D] {F G : C ⥤ D} (α : F ⟶ G)
-    {X Y : C} (f : X ⟶ Y) [IsIso (α.app X)] [IsIso (α.app Y)] :
-    inv (α.app X) ≫ F.map f = G.map f ≫ inv (α.app Y) := by
-  rw [IsIso.inv_comp_eq, ← Category.assoc, IsIso.eq_comp_inv]
-  exact α.naturality f
 
 namespace Sheaf
 
