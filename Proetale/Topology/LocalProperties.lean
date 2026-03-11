@@ -36,14 +36,16 @@ lemma isIso_iff_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G
   -- f.val.app (op Z) is iso for any Z with a map to some X i
   have hiso : ∀ (Z : C) (i : ι) (_ : Z ⟶ X i), IsIso (f.val.app (op Z)) := by
     intro Z i g
-    have h1 : IsIso ((sheafToPresheaf (K.over (X i)) A).map
-        ((K.overPullback A (X i)).map f)) := inferInstance
-    rw [sheafToPresheaf_map, NatTrans.isIso_iff_isIso_app] at h1
-    exact h1 (op (Over.mk g))
+    refine (NatTrans.isIso_iff_isIso_app ((K.overPullback A (X i)).map f).val).mp ?_
+      (op (Over.mk g))
+    rw [← sheafToPresheaf_map, isIso_iff_of_reflects_iso _ (sheafToPresheaf _ _)]
+    exact h i
   intro W
   set S : K.Cover W.unop := hX.cover W.unop
   have harrow : ∀ (I : S.Arrow), IsIso (f.val.app (op I.Y)) := by
-    intro I; obtain ⟨i, ⟨g⟩⟩ := I.hf; exact hiso I.Y i g
+    intro I
+    obtain ⟨i, ⟨g⟩⟩ := I.hf
+    exact hiso I.Y i g
   -- Naturality of inverses: inv(f_Y) ≫ F.map g = G.map g ≫ inv(f_Z)
   have nat_inv : ∀ {Y Z : C} (g : Z ⟶ Y) [IsIso (f.val.app (op Y))]
       [IsIso (f.val.app (op Z))],
@@ -57,17 +59,17 @@ lemma isIso_iff_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G
     F.2.amalgamate S (fun I => G.val.map I.f.op ≫ inv (f.val.app (op I.Y))) (by
       intro I₁ I₂ r
       have hZ : IsIso (f.val.app (op r.Z)) := by
-        obtain ⟨i, ⟨g⟩⟩ := I₁.hf; exact hiso r.Z i (r.g₁ ≫ g)
+        obtain ⟨i, ⟨g⟩⟩ := I₁.hf
+        exact hiso r.Z i (r.g₁ ≫ g)
       simp only [Category.assoc, nat_inv]
       rw [← Category.assoc, ← Category.assoc, ← G.val.map_comp, ← G.val.map_comp,
         ← op_comp, ← op_comp, r.w])
-  change IsIso (f.val.app (op W.unop))
   exact ⟨⟨invMap, by
-    apply F.2.hom_ext S; intro I
+    refine F.2.hom_ext S _ _ fun I => ?_
     simp only [Category.assoc, Category.id_comp]
     rw [Presheaf.IsSheaf.amalgamate_map, ← Category.assoc, ← f.val.naturality,
       Category.assoc, IsIso.hom_inv_id, Category.comp_id], by
-    apply G.2.hom_ext S; intro I
+    refine G.2.hom_ext S _ _ fun I => ?_
     simp only [Category.assoc, Category.id_comp]
     rw [← f.val.naturality, Presheaf.IsSheaf.amalgamate_map_assoc,
       Category.assoc, IsIso.inv_hom_id, Category.comp_id]⟩⟩
