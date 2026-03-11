@@ -18,6 +18,14 @@ variable {A : Type*} [Category A] {FA : A → A → Type*} {CA : A → Type*}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
 variable {J : Type*} [Category J]
 
+/-- Naturality of pointwise inverses: if components of a natural transformation are isos,
+the inverses satisfy a naturality condition. -/
+lemma NatTrans.naturality_inv {D : Type*} [Category D] {F G : C ⥤ D} (α : F ⟶ G)
+    {X Y : C} (f : X ⟶ Y) [IsIso (α.app X)] [IsIso (α.app Y)] :
+    inv (α.app X) ≫ F.map f = G.map f ≫ inv (α.app Y) := by
+  rw [IsIso.inv_comp_eq, ← Category.assoc, IsIso.eq_comp_inv]
+  exact α.naturality f
+
 namespace Sheaf
 
 --structure IsLocal (P : ObjectProperty (Sheaf K A)) : Prop where
@@ -46,14 +54,6 @@ lemma isIso_iff_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G
     intro I
     obtain ⟨i, ⟨g⟩⟩ := I.hf
     exact hiso I.Y i g
-  -- Naturality of inverses: inv(f_Y) ≫ F.map g = G.map g ≫ inv(f_Z)
-  have nat_inv : ∀ {Y Z : C} (g : Z ⟶ Y) [IsIso (f.val.app (op Y))]
-      [IsIso (f.val.app (op Z))],
-      inv (f.val.app (op Y)) ≫ F.val.map g.op =
-        G.val.map g.op ≫ inv (f.val.app (op Z)) := by
-    intro Y Z g _ _
-    rw [IsIso.inv_comp_eq, ← Category.assoc, IsIso.eq_comp_inv]
-    exact f.val.naturality g.op
   -- Construct inverse via sheaf amalgamation
   let invMap : G.val.obj (op W.unop) ⟶ F.val.obj (op W.unop) :=
     F.2.amalgamate S (fun I => G.val.map I.f.op ≫ inv (f.val.app (op I.Y))) (by
@@ -61,18 +61,18 @@ lemma isIso_iff_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G
       have hZ : IsIso (f.val.app (op r.Z)) := by
         obtain ⟨i, ⟨g⟩⟩ := I₁.hf
         exact hiso r.Z i (r.g₁ ≫ g)
-      simp only [Category.assoc, nat_inv]
+      simp only [Category.assoc, f.val.naturality_inv]
       rw [← Category.assoc, ← Category.assoc, ← G.val.map_comp, ← G.val.map_comp,
         ← op_comp, ← op_comp, r.w])
-  exact ⟨⟨invMap, by
-    refine F.2.hom_ext S _ _ fun I => ?_
+  refine ⟨⟨invMap, ?_, ?_⟩⟩
+  · refine F.2.hom_ext S _ _ fun I => ?_
     simp only [Category.assoc, Category.id_comp]
-    rw [Presheaf.IsSheaf.amalgamate_map, ← Category.assoc, ← f.val.naturality,
-      Category.assoc, IsIso.hom_inv_id, Category.comp_id], by
-    refine G.2.hom_ext S _ _ fun I => ?_
+    rw [Presheaf.IsSheaf.amalgamate_map, ← Category.assoc, ← f.val.naturality]
+    simp
+  · refine G.2.hom_ext S _ _ fun I => ?_
     simp only [Category.assoc, Category.id_comp]
-    rw [← f.val.naturality, Presheaf.IsSheaf.amalgamate_map_assoc,
-      Category.assoc, IsIso.inv_hom_id, Category.comp_id]⟩⟩
+    rw [← f.val.naturality, Presheaf.IsSheaf.amalgamate_map_assoc]
+    simp
 
 lemma foo (F : Sheaf K A) [HasColimitsOfShape J A] [(forget A).ReflectsIsomorphisms]
     (hF : ∀ i : ι, PreservesColimitsOfShape J (F.over (X i)).val) :
