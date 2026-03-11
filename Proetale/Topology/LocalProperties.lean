@@ -36,22 +36,20 @@ variable {ι : Type*} (X : ι → C) (hX : K.CoversTop X)
 
 /-- A sheaf morphism is an isomorphism if it becomes one after pulling back along each
 element of a covering family. -/
-lemma isIso_iff_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G}
+lemma isIso_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G}
     (h : ∀ i, IsIso ((K.overPullback A (X i)).map f)) :
     IsIso f := by
   rw [← isIso_iff_of_reflects_iso f (sheafToPresheaf K A), sheafToPresheaf_map,
     NatTrans.isIso_iff_isIso_app]
   -- f.val.app (op Z) is iso for any Z with a map to some X i
-  have hiso : ∀ (Z : C) (i : ι) (_ : Z ⟶ X i), IsIso (f.val.app (op Z)) := by
-    intro Z i g
+  have hiso (Z : C) (i : ι) (g : Z ⟶ X i) : IsIso (f.val.app (op Z)) := by
     refine (NatTrans.isIso_iff_isIso_app ((K.overPullback A (X i)).map f).val).mp ?_
       (op (Over.mk g))
     rw [← sheafToPresheaf_map, isIso_iff_of_reflects_iso _ (sheafToPresheaf _ _)]
     exact h i
   intro W
   set S : K.Cover W.unop := hX.cover W.unop
-  have harrow : ∀ (I : S.Arrow), IsIso (f.val.app (op I.Y)) := by
-    intro I
+  have harrow (I : S.Arrow) : IsIso (f.val.app (op I.Y)) := by
     obtain ⟨i, ⟨g⟩⟩ := I.hf
     exact hiso I.Y i g
   -- Construct inverse via sheaf amalgamation
@@ -73,6 +71,12 @@ lemma isIso_iff_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G
     simp only [Category.assoc, Category.id_comp]
     rw [← f.val.naturality, Presheaf.IsSheaf.amalgamate_map_assoc]
     simp
+
+/-- A sheaf morphism is an isomorphism iff it becomes one after pulling back along each
+element of a covering family. -/
+lemma isIso_iff_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} (f : F ⟶ G) :
+    IsIso f ↔ ∀ i, IsIso ((K.overPullback A (X i)).map f) :=
+  ⟨fun _ _ => inferInstance, fun h => isIso_of_coversTop K X hX h⟩
 
 lemma foo (F : Sheaf K A) [HasColimitsOfShape J A] [(forget A).ReflectsIsomorphisms]
     (hF : ∀ i : ι, PreservesColimitsOfShape J (F.over (X i)).val) :
