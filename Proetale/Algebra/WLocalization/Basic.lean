@@ -15,7 +15,7 @@ In this file we show that every ring admits a faithfully flat, ind-Zariski w-loc
 
 universe u
 
-open CategoryTheory Limits PrimeSpectrum Classical
+open CategoryTheory Limits PrimeSpectrum
 
 namespace WLocalization
 
@@ -75,11 +75,11 @@ private lemma submonoid_disjoint_locClosedSubset_primes (f : A) (I : Ideal A) (a
   simp only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen] at hqf
   rw [PrimeSpectrum.mem_zeroLocus] at hqI
   intro haq
-  have hker : RingHom.ker (Ideal.Quotient.mk I) ≤ q.asIdeal := by
-    rw [Ideal.mk_ker]; exact hqI
   set q_bar := Ideal.map (Ideal.Quotient.mk I) q.asIdeal
   have hq_prime : q_bar.IsPrime :=
-    Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective hker
+    Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective
+      (by rw [Ideal.mk_ker]
+          exact hqI)
   have hmkf : Ideal.Quotient.mk I f ∉ q_bar := by
     intro hfq
     have hcomap := Ideal.comap_map_of_surjective (Ideal.Quotient.mk I)
@@ -100,13 +100,15 @@ private lemma submonoid_disjoint_locClosedSubset_primes (f : A) (I : Ideal A) (a
     IsLocalization.isPrime_of_isPrime_disjoint _ _ q_bar hq_prime hdisj
   apply hq_loc.ne_top
   exact Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_map_of_mem _ (Ideal.mem_map_of_mem _ haq))
-    (by rw [IsScalarTower.algebraMap_apply A (A ⧸ I)] at ha; exact ha)
+    (by rw [IsScalarTower.algebraMap_apply A (A ⧸ I)] at ha
+        exact ha)
 
 /-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
 the generalization hull of `D(f) ∩ V(I)`. -/
 lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
     Set.range (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) =
     generalizationHull (locClosedSubset f I) := by
+  classical
   rw [PrimeSpectrum.localization_comap_range (Generalization f I) (submonoid f I)]
   ext p
   simp only [Set.mem_setOf_eq]
@@ -120,29 +122,29 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
       rw [Submodule.mem_sup] at hfn
       obtain ⟨a, ha, b, hb, hab⟩ := hfn
       have ha_sub : a ∈ submonoid f I := by
-        rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
-        rw [IsScalarTower.algebraMap_apply A (A ⧸ I)]
+        rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff,
+          IsScalarTower.algebraMap_apply A (A ⧸ I)]
         have h_eq : (algebraMap A (A ⧸ I)) a = (algebraMap A (A ⧸ I)) (f ^ n) := by
-          have hmem : a - f ^ n ∈ I := by
-            have : a - f ^ n = -b := by linear_combination hab
-            rw [this]; exact I.neg_mem hb
-          rwa [← Ideal.Quotient.eq] at hmem
+          rw [Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq]
+          have : a - f ^ n = -b := by linear_combination hab
+          rw [this]
+          exact I.neg_mem hb
         rw [h_eq]
-        have hmem : (Ideal.Quotient.mk I f) ^ n ∈ Submonoid.powers (Ideal.Quotient.mk I f) :=
-          ⟨n, rfl⟩
-        exact IsLocalization.map_units (Localization.Away (Ideal.Quotient.mk I f)) ⟨_, hmem⟩
+        rw [Ideal.Quotient.algebraMap_eq, map_pow]
+        exact IsLocalization.map_units (M := Submonoid.powers (Ideal.Quotient.mk I f))
+          (Localization.Away (Ideal.Quotient.mk I f)) ⟨_, n, rfl⟩
       exact Set.disjoint_left.mp hdisj ha_sub ha
     rw [Ideal.radical_eq_sInf, Ideal.mem_sInf] at hf_not_rad
     push_neg at hf_not_rad
     obtain ⟨q, ⟨hle, hq_prime⟩, hfq⟩ := hf_not_rad
     refine ⟨⟨q, hq_prime⟩, ?_, ?_⟩
     · constructor
-      · simp only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen]; exact hfq
+      · simp only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen]
+        exact hfq
       · rw [PrimeSpectrum.mem_zeroLocus]
         intro x hx
         exact hle (Ideal.mem_sup_right hx)
     · rw [← PrimeSpectrum.le_iff_specializes]
-      show p.asIdeal ≤ q
       intro x hx
       exact hle (Ideal.mem_sup_left hx)
   · rintro ⟨q, hq, hpq⟩
