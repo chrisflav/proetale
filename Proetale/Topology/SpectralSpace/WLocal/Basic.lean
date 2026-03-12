@@ -34,62 +34,57 @@ attribute [instance] WLocalSpace.isClosed_closedPoints
 @[mk_iff]
 structure IsWLocalMap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) : Prop
     extends IsSpectralMap f where
-  image_closedPoints : closedPoints X ⊆ f ⁻¹' (closedPoints Y)
+  closedPoints_subset_preimage_closedPoints : closedPoints X ⊆ f ⁻¹' (closedPoints Y)
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+/-- A w-local map sends closed points to closed points. -/
+lemma IsWLocalMap.isClosed_singleton {f : X → Y} (hf : IsWLocalMap f)
+    {x : X} (hx : IsClosed ({x} : Set X)) :
+    IsClosed ({f x} : Set Y) :=
+  mem_closedPoints_iff.mp
+    (hf.closedPoints_subset_preimage_closedPoints (mem_closedPoints_iff.mpr hx))
 
 lemma IsWLocalMap.comp {Z : Type*} [TopologicalSpace Z] {f : X → Y} {g : Y → Z}
     (hf : IsWLocalMap f) (hg : IsWLocalMap g) :
     IsWLocalMap (g ∘ f) where
   toIsSpectralMap := hg.toIsSpectralMap.comp hf.toIsSpectralMap
-  image_closedPoints := by
-    intro x hx
-    exact hg.image_closedPoints (hf.image_closedPoints hx)
+  closedPoints_subset_preimage_closedPoints _ hx :=
+    hg.closedPoints_subset_preimage_closedPoints
+      (hf.closedPoints_subset_preimage_closedPoints hx)
+
+/-- An embedding with specialization-stable range into a w-local space maps closed singletons
+to closed singletons. -/
+lemma Topology.IsEmbedding.isClosed_singleton_image
+    {f : X → Y} (hf : IsEmbedding f) (hrange : StableUnderSpecialization (Set.range f))
+    [WLocalSpace Y] {z : X} (hz : IsClosed ({z} : Set X)) :
+    IsClosed ({f z} : Set Y) := by
+  rw [← closure_eq_iff_isClosed]
+  refine Set.Subset.antisymm (fun y hy => ?_) subset_closure
+  have hspec : f z ⤳ y := specializes_iff_mem_closure.mpr hy
+  obtain ⟨z', rfl⟩ := hrange hspec (Set.mem_range_self z)
+  have hzz' : z ⤳ z' := hf.specializes_iff.mp hspec
+  have : z' ∈ ({z} : Set X) := hz.closure_eq ▸ hzz'.mem_closure
+  rw [Set.mem_singleton_iff.mp this]
+  exact Set.mem_singleton _
 
 lemma Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range {f : X → Y}
     (hf : IsEmbedding f) (h : StableUnderSpecialization (Set.range f))
     [SpectralSpace X] [WLocalSpace Y] : WLocalSpace X where
-  eq_of_specializes {x c c'} hc hc' hxc hxc' := by
-    have closed_map_points (z : X) (hz : IsClosed ({z} : Set X)) :
-        IsClosed ({f z} : Set Y) := by
-      rw [← closure_eq_iff_isClosed]
-      apply Set.Subset.antisymm _ subset_closure
-      intro y hy
-      have hspec : f z ⤳ y := specializes_iff_mem_closure.mpr hy
-      have hfy : y ∈ Set.range f := h hspec (Set.mem_range_self z)
-      obtain ⟨z', rfl⟩ := hfy
-      have hzz' : z ⤳ z' := hf.specializes_iff.mp hspec
-      have : z' ∈ ({z} : Set X) := hz.closure_eq ▸ hzz'.mem_closure
-      rw [Set.mem_singleton_iff.mp this]
-      exact Set.mem_singleton _
-    exact hf.injective (WLocalSpace.eq_of_specializes (closed_map_points c hc)
-      (closed_map_points c' hc') (hxc.map hf.continuous) (hxc'.map hf.continuous))
+  eq_of_specializes {x c c'} hc hc' hxc hxc' :=
+    hf.injective (WLocalSpace.eq_of_specializes (hf.isClosed_singleton_image h hc)
+      (hf.isClosed_singleton_image h hc') (hxc.map hf.continuous) (hxc'.map hf.continuous))
   isClosed_closedPoints := by
-    have closed_map_points (z : X) (hz : IsClosed ({z} : Set X)) :
-        IsClosed ({f z} : Set Y) := by
-      rw [← closure_eq_iff_isClosed]
-      apply Set.Subset.antisymm _ subset_closure
-      intro y hy
-      have hspec : f z ⤳ y := specializes_iff_mem_closure.mpr hy
-      have hfy : y ∈ Set.range f := h hspec (Set.mem_range_self z)
-      obtain ⟨z', rfl⟩ := hfy
-      have hzz' : z ⤳ z' := hf.specializes_iff.mp hspec
-      have : z' ∈ ({z} : Set X) := hz.closure_eq ▸ hzz'.mem_closure
-      rw [Set.mem_singleton_iff.mp this]
-      exact Set.mem_singleton _
     have : closedPoints X = f ⁻¹' closedPoints Y := by
       ext x
       simp only [Set.mem_preimage, mem_closedPoints_iff]
-      constructor
-      · exact closed_map_points x
-      · intro hfx
+      exact ⟨hf.isClosed_singleton_image h, fun hfx => by
         rw [← closure_eq_iff_isClosed]
-        apply Set.Subset.antisymm _ subset_closure
-        intro x' hx'
+        refine Set.Subset.antisymm (fun x' hx' => ?_) subset_closure
         have hspec : x ⤳ x' := specializes_iff_mem_closure.mpr hx'
         have hfspec : f x ⤳ f x' := hspec.map hf.continuous
         have hmem : f x' ∈ ({f x} : Set Y) := hfx.closure_eq ▸ hfspec.mem_closure
-        exact Set.mem_singleton_iff.mpr (hf.injective (Set.mem_singleton_iff.mp hmem))
+        exact Set.mem_singleton_iff.mpr (hf.injective (Set.mem_singleton_iff.mp hmem))⟩
     rw [this]
     exact WLocalSpace.isClosed_closedPoints.preimage hf.continuous
 
@@ -104,8 +99,7 @@ lemma StableUnderSpecialization.generalizationHull_of_wLocalSpace [WLocalSpace X
   have hac : a ⤳ c := hay.trans hyc
   obtain ⟨c', hc'_closed, hbc'⟩ := exists_isClosed_specializes b
   have hac' : a ⤳ c' := hab.trans hbc'
-  have : c = c' := WLocalSpace.eq_of_specializes hc_closed hc'_closed hac hac'
-  subst this
+  obtain rfl := WLocalSpace.eq_of_specializes hc_closed hc'_closed hac hac'
   exact ⟨c, hcs, hbc'⟩
 
 lemma Topology.IsClosedEmbedding.wLocalSpace {f : X → Y} (hf : IsClosedEmbedding f)
