@@ -78,30 +78,30 @@ private lemma submonoid_disjoint_locClosedSubset_primes (f : A) (I : Ideal A) (a
   set q_bar := Ideal.map (Ideal.Quotient.mk I) q.asIdeal
   have hq_prime : q_bar.IsPrime :=
     Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective
-      (by rw [Ideal.mk_ker]
-          exact hqI)
+      (by rwa [Ideal.mk_ker])
   have hmkf : Ideal.Quotient.mk I f ∉ q_bar := by
     intro hfq
     have hcomap := Ideal.comap_map_of_surjective (Ideal.Quotient.mk I)
       Ideal.Quotient.mk_surjective q.asIdeal
-    rw [show Ideal.comap (Ideal.Quotient.mk I) ⊥ = I from
-      RingHom.ker_eq_comap_bot (Ideal.Quotient.mk I) ▸ Ideal.mk_ker] at hcomap
-    have hIq : I ≤ q.asIdeal := hqI
-    exact hqf (sup_eq_left.mpr hIq ▸ (hcomap ▸ Ideal.mem_comap.mpr hfq))
+    rw [← RingHom.ker_eq_comap_bot, Ideal.mk_ker] at hcomap
+    have hmem := Ideal.mem_comap.mpr hfq
+    have hle : I ≤ q.asIdeal := hqI
+    rw [hcomap, sup_eq_left.mpr hle] at hmem
+    exact hqf hmem
   have hdisj : Disjoint (Submonoid.powers (Ideal.Quotient.mk I f) : Set (A ⧸ I))
-      (q_bar : Set (A ⧸ I)) :=
-    Set.disjoint_left.mpr fun y hy1 hy2 => by
-      simp only [SetLike.mem_coe, Submonoid.mem_powers_iff] at hy1
-      obtain ⟨n, hn⟩ := hy1
-      rw [← hn] at hy2
-      exact hmkf (hq_prime.mem_of_pow_mem n hy2)
+      (q_bar : Set (A ⧸ I)) := by
+    rw [Set.disjoint_left]
+    intro y hy1 hy2
+    simp only [SetLike.mem_coe, Submonoid.mem_powers_iff] at hy1
+    obtain ⟨n, hn⟩ := hy1
+    rw [← hn] at hy2
+    exact hmkf (hq_prime.mem_of_pow_mem n hy2)
   have hq_loc : (Ideal.map (algebraMap (A ⧸ I) (Localization.Away (Ideal.Quotient.mk I f)))
       q_bar).IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint _ _ q_bar hq_prime hdisj
   apply hq_loc.ne_top
-  exact Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_map_of_mem _ (Ideal.mem_map_of_mem _ haq))
-    (by rw [IsScalarTower.algebraMap_apply A (A ⧸ I)] at ha
-        exact ha)
+  refine Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_map_of_mem _ (Ideal.mem_map_of_mem _ haq)) ?_
+  rwa [IsScalarTower.algebraMap_apply A (A ⧸ I)] at ha
 
 /-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
 the generalization hull of `D(f) ∩ V(I)`. -/
@@ -111,8 +111,7 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
   classical
   rw [PrimeSpectrum.localization_comap_range (Generalization f I) (submonoid f I)]
   ext p
-  simp only [Set.mem_setOf_eq]
-  rw [mem_generalizationHull_iff]
+  simp only [Set.mem_setOf_eq, mem_generalizationHull_iff]
   constructor
   · intro hdisj
     have hf_not_rad : f ∉ Ideal.radical (p.asIdeal ⊔ I) := by
@@ -129,8 +128,7 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
           have : a - f ^ n = -b := by linear_combination hab
           rw [this]
           exact I.neg_mem hb
-        rw [h_eq]
-        rw [Ideal.Quotient.algebraMap_eq, map_pow]
+        rw [h_eq, Ideal.Quotient.algebraMap_eq, map_pow]
         exact IsLocalization.map_units (M := Submonoid.powers (Ideal.Quotient.mk I f))
           (Localization.Away (Ideal.Quotient.mk I f)) ⟨_, n, rfl⟩
       exact Set.disjoint_left.mp hdisj ha_sub ha
