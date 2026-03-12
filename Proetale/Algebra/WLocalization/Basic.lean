@@ -120,15 +120,15 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
       intro n hfn
       rw [Submodule.mem_sup] at hfn
       obtain ⟨a, ha, b, hb, hab⟩ := hfn
+      have h_eq : (Ideal.Quotient.mk I) a = (Ideal.Quotient.mk I) (f ^ n) := by
+        rw [Ideal.Quotient.eq]
+        have : a - f ^ n = -b := by linear_combination hab
+        rw [this]
+        exact I.neg_mem hb
       have ha_sub : a ∈ submonoid f I := by
         rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff,
-          IsScalarTower.algebraMap_apply A (A ⧸ I)]
-        have h_eq : (algebraMap A (A ⧸ I)) a = (algebraMap A (A ⧸ I)) (f ^ n) := by
-          rw [Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq]
-          have : a - f ^ n = -b := by linear_combination hab
-          rw [this]
-          exact I.neg_mem hb
-        rw [h_eq, Ideal.Quotient.algebraMap_eq, map_pow]
+          IsScalarTower.algebraMap_apply A (A ⧸ I), Ideal.Quotient.algebraMap_eq,
+          h_eq, map_pow]
         exact IsLocalization.map_units (M := Submonoid.powers (Ideal.Quotient.mk I f))
           (Localization.Away (Ideal.Quotient.mk I f)) ⟨_, n, rfl⟩
       exact Set.disjoint_left.mp hdisj ha_sub ha
@@ -137,8 +137,7 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
     obtain ⟨q, ⟨hle, hq_prime⟩, hfq⟩ := hf_not_rad
     refine ⟨⟨q, hq_prime⟩, ?_, ?_⟩
     · constructor
-      · simp only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen]
-        exact hfq
+      · simpa only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen]
       · rw [PrimeSpectrum.mem_zeroLocus]
         intro x hx
         exact hle (Ideal.mem_sup_right hx)
