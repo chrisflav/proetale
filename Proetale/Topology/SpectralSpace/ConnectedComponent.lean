@@ -94,7 +94,7 @@ theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
     · rw [U.inter_comm, V.inter_comm, hUSB, hVSC]
       exact ⟨hBn, hCn⟩
   obtain ⟨U, V, hU, hV, hUc, hVc, hUVS, hSUV, hUSn, hVSn⟩ := this
-  have : Nonempty {U // IsClopen U ∧ x ∈ U} := ⟨⟨⊤, by simp [isClopen_univ]⟩⟩
+  have : Nonempty {U // IsClopen U ∧ x ∈ U} := ⟨⟨⊤, isClopen_univ, Set.mem_univ _⟩⟩
   obtain ⟨W, hxW, hW, hUVW⟩ : ∃ W : Set X, x ∈ W ∧ IsClopen W ∧ U ∩ V ∩ W = ∅ := by
     obtain ⟨W, hW⟩ := IsCompact.elim_directed_family_closed
       (IsCompact.inter_of_isOpen hUc hVc hU hV) _ (·.2.1.1) hUVS
@@ -257,6 +257,7 @@ theorem IsClopen.connectedComponents_image_isClopen {X : Type u} [TopologicalSpa
     {U : Set X} (hU : IsClopen U) : IsClopen ((↑) '' U : Set (ConnectedComponents X)) := by
   rw [← ConnectedComponents.isQuotientMap_coe.isClopen_preimage,
     connectedComponents_preimage_image, hU.biUnion_connectedComponent_eq]
+  exact hU
 
 @[stacks 0906]
 instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactSpace X]
