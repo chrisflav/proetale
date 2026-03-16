@@ -255,9 +255,26 @@ instance compactSpace_connectedComponent {X : Type u} [TopologicalSpace X] [Comp
 
 @[stacks 0906]
 instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactSpace X]
-    [QuasiSeparatedSpace X] [PrespectralSpace X] : T2Space (ConnectedComponents X) :=
-  sorry
-  -- use `isClosed_and_iUnion_connectedComponent_eq_iff`
+    [QuasiSeparatedSpace X] [PrespectralSpace X] : T2Space (ConnectedComponents X) := by
+  rw [t2Space_iff]
+  intro a b hab
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe a
+  obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe b
+  rw [ConnectedComponents.coe_ne_coe] at hab
+  have hy : y ∉ connectedComponent x := fun h => hab (connectedComponent_eq h)
+  have hy' : ∃ U, IsClopen U ∧ x ∈ U ∧ y ∉ U := by
+    by_contra! habs
+    apply hy
+    rw [← sInter_isClopen_and_mem_eq_connectedComponent]
+    exact Set.mem_iInter.mpr fun ⟨U, hU1, hU2⟩ => habs U hU1 hU2
+  obtain ⟨U, hU, hxU, hyU⟩ := hy'
+  have hU' : IsClopen ((↑) '' U : Set (ConnectedComponents X)) := hU.connectedComponents_image_isClopen
+  refine ⟨(↑) '' U, ((↑) '' U)ᶜ, hU'.2, hU'.1.isOpen_compl, Set.mem_image_of_mem _ hxU, ?_, disjoint_compl_right⟩
+  simp only [Set.mem_compl_iff, Set.mem_image, not_exists, not_and]
+  intro z hzU hzy
+  apply hyU
+  rw [ConnectedComponents.coe_eq_coe'] at hzy
+  exact hU.connectedComponent_subset hzU (connectedComponent_eq_iff_mem.mp (connectedComponent_eq hzy))
 
 end
 
