@@ -39,13 +39,14 @@ structure IsWLocalMap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- A closed map sends closed singletons to closed singletons. -/
-lemma IsClosedMap.isClosed_singleton {f : X → Y} (hf : IsClosedMap f)
+lemma IsClosedMap.isClosed_image_singleton {f : X → Y} (hf : IsClosedMap f)
     {x : X} (hx : IsClosed ({x} : Set X)) :
     IsClosed ({f x} : Set Y) := by
-  rw [← Set.image_singleton]; exact hf _ hx
+  rw [← Set.image_singleton]
+  exact hf _ hx
 
 /-- A w-local map sends closed points to closed points. -/
-lemma IsWLocalMap.isClosed_singleton {f : X → Y} (hf : IsWLocalMap f)
+lemma IsWLocalMap.isClosed_image_singleton {f : X → Y} (hf : IsWLocalMap f)
     {x : X} (hx : IsClosed ({x} : Set X)) :
     IsClosed ({f x} : Set Y) :=
   mem_closedPoints_iff.mp
@@ -60,7 +61,7 @@ lemma IsWLocalMap.comp {Z : Type*} [TopologicalSpace Z] {f : X → Y} {g : Y →
       (hf.closedPoints_subset_preimage_closedPoints hx)
 
 /-- An embedding with specialization-stable range maps closed singletons to closed singletons. -/
-lemma Topology.IsEmbedding.isClosed_singleton_image
+lemma Topology.IsEmbedding.isClosed_image_singleton
     {f : X → Y} (hf : IsEmbedding f) (hrange : StableUnderSpecialization (Set.range f))
     {z : X} (hz : IsClosed ({z} : Set X)) :
     IsClosed ({f z} : Set Y) := by
@@ -74,7 +75,7 @@ lemma Topology.IsEmbedding.isClosed_singleton_image
   exact Set.mem_singleton _
 
 /-- If `f` is an embedding and `{f z}` is closed, then `{z}` is closed. -/
-lemma Topology.IsEmbedding.isClosed_singleton_of_isClosed_image
+lemma Topology.IsEmbedding.isClosed_singleton_of_isClosed_image_singleton
     {f : X → Y} (hf : IsEmbedding f) {z : X} (hz : IsClosed ({f z} : Set Y)) :
     IsClosed ({z} : Set X) := by
   rw [← closure_eq_iff_isClosed]
@@ -90,14 +91,14 @@ lemma Topology.IsEmbedding.closedPoints_eq_preimage
     closedPoints X = f ⁻¹' closedPoints Y :=
   Set.ext fun x => by
     simp only [Set.mem_preimage, mem_closedPoints_iff]
-    exact ⟨hf.isClosed_singleton_image hrange, hf.isClosed_singleton_of_isClosed_image⟩
+    exact ⟨hf.isClosed_image_singleton hrange, hf.isClosed_singleton_of_isClosed_image_singleton⟩
 
 lemma Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range {f : X → Y}
     (hf : IsEmbedding f) (h : StableUnderSpecialization (Set.range f))
     [SpectralSpace X] [WLocalSpace Y] : WLocalSpace X where
   eq_of_specializes {x c c'} hc hc' hxc hxc' :=
-    hf.injective (WLocalSpace.eq_of_specializes (hf.isClosed_singleton_image h hc)
-      (hf.isClosed_singleton_image h hc') (hxc.map hf.continuous) (hxc'.map hf.continuous))
+    hf.injective (WLocalSpace.eq_of_specializes (hf.isClosed_image_singleton h hc)
+      (hf.isClosed_image_singleton h hc') (hxc.map hf.continuous) (hxc'.map hf.continuous))
   isClosed_closedPoints := by
     rw [hf.closedPoints_eq_preimage h]
     exact WLocalSpace.isClosed_closedPoints.preimage hf.continuous
