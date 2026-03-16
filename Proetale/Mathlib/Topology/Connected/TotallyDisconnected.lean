@@ -56,14 +56,6 @@ theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpa
   have hba : b = a := by simpa [Set.mem_singleton_iff] using this
   exact hba.symm
 
-theorem IsClopen.connectedComponents_image_isClopen {U : Set X} (hU : IsClopen U) :
-    IsClopen (ConnectedComponents.mk '' U : Set (ConnectedComponents X)) := by
-  have hsat : ConnectedComponents.mk ⁻¹'
-      (ConnectedComponents.mk '' U : Set (ConnectedComponents X)) = U := by
-    rw [connectedComponents_preimage_image]
-    exact hU.biUnion_connectedComponent_eq
-  rwa [← ConnectedComponents.isQuotientMap_coe.isClopen_preimage, hsat]
-
 -- end of the file
 variable (S T : Type*) [TopologicalSpace S] [TopologicalSpace T]
 
