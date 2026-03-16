@@ -38,17 +38,10 @@ structure IsWLocalMap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-/-- A closed map sends closed singletons to closed singletons. -/
-lemma IsClosedMap.isClosed_image_singleton {f : X → Y} (hf : IsClosedMap f)
-    {x : X} (hx : IsClosed ({x} : Set X)) :
-    IsClosed ({f x} : Set Y) := by
-  rw [← Set.image_singleton]
-  exact hf _ hx
-
 /-- A w-local map sends closed points to closed points. -/
-lemma IsWLocalMap.isClosed_image_singleton {f : X → Y} (hf : IsWLocalMap f)
-    {x : X} (hx : IsClosed ({x} : Set X)) :
-    IsClosed ({f x} : Set Y) :=
+lemma IsWLocalMap.isClosed_singleton {f : X → Y} (hf : IsWLocalMap f)
+    {x : X} (hx : IsClosed {x}) :
+    IsClosed {f x} :=
   mem_closedPoints_iff.mp
     (hf.closedPoints_subset_preimage_closedPoints (mem_closedPoints_iff.mpr hx))
 
@@ -61,10 +54,10 @@ lemma IsWLocalMap.comp {Z : Type*} [TopologicalSpace Z] {f : X → Y} {g : Y →
       (hf.closedPoints_subset_preimage_closedPoints hx)
 
 /-- An embedding with specialization-stable range maps closed singletons to closed singletons. -/
-lemma Topology.IsEmbedding.isClosed_image_singleton
+lemma Topology.IsEmbedding.isClosed_singleton
     {f : X → Y} (hf : IsEmbedding f) (hrange : StableUnderSpecialization (Set.range f))
-    {z : X} (hz : IsClosed ({z} : Set X)) :
-    IsClosed ({f z} : Set Y) := by
+    {z : X} (hz : IsClosed {z}) :
+    IsClosed {f z} := by
   rw [← closure_eq_iff_isClosed]
   refine Set.Subset.antisymm (fun y hy => ?_) subset_closure
   have hspec : f z ⤳ y := specializes_iff_mem_closure.mpr hy
@@ -76,8 +69,8 @@ lemma Topology.IsEmbedding.isClosed_image_singleton
 
 /-- If `f` is an embedding and `{f z}` is closed, then `{z}` is closed. -/
 lemma Topology.IsEmbedding.isClosed_singleton_of_isClosed_image_singleton
-    {f : X → Y} (hf : IsEmbedding f) {z : X} (hz : IsClosed ({f z} : Set Y)) :
-    IsClosed ({z} : Set X) := by
+    {f : X → Y} (hf : IsEmbedding f) {z : X} (hz : IsClosed {f z}) :
+    IsClosed {z} := by
   rw [← closure_eq_iff_isClosed]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   have hfspec : f z ⤳ f x := (specializes_iff_mem_closure.mpr hx).map hf.continuous
@@ -88,17 +81,17 @@ lemma Topology.IsEmbedding.isClosed_singleton_of_isClosed_image_singleton
 closed points of `X` with the preimage of closed points of `Y`. -/
 lemma Topology.IsEmbedding.closedPoints_eq_preimage
     {f : X → Y} (hf : IsEmbedding f) (hrange : StableUnderSpecialization (Set.range f)) :
-    closedPoints X = f ⁻¹' closedPoints Y :=
-  Set.ext fun x => by
-    simp only [Set.mem_preimage, mem_closedPoints_iff]
-    exact ⟨hf.isClosed_image_singleton hrange, hf.isClosed_singleton_of_isClosed_image_singleton⟩
+    closedPoints X = f ⁻¹' closedPoints Y := by
+  ext x
+  simp only [Set.mem_preimage, mem_closedPoints_iff]
+  exact ⟨hf.isClosed_singleton hrange, hf.isClosed_singleton_of_isClosed_image_singleton⟩
 
 lemma Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range {f : X → Y}
     (hf : IsEmbedding f) (h : StableUnderSpecialization (Set.range f))
     [SpectralSpace X] [WLocalSpace Y] : WLocalSpace X where
   eq_of_specializes {x c c'} hc hc' hxc hxc' :=
-    hf.injective (WLocalSpace.eq_of_specializes (hf.isClosed_image_singleton h hc)
-      (hf.isClosed_image_singleton h hc') (hxc.map hf.continuous) (hxc'.map hf.continuous))
+    hf.injective (WLocalSpace.eq_of_specializes (hf.isClosed_singleton h hc)
+      (hf.isClosed_singleton h hc') (hxc.map hf.continuous) (hxc'.map hf.continuous))
   isClosed_closedPoints := by
     rw [hf.closedPoints_eq_preimage h]
     exact WLocalSpace.isClosed_closedPoints.preimage hf.continuous
@@ -117,7 +110,7 @@ lemma StableUnderSpecialization.generalizationHull_of_wLocalSpace [WLocalSpace X
 
 lemma Topology.IsClosedEmbedding.wLocalSpace {f : X → Y} (hf : IsClosedEmbedding f)
     [WLocalSpace Y] : WLocalSpace X :=
-  haveI : SpectralSpace X := hf.spectralSpace
+  have : SpectralSpace X := hf.spectralSpace
   hf.isEmbedding.wLocalSpace_of_stableUnderSpecialization_range
     hf.isClosedMap.isClosed_range.stableUnderSpecialization
 
