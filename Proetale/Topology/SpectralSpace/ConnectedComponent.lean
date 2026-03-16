@@ -94,7 +94,7 @@ theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
     · rw [U.inter_comm, V.inter_comm, hUSB, hVSC]
       exact ⟨hBn, hCn⟩
   obtain ⟨U, V, hU, hV, hUc, hVc, hUVS, hSUV, hUSn, hVSn⟩ := this
-  have : Nonempty {U // IsClopen U ∧ x ∈ U} := ⟨⟨⊤, isClopen_univ, Set.mem_univ x⟩⟩
+  have : Nonempty {U // IsClopen U ∧ x ∈ U} := ⟨⟨⊤, by simp [isClopen_univ]⟩⟩
   obtain ⟨W, hxW, hW, hUVW⟩ : ∃ W : Set X, x ∈ W ∧ IsClopen W ∧ U ∩ V ∩ W = ∅ := by
     obtain ⟨W, hW⟩ := IsCompact.elim_directed_family_closed
       (IsCompact.inter_of_isOpen hUc hVc hU hV) _ (·.2.1.1) hUVS
@@ -253,12 +253,15 @@ instance compactSpace_connectedComponent {X : Type u} [TopologicalSpace X] [Comp
     simpa [f, ConnectedComponents.range_coe] using h3
 
 
-/-- The connected components space of a quasi-separated prespectral compact space is Hausdorff.
-Two distinct connected components can be separated by the image of a clopen set. -/
+theorem IsClopen.connectedComponents_image_isClopen {X : Type u} [TopologicalSpace X]
+    {U : Set X} (hU : IsClopen U) : IsClopen ((↑) '' U : Set (ConnectedComponents X)) := by
+  rw [← ConnectedComponents.isQuotientMap_coe.isClopen_preimage,
+    connectedComponents_preimage_image, hU.biUnion_connectedComponent_eq]
+
 @[stacks 0906]
 instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactSpace X]
     [QuasiSeparatedSpace X] [PrespectralSpace X] : T2Space (ConnectedComponents X) := by
-  rw [(t2Space_iff _)]
+  rw [t2Space_iff]
   intro a b hab
   obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe a
   obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe b
@@ -270,11 +273,7 @@ instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactS
     rw [← sInter_isClopen_and_mem_eq_connectedComponent]
     exact Set.mem_iInter.mpr fun ⟨U, hU1, hU2⟩ => habs U hU1 hU2
   obtain ⟨U, hU, hxU, hyU⟩ := hy'
-  have hsat : (↑) ⁻¹' ((↑) '' U : Set (ConnectedComponents X)) = U := by
-    rw [connectedComponents_preimage_image]
-    exact hU.biUnion_connectedComponent_eq
-  have hU' : IsClopen ((↑) '' U : Set (ConnectedComponents X)) := by
-    rwa [← ConnectedComponents.isQuotientMap_coe.isClopen_preimage, hsat]
+  have hU' : IsClopen ((↑) '' U : Set (ConnectedComponents X)) := hU.connectedComponents_image_isClopen
   refine ⟨(↑) '' U, ((↑) '' U)ᶜ, hU'.2, hU'.1.isOpen_compl, Set.mem_image_of_mem _ hxU, ?_, disjoint_compl_right⟩
   simp only [Set.mem_compl_iff, Set.mem_image, not_exists, not_and]
   intro z hzU hzy
