@@ -72,6 +72,7 @@ import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 import Proetale.Mathlib.Topology.Constructions
 import Proetale.Mathlib.Topology.Inseparable
 import Proetale.Mathlib.Topology.JacobsonSpace
+import Proetale.Mathlib.Topology.Maps.Basic
 import Proetale.Mathlib.Topology.QuasiSeparated
 import Proetale.Mathlib.Topology.Separation.Basic
 import Proetale.Mathlib.Topology.Separation.Hausdorff
