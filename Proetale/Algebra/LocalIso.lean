@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.RingTheory.RingHom.OpenImmersion
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.Tactic.Algebraize
 import Mathlib.Tactic.DepRewrite
 import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 
@@ -195,7 +196,7 @@ end Algebra.IsLocalIso
 
 /-- A ring homomorphism is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
-@[stacks 096E "(1)"]
+@[stacks 096E "(1)", algebraize]
 def RingHom.IsLocalIso {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.IsLocalIso R S
@@ -212,20 +213,15 @@ namespace RingHom.IsLocalIso
 lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
   letI : Algebra R S := f.toAlgebra
   have hbij : Function.Bijective (algebraMap R S) := hf
-  have : Algebra.IsStandardOpenImmersion R S := by
+  haveI : Algebra.IsStandardOpenImmersion R S := by
     rw [Algebra.isStandardOpenImmersion_iff]
     exact ⟨1, IsLocalization.away_of_isUnit_of_bijective _ isUnit_one hbij⟩
-  exact Algebra.IsLocalIso.instOfIsStandardOpenImmersion R S
+  exact (inferInstance : Algebra.IsLocalIso R S)
 
 /-- The composition of two local isomorphisms is a local isomorphism. -/
 lemma comp {T : Type*} [CommSemiring T] {g : S →+* T} (hg : g.IsLocalIso) (hf : f.IsLocalIso) :
     (g.comp f).IsLocalIso := by
-  letI : Algebra R S := f.toAlgebra
-  letI : Algebra S T := g.toAlgebra
-  letI : Algebra R T := (g.comp f).toAlgebra
-  haveI : IsScalarTower R S T := .of_algebraMap_eq fun _ ↦ rfl
-  haveI : Algebra.IsLocalIso R S := hf
-  haveI : Algebra.IsLocalIso S T := hg
+  algebraize [f, g, g.comp f]
   exact Algebra.IsLocalIso.trans R S
 
 lemma stableUnderComposition : StableUnderComposition IsLocalIso :=
