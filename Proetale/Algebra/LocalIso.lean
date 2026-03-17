@@ -103,7 +103,6 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
 instance refl : IsLocalIso R R :=
   instOfIsStandardOpenImmersion R R
 
-/-- The composition of two local isomorphisms is a local isomorphism. -/
 lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
     [IsLocalIso R S] [IsLocalIso S T] : IsLocalIso R T := by
   constructor
@@ -117,8 +116,6 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
   set q_g := Ideal.map (algebraMap T Tg) q
   haveI : q_g.IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g₁) Tg q hq hq_disj
-  have hcomap_qg : q_g.comap (algebraMap T Tg) = q :=
-    IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g₁) Tg hq hq_disj
   set p := q_g.comap (algebraMap S Tg)
   haveI : p.IsPrime := Ideal.IsPrime.comap (algebraMap S Tg)
   obtain ⟨r₁, hr₁p, hstd_f⟩ :=
@@ -139,20 +136,6 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
       .mul Tg _ _ _
     let e : Localization.Away (t * g₁) ≃ₐ[T] (Localization.Away (algebraMap T Tg t)) :=
       Localization.algEquiv _ _
-    letI instAlg : Algebra (Localization.Away (algebraMap T Tg t)) (Localization.Away (t * g₁)) :=
-      RingHom.toAlgebra (e.symm : Localization.Away (algebraMap T Tg t) →+* Localization.Away (t * g₁))
-    haveI : IsScalarTower R (Localization.Away (algebraMap T Tg t)) (Localization.Away (t * g₁)) :=
-      IsScalarTower.of_algebraMap_eq' (A := Localization.Away (t * g₁))
-        (S := Localization.Away (algebraMap T Tg t)) (R := R) (by
-      rw [RingHom.algebraMap_toAlgebra]
-      ext (x : R)
-      simp only [RingHom.coe_comp, Function.comp_apply]
-      rw [IsScalarTower.algebraMap_apply R T (Localization.Away (t * g₁)), ← e.symm.commutes,
-          IsScalarTower.algebraMap_apply R T (Localization.Away (algebraMap T Tg t))]
-      rfl)
-    have : Algebra.IsStandardOpenImmersion
-        (Localization.Away (algebraMap T Tg t)) (Localization.Away (t * g₁)) :=
-      .of_bijective _ _ e.symm.bijective
     have : Algebra.IsStandardOpenImmersion R (Localization.Away (algebraMap T Tg t)) := by
       rw [← ht]
       have hunit : IsUnit ((algebraMap T Tg g₁) ^ n) :=
@@ -171,7 +154,7 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
       set Sr := Localization.Away r₁
       set Tgr := Localization.Away (algebraMap S Tg r₁)
       letI : Algebra Sr Tgr := (IsLocalization.Away.map Sr Tgr (algebraMap S Tg) r₁).toAlgebra
-      have hST_R : IsScalarTower R Sr Tgr :=
+      haveI : IsScalarTower R Sr Tgr :=
         IsScalarTower.of_algebraMap_eq' (R := R) (S := Sr) (A := Tgr) (by
         ext x
         simp only [RingHom.comp_apply]
@@ -190,7 +173,7 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
       haveI : Algebra.IsStandardOpenImmersion R Tgr :=
         Algebra.IsStandardOpenImmersion.trans R Sr Tgr
       apply Algebra.IsStandardOpenImmersion.of_algEquiv _ _ _ (e'.symm.restrictScalars R)
-    exact Algebra.IsStandardOpenImmersion.trans _ (Localization.Away (algebraMap T Tg t)) _
+    exact .of_algEquiv _ _ _ (e.symm.restrictScalars R)
 
 end Algebra.IsLocalIso
 
@@ -209,7 +192,6 @@ lemma RingHom.isLocalIso_algebraMap [Algebra R S] :
 
 namespace RingHom.IsLocalIso
 
-/-- A bijective ring homomorphism is a local isomorphism. -/
 lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
   letI : Algebra R S := f.toAlgebra
   have hbij : Function.Bijective (algebraMap R S) := hf
@@ -218,7 +200,6 @@ lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
     exact ⟨1, IsLocalization.away_of_isUnit_of_bijective _ isUnit_one hbij⟩
   exact (inferInstance : Algebra.IsLocalIso R S)
 
-/-- The composition of two local isomorphisms is a local isomorphism. -/
 lemma comp {T : Type*} [CommSemiring T] {g : S →+* T} (hg : g.IsLocalIso) (hf : f.IsLocalIso) :
     (g.comp f).IsLocalIso := by
   algebraize [f, g, g.comp f]
