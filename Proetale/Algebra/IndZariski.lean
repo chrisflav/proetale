@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.RingTheory.RingHom.Flat
+import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.Ind
 import Proetale.Algebra.StalkIso
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
@@ -27,13 +28,35 @@ variable [Algebra R S] [Algebra R T]
 def CommAlgCat.isLocalIso : ObjectProperty (CommAlgCat.{u} R) :=
   fun S ↦ Algebra.IsLocalIso R S
 
-instance (ι : Type*) [Finite ι] :
-    (CommAlgCat.isLocalIso R).IsClosedUnderLimitsOfShape (Discrete ι) := by
-  sorry
-
 lemma CommAlgCat.isLocalIso_eq : isLocalIso R = RingHom.toObjectProperty RingHom.IsLocalIso R := by
   ext S
   exact RingHom.isLocalIso_algebraMap.symm
+
+instance : (CommAlgCat.isLocalIso R).IsClosedUnderIsomorphisms := by
+  rw [CommAlgCat.isLocalIso_eq]
+  exact RingHom.IsLocalIso.respectsIso.isClosedUnderIsomorphisms_toObjectProperty R
+
+private instance isClosedUnderLimitsOfShape_isLocalIso_aux (ι : Type u) [Finite ι] :
+    (CommAlgCat.isLocalIso R).IsClosedUnderLimitsOfShape (Discrete ι) := by
+  apply ObjectProperty.IsClosedUnderLimitsOfShape.mk'
+  rintro X ⟨F, hF⟩
+  let S : ι → CommAlgCat.{u} R := fun i => F.obj ⟨i⟩
+  let natIso : F ≅ Discrete.functor S := Discrete.natIso (fun i => Iso.refl _)
+  let isoPi : (CommAlgCat.piFan S).pt ≅ limit (Discrete.functor S) :=
+    (limit.isoLimitCone ⟨CommAlgCat.piFan S, CommAlgCat.isLimitPiFan S⟩).symm
+  let isoLim : limit (Discrete.functor S) ≅ limit F :=
+    (HasLimit.isoOfNatIso natIso).symm
+  apply (CommAlgCat.isLocalIso R).prop_of_iso (isoPi ≪≫ isoLim)
+  have inst (i : ι) : Algebra.IsLocalIso R (S i) := hF ⟨i⟩
+  exact Algebra.IsLocalIso.pi_of_finite R (fun i => (S i))
+
+instance (ι : Type*) [Finite ι] :
+    (CommAlgCat.isLocalIso R).IsClosedUnderLimitsOfShape (Discrete ι) := by
+  have : Small.{u} ι := by
+    obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+    exact ⟨⟨ULift.{u} (Fin n), ⟨e.trans Equiv.ulift.symm⟩⟩⟩
+  haveI : Finite (Shrink.{u} ι) := Finite.of_equiv ι (equivShrink ι)
+  exact .of_equivalence (Discrete.equivalence (equivShrink.{u} ι).symm)
 
 /-- An algebra is ind-Zariski if it can be written as the filtered colimit of locally isomorphic
 algebras. -/
@@ -69,8 +92,35 @@ instance pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRin
     rw [← iff_ind_isLocalIso]
     infer_instance
 
-instance prod [Algebra.IndZariski R S] [Algebra.IndZariski R T] : Algebra.IndZariski R (S × T) :=
-  sorry
+-- Express S × T as a pi type over ULift Bool to deduce IndZariski closure under products.
+private def prod_B (S T : Type u) : ULift.{u} Bool → Type u := fun i => Bool.rec T S i.down
+
+private noncomputable instance prod_instCR (S T : Type u) [CommRing S] [CommRing T] :
+    ∀ i, CommRing (prod_B S T i) := fun ⟨b⟩ =>
+  Bool.rec (inferInstanceAs (CommRing T)) (inferInstanceAs (CommRing S)) b
+
+private noncomputable instance prod_instAlg (S T : Type u) [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] : ∀ i, Algebra R (prod_B S T i) := fun ⟨b⟩ =>
+  Bool.rec (inferInstanceAs (Algebra R T)) (inferInstanceAs (Algebra R S)) b
+
+private noncomputable instance prod_instIZ (S T : Type u) [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] [IndZariski R S] [IndZariski R T] :
+    ∀ i, IndZariski R (prod_B S T i) := fun ⟨b⟩ =>
+  Bool.rec (inferInstanceAs (IndZariski R T)) (inferInstanceAs (IndZariski R S)) b
+
+private noncomputable def prod_equiv (S T : Type u) [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] : (∀ i, prod_B S T i) ≃ₐ[R] S × T where
+  toFun f := (f ⟨true⟩, f ⟨false⟩)
+  invFun p := fun ⟨b⟩ => @Bool.rec (fun b => prod_B S T ⟨b⟩) p.2 p.1 b
+  left_inv f := by ext ⟨b⟩; cases b <;> rfl
+  right_inv p := by obtain ⟨_, _⟩ := p; rfl
+  map_mul' _ _ := Prod.ext rfl rfl
+  map_add' _ _ := Prod.ext rfl rfl
+  commutes' _ := Prod.ext rfl rfl
+
+instance prod [Algebra.IndZariski R S] [Algebra.IndZariski R T] :
+    Algebra.IndZariski R (S × T) :=
+  of_equiv (R := R) (S := ∀ i, prod_B S T i) (T := S × T) (prod_equiv R S T)
 
 instance function {ι : Type u} [_root_.Finite ι] (S : Type u) [CommRing S]
     [Algebra R S] [Algebra.IndZariski R S] : Algebra.IndZariski R (ι → S) :=
@@ -78,7 +128,9 @@ instance function {ι : Type u} [_root_.Finite ι] (S : Type u) [CommRing S]
 
 variable {R}
 
-instance (priority := 100) of_isLocalIso [Algebra.IsLocalIso R S] : Algebra.IndZariski R S := sorry
+instance (priority := 100) of_isLocalIso [Algebra.IsLocalIso R S] : Algebra.IndZariski R S := by
+  rw [iff_ind_isLocalIso]
+  exact ObjectProperty.le_ind _ _ ‹_›
 
 instance refl : Algebra.IndZariski R R :=
   Algebra.IndZariski.of_isLocalIso _
@@ -91,9 +143,31 @@ instance localization (M : Submonoid R) : Algebra.IndZariski R (Localization M) 
 
 variable (R)
 
+/-- A local isomorphism `R → X` is flat, since it is locally a localization. -/
+private lemma isLocalIso_implies_flat {R : Type u} [CommRing R] (X : CommAlgCat.{u} R)
+    (hX : Algebra.IsLocalIso R X) : Module.Flat R X := by
+  have hflat : RingHom.Flat (algebraMap R X) :=
+    RingHom.Flat.ofLocalizationSpanTarget (algebraMap R X)
+      {g | Algebra.IsStandardOpenImmersion R (Localization.Away g)} (by
+        by_contra hne
+        obtain ⟨m, hm, hms⟩ := Ideal.exists_le_maximal _ hne
+        obtain ⟨g, hgm, hstd⟩ := hX.exists_notMem_isStandardOpenImmersion m
+        exact hgm (hms (Ideal.subset_span hstd)))
+      (fun ⟨g, hg⟩ => by
+        obtain ⟨r, hr⟩ := hg.exists_away
+        rw [show (algebraMap X (Localization.Away g)).comp (algebraMap R X) =
+          algebraMap R (Localization.Away g) from by
+          ext x; simp [RingHom.comp_apply, ← IsScalarTower.algebraMap_apply R X]]
+        exact RingHom.flat_algebraMap_iff.mpr (IsLocalization.flat _ (Submonoid.powers r)))
+  exact RingHom.flat_algebraMap_iff.mp hflat
+
 instance (priority := 100) _root_.Module.Flat.of_indZariski [Algebra.IndZariski R S] :
-    Module.Flat R S :=
-  sorry
+    Module.Flat R S := by
+  rw [Module.Flat.iff_ind_flat]
+  obtain ⟨J, _, _, pres, h⟩ := (Algebra.IndZariski.iff_ind_isLocalIso R S).mp ‹_›
+  exact ⟨J, inferInstance, inferInstance, pres, fun i => by
+    rw [CommAlgCat.flat_iff]
+    exact isLocalIso_implies_flat (pres.diag.obj i) (h i)⟩
 
 @[stacks 096T]
 theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
@@ -128,7 +202,7 @@ lemma iff_ind_isLocalIso (f : R →+* S) :
     f.IndZariski ↔ MorphismProperty.ind.{u}
       (RingHom.toMorphismProperty RingHom.IsLocalIso) (CommRingCat.ofHom f) := by
   algebraize [f]
-  rw [RingHom.IndZariski, Algebra.IndZariski.iff_ind_isLocalIso, ← f.algebraMap_toAlgebra,
+  simp only [RingHom.IndZariski, Algebra.IndZariski.iff_ind_isLocalIso, ← f.algebraMap_toAlgebra,
     RingHom.IsLocalIso.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty,
     CommAlgCat.isLocalIso_eq]
 
@@ -163,15 +237,6 @@ lemma pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (
 lemma flat (h : f.IndZariski) : f.Flat := by
   algebraize [f]
   exact .of_indZariski R S
-
--- lemma of_bijective (hf : Function.Bijective f) : f.IndZariski :=
---   sorry
-
--- lemma stableUnderComposition : StableUnderComposition IndZariski :=
---   fun _ _ _ _ _ _ _ _ hf hg ↦ hg.comp hf
-
--- lemma respectsIso : RespectsIso IndZariski :=
---   stableUnderComposition.respectsIso fun e ↦ .of_bijective e.bijective
 
 @[stacks 096T]
 theorem bijectiveOnStalks (h : f.IndZariski) : f.BijectiveOnStalks := by
