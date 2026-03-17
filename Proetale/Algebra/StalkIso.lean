@@ -59,13 +59,11 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
   have halg_eq : (algebraMap S Sg).comp f = algebraMap R Sg := by
     ext x; exact (IsScalarTower.algebraMap_apply R S Sg x).symm
   have hcomap_comp : p.comap f = p_g.comap ((algebraMap S Sg).comp f) := by
-    rw [show p_g.comap ((algebraMap S Sg).comp f) = (p_g.comap (algebraMap S Sg)).comap f
-      from (Ideal.comap_comap f (algebraMap S Sg)).symm, hcomap_pg]
+    rw [← Ideal.comap_comap, hcomap_pg]
   have h_comp_bij : Function.Bijective
       (Localization.localRingHom (p.comap f) p_g ((algebraMap S Sg).comp f) hcomap_comp) := by
     have hcomap_R : p_g.comap (algebraMap R Sg) = p.comap f := by
-      conv_lhs => rw [show (algebraMap R Sg) = (algebraMap S Sg).comp f from halg_eq.symm]
-      rw [← Ideal.comap_comap, hcomap_pg]
+      rw [← halg_eq, ← Ideal.comap_comap, hcomap_pg]
     haveI : IsLocalization.AtPrime (Localization.AtPrime p_g) (p.comap f) := by
       have := IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
         (Submonoid.powers r) (Localization.AtPrime p_g) p_g
@@ -75,10 +73,9 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       (Localization.localRingHom (p.comap f) p_g ((algebraMap S Sg).comp f) hcomap_comp) (by
       ext x
       simp only [RingHom.comp_apply, Localization.localRingHom_to_map]
-      have : (algebraMap S Sg) (f x) = (algebraMap R Sg) x := by
-        change (algebraMap S Sg) ((algebraMap R S) x) = (algebraMap R Sg) x
-        exact IsScalarTower.algebraMap_apply R S Sg x
-      rw [this, IsScalarTower.algebraMap_apply R Sg (Localization.AtPrime p_g)])
+      rw [show (algebraMap S Sg) (f x) = (algebraMap R Sg) x
+        from (IsScalarTower.algebraMap_apply R S Sg x).symm,
+        IsScalarTower.algebraMap_apply R Sg (Localization.AtPrime p_g)])
   have hfactor := Localization.localRingHom_comp (p.comap f) p p_g f rfl
     (algebraMap S Sg) hcomap_pg.symm
   have hfactor' : Function.Bijective
@@ -150,23 +147,13 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
         ∃ r : R, r ∉ m ∧ f r * s ∈ f.range by
       by_contra hs
       have h1 : ¬(f 1 * s ∈ f.range) := by simp only [map_one, one_mul]; exact hs
-      have hJ_add : ∀ {a b : R}, f a * s ∈ f.range → f b * s ∈ f.range →
-          f (a + b) * s ∈ f.range := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
-        ⟨x + y, by rw [map_add, map_add, add_mul, hx, hy]⟩
-      have hJ_smul : ∀ (c : R) {r : R}, f r * s ∈ f.range → f (c * r) * s ∈ f.range :=
-        fun c _ ⟨x, hx⟩ => ⟨c * x, by rw [map_mul, map_mul, mul_assoc, hx]⟩
       set J_s : Ideal R := {
         carrier := {r : R | f r * s ∈ f.range}
-        add_mem' := fun ha hb => hJ_add ha hb
+        add_mem' := fun ⟨x, hx⟩ ⟨y, hy⟩ => ⟨x + y, by rw [map_add, map_add, add_mul, hx, hy]⟩
         zero_mem' := ⟨0, by simp⟩
-        smul_mem' := fun c _ hr => hJ_smul c hr
+        smul_mem' := fun c _ ⟨x, hx⟩ => ⟨c * x, by rw [smul_eq_mul, map_mul, map_mul, mul_assoc, hx]⟩
       }
-      have hJ_ne_top : J_s ≠ ⊤ := by
-        intro heq
-        apply h1
-        change (1 : R) ∈ J_s
-        rw [heq]
-        exact Submodule.mem_top
+      have hJ_ne_top : J_s ≠ ⊤ := fun heq => h1 ((heq ▸ Submodule.mem_top : (1 : R) ∈ J_s))
       obtain ⟨m, hm, hJm⟩ := Ideal.exists_le_maximal J_s hJ_ne_top
       obtain ⟨r, hrm, hr_range⟩ := key m hm
       exact hrm (hJm hr_range)
@@ -209,15 +196,10 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     have hd'' : f r₁ = c * d' := by
       change (algebraMap R S) r₁ = c * d' at hd'; exact hd'
     have hkey2 : f r₁ * (f b * s - f r₀) = 0 := by
-      calc f r₁ * (f b * s - f r₀)
-        _ = (c * d') * (f b * s - f r₀) := by rw [← hd'']
-        _ = d' * (c * (f b * s - f r₀)) := by ring
-        _ = d' * 0 := by rw [hc_eq]
-        _ = 0 := mul_zero _
+      rw [hd'']; linear_combination d' * hc_eq
     have hkey3 : f (r₁ * b) * s = f (r₁ * r₀) := by
-      have := hkey2
-      rw [mul_sub, sub_eq_zero] at this
-      rw [map_mul, mul_assoc, this, ← map_mul]
+      have h := hkey2; rw [mul_sub, sub_eq_zero] at h
+      rw [map_mul, map_mul, mul_assoc, h]
     have hb_nmem : b ∉ m := hqm' ▸ hb
     have hr1b_nmem : r₁ * b ∉ m :=
       mt hm_prime.mul_mem_iff_mem_or_mem.mp (by push_neg; exact ⟨hr₁m, hb_nmem⟩)
