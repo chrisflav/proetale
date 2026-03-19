@@ -44,7 +44,7 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
     IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
   have h_alg_bij : Function.Bijective
       (Localization.localRingHom p p_g (algebraMap S Sg) hcomap_pg.symm) := by
-    haveI : IsLocalization.AtPrime (Localization.AtPrime p_g) p := by
+    letI : IsLocalization.AtPrime (Localization.AtPrime p_g) p := by
       have := IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
         (Submonoid.powers g) (Localization.AtPrime p_g) p_g
       simp_rw [hcomap_pg] at this
@@ -63,7 +63,7 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       (Localization.localRingHom (p.comap f) p_g ((algebraMap S Sg).comp f) hcomap_comp) := by
     have hcomap_R : p_g.comap (algebraMap R Sg) = p.comap f := by
       rw [← halg_eq, ← Ideal.comap_comap, hcomap_pg]
-    haveI : IsLocalization.AtPrime (Localization.AtPrime p_g) (p.comap f) := by
+    letI : IsLocalization.AtPrime (Localization.AtPrime p_g) (p.comap f) := by
       have := IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
         (Submonoid.powers r) (Localization.AtPrime p_g) p_g
       simp_rw [hcomap_R] at this
@@ -147,11 +147,12 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
       have h1 : ¬(f 1 * s ∈ f.range) := by simp only [map_one, one_mul]; exact hs
       set J_s : Ideal R := {
         carrier := {r : R | f r * s ∈ f.range}
-        add_mem' := fun ⟨x, hx⟩ ⟨y, hy⟩ => ⟨x + y, by rw [map_add, map_add, add_mul, hx, hy]⟩
+        add_mem' := fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by rw [map_add, map_add, add_mul, hx, hy]⟩
         zero_mem' := ⟨0, by simp⟩
-        smul_mem' := fun c _ ⟨x, hx⟩ => ⟨c * x, by rw [smul_eq_mul, map_mul, map_mul, mul_assoc, hx]⟩
+        smul_mem' := fun c _ ⟨x, hx⟩ ↦
+          ⟨c * x, by rw [smul_eq_mul, map_mul, map_mul, mul_assoc, hx]⟩
       }
-      have hJ_ne_top : J_s ≠ ⊤ := fun heq => h1 ((heq ▸ Submodule.mem_top : (1 : R) ∈ J_s))
+      have hJ_ne_top : J_s ≠ ⊤ := fun heq ↦ h1 ((heq ▸ Submodule.mem_top : (1 : R) ∈ J_s))
       obtain ⟨m, hm, hJm⟩ := Ideal.exists_le_maximal J_s hJ_ne_top
       obtain ⟨r, hrm, hr_range⟩ := key m hm
       exact hrm (hJm hr_range)
@@ -191,8 +192,7 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     obtain ⟨t, ht_mem, hc_dvd⟩ := hc_unit
     obtain ⟨r₁, hr₁m, rfl⟩ := ht_mem
     obtain ⟨d', hd'⟩ := hc_dvd
-    have hd'' : f r₁ = c * d' := by
-      change (algebraMap R S) r₁ = c * d' at hd'; exact hd'
+    have hd'' : f r₁ = c * d' := hd'
     have hkey2 : f r₁ * (f b * s - f r₀) = 0 := by
       rw [hd'']; linear_combination d' * hc_eq
     have hkey3 : f (r₁ * b) * s = f (r₁ * r₀) := by
