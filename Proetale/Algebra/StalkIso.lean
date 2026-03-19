@@ -31,8 +31,7 @@ variable {R S : Type*} [CommRing R] [CommRing S]
 lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
     f.BijectiveOnStalks := by
   intro p hp
-  letI := f.toAlgebra
-  haveI : Algebra.IsLocalIso R S := hf
+  algebraize [f]
   obtain ⟨g, hgp, hstd⟩ := Algebra.IsLocalIso.exists_notMem_isStandardOpenImmersion (R := R) p
   obtain ⟨r, hr⟩ := Algebra.IsStandardOpenImmersion.exists_away R (Localization.Away g)
   set Sg := Localization.Away g
@@ -55,7 +54,7 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       ext x
       simp only [RingHom.comp_apply, Localization.localRingHom_to_map]
       exact (IsScalarTower.algebraMap_apply S Sg (Localization.AtPrime p_g) x).symm)
-  haveI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
+  letI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
   have halg_eq : (algebraMap S Sg).comp f = algebraMap R Sg := by
     ext x; exact (IsScalarTower.algebraMap_apply R S Sg x).symm
   have hcomap_comp : p.comap f = p_g.comap ((algebraMap S Sg).comp f) := by
@@ -108,9 +107,8 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     have hstalk_inj := (hf p).1
     subst hpq'
     apply hstalk_inj
-    change Localization.localRingHom _ p f rfl (algebraMap R _ r₁) =
-           Localization.localRingHom _ p f rfl (algebraMap R _ r₂)
-    rw [Localization.localRingHom_to_map, Localization.localRingHom_to_map, hr]
+    simp only [PrimeSpectrum.toPiLocalization, Pi.algebraMap_apply,
+      Localization.localRingHom_to_map, hr]
   have hsurj : Function.Surjective f := by
     have hflat : f.Flat := by
       letI := f.toAlgebra
@@ -206,8 +204,7 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     exact ⟨r₁ * b, hr1b_nmem, r₁ * r₀, hkey3.symm⟩
   exact ⟨hinj, hsurj⟩
 
-lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T}
-    (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) :
+lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T} :
     RingHom.BijectiveOnStalks (f.prod g) :=
   sorry
 
