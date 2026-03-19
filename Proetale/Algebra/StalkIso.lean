@@ -206,4 +206,9 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     exact ⟨r₁ * b, hr1b_nmem, r₁ * r₀, hkey3.symm⟩
   exact ⟨hinj, hsurj⟩
 
+lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T}
+    (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) :
+    RingHom.BijectiveOnStalks (f.prod g) :=
+  sorry
+
 end RingHom.BijectiveOnStalks
