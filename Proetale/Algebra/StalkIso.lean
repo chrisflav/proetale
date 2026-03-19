@@ -56,7 +56,8 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       exact (IsScalarTower.algebraMap_apply S Sg (Localization.AtPrime p_g) x).symm)
   letI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
   have halg_eq : (algebraMap S Sg).comp f = algebraMap R Sg := by
-    ext x; exact (IsScalarTower.algebraMap_apply R S Sg x).symm
+    ext x
+    exact (IsScalarTower.algebraMap_apply R S Sg x).symm
   have hcomap_comp : p.comap f = p_g.comap ((algebraMap S Sg).comp f) := by
     rw [← Ideal.comap_comap, hcomap_pg]
   have h_comp_bij : Function.Bijective
@@ -72,9 +73,9 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       (Localization.localRingHom (p.comap f) p_g ((algebraMap S Sg).comp f) hcomap_comp) (by
       ext x
       simp only [RingHom.comp_apply, Localization.localRingHom_to_map]
-      rw [show (algebraMap S Sg) (f x) = (algebraMap R Sg) x
-        from (IsScalarTower.algebraMap_apply R S Sg x).symm,
-        IsScalarTower.algebraMap_apply R Sg (Localization.AtPrime p_g)])
+      have : (algebraMap S Sg) (f x) = (algebraMap R Sg) x :=
+        (IsScalarTower.algebraMap_apply R S Sg x).symm
+      rw [this, IsScalarTower.algebraMap_apply R Sg (Localization.AtPrime p_g)])
   have hfactor := Localization.localRingHom_comp (p.comap f) p p_g f rfl
     (algebraMap S Sg) hcomap_pg.symm
   have hfactor' : Function.Bijective
@@ -144,7 +145,7 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     suffices key : ∀ (m : Ideal R), m.IsMaximal →
         ∃ r : R, r ∉ m ∧ f r * s ∈ f.range by
       by_contra hs
-      have h1 : ¬(f 1 * s ∈ f.range) := by simp only [map_one, one_mul]; exact hs
+      have h1 : ¬(f 1 * s ∈ f.range) := by simpa only [map_one, one_mul]
       set J_s : Ideal R := {
         carrier := {r : R | f r * s ∈ f.range}
         add_mem' := fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by rw [map_add, map_add, add_mul, hx, hy]⟩
@@ -194,13 +195,17 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     obtain ⟨d', hd'⟩ := hc_dvd
     have hd'' : f r₁ = c * d' := hd'
     have hkey2 : f r₁ * (f b * s - f r₀) = 0 := by
-      rw [hd'']; linear_combination d' * hc_eq
+      rw [hd'']
+      linear_combination d' * hc_eq
     have hkey3 : f (r₁ * b) * s = f (r₁ * r₀) := by
-      have h := hkey2; rw [mul_sub, sub_eq_zero] at h
+      have h := hkey2
+      rw [mul_sub, sub_eq_zero] at h
       rw [map_mul, map_mul, mul_assoc, h]
     have hb_nmem : b ∉ m := hqm' ▸ hb
     have hr1b_nmem : r₁ * b ∉ m :=
-      mt hm_prime.mul_mem_iff_mem_or_mem.mp (by push_neg; exact ⟨hr₁m, hb_nmem⟩)
+      mt hm_prime.mul_mem_iff_mem_or_mem.mp (by
+        push_neg
+        exact ⟨hr₁m, hb_nmem⟩)
     exact ⟨r₁ * b, hr1b_nmem, r₁ * r₀, hkey3.symm⟩
   exact ⟨hinj, hsurj⟩
 
