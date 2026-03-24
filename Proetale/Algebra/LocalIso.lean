@@ -132,8 +132,6 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
     · exact hg₁q
   · have hmul : IsLocalization.Away (t * g₁) (Localization.Away (algebraMap T Tg t)) :=
       .mul Tg _ _ _
-    let e : Localization.Away (t * g₁) ≃ₐ[T] (Localization.Away (algebraMap T Tg t)) :=
-      Localization.algEquiv _ _
     have : Algebra.IsStandardOpenImmersion R (Localization.Away (algebraMap T Tg t)) := by
       rw [← ht]
       have hunit : IsUnit ((algebraMap T Tg g₁) ^ n) :=
@@ -146,32 +144,36 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
         apply IsLocalization.away_of_isUnit_of_bijective
         · exact IsUnit.map _ hunit
         · exact Function.bijective_id
-      let e' : Localization.Away ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n) ≃ₐ[Tg]
-          Localization.Away (algebraMap S Tg r₁) :=
-        Localization.algEquiv _ _
-      set Sr := Localization.Away r₁
-      set Tgr := Localization.Away (algebraMap S Tg r₁)
+      let Sr := Localization.Away r₁
+      let Tgr := Localization.Away (algebraMap S Tg r₁)
       letI : Algebra Sr Tgr := (IsLocalization.Away.map Sr Tgr (algebraMap S Tg) r₁).toAlgebra
-      haveI : IsScalarTower R Sr Tgr :=
+      have : IsScalarTower R Sr Tgr :=
         IsScalarTower.of_algebraMap_eq' (R := R) (S := Sr) (A := Tgr) (by
         ext x
         simp only [RingHom.comp_apply]
         rw [IsScalarTower.algebraMap_apply R S Sr, RingHom.algebraMap_toAlgebra,
             IsLocalization.Away.map, IsLocalization.map_eq,
             IsScalarTower.algebraMap_apply R Tg Tgr, IsScalarTower.algebraMap_apply R S Tg])
-      haveI : IsScalarTower S Sr Tgr :=
+      have : IsScalarTower S Sr Tgr :=
         IsScalarTower.of_algebraMap_eq' (R := S) (S := Sr) (A := Tgr) (by
         ext a
         simp only [RingHom.comp_apply]
         rw [RingHom.algebraMap_toAlgebra, IsLocalization.Away.map, IsLocalization.map_eq,
             IsScalarTower.algebraMap_apply S Tg Tgr])
-      haveI : IsLocalization.Away (algebraMap S Sr s₁) Tgr :=
+      have : IsLocalization.Away (algebraMap S Sr s₁) Tgr :=
         IsLocalization.Away.commutes Sr Tg Tgr r₁ s₁
-      haveI : Algebra.IsStandardOpenImmersion Sr Tgr := ⟨algebraMap S Sr s₁, inferInstance⟩
-      haveI : Algebra.IsStandardOpenImmersion R Tgr :=
+      have : Algebra.IsStandardOpenImmersion Sr Tgr := ⟨algebraMap S Sr s₁, inferInstance⟩
+      have : Algebra.IsStandardOpenImmersion R Tgr :=
         Algebra.IsStandardOpenImmersion.trans R Sr Tgr
-      apply Algebra.IsStandardOpenImmersion.of_algEquiv _ _ _ (e'.symm.restrictScalars R)
-    exact .of_algEquiv _ _ _ (e.symm.restrictScalars R)
+      exact .of_algEquiv _ _ _
+        ((IsLocalization.algEquiv
+          (Submonoid.powers ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n))
+          (Localization.Away ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n))
+          (Localization.Away (algebraMap S Tg r₁))).symm.restrictScalars R)
+    exact .of_algEquiv _ _ _
+      ((IsLocalization.algEquiv (Submonoid.powers (t * g₁))
+        (Localization.Away (t * g₁))
+        (Localization.Away (algebraMap T Tg t))).symm.restrictScalars R)
 
 end Algebra.IsLocalIso
 
