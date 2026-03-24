@@ -149,25 +149,20 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
     refine Set.Subset.antisymm ?_ ?_
     · intro x hx
       by_contra hxT
-      have hTcomp : IsCompact T := hT.isCompact
       have hSat : ∀ z, z ∈ T → connectedComponent z ⊆ T := by
         intro z hz
         have hz' : z ∈ ⋃ x ∈ I, connectedComponent x := by simpa [hI] using hz
         rcases Set.mem_iUnion₂.mp hz' with ⟨w, hwI, hzw⟩
-        have hEq : connectedComponent z = connectedComponent w := (connectedComponent_eq hzw).symm
         have : connectedComponent w ⊆ T := by
           intro u hu
-          have : u ∈ ⋃ x ∈ I, connectedComponent x := Set.mem_iUnion₂.mpr ⟨w, hwI, hu⟩
-          simpa [hI] using this
-        simpa [hEq] using this
+          simpa [hI] using (Set.mem_iUnion₂.mpr ⟨w, hwI, hu⟩ : u ∈ ⋃ x ∈ I, connectedComponent x)
+        simpa [(connectedComponent_eq hzw).symm] using this
       have hdis : Disjoint (connectedComponent x) T := by
         refine Set.disjoint_left.2 ?_
         intro z hz hxz
         have hxmem : x ∈ connectedComponent z := by
-          have hEq : connectedComponent z = connectedComponent x := (connectedComponent_eq hz).symm
-          simpa [hEq] using (mem_connectedComponent (x := x))
-        have : x ∈ T := (hSat z hxz) hxmem
-        exact hxT this
+          simpa [(connectedComponent_eq hz).symm] using (mem_connectedComponent (x := x))
+        exact hxT ((hSat z hxz) hxmem)
       let K : Type u := {U : Set X // IsClopen U ∧ x ∈ U}
       have hInter : (⋂ U : K, (U : Set X)) = connectedComponent x :=
         sInter_isClopen_and_mem_eq_connectedComponent (X := X) (x := x)
@@ -180,7 +175,7 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
         simp only [Set.mem_iInter, not_forall] at this
         exact Set.mem_iUnion.mpr this
       obtain ⟨s, hs⟩ :=
-        hTcomp.elim_finite_subcover
+        hT.isCompact.elim_finite_subcover
           (U := fun U : K => (U : Set X)ᶜ)
           (fun U => U.2.1.1.isOpen_compl) hcover
       let V : Set X := ⋃ U ∈ s, (U : Set X)ᶜ
@@ -188,11 +183,9 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
         refine Set.Finite.isClopen_biUnion s.finite_toSet ?_
         intro U hU
         exact U.2.1.compl
-      have hVT : T ⊆ V := hs
       have hxV : x ∈ V := by
-        have hxmem : (⟨V, hVcl⟩ : {U : Set X // IsClopen U}) ∈ J := hVT
-        have : x ∈ ((⟨⟨V, hVcl⟩, hxmem⟩ : J) : Set X) :=
-          Set.mem_iInter.1 hx ⟨⟨V, hVcl⟩, hxmem⟩
+        have : x ∈ ((⟨⟨V, hVcl⟩, (hs : T ⊆ V)⟩ : J) : Set X) :=
+          Set.mem_iInter.1 hx ⟨⟨V, hVcl⟩, hs⟩
         simpa using this
       have hxnotV : x ∉ V := by
         intro hxV'
@@ -242,10 +235,8 @@ instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactS
     intro a b hab
     obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe a
     obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe b
-    have hxy : connectedComponent x ≠ connectedComponent y :=
-      (ConnectedComponents.coe_ne_coe (x := x) (y := y)).1 hab
     have hdis : Disjoint (connectedComponent x) (connectedComponent y) :=
-      connectedComponent_disjoint hxy
+      connectedComponent_disjoint ((ConnectedComponents.coe_ne_coe (x := x) (y := y)).1 hab)
     -- Express `connectedComponent x` as an intersection of clopens.
     have hxdata :
         IsClosed (connectedComponent x : Set X) ∧
@@ -264,10 +255,8 @@ instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactS
         simpa [Set.mem_iInter] using hznot
       rcases not_forall.mp hznot' with ⟨U, hzU⟩
       exact Set.mem_iUnion.mpr ⟨U, by simpa using hzU⟩
-    have hyCpt : IsCompact (connectedComponent y : Set X) :=
-      (isClosed_connectedComponent (x := y)).isCompact
     obtain ⟨s, hs⟩ :=
-      hyCpt.elim_finite_subcover
+      (isClosed_connectedComponent (x := y)).isCompact.elim_finite_subcover
         (U := fun U : J => (↑↑U : Set X)ᶜ)
         (fun U => (U.1.2).1.isOpen_compl) hcover
     let U0 : Set X := ⋂ U ∈ s, (↑↑U : Set X)
@@ -367,10 +356,9 @@ theorem ConnectedComponents.isPreconnected_fiber_of_isPullback {Y T : Type u}
     · intro hy
       refine ⟨eY y, ?_, by simp⟩
       have hy' : g y = t := by simpa using hy
-      have hfst : pullback.fst (ofHom i) (ofHom mkX) (eY y) = t := by
-        rw [show pullback.fst (ofHom i) (ofHom mkX) (eY y) = g y from
-          ConcreteCategory.congr_hom pb.isoPullback_hom_fst y, hy']
-      simp [fiberP, hfst]
+      have heq : pullback.fst (ofHom i) (ofHom mkX) (eY y) = g y :=
+        ConcreteCategory.congr_hom pb.isoPullback_hom_fst y
+      simp [fiberP, heq, hy']
     · rintro ⟨q, hq, rfl⟩
       have hgq : g (eY.symm q) = pullback.fst (ofHom i) (ofHom mkX) q :=
         ConcreteCategory.congr_hom pb.isoPullback_inv_fst q
