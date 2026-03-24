@@ -153,10 +153,9 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
         intro z hz
         have hz' : z ∈ ⋃ x ∈ I, connectedComponent x := by simpa [hI] using hz
         rcases Set.mem_iUnion₂.mp hz' with ⟨w, hwI, hzw⟩
-        have : connectedComponent w ⊆ T := by
-          intro u hu
-          simpa [hI] using (Set.mem_iUnion₂.mpr ⟨w, hwI, hu⟩ : u ∈ ⋃ x ∈ I, connectedComponent x)
-        simpa [(connectedComponent_eq hzw).symm] using this
+        rw [(connectedComponent_eq hzw).symm]
+        intro u hu
+        simpa [hI] using (Set.mem_iUnion₂.mpr ⟨w, hwI, hu⟩ : u ∈ ⋃ x ∈ I, connectedComponent x)
       have hdis : Disjoint (connectedComponent x) T := by
         refine Set.disjoint_left.2 ?_
         intro z hz hxz
