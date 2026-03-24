@@ -109,20 +109,18 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
   intro q hq
   obtain ⟨g₁, hg₁q, hstd_g⟩ :=
     Algebra.IsLocalIso.exists_notMem_isStandardOpenImmersion (R := S) q
-  obtain ⟨s₁, hs₁⟩ := Algebra.IsStandardOpenImmersion.exists_away S (Localization.Away g₁)
-  set Tg := Localization.Away g₁
-  have hq_disj : Disjoint (Submonoid.powers g₁ : Set T) (↑q : Set T) :=
-    (Ideal.disjoint_powers_iff_notMem g₁ hq.isRadical).mpr hg₁q
+  let Tg := Localization.Away g₁
+  obtain ⟨s₁, hs₁⟩ := Algebra.IsStandardOpenImmersion.exists_away S Tg
   set q_g := Ideal.map (algebraMap T Tg) q
-  haveI : q_g.IsPrime :=
-    IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g₁) Tg q hq hq_disj
+  have : q_g.IsPrime :=
+    IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g₁) Tg q hq
+      ((Ideal.disjoint_powers_iff_notMem g₁ hq.isRadical).mpr hg₁q)
   set p := q_g.comap (algebraMap S Tg)
-  haveI : p.IsPrime := Ideal.IsPrime.comap (algebraMap S Tg)
+  have : p.IsPrime := Ideal.IsPrime.comap (algebraMap S Tg)
   obtain ⟨r₁, hr₁p, hstd_f⟩ :=
     Algebra.IsLocalIso.exists_notMem_isStandardOpenImmersion (R := R) p
   obtain ⟨n, t, ht⟩ := IsLocalization.Away.surj g₁ (algebraMap S Tg r₁)
-  use t * g₁
-  constructor
+  refine ⟨t * g₁, ?_, ?_⟩
   · apply Ideal.IsPrime.mul_notMem hq
     · intro htq
       apply hr₁p
@@ -193,12 +191,13 @@ lemma RingHom.isLocalIso_algebraMap [Algebra R S] :
 namespace RingHom.IsLocalIso
 
 lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
-  letI : Algebra R S := f.toAlgebra
+  algebraize [f]
   have hbij : Function.Bijective (algebraMap R S) := hf
   haveI : Algebra.IsStandardOpenImmersion R S := by
     rw [Algebra.isStandardOpenImmersion_iff]
     exact ⟨1, IsLocalization.away_of_isUnit_of_bijective _ isUnit_one hbij⟩
-  exact (inferInstance : Algebra.IsLocalIso R S)
+  show Algebra.IsLocalIso R S
+  infer_instance
 
 lemma comp {T : Type*} [CommSemiring T] {g : S →+* T} (hg : g.IsLocalIso) (hf : f.IsLocalIso) :
     (g.comp f).IsLocalIso := by
