@@ -176,9 +176,9 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
         have hznot : z ∉ connectedComponent x := by
           intro hz'
           exact (Set.disjoint_left.mp hdis) hz' hz
-        have : z ∉ ⋂ U : K, (U : Set X) := by simpa [hInter] using hznot
-        rcases (by simpa [Set.mem_iInter] using this) with ⟨U, hzU⟩
-        exact Set.mem_iUnion.mpr ⟨U, hzU⟩
+        have : z ∉ ⋂ U : K, (U : Set X) := by rwa [hInter]
+        simp only [Set.mem_iInter, not_forall] at this
+        exact Set.mem_iUnion.mpr this
       obtain ⟨s, hs⟩ :=
         hTcomp.elim_finite_subcover
           (U := fun U : K => (U : Set X)ᶜ)
@@ -249,16 +249,8 @@ instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactS
     -- Express `connectedComponent x` as an intersection of clopens.
     have hxdata :
         IsClosed (connectedComponent x : Set X) ∧
-          ∃ I : Set X, ⋃ z ∈ I, connectedComponent z = connectedComponent x := by
-      refine ⟨isClosed_connectedComponent (x := x), ⟨{x}, ?_⟩⟩
-      ext z
-      constructor
-      · intro hz
-        rcases Set.mem_iUnion₂.mp hz with ⟨w, hw, hzw⟩
-        rcases Set.mem_singleton_iff.1 hw with rfl
-        simpa using hzw
-      · intro hz
-        exact Set.mem_iUnion₂.mpr ⟨x, by simp, hz⟩
+          ∃ I : Set X, ⋃ z ∈ I, connectedComponent z = connectedComponent x :=
+      ⟨isClosed_connectedComponent, {x}, by ext z; simp⟩
     obtain ⟨J, hJ⟩ :=
       (isClosed_and_iUnion_connectedComponent_eq_iff (X := X) (T := connectedComponent x)).1 hxdata
     -- Use compactness of `connectedComponent y` to find a clopen neighborhood of `x` disjoint from it.
@@ -282,24 +274,12 @@ instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactS
     have hU0 : IsClopen U0 := by
       simpa [U0] using
         (isClopen_biInter_finset (s := s) (f := fun U : J => (↑↑U : Set X)) fun U _ => U.1.2)
-    have hxU0 : x ∈ U0 := by
-      have hxInter : x ∈ ⋂ U : J, (↑↑U : Set X) := by
-        simpa [hJ] using (mem_connectedComponent (x := x))
-      have hxU : ∀ U : J, x ∈ (↑↑U : Set X) := fun U => Set.mem_iInter.1 hxInter U
-      refine Set.mem_iInter.2 ?_
-      intro U
-      refine Set.mem_iInter.2 ?_
-      intro _
-      exact hxU U
+    have hxInter : x ∈ ⋂ U : J, (↑↑U : Set X) := by
+      simpa [hJ] using (mem_connectedComponent (x := x))
+    have hxU0 : x ∈ U0 := Set.mem_iInter₂.mpr fun U _ => Set.mem_iInter.1 hxInter U
     have hyU0 : y ∉ U0 := by
-      have hycov : y ∈ ⋃ U ∈ s, (↑↑U : Set X)ᶜ := hs mem_connectedComponent
-      rcases Set.mem_iUnion₂.mp hycov with ⟨U, hUs, hyU⟩
-      intro hyU0
-      have hyU' : y ∈ (↑↑U : Set X) := by
-        have hyU0' : y ∈ ⋂ U ∈ s, (↑↑U : Set X) := by simpa [U0] using hyU0
-        have hyInner : y ∈ ⋂ (_ : U ∈ s), (↑↑U : Set X) := Set.mem_iInter.1 hyU0' U
-        exact Set.mem_iInter.1 hyInner hUs
-      exact hyU hyU'
+      obtain ⟨U, hUs, hyU⟩ := Set.mem_iUnion₂.mp (hs mem_connectedComponent)
+      exact fun h => hyU (Set.mem_iInter₂.mp h U hUs)
     -- Descend the clopen set `U0` to a clopen set in `ConnectedComponents X`.
     let V : Set (ConnectedComponents X) := ((↑) : X → ConnectedComponents X) '' U0
     have hUnion : (⋃ z ∈ U0, connectedComponent z) = U0 := by
@@ -345,166 +325,120 @@ theorem ConnectedComponents.spectralSpace_of_isPullback {Y T : Type u} [Topologi
     SpectralSpace Y := pb.spectralSpace
 
 omit [SpectralSpace X] in
+/-- The first projection of a pullback along the connected components map is surjective. -/
+theorem ConnectedComponents.surjective_fst_of_isPullback {Y T : Type u} [TopologicalSpace Y]
+    [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
+    {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
+    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
+    Function.Surjective g := by
+  classical
+  let mkX : C(X, ConnectedComponents X) := ⟨mk, continuous_coe⟩
+  intro t
+  rcases ConnectedComponents.surjective_coe (i t) with ⟨x, hx⟩
+  let p : { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+    ⟨⟨t, x⟩, hx.symm⟩
+  let q : (pullback (ofHom i) (ofHom mkX) : TopCat) :=
+    (TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX)).inv p
+  refine ⟨pb.isoPullback.inv q, ?_⟩
+  have hq : g (pb.isoPullback.inv q) = pullback.fst (ofHom i) (ofHom mkX) q :=
+    ConcreteCategory.congr_hom pb.isoPullback_inv_fst q
+  have hfst : pullback.fst (ofHom i) (ofHom mkX) q = t := by
+    simpa [q] using TopCat.pullbackIsoProdSubtype_inv_fst_apply (ofHom i) (ofHom mkX) p
+  simp [hq, hfst]
+
+omit [SpectralSpace X] in
+/-- The fibers of the first projection of a pullback along the connected components map are
+preconnected. -/
+theorem ConnectedComponents.isPreconnected_fiber_of_isPullback {Y T : Type u}
+    [TopologicalSpace Y] [TopologicalSpace T] [CompactSpace T] [T2Space T]
+    [TotallyDisconnectedSpace T] {f : C(Y, X)} {g : C(Y, T)}
+    {i : C(T, ConnectedComponents X)}
+    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
+    (t : T) : IsPreconnected ((g : Y → T) ⁻¹' ({t} : Set T)) := by
+  classical
+  let mkX : C(X, ConnectedComponents X) := ⟨mk, continuous_coe⟩
+  -- Transport to the (concrete) pullback.
+  let eY : Y ≃ₜ (pullback (ofHom i) (ofHom mkX) : TopCat) := homeoOfIso pb.isoPullback
+  let fiberP : Set (pullback (ofHom i) (ofHom mkX) : TopCat) :=
+    (pullback.fst (ofHom i) (ofHom mkX)) ⁻¹' ({t} : Set T)
+  have hsetY : ((g : Y → T) ⁻¹' ({t} : Set T)) = eY.symm '' fiberP := by
+    ext y
+    constructor
+    · intro hy
+      refine ⟨eY y, ?_, by simp⟩
+      have hy' : g y = t := by simpa using hy
+      have hfst : pullback.fst (ofHom i) (ofHom mkX) (eY y) = t := by
+        rw [show pullback.fst (ofHom i) (ofHom mkX) (eY y) = g y from
+          ConcreteCategory.congr_hom pb.isoPullback_hom_fst y, hy']
+      simp [fiberP, hfst]
+    · rintro ⟨q, hq, rfl⟩
+      have hgq : g (eY.symm q) = pullback.fst (ofHom i) (ofHom mkX) q :=
+        ConcreteCategory.congr_hom pb.isoPullback_inv_fst q
+      simpa [hgq] using hq
+  -- Work in the explicit subtype pullback `S ⊆ T × X`.
+  let eS :
+      (pullback (ofHom i) (ofHom mkX) : TopCat) ≃ₜ
+        { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+    homeoOfIso (TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX))
+  let FSt : Set { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+    { p | (p : T × X).fst = t }
+  -- Show `FSt` is preconnected: it is the continuous image of a connected component in `X`.
+  have hFSt : IsPreconnected FSt := by
+    rcases ConnectedComponents.surjective_coe (i t) with ⟨x0, hx0⟩
+    let A : Set X := ((↑) : X → ConnectedComponents X) ⁻¹' ({i t} : Set (ConnectedComponents X))
+    have hA : IsPreconnected A := by
+      have hA' : A = connectedComponent x0 := by
+        simpa [A, hx0] using (connectedComponents_preimage_singleton (α := X) (x := x0))
+      simpa [hA'] using (isPreconnected_connectedComponent (x := x0))
+    letI : PreconnectedSpace A := (isPreconnected_iff_preconnectedSpace (s := A)).1 hA
+    let φ : A → { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+      fun ⟨x, hxA⟩ => ⟨⟨t, x⟩, by simpa [mkX, Set.mem_singleton_iff, A] using hxA.symm⟩
+    have hφcont : Continuous φ :=
+      (continuous_const.prodMk continuous_subtype_val).subtype_mk fun ⟨x, hxA⟩ => by
+        simpa [mkX, Set.mem_singleton_iff, A] using hxA.symm
+    have hRange : Set.range φ = FSt := by
+      ext p
+      constructor
+      · rintro ⟨x, rfl⟩
+        simp [FSt, φ]
+      · intro hp
+        have hxmem : p.1.2 ∈ A := by
+          have h : i p.1.1 = (p.1.2 : ConnectedComponents X) := by simpa [mkX] using p.2
+          have hip : i t = i p.1.1 := by simpa using (congrArg i hp).symm
+          simp [A, (hip.trans h).symm]
+        exact ⟨⟨p.1.2, hxmem⟩, Subtype.ext (Prod.ext hp.symm rfl)⟩
+    simpa [hRange, Set.image_univ] using
+      isPreconnected_univ.image (f := φ) (hf := hφcont.continuousOn)
+  have hfiberP : IsPreconnected fiberP := by
+    have hEq : fiberP = eS.symm '' FSt := by
+      ext q
+      constructor
+      · intro hq
+        refine ⟨eS q, ?_, by simp⟩
+        have hqt : pullback.fst (ofHom i) (ofHom mkX) q = t := by simpa using hq
+        have : (eS q : T × X).fst = pullback.fst (ofHom i) (ofHom mkX) q := by
+          simpa using congrArg Prod.fst <| congrArg Subtype.val <|
+            TopCat.pullbackIsoProdSubtype_hom_apply (f := ofHom i) (g := ofHom mkX) (x := q)
+        simp [FSt, this, hqt]
+      · rintro ⟨p, hp, rfl⟩
+        have : pullback.fst (ofHom i) (ofHom mkX) (eS.symm p) = (p : T × X).fst := by
+          simpa [eS] using TopCat.pullbackIsoProdSubtype_inv_fst_apply (ofHom i) (ofHom mkX) p
+        simp [fiberP, this, show (p : T × X).fst = t by simpa [FSt] using hp]
+    simpa [hEq] using hFSt.image (f := eS.symm) (hf := eS.symm.continuous.continuousOn)
+  simpa [hsetY] using hfiberP.image (f := eY.symm) (hf := eY.symm.continuous.continuousOn)
+
+omit [SpectralSpace X] in
 theorem ConnectedComponents.lift_bijective_of_isPullback {Y T : Type u} [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
     {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     Function.Bijective (connectedComponentsLift g.2) := by
-  classical
-  let mkX : C(X, ConnectedComponents X) := ⟨mk, continuous_coe⟩
-  have hg_surj : Function.Surjective g := by
-    intro t
-    rcases ConnectedComponents.surjective_coe (i t) with ⟨x, hx⟩
-    let p :
-        { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
-      ⟨⟨t, x⟩, hx.symm⟩
-    let q : (pullback (ofHom i) (ofHom mkX) : TopCat) :=
-      (TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX)).inv p
-    refine ⟨pb.isoPullback.inv q, ?_⟩
-    have hq :
-        g (pb.isoPullback.inv q) =
-          pullback.fst (ofHom i) (ofHom mkX) q := by
-      exact ConcreteCategory.congr_hom pb.isoPullback_inv_fst q
-    have hfst :
-        pullback.fst (ofHom i) (ofHom mkX) q = t := by
-      simpa [q] using
-        (TopCat.pullbackIsoProdSubtype_inv_fst_apply (ofHom i) (ofHom mkX) p)
-    simp [hq, hfst]
-  have hlift_surj : Function.Surjective (connectedComponentsLift g.2) := by
-    intro t
-    rcases hg_surj t with ⟨y, rfl⟩
-    refine ⟨(y : ConnectedComponents Y), ?_⟩
-    simp
-  have hFib : ∀ t : T, IsPreconnected ((g : Y → T) ⁻¹' ({t} : Set T)) := by
-    intro t
-    -- Transport to the (concrete) pullback.
-    let eY : Y ≃ₜ (pullback (ofHom i) (ofHom mkX) : TopCat) := homeoOfIso pb.isoPullback
-    let fiberP : Set (pullback (ofHom i) (ofHom mkX) : TopCat) :=
-      (pullback.fst (ofHom i) (ofHom mkX)) ⁻¹' ({t} : Set T)
-    have hsetY : ((g : Y → T) ⁻¹' ({t} : Set T)) = eY.symm '' fiberP := by
-      ext y
-      constructor
-      · intro hy
-        refine ⟨eY y, ?_, by simp⟩
-        have hy' : g y = t := by
-          simpa [Set.mem_preimage, Set.mem_singleton_iff] using hy
-        have : pullback.fst (ofHom i) (ofHom mkX) (eY y) = g y := by
-          change
-            pullback.fst (ofHom i) (ofHom mkX) (pb.isoPullback.hom y) = g y
-          exact ConcreteCategory.congr_hom pb.isoPullback_hom_fst y
-        have hfst : pullback.fst (ofHom i) (ofHom mkX) (eY y) = t := by
-          simpa [hy'] using this
-        simp [fiberP, Set.mem_preimage, Set.mem_singleton_iff, hfst]
-      · rintro ⟨q, hq, rfl⟩
-        have hgq : g (eY.symm q) =
-            pullback.fst (ofHom i) (ofHom mkX) q := by
-          -- `eY.symm = pb.isoPullback.inv` and `pb.isoPullback.inv ≫ g = pullback.fst`
-          change g (pb.isoPullback.inv q) = pullback.fst (ofHom i) (ofHom mkX) q
-          exact ConcreteCategory.congr_hom pb.isoPullback_inv_fst q
-        have hqt : pullback.fst (ofHom i) (ofHom mkX) q = t := by
-          simpa [fiberP, Set.mem_preimage, Set.mem_singleton_iff] using hq
-        have : g (eY.symm q) = t := by
-          simp [hgq, hqt]
-        simpa [Set.mem_preimage, Set.mem_singleton_iff] using this
-    -- Work in the explicit subtype pullback `S ⊆ T × X`.
-    let eS :
-        (pullback (ofHom i) (ofHom mkX) : TopCat) ≃ₜ
-          { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
-      homeoOfIso (TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX))
-    let FSt : Set { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
-      { p | (p : T × X).fst = t }
-    -- Show `FSt` is preconnected: it is the continuous image of a connected component in `X`.
-    have hFSt : IsPreconnected FSt := by
-      -- Choose a representative of `i t` in `X`.
-      rcases ConnectedComponents.surjective_coe (i t) with ⟨x0, hx0⟩
-      let A : Set X := ((↑) : X → ConnectedComponents X) ⁻¹' ({i t} : Set (ConnectedComponents X))
-      have hA : IsPreconnected A := by
-        have hA' : A = connectedComponent x0 := by
-          simpa [A, hx0] using (connectedComponents_preimage_singleton (α := X) (x := x0))
-        simpa [hA'] using (isPreconnected_connectedComponent (x := x0))
-      letI : PreconnectedSpace A := (isPreconnected_iff_preconnectedSpace (s := A)).1 hA
-      let φ :
-          A → { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } := fun x => by
-        rcases x with ⟨x, hxA⟩
-        have hxmem :
-            (x : ConnectedComponents X) ∈ ({i t} : Set (ConnectedComponents X)) := by
-          simpa [A] using hxA
-        have hx : (x : ConnectedComponents X) = i t := by
-          simpa [Set.mem_singleton_iff] using hxmem
-        exact ⟨⟨t, x⟩, hx.symm⟩
-      have hφcont : Continuous φ := by
-        -- continuity of `x ↦ (t, x)` and then into the subtype
-        refine (continuous_const.prodMk continuous_subtype_val).subtype_mk (by
-          rintro ⟨x, hxA⟩
-          have hxmem :
-              (x : ConnectedComponents X) ∈ ({i t} : Set (ConnectedComponents X)) := by
-            simpa [A] using hxA
-          have hx : (x : ConnectedComponents X) = i t := by
-            simpa [Set.mem_singleton_iff] using hxmem
-          simpa [mkX] using hx.symm)
-      have hRange : Set.range φ = FSt := by
-        ext p
-        constructor
-        · rintro ⟨x, rfl⟩
-          simp [FSt, φ]
-        · intro hp
-          have hxmem : p.1.2 ∈ A := by
-            -- `p.2 : i p.1.1 = mk p.1.2`
-            have : (p.1.2 : ConnectedComponents X) = i t := by
-              have h : i p.1.1 = (p.1.2 : ConnectedComponents X) := by
-                simpa [mkX] using p.2
-              have hip : i t = i p.1.1 := by
-                simpa using (congrArg i hp).symm
-              exact (hip.trans h).symm
-            simp [A, this]
-          refine ⟨⟨p.1.2, hxmem⟩, ?_⟩
-          apply Subtype.ext
-          apply Prod.ext
-          · exact hp.symm
-          · rfl
-      have : IsPreconnected (Set.range φ) := by
-        simpa [Set.image_univ] using
-          (isPreconnected_univ.image (f := φ) (hf := hφcont.continuousOn))
-      simpa [hRange] using this
-    have hfiberP : IsPreconnected fiberP := by
-      have hEq :
-          fiberP = eS.symm '' FSt := by
-        ext q
-        constructor
-        · intro hq
-          refine ⟨eS q, ?_, by simp⟩
-          have hqt : pullback.fst (ofHom i) (ofHom mkX) q = t := by
-            simpa [fiberP, Set.mem_preimage, Set.mem_singleton_iff] using hq
-          -- `eS` sends `q` to `⟨⟨fst q, snd q⟩, _⟩`
-          have : (eS q : T × X).fst = pullback.fst (ofHom i) (ofHom mkX) q := by
-            change
-              (((TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX)).hom q :
-                  { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 }) : T × X).fst =
-                pullback.fst (ofHom i) (ofHom mkX) q
-            simpa using
-              congrArg Prod.fst <|
-                congrArg Subtype.val <|
-                  (TopCat.pullbackIsoProdSubtype_hom_apply
-                    (f := ofHom i) (g := ofHom mkX) (x := q))
-          simp [FSt, this, hqt]
-        · rintro ⟨p, hp, rfl⟩
-          have : pullback.fst (ofHom i) (ofHom mkX) (eS.symm p) = (p : T × X).fst := by
-            simpa [eS] using
-              (TopCat.pullbackIsoProdSubtype_inv_fst_apply (ofHom i) (ofHom mkX) p)
-          have hp' : (p : T × X).fst = t := by
-            simpa [FSt] using hp
-          have : pullback.fst (ofHom i) (ofHom mkX) (eS.symm p) = t := by
-            simpa [hp'] using this
-          simp [fiberP, this]
-      have : IsPreconnected (eS.symm '' FSt) :=
-        hFSt.image (f := eS.symm) (hf := eS.symm.continuous.continuousOn)
-      simpa [hEq] using this
-    have : IsPreconnected (eY.symm '' fiberP) :=
-      hfiberP.image (f := eY.symm) (hf := eY.symm.continuous.continuousOn)
-    simpa [hsetY] using this
-  have hlift_inj : Function.Injective (connectedComponentsLift g.2) :=
-    Continuous.connectedComponentsLift_injective (hf := g.2) hFib
-  exact ⟨hlift_inj, hlift_surj⟩
+  refine ⟨?_, ?_⟩
+  · exact Continuous.connectedComponentsLift_injective g.2
+      (ConnectedComponents.isPreconnected_fiber_of_isPullback pb)
+  · intro t
+    rcases ConnectedComponents.surjective_fst_of_isPullback pb t with ⟨y, rfl⟩
+    exact ⟨(y : ConnectedComponents Y), by simp⟩
 
 @[stacks 096C "first part"]
 theorem ConnectedComponents.isHomeomorph_lift_of_isPullback {Y T : Type u} [TopologicalSpace Y]
