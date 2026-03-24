@@ -24,19 +24,24 @@ In this file we show:
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
-/-- A ring homomorphism is injective if all stalk maps are injective and for every maximal
-ideal of `R`, there exists a prime of `S` mapping to it. -/
+/-- A ring homomorphism is injective if all stalk maps at maximal ideals are injective and
+`PrimeSpectrum.comap f` is surjective. -/
 lemma RingHom.injective_of_injectiveOnStalks {f : R →+* S}
-    (hf : ∀ (p : Ideal S) [p.IsPrime],
+    (hf : ∀ (p : Ideal S) [p.IsMaximal],
         Function.Injective (Localization.localRingHom (p.comap f) p f rfl))
-    (hb : ∀ (m : Ideal R), m.IsMaximal →
-        ∃ (p : Ideal S), p.IsPrime ∧ p.comap f = m) : Function.Injective f := by
+    (hb : Function.Surjective (PrimeSpectrum.comap f)) : Function.Injective f := by
   intro r₁ r₂ hr
   apply MaximalSpectrum.toPiLocalization_injective R
   ext ⟨q, hq⟩
-  obtain ⟨p, hp, hpq⟩ := hb q hq
-  subst hpq
-  apply @hf p hp
+  obtain ⟨⟨p, hp⟩, hpq⟩ := hb ⟨q, hq.isPrime⟩
+  have hpq' : p.comap f = q := congr_arg PrimeSpectrum.asIdeal hpq
+  obtain ⟨m, hm, hpm⟩ := p.exists_le_maximal hp.ne_top
+  have hmcomap : m.comap f = q :=
+    (hq.eq_of_le (Ideal.comap_ne_top f hm.ne_top)
+      (hpq' ▸ Ideal.comap_mono hpm)).symm
+  subst hmcomap
+  haveI := hm
+  apply hf m
   simp only [MaximalSpectrum.toPiLocalization, Pi.algebraMap_apply,
     Localization.localRingHom_to_map, hr]
 
@@ -52,7 +57,7 @@ lemma RingHom.flat_of_localizations_flat {f : R →+* S}
     (fun P ↦ Algebra.linearMap S _)
   intro P hPmax
   haveI : P.IsMaximal := hPmax
-  letI := (Localization.localRingHom (Ideal.comap f P) P f rfl).toAlgebra
+  algebraize [Localization.localRingHom (Ideal.comap f P) P f rfl]
   haveI : IsScalarTower R (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) :=
     .of_algebraMap_eq fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
   haveI : Module.Flat (Localization.AtPrime (Ideal.comap f P))
@@ -80,7 +85,7 @@ lemma RingHom.surjective_of_forall_isMaximal_exists {f : R →+* S}
   exact hrm (hJm hr_range)
 
 /-- Converse of `RingHom.surjective_of_forall_isMaximal_exists`. -/
-lemma RingHom.forall_isMaximal_exists_of_surjective {f : R →+* S}
+lemma RingHom.exists_mul_mem_range_of_surjective {f : R →+* S}
     (hf : Function.Surjective f) (s : S) (m : Ideal R) (hm : m.IsMaximal) :
     ∃ r : R, r ∉ m ∧ f r * s ∈ f.range := by
   obtain ⟨r, rfl⟩ := hf s

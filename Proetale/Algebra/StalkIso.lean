@@ -88,9 +88,8 @@ lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) : (g.comp f).BijectiveOnStalks := by
   intro p hp
   have hq : (p.comap g).IsPrime := Ideal.IsPrime.comap g
-  have key := Localization.localRingHom_comp
-    (I := p.comap (g.comp f)) (p.comap g) p f (Ideal.comap_comap f g) g rfl
-  rw [key]
+  rw [Localization.localRingHom_comp
+    (I := p.comap (g.comp f)) (p.comap g) p f (Ideal.comap_comap f g) g rfl]
   exact (hg p).comp (hf (p.comap g))
 
 /-- A ring homomorphism that is bijective on stalks and induces a bijection on prime spectra
@@ -98,10 +97,7 @@ is itself bijective. -/
 lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     (hb : Function.Bijective <| PrimeSpectrum.comap f) : Function.Bijective f := by
   have hinj : Function.Injective f :=
-    RingHom.injective_of_injectiveOnStalks (fun p [_] ↦ (hf p).1)
-      fun m hm ↦ by
-        obtain ⟨⟨p, hp⟩, hpq⟩ := hb.2 ⟨m, hm.isPrime⟩
-        exact ⟨p, hp, congr_arg PrimeSpectrum.asIdeal hpq⟩
+    RingHom.injective_of_injectiveOnStalks (fun p [_] ↦ (hf p).1) hb.2
   have hsurj : Function.Surjective f := by
     have hflat : f.Flat :=
       RingHom.flat_of_localizations_flat fun P [_] ↦ .of_bijective (hf P)
@@ -131,10 +127,10 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     obtain ⟨⟨r₀, ⟨b, hb⟩⟩, hxeq⟩ := IsLocalization.surj (q.comap f).primeCompl x
     have hfb_s : algebraMap S (Localization.AtPrime q) (f b * s) =
         algebraMap S (Localization.AtPrime q) (f r₀) := by
-      rw [map_mul]
-      have step1 := congr_arg (Localization.localRingHom (q.comap f) q f rfl) hxeq
-      rw [map_mul, Localization.localRingHom_to_map, Localization.localRingHom_to_map] at step1
-      rw [← step1, ← hx, mul_comm]
+      rw [map_mul, ← hx,
+        ← Localization.localRingHom_to_map (hIJ := rfl) (f := f),
+        ← Localization.localRingHom_to_map (hIJ := rfl) (f := f) (x := r₀),
+        ← map_mul, mul_comm, hxeq]
     have hfb_s' : algebraMap S (Localization.AtPrime q) (f b * s - f r₀) =
         algebraMap S (Localization.AtPrime q) 0 := by
       rw [map_zero, map_sub, hfb_s, sub_self]
@@ -164,15 +160,12 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
       rw [hd'']
       linear_combination d' * hc_eq
     have hkey3 : f (r₁ * b) * s = f (r₁ * r₀) := by
-      have h := hkey2
-      rw [mul_sub, sub_eq_zero] at h
-      rw [map_mul, map_mul, mul_assoc, h]
-    have hb_nmem : b ∉ m := hqm' ▸ hb
-    have hr1b_nmem : r₁ * b ∉ m :=
-      mt hm_prime.mul_mem_iff_mem_or_mem.mp (by
-        push_neg
-        exact ⟨hr₁m, hb_nmem⟩)
-    exact ⟨r₁ * b, hr1b_nmem, r₁ * r₀, hkey3.symm⟩
+      rw [mul_sub, sub_eq_zero] at hkey2
+      rw [map_mul, map_mul, mul_assoc, hkey2]
+    refine ⟨r₁ * b, ?_, r₁ * r₀, hkey3.symm⟩
+    exact mt hm_prime.mul_mem_iff_mem_or_mem.mp (by
+      push_neg
+      exact ⟨hr₁m, hqm' ▸ hb⟩)
   exact ⟨hinj, hsurj⟩
 
 lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T} :
