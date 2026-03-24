@@ -78,7 +78,7 @@ lemma of_span_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) =
     have : IsStandardOpenImmersion R (Localization.Away ((algebraMap S (T i)) g)) := by
       rw [← hg]
       have : IsLocalization.Away (g' * (algebraMap S (T i)) (f i) ^ n) (Localization.Away g') := by
-        apply (config := { allowSynthFailures := true }) IsLocalization.Away.mul' (Localization.Away g')
+        apply +allowSynthFailures IsLocalization.Away.mul' (Localization.Away g')
         apply IsLocalization.away_of_isUnit_of_bijective
         · exact IsUnit.map _ (IsUnit.pow _ (IsLocalization.Away.algebraMap_isUnit _))
         · exact Function.bijective_id
@@ -139,7 +139,7 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
       have : IsLocalization.Away
           ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n)
           (Localization.Away (algebraMap S Tg r₁)) := by
-        apply (config := { allowSynthFailures := true }) IsLocalization.Away.mul'
+        apply +allowSynthFailures IsLocalization.Away.mul'
           (Localization.Away (algebraMap S Tg r₁))
         apply IsLocalization.away_of_isUnit_of_bijective
         · exact IsUnit.map _ hunit
@@ -150,16 +150,14 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
       have : IsScalarTower R Sr Tgr :=
         IsScalarTower.of_algebraMap_eq' (R := R) (S := Sr) (A := Tgr) (by
         ext x
-        simp only [RingHom.comp_apply]
-        rw [IsScalarTower.algebraMap_apply R S Sr, RingHom.algebraMap_toAlgebra,
-            IsLocalization.Away.map, IsLocalization.map_eq,
-            IsScalarTower.algebraMap_apply R Tg Tgr, IsScalarTower.algebraMap_apply R S Tg])
+        rw [RingHom.comp_apply, IsScalarTower.algebraMap_apply R S Sr,
+            RingHom.algebraMap_toAlgebra, IsLocalization.Away.map, IsLocalization.map_eq,
+            ← IsScalarTower.algebraMap_apply R S Tg, ← IsScalarTower.algebraMap_apply R Tg Tgr])
       have : IsScalarTower S Sr Tgr :=
         IsScalarTower.of_algebraMap_eq' (R := S) (S := Sr) (A := Tgr) (by
         ext a
-        simp only [RingHom.comp_apply]
-        rw [RingHom.algebraMap_toAlgebra, IsLocalization.Away.map, IsLocalization.map_eq,
-            IsScalarTower.algebraMap_apply S Tg Tgr])
+        rw [RingHom.comp_apply, RingHom.algebraMap_toAlgebra, IsLocalization.Away.map,
+            IsLocalization.map_eq, ← IsScalarTower.algebraMap_apply S Tg Tgr])
       have : IsLocalization.Away (algebraMap S Sr s₁) Tgr :=
         IsLocalization.Away.commutes Sr Tg Tgr r₁ s₁
       have : Algebra.IsStandardOpenImmersion Sr Tgr := ⟨algebraMap S Sr s₁, inferInstance⟩
@@ -167,12 +165,10 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
         Algebra.IsStandardOpenImmersion.trans R Sr Tgr
       exact .of_algEquiv _ _ _
         ((IsLocalization.algEquiv
-          (Submonoid.powers ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n))
-          (Localization.Away ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n))
+          (Submonoid.powers ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n)) _
           (Localization.Away (algebraMap S Tg r₁))).symm.restrictScalars R)
     exact .of_algEquiv _ _ _
-      ((IsLocalization.algEquiv (Submonoid.powers (t * g₁))
-        (Localization.Away (t * g₁))
+      ((IsLocalization.algEquiv (Submonoid.powers (t * g₁)) _
         (Localization.Away (algebraMap T Tg t))).symm.restrictScalars R)
 
 end Algebra.IsLocalIso
@@ -194,10 +190,7 @@ namespace RingHom.IsLocalIso
 
 lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
   algebraize [f]
-  have hbij : Function.Bijective (algebraMap R S) := hf
-  haveI : Algebra.IsStandardOpenImmersion R S := by
-    rw [Algebra.isStandardOpenImmersion_iff]
-    exact ⟨1, IsLocalization.away_of_isUnit_of_bijective _ isUnit_one hbij⟩
+  haveI := Algebra.IsStandardOpenImmersion.of_bijective R S hf
   show Algebra.IsLocalIso R S
   infer_instance
 
