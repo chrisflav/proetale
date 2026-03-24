@@ -7,6 +7,7 @@ import Mathlib.RingTheory.RingHom.Flat
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.Ind
 import Proetale.Algebra.StalkIso
+import Proetale.Mathlib.Algebra.Algebra.Pi
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 
 /-!
@@ -92,28 +93,30 @@ instance pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRin
     rw [← iff_ind_isLocalIso]
     infer_instance
 
-private def prod_B (S T : Type u) : ULift.{u} Bool → Type u := fun i ↦ Bool.rec T S i.down
+/-- Type family for the product of two types indexed by `Fin 2`, lifted to universe `u`. -/
+@[reducible] def piFinTwoTypes (S T : Type u) : ULift.{u} (Fin 2) → Type u
+  | ⟨0⟩ => S
+  | ⟨1⟩ => T
 
-private noncomputable instance prod_instCR (S T : Type u) [CommRing S] [CommRing T] :
-    ∀ i, CommRing (prod_B S T i) := fun ⟨b⟩ ↦
-  Bool.rec (inferInstanceAs (CommRing T)) (inferInstanceAs (CommRing S)) b
+noncomputable instance piFinTwoTypes.commRing (S T : Type u) [CommRing S] [CommRing T]
+    (i : ULift.{u} (Fin 2)) : CommRing (piFinTwoTypes S T i) :=
+  match i with | ⟨0⟩ => inferInstance | ⟨1⟩ => inferInstance
 
-private noncomputable instance prod_instAlg (S T : Type u) [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] : ∀ i, Algebra R (prod_B S T i) := fun ⟨b⟩ ↦
-  Bool.rec (inferInstanceAs (Algebra R T)) (inferInstanceAs (Algebra R S)) b
+noncomputable instance piFinTwoTypes.algebra (S T : Type u) [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] (i : ULift.{u} (Fin 2)) : Algebra R (piFinTwoTypes S T i) :=
+  match i with | ⟨0⟩ => inferInstance | ⟨1⟩ => inferInstance
 
-private noncomputable instance prod_instIZ (S T : Type u) [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] [IndZariski R S] [IndZariski R T] :
-    ∀ i, IndZariski R (prod_B S T i) := fun ⟨b⟩ ↦
-  Bool.rec (inferInstanceAs (IndZariski R T)) (inferInstanceAs (IndZariski R S)) b
+noncomputable instance piFinTwoTypes.indZariski (S T : Type u) [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] [IndZariski R S] [IndZariski R T]
+    (i : ULift.{u} (Fin 2)) : IndZariski R (piFinTwoTypes S T i) :=
+  match i with | ⟨0⟩ => inferInstance | ⟨1⟩ => inferInstance
 
-private noncomputable def prod_equiv (S T : Type u) [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] : (∀ i, prod_B S T i) ≃ₐ[R] S × T where
-  toFun f := (f ⟨true⟩, f ⟨false⟩)
-  invFun p := fun ⟨b⟩ ↦ @Bool.rec (fun b ↦ prod_B S T ⟨b⟩) p.2 p.1 b
-  left_inv f := by
-    ext ⟨b⟩
-    cases b <;> rfl
+/-- Algebra equivalence between a pi type over `ULift (Fin 2)` and a product. -/
+noncomputable def piFinTwoEquiv (S T : Type u) [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] : (∀ i, piFinTwoTypes S T i) ≃ₐ[R] S × T where
+  toFun f := (f ⟨0⟩, f ⟨1⟩)
+  invFun p := fun | ⟨0⟩ => p.1 | ⟨1⟩ => p.2
+  left_inv f := by ext ⟨i⟩; fin_cases i <;> rfl
   right_inv p := by obtain ⟨_, _⟩ := p; rfl
   map_mul' _ _ := Prod.ext rfl rfl
   map_add' _ _ := Prod.ext rfl rfl
@@ -122,7 +125,8 @@ private noncomputable def prod_equiv (S T : Type u) [CommRing S] [CommRing T]
 /-- The product of two ind-Zariski algebras is ind-Zariski. -/
 instance prod [Algebra.IndZariski R S] [Algebra.IndZariski R T] :
     Algebra.IndZariski R (S × T) :=
-  of_equiv (R := R) (S := ∀ i, prod_B S T i) (T := S × T) (prod_equiv R S T)
+  of_equiv (R := R) (S := ∀ i, piFinTwoTypes S T i) (T := S × T)
+    (piFinTwoEquiv R S T)
 
 instance function {ι : Type u} [_root_.Finite ι] (S : Type u) [CommRing S]
     [Algebra R S] [Algebra.IndZariski R S] : Algebra.IndZariski R (ι → S) :=
@@ -145,33 +149,13 @@ instance localization (M : Submonoid R) : Algebra.IndZariski R (Localization M) 
 
 variable (R)
 
-/-- A local isomorphism `R → X` is flat, since it is locally a localization. -/
-private lemma isLocalIso_implies_flat {R : Type u} [CommRing R] (X : CommAlgCat.{u} R)
-    (hX : Algebra.IsLocalIso R X) : Module.Flat R X := by
-  have hflat : RingHom.Flat (algebraMap R X) :=
-    RingHom.Flat.ofLocalizationSpanTarget (algebraMap R X)
-      {g | Algebra.IsStandardOpenImmersion R (Localization.Away g)} (by
-        by_contra hne
-        obtain ⟨m, hm, hms⟩ := Ideal.exists_le_maximal _ hne
-        obtain ⟨g, hgm, hstd⟩ := hX.exists_notMem_isStandardOpenImmersion m
-        exact hgm (hms (Ideal.subset_span hstd)))
-      (fun ⟨g, hg⟩ ↦ by
-        obtain ⟨r, hr⟩ := hg.exists_away
-        have : (algebraMap X (Localization.Away g)).comp (algebraMap R X) =
-            algebraMap R (Localization.Away g) := by
-          ext x
-          simp [RingHom.comp_apply, ← IsScalarTower.algebraMap_apply R X]
-        rw [this]
-        exact RingHom.flat_algebraMap_iff.mpr (IsLocalization.flat _ (Submonoid.powers r)))
-  exact RingHom.flat_algebraMap_iff.mp hflat
-
 instance (priority := 100) _root_.Module.Flat.of_indZariski [Algebra.IndZariski R S] :
     Module.Flat R S := by
   rw [Module.Flat.iff_ind_flat]
   obtain ⟨J, _, _, pres, h⟩ := (Algebra.IndZariski.iff_ind_isLocalIso R S).mp ‹_›
-  exact ⟨J, inferInstance, inferInstance, pres, fun i ↦ by
-    rw [CommAlgCat.flat_iff]
-    exact isLocalIso_implies_flat (pres.diag.obj i) (h i)⟩
+  refine ⟨J, inferInstance, inferInstance, pres, fun i ↦ ?_⟩
+  rw [CommAlgCat.flat_iff]
+  exact @Algebra.IsLocalIso.flat _ _ _ _ _ (h i)
 
 @[stacks 096T]
 theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
@@ -206,9 +190,10 @@ lemma iff_ind_isLocalIso (f : R →+* S) :
     f.IndZariski ↔ MorphismProperty.ind.{u}
       (RingHom.toMorphismProperty RingHom.IsLocalIso) (CommRingCat.ofHom f) := by
   algebraize [f]
-  simp only [RingHom.IndZariski, Algebra.IndZariski.iff_ind_isLocalIso, ← f.algebraMap_toAlgebra,
+  rw [RingHom.IndZariski, Algebra.IndZariski.iff_ind_isLocalIso, ← f.algebraMap_toAlgebra,
     RingHom.IsLocalIso.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty,
     CommAlgCat.isLocalIso_eq]
+  rfl
 
 /-- A ring hom is ind-Zariski if and only if it can be written
 as a colimit of local isomorphisms. -/
