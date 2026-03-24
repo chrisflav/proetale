@@ -137,81 +137,66 @@ theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
     have : y ∈ U ∩ V ∩ S := by grind
     grind
 
+omit [PrespectralSpace X] [CompactSpace X] [QuasiSeparatedSpace X] in
+lemma connectedComponent_subset_of_iUnion_eq {T : Set X} {I : Set X}
+    (hI : ⋃ x ∈ I, connectedComponent x = T) {z : X} (hz : z ∈ T) :
+    connectedComponent z ⊆ T := by
+  have hz' : z ∈ ⋃ x ∈ I, connectedComponent x := by simpa [hI] using hz
+  rcases Set.mem_iUnion₂.mp hz' with ⟨w, hwI, hzw⟩
+  rw [(connectedComponent_eq hzw).symm]
+  intro u hu
+  simpa [hI] using (Set.mem_iUnion₂.mpr ⟨w, hwI, hu⟩ : u ∈ ⋃ x ∈ I, connectedComponent x)
+
+omit [PrespectralSpace X] [CompactSpace X] [QuasiSeparatedSpace X] in
+lemma disjoint_connectedComponent_of_not_mem {T : Set X} {I : Set X}
+    (hI : ⋃ x ∈ I, connectedComponent x = T) {x : X} (hx : x ∉ T) :
+    Disjoint (connectedComponent x) T :=
+  Set.disjoint_left.2 fun z hz hxz => hx <|
+    (connectedComponent_subset_of_iUnion_eq hI hxz) <| by
+      simpa [(connectedComponent_eq hz).symm] using mem_connectedComponent (x := x)
+
 @[stacks 04PL]
 theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
     (IsClosed T ∧ ∃ I : Set X, ⋃ x ∈ I, connectedComponent x = T) ↔
     ∃ J : Set ({U : Set X // IsClopen U}), ⋂ (U : J), U = T := by
-  classical
   constructor
   · rintro ⟨hT, ⟨I, hI⟩⟩
-    let J : Set ({U : Set X // IsClopen U}) := {U | T ⊆ U}
-    refine ⟨J, ?_⟩
-    refine Set.Subset.antisymm ?_ ?_
+    refine ⟨{U | T ⊆ U}, Set.Subset.antisymm ?_ ?_⟩
     · intro x hx
       by_contra hxT
-      have hSat : ∀ z, z ∈ T → connectedComponent z ⊆ T := by
+      have hdis := disjoint_connectedComponent_of_not_mem hI hxT
+      have hcover : T ⊆ ⋃ U : {U : Set X // IsClopen U ∧ x ∈ U}, (U : Set X)ᶜ := by
         intro z hz
-        have hz' : z ∈ ⋃ x ∈ I, connectedComponent x := by simpa [hI] using hz
-        rcases Set.mem_iUnion₂.mp hz' with ⟨w, hwI, hzw⟩
-        rw [(connectedComponent_eq hzw).symm]
-        intro u hu
-        simpa [hI] using (Set.mem_iUnion₂.mpr ⟨w, hwI, hu⟩ : u ∈ ⋃ x ∈ I, connectedComponent x)
-      have hdis : Disjoint (connectedComponent x) T := by
-        refine Set.disjoint_left.2 ?_
-        intro z hz hxz
-        have hxmem : x ∈ connectedComponent z := by
-          simpa [(connectedComponent_eq hz).symm] using (mem_connectedComponent (x := x))
-        exact hxT ((hSat z hxz) hxmem)
-      let K : Type u := {U : Set X // IsClopen U ∧ x ∈ U}
-      have hInter : (⋂ U : K, (U : Set X)) = connectedComponent x :=
-        sInter_isClopen_and_mem_eq_connectedComponent (X := X) (x := x)
-      have hcover : T ⊆ ⋃ U : K, (U : Set X)ᶜ := by
-        intro z hz
-        have hznot : z ∉ connectedComponent x := by
-          intro hz'
-          exact (Set.disjoint_left.mp hdis) hz' hz
-        have : z ∉ ⋂ U : K, (U : Set X) := by rwa [hInter]
+        have : z ∉ ⋂ U : {U : Set X // IsClopen U ∧ x ∈ U}, (U : Set X) := by
+          rw [sInter_isClopen_and_mem_eq_connectedComponent]
+          exact fun hz' => (Set.disjoint_left.mp hdis) hz' hz
         simp only [Set.mem_iInter, not_forall] at this
         exact Set.mem_iUnion.mpr this
       obtain ⟨s, hs⟩ :=
-        hT.isCompact.elim_finite_subcover
-          (U := fun U : K => (U : Set X)ᶜ)
-          (fun U => U.2.1.1.isOpen_compl) hcover
-      let V : Set X := ⋃ U ∈ s, (U : Set X)ᶜ
-      have hVcl : IsClopen V := by
-        refine Set.Finite.isClopen_biUnion s.finite_toSet ?_
-        intro U hU
-        exact U.2.1.compl
-      have hxV : x ∈ V := by
-        have : x ∈ ((⟨⟨V, hVcl⟩, (hs : T ⊆ V)⟩ : J) : Set X) :=
-          Set.mem_iInter.1 hx ⟨⟨V, hVcl⟩, hs⟩
-        simpa using this
-      have hxnotV : x ∉ V := by
-        intro hxV'
-        rcases (by simpa [V] using hxV') with ⟨U, hUs, hxU⟩
-        exact hxU U.2.2
-      exact hxnotV hxV
+        hT.isCompact.elim_finite_subcover _ (fun U => U.2.1.1.isOpen_compl) hcover
+      have hVcl : IsClopen (⋃ U ∈ s, (U : Set X)ᶜ) :=
+        Set.Finite.isClopen_biUnion s.finite_toSet fun U _ => U.2.1.compl
+      have hxV : x ∈ (⋃ U ∈ s, (U : Set X)ᶜ) := by
+        simpa using Set.mem_iInter.1 hx ⟨⟨_, hVcl⟩, hs⟩
+      exact absurd hxV (by
+        simp only [Set.mem_iUnion]
+        rintro ⟨U, hUs, hxU⟩
+        exact hxU U.2.2)
     · intro x hx
-      simp [J]
+      simp
       intro U hU hTU
       exact hTU hx
   · rintro ⟨J, hJ⟩
-    refine ⟨?_, ?_⟩
+    refine ⟨?_, T, Set.Subset.antisymm (fun z hz => ?_) (fun z hz => ?_)⟩
     · have : IsClosed (⋂ U : J, (U : Set X)) := isClosed_iInter fun U => (U.1.2).1
       simpa [hJ] using this
-    · refine ⟨T, ?_⟩
-      refine Set.Subset.antisymm ?_ ?_
-      · intro z hz
-        rcases Set.mem_iUnion₂.mp hz with ⟨x, hxT, hzx⟩
-        have hxInter : x ∈ ⋂ U : J, (U : Set X) := by simpa [hJ] using hxT
-        have hzInter : z ∈ ⋂ U : J, (U : Set X) := by
-          refine Set.mem_iInter.2 ?_
-          intro U
-          have hxU : x ∈ (U : Set X) := Set.mem_iInter.1 hxInter U
-          exact (IsClopen.connectedComponent_subset U.1.2 hxU) hzx
-        simpa [hJ] using hzInter
-      · intro z hz
-        exact Set.mem_iUnion₂.mpr ⟨z, hz, mem_connectedComponent⟩
+    · rcases Set.mem_iUnion₂.mp hz with ⟨x, hxT, hzx⟩
+      have hxInter : x ∈ ⋂ U : J, (U : Set X) := by simpa [hJ] using hxT
+      have hzInter : z ∈ ⋂ U : J, (U : Set X) :=
+        Set.mem_iInter.2 fun U =>
+          (IsClopen.connectedComponent_subset U.1.2 (Set.mem_iInter.1 hxInter U)) hzx
+      simpa [hJ] using hzInter
+    · exact Set.mem_iUnion₂.mpr ⟨z, hz, mem_connectedComponent⟩
 
   -- uses `ConnectedComponents.injective_lift`
 
