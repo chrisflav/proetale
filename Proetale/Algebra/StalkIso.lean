@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Proetale.Algebra.LocalIso
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
-import Mathlib.RingTheory.RingHom.Flat
-import Mathlib.RingTheory.Localization.Ideal
+import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # Ring homomorphisms bijective on stalks
@@ -95,85 +93,24 @@ lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
   rw [key]
   exact (hg p).comp (hf (p.comap g))
 
-end RingHom.BijectiveOnStalks
-
-/-- A ring homomorphism is injective if all stalk maps are injective and the induced map
-on prime spectra is surjective. -/
-lemma RingHom.injective_of_injectiveOnStalks_of_surjective_comap {f : R →+* S}
-    (hf : ∀ (p : Ideal S) [p.IsPrime],
-        Function.Injective (Localization.localRingHom (p.comap f) p f rfl))
-    (hb : Function.Surjective (PrimeSpectrum.comap f)) : Function.Injective f := by
-  intro r₁ r₂ hr
-  apply PrimeSpectrum.toPiLocalization_injective R
-  ext ⟨q, hq⟩
-  obtain ⟨⟨p, hp⟩, hpq : PrimeSpectrum.comap f ⟨p, hp⟩ = ⟨q, hq⟩⟩ := hb ⟨q, hq⟩
-  have hpq' : p.comap f = q := congr_arg PrimeSpectrum.asIdeal hpq
-  have hstalk_inj := hf p
-  subst hpq'
-  apply hstalk_inj
-  simp only [PrimeSpectrum.toPiLocalization, Pi.algebraMap_apply,
-    Localization.localRingHom_to_map, hr]
-
-/-- A ring homomorphism `f : R →+* S` is flat if the induced maps on localizations at each
-prime are flat. -/
-lemma RingHom.flat_of_localizations_flat {f : R →+* S}
-    (h : ∀ (p : Ideal S) [p.IsPrime],
-        (Localization.localRingHom (p.comap f) p f rfl).Flat) :
-    f.Flat := by
-  algebraize [f]
-  rw [RingHom.Flat]
-  apply Module.flat_of_isLocalized_maximal S S (fun P ↦ Localization.AtPrime P)
-    (fun P ↦ Algebra.linearMap S _)
-  intro P hPmax
-  haveI : P.IsPrime := hPmax.isPrime
-  letI := (Localization.localRingHom (Ideal.comap f P) P f rfl).toAlgebra
-  have : IsScalarTower R (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) :=
-    .of_algebraMap_eq fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
-  haveI hflat_stalk : Module.Flat (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) :=
-    h P
-  exact Module.Flat.trans R (Localization.AtPrime <| Ideal.comap f P) (Localization.AtPrime P)
-
-/-- A ring homomorphism `f : R →+* S` is surjective if for every `s : S` and every maximal
-ideal `m` of `R`, there exists `r ∉ m` such that `f r * s ∈ f.range`. -/
-lemma RingHom.surjective_of_range_criterion {f : R →+* S}
-    (h : ∀ (s : S) (m : Ideal R), m.IsMaximal → ∃ r : R, r ∉ m ∧ f r * s ∈ f.range) :
-    Function.Surjective f := by
-  intro s
-  by_contra hs
-  have h1 : ¬(f 1 * s ∈ f.range) := by simpa only [map_one, one_mul]
-  set J_s : Ideal R := {
-    carrier := {r : R | f r * s ∈ f.range}
-    add_mem' := fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by rw [map_add, map_add, add_mul, hx, hy]⟩
-    zero_mem' := ⟨0, by simp⟩
-    smul_mem' := fun c _ ⟨x, hx⟩ ↦
-      ⟨c * x, by rw [smul_eq_mul, map_mul, map_mul, mul_assoc, hx]⟩
-  }
-  have hJ_ne_top : J_s ≠ ⊤ := fun heq ↦ h1 ((heq ▸ Submodule.mem_top : (1 : R) ∈ J_s))
-  obtain ⟨m, hm, hJm⟩ := Ideal.exists_le_maximal J_s hJ_ne_top
-  obtain ⟨r, hrm, hr_range⟩ := h s m hm
-  exact hrm (hJm hr_range)
-
-namespace RingHom.BijectiveOnStalks
-
 /-- A ring homomorphism that is bijective on stalks and induces a bijection on prime spectra
 is itself bijective. -/
 lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     (hb : Function.Bijective <| PrimeSpectrum.comap f) : Function.Bijective f := by
   have hinj : Function.Injective f :=
-    RingHom.injective_of_injectiveOnStalks_of_surjective_comap (fun p [_] ↦ (hf p).1) hb.2
+    RingHom.injective_of_injectiveOnStalks (fun p [_] ↦ (hf p).1)
+      fun m hm ↦ by
+        obtain ⟨⟨p, hp⟩, hpq⟩ := hb.2 ⟨m, hm.isPrime⟩
+        exact ⟨p, hp, congr_arg PrimeSpectrum.asIdeal hpq⟩
   have hsurj : Function.Surjective f := by
     have hflat : f.Flat :=
-      RingHom.flat_of_localizations_flat fun P [_] ↦ by
-        letI := (Localization.localRingHom (Ideal.comap f P) P f rfl).toAlgebra
-        show Module.Flat (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P)
-        exact Module.Flat.of_linearEquiv
-          (LinearEquiv.ofBijective (Algebra.linearMap _ _) (hf P)).symm
+      RingHom.flat_of_localizations_flat fun P [_] ↦ .of_bijective (hf P)
     have hgen : GeneralizingMap (PrimeSpectrum.comap f) := hflat.generalizingMap_comap
     have going_down_key : ∀ (p : Ideal S) [p.IsPrime] (c : S), c ∉ p →
         ∀ (q : Ideal S) [q.IsPrime], c ∈ q → ¬(q.comap f ≤ p.comap f) := by
       intro p hp c hcp q hq hcq hle
-      set sp := (⟨p, hp⟩ : PrimeSpectrum S)
-      set sq := (⟨q, hq⟩ : PrimeSpectrum S)
+      let sp := (⟨p, hp⟩ : PrimeSpectrum S)
+      let sq := (⟨q, hq⟩ : PrimeSpectrum S)
       have hspec : PrimeSpectrum.comap f sq ⤳ PrimeSpectrum.comap f sp :=
         (PrimeSpectrum.le_iff_specializes
           (PrimeSpectrum.comap f sq) (PrimeSpectrum.comap f sp)).mp hle
@@ -184,7 +121,7 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
         hb.1 (PrimeSpectrum.ext (congr_arg PrimeSpectrum.asIdeal hq'eq).symm)
       have : sq.asIdeal ≤ p := hqeq ▸ hq'le
       exact hcp (this hcq)
-    apply RingHom.surjective_of_range_criterion
+    apply RingHom.surjective_of_forall_isMaximal_exists
     intro s m hm
     have hm_prime := hm.isPrime
     obtain ⟨⟨q, hq⟩, hqm : PrimeSpectrum.comap f ⟨q, hq⟩ = ⟨m, hm_prime⟩⟩ := hb.2 ⟨m, hm_prime⟩
