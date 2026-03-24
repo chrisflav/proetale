@@ -1,0 +1,5 @@
+{
+    "validation": {
+            "retry_prompt": "Validation failed. Re-run the bash script in .agent/validation.sh to check what the error was."
+    }
+}
