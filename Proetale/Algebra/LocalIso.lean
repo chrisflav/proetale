@@ -103,6 +103,7 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
 instance refl : IsLocalIso R R :=
   instOfIsStandardOpenImmersion R R
 
+/-- Local isomorphisms are closed under composition of algebra maps. -/
 lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
     [IsLocalIso R S] [IsLocalIso S T] : IsLocalIso R T := by
   constructor
@@ -130,19 +131,17 @@ lemma trans {T : Type*} [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
       rwa [Ideal.mul_unit_mem_iff_mem] at ht_mem
       exact IsUnit.pow _ (IsLocalization.Away.algebraMap_isUnit _)
     · exact hg₁q
-  · have hmul : IsLocalization.Away (t * g₁) (Localization.Away (algebraMap T Tg t)) :=
+  · have : IsLocalization.Away (t * g₁) (Localization.Away (algebraMap T Tg t)) :=
       .mul Tg _ _ _
     have : Algebra.IsStandardOpenImmersion R (Localization.Away (algebraMap T Tg t)) := by
       rw [← ht]
-      have hunit : IsUnit ((algebraMap T Tg g₁) ^ n) :=
-        IsUnit.pow _ (IsLocalization.Away.algebraMap_isUnit _)
       have : IsLocalization.Away
           ((algebraMap S Tg r₁) * (algebraMap T Tg g₁) ^ n)
           (Localization.Away (algebraMap S Tg r₁)) := by
         apply +allowSynthFailures IsLocalization.Away.mul'
           (Localization.Away (algebraMap S Tg r₁))
         apply IsLocalization.away_of_isUnit_of_bijective
-        · exact IsUnit.map _ hunit
+        · exact IsUnit.map _ (IsUnit.pow _ (IsLocalization.Away.algebraMap_isUnit _))
         · exact Function.bijective_id
       let Sr := Localization.Away r₁
       let Tgr := Localization.Away (algebraMap S Tg r₁)
@@ -188,12 +187,14 @@ lemma RingHom.isLocalIso_algebraMap [Algebra R S] :
 
 namespace RingHom.IsLocalIso
 
+/-- A bijective ring homomorphism is a local isomorphism. -/
 lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
   algebraize [f]
   haveI := Algebra.IsStandardOpenImmersion.of_bijective R S hf
   show Algebra.IsLocalIso R S
   infer_instance
 
+/-- The composition of local isomorphisms is a local isomorphism. -/
 lemma comp {T : Type*} [CommSemiring T] {g : S →+* T} (hg : g.IsLocalIso) (hf : f.IsLocalIso) :
     (g.comp f).IsLocalIso := by
   algebraize [f, g, g.comp f]
