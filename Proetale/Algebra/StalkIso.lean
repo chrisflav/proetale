@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Proetale.Algebra.LocalIso
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
+import Proetale.Mathlib.Topology.Inseparable
 
 /-!
 # Ring homomorphisms bijective on stalks
@@ -105,18 +106,9 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
     have going_down_key : ∀ (p : Ideal S) [p.IsPrime] (c : S), c ∉ p →
         ∀ (q : Ideal S) [q.IsPrime], c ∈ q → ¬(q.comap f ≤ p.comap f) := by
       intro p hp c hcp q hq hcq hle
-      let sp := (⟨p, hp⟩ : PrimeSpectrum S)
-      let sq := (⟨q, hq⟩ : PrimeSpectrum S)
-      have hspec : PrimeSpectrum.comap f sq ⤳ PrimeSpectrum.comap f sp :=
-        (PrimeSpectrum.le_iff_specializes
-          (PrimeSpectrum.comap f sq) (PrimeSpectrum.comap f sp)).mp hle
-      obtain ⟨q', hq'spec, hq'eq⟩ := hgen hspec
-      have hq'le : q'.asIdeal ≤ p :=
-        (PrimeSpectrum.le_iff_specializes q' sp).mpr hq'spec
-      have hqeq : sq = q' :=
-        hb.1 (PrimeSpectrum.ext (congr_arg PrimeSpectrum.asIdeal hq'eq).symm)
-      have : sq.asIdeal ≤ p := hqeq ▸ hq'le
-      exact hcp (this hcq)
+      exact hcp ((PrimeSpectrum.le_iff_specializes ⟨q, hq⟩ ⟨p, hp⟩).mpr
+        (hgen.specializes_of_map_specializes hb.1
+          ((PrimeSpectrum.le_iff_specializes _ _).mp hle)) hcq)
     apply RingHom.surjective_of_forall_isMaximal_exists
     intro s m hm
     have hm_prime := hm.isPrime
