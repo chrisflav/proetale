@@ -170,7 +170,6 @@ lemma iff_ind_isLocalIso (f : R →+* S) :
   rw [RingHom.IndZariski, Algebra.IndZariski.iff_ind_isLocalIso, ← f.algebraMap_toAlgebra,
     RingHom.IsLocalIso.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty,
     CommAlgCat.isLocalIso_eq]
-  exact Iff.rfl
 
 /-- A ring hom is ind-Zariski if and only if it can be written
 as a colimit of local isomorphisms. -/
