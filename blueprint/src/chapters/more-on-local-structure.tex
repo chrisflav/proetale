@@ -156,7 +156,7 @@ suffices for our purposes.
     TBA.
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}[\stacksproject{092E}]
     Let $A$ be of weak dimension $\le 1$ and $B$ a weakly étale $A$-algebra. Then
     $B$ is of weak dimension $\le 1$.
     \label{lemma:weakly-etale-preserve-weak-dim}
@@ -176,7 +176,7 @@ suffices for our purposes.
     TBA.
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}[\stacksproject{092V}]
     Let $A$ be of weak dimension $\le 1$. Let $B$ be a
     flat $A$-algebra such that $A \to B$ is injective and an epimorphism of rings. Then
     $A$ is integrally closed in $B$.
@@ -194,7 +194,24 @@ suffices for our purposes.
     \] is injective.
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}[\stacksproject{092U}]
+    Let $A$ be a domain and $L$ an algebraic extension of $\mathrm{Frac}(A)$.
+    If $A$ is integrally closed in $L$, then there exists a cartesian diagram
+    of rings
+    \[
+    \begin{tikzcd}
+        A \arrow{r} \arrow{d} & L \arrow{d} \\
+        S \arrow{r} & T
+    \end{tikzcd}
+    \] with $S$ of weak dimension $\le 1$ and $S \to T$ a flat, injective epimorphism of rings.
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:prod-valuation-ring-weak-dim-integrally-closed}
+    TBA.
+\end{proof}
+
+\begin{lemma}[\stacksproject{092W}]
     Let $A$ be a domain and $B$ a weakly étale $A$-algebra. Let $L$ be an algebraic extension
     of $\mathrm{Frac}(A)$ and assume that $A$ is integrally closed in $L$.
     Then $B$ is integrally closed
@@ -204,7 +221,7 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:weak-dim-integrally-closed}
+    \uses{lemma:weak-dim-integrally-closed, lemma:weakly-etale-preserve-weak-dim}
     % TODO
 \end{proof}
 
