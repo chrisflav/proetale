@@ -6,6 +6,86 @@ This chapter serves for the second half of the commutative algebra preparation o
 \end{enumerate}
 The proof goes via the local input \label{weakly-etale-over-sh}.
 
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GH}{Tag 04GH, (1)}]{stacks-project}}]
+    Let $R$ be a Henselian local ring and $S$ a finite $R$-algebra. Then $S$ is
+    a finite product of Henselian local rings, each finite over $R$.
+    \label{lemma:finite-over-henselian-local}
+\end{lemma}
+
+\begin{proof}
+    Omitted, will be in mathlib soon.
+\end{proof}
+
+\begin{lemma}
+    A filtered colimit of local rings along local homomorphisms is local.
+    \label{lemma:colimit-local}
+\end{lemma}
+
+\begin{proof}
+    Omitted.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GI}{Tag 04GI}]{stacks-project}}]
+    A filtered colimit of (strictly) Henselian local rings along local homomorphisms is
+    (strictly) Henselian.
+    \label{lemma:colimit-henselian-local}
+\end{lemma}
+
+\begin{proof}
+    Omitted.
+\end{proof}
+
+\begin{lemma}
+    Let $R$ be a Henselian local ring and $S$ be an integral $R$-algebra and an integral domain.
+    Then $S$ is a local ring.
+    \label{lemma:henselian-local-integral-local}
+\end{lemma}
+
+\begin{proof}
+    Since $S$ is integral over $R$, it is the colimit of its finite $R$-sub-algebras. Since
+    a subring of an integral domain is still an integral domain, by \Cref{lemma:colimit-local} we
+    may assume that $S$ is finite over $R$.
+    By \Cref{lemma:finite-over-henselian-local}, $S$ is a product of (Henselian) local rings and hence
+    local as an integral domain.
+\end{proof}
+
+\begin{lemma}
+    Let $R \to S$ be an integral ring map of local rings. Then $R \to S$ is a local ring homomorphism.
+    \label{lemma:integral-local-hom}
+\end{lemma}
+
+\begin{proof}
+    This follows from going-up (use `\verb`Ideal.IsMaximal.under`).
+\end{proof}
+
+\begin{lemma}
+    Let $R \to S$ be a local ring homomorphism of local rings. If $R \to S$ is integral,
+    the extension of residue fields $\kappa(S) / \kappa(R)$ is algebraic.
+    \label{lemma:integral-local-algebraic-residue-field}
+\end{lemma}
+
+\begin{proof}
+    Omitted.
+\end{proof}
+
+\begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/092Y}{Tag 092Y}]{stacks-project}}]
+    Let $R \to S$ and $R \to T$ be local ring maps of local rings. Suppose
+    $R \to S$ is integral and $\kappa(S) / \kappa(R)$ or $\kappa(T) / \kappa(S)$
+    is purely inseparable, then $T \otimes_{R} S$ is a local ring.
+    \label{lemma:tensorprod-local-purely-inseparable}
+\end{lemma}
+
+\begin{proof}
+    Integral is stable under base change, so $T \to S' = T \otimes_{R} S$ is integral. Hence by going-up
+    any maximal ideal of $S'$ lies over $\mathfrak{m}_T$. We have
+    \[
+        S' / \mathfrak{m}_T S' = \kappa(T) \otimes_{R} S = \kappa(T) \otimes_{\kappa(R)} S / \mathfrak{m}_R S
+    .\] Again by going-up and since $S$ is local, $\spec{S / \mathfrak{m}_R S}$ is
+    a single point. Thus $\spec{S' / \mathfrak{m}_T S'} \cong \spec{\kappa(T) \otimes_{\kappa(R)} \kappa(S)}$.
+    The latter is a single point, because purely inseparable extensions induce
+    universal homeomorphisms.
+\end{proof}
+
 \section{Weakly étale algebras}
 
 Ind-étale is a practical notion, since it usually allows reducing proofs to the étale case. Geometrically,
