@@ -103,6 +103,14 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
 instance refl : IsLocalIso R R :=
   instOfIsStandardOpenImmersion R R
 
+lemma span_isStandardOpenImmersion_eq_top [Algebra.IsLocalIso R S] :
+    Ideal.span {g : S | Algebra.IsStandardOpenImmersion R (Localization.Away g)} = ⊤ := by
+  by_contra hne
+  obtain ⟨m, hm, hms⟩ := Ideal.exists_le_maximal _ hne
+  obtain ⟨g, hgm, hstd⟩ :=
+    Algebra.IsLocalIso.exists_notMem_isStandardOpenImmersion (R := R) m
+  exact hgm (hms (Ideal.subset_span hstd))
+
 end Algebra.IsLocalIso
 
 section Flat
@@ -121,15 +129,12 @@ lemma Algebra.IsLocalIso.flat
     (R : Type v) (S : Type w) [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.IsLocalIso R S] : Module.Flat R S := by
   refine Module.flat_of_isLocalized_span S S
-    {g | Algebra.IsStandardOpenImmersion R (Localization.Away g)} ?_
+    {g | Algebra.IsStandardOpenImmersion R (Localization.Away g)}
+    (Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top _ _)
     (fun g ↦ Localization.Away g.1)
-    (fun g ↦ Algebra.linearMap S (Localization.Away g.1)) fun ⟨g, hg⟩ ↦ ?_
-  · by_contra hne
-    obtain ⟨m, hm, hms⟩ := Ideal.exists_le_maximal _ hne
-    obtain ⟨g, hgm, hstd⟩ :=
-      Algebra.IsLocalIso.exists_notMem_isStandardOpenImmersion (R := R) m
-    exact hgm (hms (Ideal.subset_span hstd))
-  · exact @Module.Flat.of_isStandardOpenImmersion _ _ _ _ _ hg
+    (fun g ↦ Algebra.linearMap S (Localization.Away g.1)) fun ⟨g, hg⟩ ↦ by
+      letI : Algebra.IsStandardOpenImmersion R (Localization.Away g) := hg
+      exact Module.Flat.of_isStandardOpenImmersion R (Localization.Away g)
 
 end Flat
 

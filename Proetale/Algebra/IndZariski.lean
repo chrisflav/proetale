@@ -9,6 +9,7 @@ import Proetale.Algebra.Ind
 import Proetale.Algebra.StalkIso
 import Proetale.Mathlib.Algebra.Algebra.Pi
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
+import Proetale.Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 /-!
 # Ind-Zariski algebras and ring homomorphisms
@@ -37,27 +38,20 @@ instance : (CommAlgCat.isLocalIso R).IsClosedUnderIsomorphisms := by
   rw [CommAlgCat.isLocalIso_eq]
   exact RingHom.IsLocalIso.respectsIso.isClosedUnderIsomorphisms_toObjectProperty R
 
-private instance isClosedUnderLimitsOfShape_isLocalIso_aux (ι : Type u) [Finite ι] :
-    (CommAlgCat.isLocalIso R).IsClosedUnderLimitsOfShape (Discrete ι) := by
-  apply ObjectProperty.IsClosedUnderLimitsOfShape.mk'
-  rintro X ⟨F, hF⟩
-  let S : ι → CommAlgCat.{u} R := fun i ↦ F.obj ⟨i⟩
-  let natIso : F ≅ Discrete.functor S := Discrete.natIso (fun i ↦ Iso.refl _)
-  let isoPi : (CommAlgCat.piFan S).pt ≅ limit (Discrete.functor S) :=
-    (limit.isoLimitCone ⟨CommAlgCat.piFan S, CommAlgCat.isLimitPiFan S⟩).symm
-  let isoLim : limit (Discrete.functor S) ≅ limit F :=
-    (HasLimit.isoOfNatIso natIso).symm
-  apply (CommAlgCat.isLocalIso R).prop_of_iso (isoPi ≪≫ isoLim)
-  have inst (i : ι) : Algebra.IsLocalIso R (S i) := hF ⟨i⟩
-  exact Algebra.IsLocalIso.pi_of_finite R (fun i ↦ S i)
-
-instance (ι : Type*) [Finite ι] :
-    (CommAlgCat.isLocalIso R).IsClosedUnderLimitsOfShape (Discrete ι) := by
-  have : Small.{u} ι := by
-    obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
-    exact ⟨⟨ULift.{u} (Fin n), ⟨e.trans Equiv.ulift.symm⟩⟩⟩
-  have : Finite (Shrink.{u} ι) := Finite.of_equiv ι (equivShrink ι)
-  exact .of_equivalence (Discrete.equivalence (equivShrink.{u} ι).symm)
+instance : (CommAlgCat.isLocalIso R).IsClosedUnderFiniteProducts :=
+  .of_isClosedUnderLimitsOfShape_discrete fun ι ↦ by
+    intro
+    apply ObjectProperty.IsClosedUnderLimitsOfShape.mk'
+    rintro X ⟨F, hF⟩
+    let S : ι → CommAlgCat.{u} R := fun i ↦ F.obj ⟨i⟩
+    let natIso : F ≅ Discrete.functor S := Discrete.natIso (fun i ↦ Iso.refl _)
+    let isoPi : (CommAlgCat.piFan S).pt ≅ limit (Discrete.functor S) :=
+      (limit.isoLimitCone ⟨CommAlgCat.piFan S, CommAlgCat.isLimitPiFan S⟩).symm
+    let isoLim : limit (Discrete.functor S) ≅ limit F :=
+      (HasLimit.isoOfNatIso natIso).symm
+    apply (CommAlgCat.isLocalIso R).prop_of_iso (isoPi ≪≫ isoLim)
+    have inst (i : ι) : Algebra.IsLocalIso R (S i) := hF ⟨i⟩
+    exact Algebra.IsLocalIso.pi_of_finite R (fun i ↦ S i)
 
 /-- An algebra is ind-Zariski if it can be written as the filtered colimit of locally isomorphic
 algebras. -/
@@ -93,40 +87,23 @@ instance pi {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRin
     rw [← iff_ind_isLocalIso]
     infer_instance
 
-/-- Type family for the product of two types indexed by `Fin 2`, lifted to universe `u`. -/
-@[reducible] def piFinTwoTypes (S T : Type u) : ULift.{u} (Fin 2) → Type u
-  | ⟨0⟩ => S
-  | ⟨1⟩ => T
-
-noncomputable instance piFinTwoTypes.commRing (S T : Type u) [CommRing S] [CommRing T]
-    (i : ULift.{u} (Fin 2)) : CommRing (piFinTwoTypes S T i) :=
-  match i with | ⟨0⟩ => inferInstance | ⟨1⟩ => inferInstance
-
-noncomputable instance piFinTwoTypes.algebra (S T : Type u) [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] (i : ULift.{u} (Fin 2)) : Algebra R (piFinTwoTypes S T i) :=
-  match i with | ⟨0⟩ => inferInstance | ⟨1⟩ => inferInstance
-
-noncomputable instance piFinTwoTypes.indZariski (S T : Type u) [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] [IndZariski R S] [IndZariski R T]
-    (i : ULift.{u} (Fin 2)) : IndZariski R (piFinTwoTypes S T i) :=
-  match i with | ⟨0⟩ => inferInstance | ⟨1⟩ => inferInstance
-
-/-- Algebra equivalence between a pi type over `ULift (Fin 2)` and a product. -/
-noncomputable def piFinTwoEquiv (S T : Type u) [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] : (∀ i, piFinTwoTypes S T i) ≃ₐ[R] S × T where
-  toFun f := (f ⟨0⟩, f ⟨1⟩)
-  invFun p := fun | ⟨0⟩ => p.1 | ⟨1⟩ => p.2
-  left_inv f := by ext ⟨i⟩; fin_cases i <;> rfl
-  right_inv p := by obtain ⟨_, _⟩ := p; rfl
-  map_mul' _ _ := Prod.ext rfl rfl
-  map_add' _ _ := Prod.ext rfl rfl
-  commutes' _ := Prod.ext rfl rfl
-
 /-- The product of two ind-Zariski algebras is ind-Zariski. -/
 instance prod [Algebra.IndZariski R S] [Algebra.IndZariski R T] :
-    Algebra.IndZariski R (S × T) :=
-  of_equiv (R := R) (S := ∀ i, piFinTwoTypes S T i) (T := S × T)
-    (piFinTwoEquiv R S T)
+    Algebra.IndZariski R (S × T) := by
+  let F : ULift.{u} (Fin 2) → Type u := fun | ⟨0⟩ => S | ⟨1⟩ => T
+  letI : ∀ i, CommRing (F i) := fun | ⟨0⟩ => ‹_› | ⟨1⟩ => ‹_›
+  letI : ∀ i, Algebra R (F i) := fun | ⟨0⟩ => ‹_› | ⟨1⟩ => ‹_›
+  haveI : ∀ i, IndZariski R (F i) := fun | ⟨0⟩ => ‹_› | ⟨1⟩ => ‹_›
+  have := pi R F
+  let e : (∀ i, F i) ≃ₐ[R] S × T :=
+    { toFun := fun f ↦ (f ⟨0⟩, f ⟨1⟩)
+      invFun := fun p ↦ fun | ⟨0⟩ => p.1 | ⟨1⟩ => p.2
+      left_inv := fun f ↦ by ext ⟨i⟩; fin_cases i <;> rfl
+      right_inv := fun ⟨_, _⟩ ↦ rfl
+      map_mul' := fun _ _ ↦ rfl
+      map_add' := fun _ _ ↦ rfl
+      commutes' := fun _ ↦ rfl }
+  exact Algebra.IndZariski.of_equiv (R := R) (S := ∀ i, F i) (T := S × T) e
 
 instance function {ι : Type u} [_root_.Finite ι] (S : Type u) [CommRing S]
     [Algebra R S] [Algebra.IndZariski R S] : Algebra.IndZariski R (ι → S) :=
@@ -193,6 +170,7 @@ lemma iff_ind_isLocalIso (f : R →+* S) :
   rw [RingHom.IndZariski, Algebra.IndZariski.iff_ind_isLocalIso, ← f.algebraMap_toAlgebra,
     RingHom.IsLocalIso.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty,
     CommAlgCat.isLocalIso_eq]
+  exact Iff.rfl
 
 /-- A ring hom is ind-Zariski if and only if it can be written
 as a colimit of local isomorphisms. -/
