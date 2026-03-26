@@ -121,12 +121,78 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     (2) If $A \to B$ is weakly étale, then $A' to B'$ is weakly étale.
 \end{lemma}
 
+\begin{lemma}[\stacksproject{092C}]
+    Let $B$ be an $A$-algebra such that $B \otimes_{A} B \to B$ is flat. Let $N$ be a $B$-module.
+    If $N$ is flat as a $A$-module, then $N$ is flat as a $B$-module.
+    \label{lemma:weakly-etale-flat}
+\end{lemma}
+
+\begin{proof}
+    If $N'$ is a second $B$-module, then
+    \[
+        N \otimes_B N' = B \otimes_{B \otimes_{A} B} (N \otimes_{A} N')
+    .\]
+    Hence this follows from the definitions.
+\end{proof}
+
+\section{Weak dimension}
+
+Currently, mathlib does not have $\mathrm{Tor}$ so we give a non-standard, but equivalent definition which
+suffices for our purposes.
+
+\begin{definition}
+    Let $A$ be a ring. We say it is of \emph{weak dimension} $\le 1$ if every finitely generated ideal of
+    $A$ is flat over $A$.
+    \label{def:weak-dim-le-one}
+\end{definition}
+
+\begin{lemma}[\stacksproject{092S}, (3) => (4)]
+    Let $A$ be a ring of weak dimension $\le 1$ and $M$ a flat $A$-module. Then
+    any submodule of $M$ is flat.
+    \label{lemma:weak-dim-flat-submodule}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
 \begin{lemma}
-    Let $A$ be a ring such that every ideal $I$ of $A$ is flat over $A$. Let $B$ be a
+    Let $A$ be of weak dimension $\le 1$ and $B$ a weakly étale $A$-algebra. Then
+    $B$ is of weak dimension $\le 1$.
+    \label{lemma:weakly-etale-preserve-weak-dim}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{lemma}[\stacksproject{092T}]
+    Let $(A_i)_{i \in I}$ be a family of valuation rings. Then
+    $\prod_{i \in I} A_i$ is of weak dimension $\le 1$.
+    \label{lemma:prod-valuation-ring-weak-dim-integrally-closed}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{lemma}
+    Let $A$ be of weak dimension $\le 1$. Let $B$ be a
     flat $A$-algebra such that $A \to B$ is injective and an epimorphism of rings. Then
     $A$ is integrally closed in $B$.
     \label{lemma:weak-dim-integrally-closed}
 \end{lemma}
+
+\begin{proof}
+    \uses{lemma:weak-dim-flat-submodule}
+    Let $x \in B$ be integral over $A$ and $A' = A[x]$. The map $A \to A'$ is injective and finite, so
+    to show $A = A'$ it suffices to check that $A \to A'$ is an epimorphism. By
+    \Cref{lemma:weak-dim-flat-submodule}, $A'$ is flat over $A$. Hence
+    the composition
+    \[
+        A' \otimes_{A} A' \to B \otimes_{A} B \to B
+    \] is injective.
+\end{proof}
 
 \begin{lemma}
     Let $A$ be a domain and $B$ a weakly étale $A$-algebra. Let $L$ be an algebraic extension
@@ -140,30 +206,6 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
 \begin{proof}
     \uses{lemma:weak-dim-integrally-closed}
     % TODO
-\end{proof}
-
-\begin{lemma}
-    \label{lemma:weakly-etale-over-sh-aux}
-    Let $R$ be a Henselian local ring with separably closed residue field and $S$ a weakly étale local
-    $R$-algebra with $R \to S$ a local homomorphism.
-    Let $\mathfrak{p}$ be a prime ideal of $R$ and $L$ an algebraic field
-    extension of $\kappa(\mathfrak{p})$. Then $L \otimes_{R} S$ has no non-trivial idempotents.
-\end{lemma}
-
-\begin{proof}
-    \uses{lemma:integral-local-algebraic-residue-field, 
-    lemma:tensorprod-local-purely-inseparable, 
-    lemma:henselian-local-integral-local}
-    Let $R'$ be the integral closure of $R / \mathfrak{p}$ in $L$. Since $R \to R / \mathfrak{p} \to R'$
-    is integral, $R'$ is local by \Cref{lemma:henselian-local-integral-local}. Moreover,
-    the residue field $\kappa(R')$ is an algebraic extension of $\kappa(R)$
-    by \Cref{lemma:integral-local-algebraic-residue-field}. Since $\kappa(R)$ is
-    separably closed, the extension is purely inseparable. Hence
-    $R' \otimes_{R} S$ is local by \Cref{lemma:tensorprod-local-purely-inseparable}. By
-    \Cref{lemma:weakly-etale-integrally-closed} and since $R'$ is integrally closed in $L$,
-    the tensor product $R' \otimes_{R} S$ is integrally closed in $L \otimes_{R} S$.
-    Since $R' \otimes_{R} S$ is local and any idempotent of $L \otimes_{R} S$ is integral over
-    $R' \otimes_{R} S$, the latter can not have any non-trivial idemponent elements.
 \end{proof}
 
 \section{Fields}
@@ -330,6 +372,28 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     $\kappa(q_i)$ be the residue field of $q_i$, then $K_i$ is a separable field extensions of $K$.
     Now $\kappa(q) = \colim \kappa(q_i)$ is again a separable extension of $K$. Then 
     $\kappa(q) \otimes_A B = \kappa(q) \otimes_K \kappa(q)$ splits. The conclusion follows.
+\end{proof}
+
+\begin{lemma}
+    Let $R$ be a Henselian local ring with separably closed residue field and $S$ a weakly étale local
+    $R$-algebra with $R \to S$ a local homomorphism.
+    Let $\mathfrak{p}$ be a prime ideal of $R$ and $L$ an algebraic field
+    extension of $\kappa(\mathfrak{p})$. Then $L \otimes_{R} S$ has no non-trivial idempotents.
+    \label{lemma:weakly-etale-over-sh-aux}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable, lemma:henselian-local-integral-local}
+    Let $R'$ be the integral closure of $R / \mathfrak{p}$ in $L$. Since $R \to R / \mathfrak{p} \to R'$
+    is integral, $R'$ is local by \Cref{lemma:henselian-local-integral-local}. Moreover,
+    the residue field $\kappa(R')$ is an algebraic extension of $\kappa(R)$
+    by \Cref{lemma:integral-local-algebraic-residue-field}. Since $\kappa(R)$ is
+    separably closed, the extension is purely inseparable. Hence
+    $R' \otimes_{R} S$ is local by \Cref{lemma:tensorprod-local-purely-inseparable}. By
+    \Cref{lemma:weakly-etale-integrally-closed} and since $R'$ is integrally closed in $L$,
+    the tensor product $R' \otimes_{R} S$ is integrally closed in $L \otimes_{R} S$.
+    Since $R' \otimes_{R} S$ is local and any idempotent of $L \otimes_{R} S$ is integral over
+    $R' \otimes_{R} S$, the latter can not have any non-trivial idemponent elements.
 \end{proof}
 
 \begin{theorem}[\stacksproject{097Z} (Olivier).]
