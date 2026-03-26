@@ -1,9 +1,10 @@
-\chapter{Local structure}
+\chapter{Ind-\'etale algebras}
 
-This chapter serves for the commutative algebra preparation of the remaining part of the paper. The key results are
+This chapter serves for the first half of the commutative algebra preparation of the remaining part of the paper. The key result is
 \begin{enumerate}
-  \item \Cref{thm:ind-etale-w-contractible-cover-exists} expressing that every affine scheme has a w-contractible cover in the proetale site.
-  \item \Cref{thm:weakly-etale-ind-etale} expressing that every weakly etale map can be covered by ind-etale maps.
+  \item \Cref{thm:ind-etale-w-contractible-cover-exists} expressing that For any ring $A$, there 
+  exists an ind-étale faithfully flat $A$-algebra $D$ with $D$ w-contractible. That is to say, 
+  every affine scheme has a w-contractible cover in the "pro-(etale site)".
 \end{enumerate}
 
 % Question: Can we avoid using weakly etale algebra, only use ind-etale algebra? This would need a modification of theorem 5.4.2, by directly mimicking the proof of topological invariance of étale sites for weakly étale.
@@ -2220,34 +2221,3 @@ this we will perform a series of reductions.
     \uses{thm:ind-etale-w-contractible-cover-exists, thm:w-contractible-retraction}
     This follows from \Cref{thm:ind-etale-w-contractible-cover-exists} and \Cref{thm:w-contractible-retraction}.
 \end{proof}
-
-\section{Weakly étale algebras}
-
-Ind-étale is a practical notion, since it usually allows reducing proofs to the étale case. Geometrically,
-ind-étale is badly behaved though, since it is not local on the (geometric) target. For this reason, when we later
-define the pro-étale site of a scheme, we use the notion of weakly étale ring maps instead.
-
-\begin{definition}[Weakly étale algebras]
-    An $R$-algebra $S$ is \emph{weakly étale} if it is flat over $R$ and flat over $S \otimes_{R} S$.
-    A ring homorphism $f \colon R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra.
-    \label{def:weakly-etale-algebra}
-\end{definition}
-
-\begin{lemma}
-    Every étale algebra is weakly étale.
-    \label{lemma:etale-weakly-etale-algebra}
-\end{lemma}
-
-\begin{proof}
-    Let $S$ be an étale $R$-algebra. Then $S$ is $R$-flat. Also
-    $S \otimes_{R} S \cong S × T$ for some ring $T$, in particular $\spec{S \otimes_{R} S} \to \spec{S}$ is
-    an open immersion, hence flat.
-\end{proof}
-
-The following theorem is difficult to prove and we will try to avoid it for now.
-
-\begin{theorem}
-    Let $R \to S$ be weakly étale. Then there exists a faithfully flat ind-étale morphism
-    $S \to T$ such that the composition $R \to T$ is ind-étale.
-    \label{thm:weakly-etale-ind-etale}
-\end{theorem}

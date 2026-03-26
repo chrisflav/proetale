@@ -1,0 +1,66 @@
+\chapter{More on local structure}
+
+This chapter serves for the second half of the commutative algebra preparation of the remaining part of the paper. The key result is
+\begin{enumerate}
+  \item \Cref{thm:weakly-etale-ind-etale} expressing that every weakly etale map can be covered by ind-etale maps.
+\end{enumerate}
+The proof goes via the local input \label{weakly-etale-over-sh}.
+
+\section{Weakly étale algebras}
+
+Ind-étale is a practical notion, since it usually allows reducing proofs to the étale case. Geometrically,
+ind-étale is badly behaved though, since it is not local on the (geometric) target. For this reason, when we later
+define the pro-étale site of a scheme, we use the notion of weakly étale ring maps instead.
+
+\begin{definition}[Weakly étale algebras]
+    An $R$-algebra $S$ is \emph{weakly étale} if it is flat over $R$ and flat over $S \otimes_{R} S$.
+    A ring homorphism $f \colon R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra.
+    \label{def:weakly-etale-algebra}
+\end{definition}
+
+\begin{lemma}
+    Every étale algebra is weakly étale.
+    \label{lemma:etale-weakly-etale-algebra}
+\end{lemma}
+
+\begin{proof}
+    Let $S$ be an étale $R$-algebra. Then $S$ is $R$-flat. Also
+    $S \otimes_{R} S \cong S × T$ for some ring $T$, in particular $\spec{S \otimes_{R} S} \to \spec{S}$ is
+    an open immersion, hence flat.
+\end{proof}
+
+
+\begin{theorem}[\stacksproject{097Z} (Olivier).]
+    \label{weakly-etale-over-sh}
+Let $A \to B$ be a local homomorphism of local rings. If $A$ is strictly henselian and $A \to B$ 
+is weakly étale, then $A = B$.
+\end{theorem}
+
+\begin{proof}
+\textit{Proof.} We will show that for all $\mathfrak{p} \subset A$ there is a unique prime 
+$\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) = 
+\kappa(\mathfrak{q})$. This implies that $B \otimes_A B \to B$ is bijective on spectra 
+as well as surjective and flat. Hence it is an isomorphism for example by the description of 
+pure ideals in Algebra, Lemma 10.108.4. Hence $A \to B$ is a faithfully flat epimorphism of rings. 
+We get $A = B$ by Algebra, Lemma 10.107.7.
+
+Note that the fibre ring $B \otimes_A \kappa(\mathfrak{p})$ is a colimit of étale extensions of 
+$\kappa(\mathfrak{p})$ by Lemmas 15.105.7 and 15.105.16. Hence, if there exists more than one 
+prime lying over $\mathfrak{p}$ or if $\kappa(\mathfrak{p}) \neq \kappa(\mathfrak{q})$ for 
+some $\mathfrak{q}$, then $B \otimes_A L$ has a nontrivial idempotent for some (separable) 
+algebraic field extension $L/\kappa(\mathfrak{p})$.
+
+Let $L/\kappa(\mathfrak{p})$ be an algebraic field extension. Let $A' \subset L$ be the 
+integral closure of $A/\mathfrak{p}$ in $L$. By Lemma 15.105.23 we see that $A'$ is a 
+strictly henselian local ring whose residue field is a purely inseparable extension of 
+the residue field of $A$. Thus $B \otimes_A A'$ is a local ring by Algebra, Lemma 10.156.5.
+On the other hand, $B \otimes_A A'$ is integrally closed in $B \otimes_A L$ by Lemma 15.105.22. 
+Since $B \otimes_A A'$ is local, it follows that the ring $B \otimes_A L$ does not have 
+nontrivial idempotents which is what we wanted to prove.
+\end{proof}
+
+\begin{theorem}
+    Let $R \to S$ be weakly étale. Then there exists a faithfully flat ind-étale morphism
+    $S \to T$ such that the composition $R \to T$ is ind-étale.
+    \label{thm:weakly-etale-ind-etale}
+\end{theorem}
