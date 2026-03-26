@@ -3,6 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.RingHom.OpenImmersion
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Tactic.DepRewrite
@@ -102,7 +103,40 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*)
 instance refl : IsLocalIso R R :=
   instOfIsStandardOpenImmersion R R
 
+lemma span_isStandardOpenImmersion_eq_top [Algebra.IsLocalIso R S] :
+    Ideal.span {g : S | Algebra.IsStandardOpenImmersion R (Localization.Away g)} = ⊤ := by
+  by_contra hne
+  obtain ⟨m, hm, hms⟩ := Ideal.exists_le_maximal _ hne
+  obtain ⟨g, hgm, hstd⟩ :=
+    Algebra.IsLocalIso.exists_notMem_isStandardOpenImmersion (R := R) m
+  exact hgm (hms (Ideal.subset_span hstd))
+
 end Algebra.IsLocalIso
+
+section Flat
+
+universe v w
+
+/-- A standard open immersion is flat, since it is a localization. -/
+lemma Module.Flat.of_isStandardOpenImmersion
+    (R : Type v) (S : Type w) [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.IsStandardOpenImmersion R S] : Module.Flat R S := by
+  obtain ⟨r, _⟩ := Algebra.IsStandardOpenImmersion.exists_away R S
+  exact IsLocalization.flat S (Submonoid.powers r)
+
+/-- A local isomorphism is flat, since it is locally a localization. -/
+lemma Algebra.IsLocalIso.flat
+    (R : Type v) (S : Type w) [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.IsLocalIso R S] : Module.Flat R S := by
+  refine Module.flat_of_isLocalized_span S S
+    {g | Algebra.IsStandardOpenImmersion R (Localization.Away g)}
+    (Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top _ _)
+    (fun g ↦ Localization.Away g.1)
+    (fun g ↦ Algebra.linearMap S (Localization.Away g.1)) fun ⟨g, hg⟩ ↦ by
+      letI : Algebra.IsStandardOpenImmersion R (Localization.Away g) := hg
+      exact Module.Flat.of_isStandardOpenImmersion R (Localization.Away g)
+
+end Flat
 
 /-- A ring homomorphism is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
