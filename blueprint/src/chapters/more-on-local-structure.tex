@@ -29,26 +29,104 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     an open immersion, hence flat.
 \end{proof}
 
+\begin{lemma}[\stacksproject{092H}]
+    \label{lem:weakly-etale-base-change}
+    Base change preserves weakly etale. More specifically, for any ring maps $A \to A'$, $A \to B$,
+    let $B' = B \otime_A A'$ be the base change of $B$.
+    (1) If $B \otimes_A B \to B$ is flat, then $B' \otimes_{A'} B' \to B'$ is flat.
+    (2) If $A \to B$ is weakly étale, then $A' to B'$ is weakly étale. 
+\end{lemma}
 
-\begin{theorem}[\stacksproject{097Z} (Olivier).]
-    \label{weakly-etale-over-sh}
-Let $A \to B$ be a local homomorphism of local rings. If $A$ is strictly henselian and $A \to B$ 
-is weakly étale, then $A = B$.
+\begin{proof}
+    TBA.
+\end{proof}
+
+\section{Fields}
+
+\begin{theorem}[\stacksproject{092Q}, (2) => (3)]
+    \label{thm:weakly-etale-imples-ind-etale-over-fields}
+    Let $K$ be a field. Suppose that $K \to B$ is weakly étale, then $B$ is a filtered colimit of 
+    étale $K$-algebras, i.e. $B$ is ind-\'etale. 
+    \uses{def:weakly-etale-algebra, 
+    def:ind-etale}
 \end{theorem}
 
 \begin{proof}
-\textit{Proof.} We will show that for all $\mathfrak{p} \subset A$ there is a unique prime 
-$\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) = 
-\kappa(\mathfrak{q})$. This implies that $B \otimes_A B \to B$ is bijective on spectra 
-as well as surjective and flat. Hence it is an isomorphism for example by the description of 
-pure ideals in Algebra, Lemma 10.108.4. Hence $A \to B$ is a faithfully flat epimorphism of rings. 
-We get $A = B$ by Algebra, Lemma 10.107.7.
+    TBA.
+\end{proof}
 
-Note that the fibre ring $B \otimes_A \kappa(\mathfrak{p})$ is a colimit of étale extensions of 
-$\kappa(\mathfrak{p})$ by Lemmas 15.105.7 and 15.105.16. Hence, if there exists more than one 
-prime lying over $\mathfrak{p}$ or if $\kappa(\mathfrak{p}) \neq \kappa(\mathfrak{q})$ for 
-some $\mathfrak{q}$, then $B \otimes_A L$ has a nontrivial idempotent for some (separable) 
-algebraic field extension $L/\kappa(\mathfrak{p})$.
+\section{Local rings}
+
+\begin{lemma}
+    \label{lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq}
+Let $A \to B$ be a local homomorphism of local rings. For all $\mathfrak{p} \subset A$,
+there is a unique prime $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and 
+$\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bijective on spectra.
+\end{lemma}
+
+\begin{proof}
+    TBA. Analuze nilpotent ideal of B.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:iso-of-bij-on-spectrum-and-surj-and-flat}
+    Let $A \to B$ be a ring map that is bijective on spectra, as well as surjective and flat, then 
+    it is an isomorphism.
+\end{lemma}
+
+\begin{proof}
+    TBA. by the description of pure ideals in Algebra, Lemma 10.108.4. 
+\end{proof}
+
+\begin{lemma}
+    \label{lem:isom-of-ff-and-mul-isom}
+    Let $A \to B$ be a faithfully flat ring map such that $B \otimes_A B \to B$ is an isomorphism.
+    Then $A \to B$ is an isomrophism.
+\end{lemma}
+
+\begin{lemma}
+    \uses{isom-of-unique-lying-over-and-residue-field-eq, 
+    def:weakly-etale-algebra, 
+    lem:iso-of-bij-on-spectrum-and-surj-and-flat, 
+    lem:isom-of-ff-and-mul-isom}
+    Let $A \to B$ be a local homomorphism of local rings. For all $\mathfrak{p} \subset A$, 
+    there is a unique prime $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and 
+    $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $A \to B$ is an isomorphism.
+\end{lemma}
+
+\begin{proof}
+    \uses{lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq}
+    To see this, suppose that we are under the above hypothesis. 
+    This implies that $\mu : B \otimes_A B \to B$ is bijective on spectra by 
+    \Cref{lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq},
+    as well as surjective and flat (immediately by \Cref{def:weakly-etale-algebra}). 
+    Hence it is an isomorphism by \Cref{lem:iso-of-bij-on-spectrum-and-surj-and-flat}. Together with
+    the fact that $A \to B$ is a faithfully (by surjectivity on spectrum) flat, we can apply 
+    \Cref{lem:isom-of-ff-and-mul-isom} to conclude $A = B$.
+\end{proof}
+
+%092Y, 092X, 092W
+\begin{theorem}[\stacksproject{097Z} (Olivier).]
+    \label{thm:weakly-etale-over-sh}
+    Let $A \to B$ be a local homomorphism of local rings. If $A$ is strictly henselian and $A \to B$ 
+    is weakly étale, then $A = B$.
+    \uses{def:weakly-etale-algebra, 
+    def:p-henselian}
+\end{theorem}
+
+\begin{proof}
+    \uses{isom-of-unique-lying-over-and-residue-field-eq}
+    It suffices to show that for all $\mathfrak{p} \subset A$ there is a unique prime 
+    $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) = 
+    \kappa(\mathfrak{q})$ by \Cref{isom-of-unique-lying-over-and-residue-field-eq}
+    
+    Note that the fibre ring $B \otimes_A \kappa(\mathfrak{p})$ is weakly etale over 
+    $\kappa(\mathfrak{p})$ by \Cref{lem:weakly-etale-base-change}, thus it is a colimit of étale 
+    extensions of $\kappa(\mathfrak{p})$ by \Cref{thm:weakly-etale-imples-ind-etale-over-fields}. 
+    Hence, if there exists more than one prime $\mathfrak{q}\_1, \mathfrak{q}\_2$ lying over 
+    $\mathfrak{p}$ or if $\kappa(\mathfrak{p}) \neq \kappa(\mathfrak{q})$ for 
+    some $\mathfrak{q}$, then $B \otimes_A L$ has a nontrivial idempotent for some (separable) 
+    algebraic field extension $L/\kappa(\mathfrak{p})$.
 
 Let $L/\kappa(\mathfrak{p})$ be an algebraic field extension. Let $A' \subset L$ be the 
 integral closure of $A/\mathfrak{p}$ in $L$. By Lemma 15.105.23 we see that $A'$ is a 
