@@ -216,6 +216,7 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
 \end{proof}
 
 \begin{lemma}
+    \label{lem:isom-of-unique-lying-over-and-residue-field-eq}
     Let $A \to B$ be a local homomorphism of local rings. For all $\mathfrak{p} \subset A$, 
     there is a unique prime $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and 
     $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $A \to B$ is an isomorphism.
@@ -223,7 +224,6 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
 
 \begin{proof}
     \uses{lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq,
-    isom-of-unique-lying-over-and-residue-field-eq, 
     def:weakly-etale-algebra, 
     lem:iso-of-bij-on-spectrum-and-surj-and-flat, 
     lem:isom-of-ff-and-mul-isom}
@@ -289,14 +289,14 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
 \end{theorem}
 
 \begin{proof}
-    \uses{isom-of-unique-lying-over-and-residue-field-eq,
+    \uses{lem:isom-of-unique-lying-over-and-residue-field-eq,
     lem:weakly-etale-base-change,
     thm:weakly-etale-imples-ind-etale-over-fields,
     lem:idempotent-in-ind-etale-of-primes,
     lem:idempotent-in-ind-etale-of-field-ext}
     It suffices to show that for all $\mathfrak{p} \subset A$ there is a unique prime 
     $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) = 
-    \kappa(\mathfrak{q})$ by \Cref{isom-of-unique-lying-over-and-residue-field-eq}
+    \kappa(\mathfrak{q})$ by \Cref{lem:isom-of-unique-lying-over-and-residue-field-eq}
     
     Note that the fibre ring $\kappa(\mathfrak{p}) \otimes_A B$ is weakly etale over 
     $\kappa(\mathfrak{p})$ by \Cref{lem:weakly-etale-base-change}, thus it is a colimit of étale 
