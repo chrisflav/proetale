@@ -293,7 +293,8 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
     lem:weakly-etale-base-change,
     thm:weakly-etale-imples-ind-etale-over-fields,
     lem:idempotent-in-ind-etale-of-primes,
-    lem:idempotent-in-ind-etale-of-field-ext}
+    lem:idempotent-in-ind-etale-of-field-ext,
+    lemma:weakly-etale-over-sh-aux}
     It suffices to show that for all $\mathfrak{p} \subset A$ there is a unique prime 
     $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) = 
     \kappa(\mathfrak{q})$ by \Cref{lem:isom-of-unique-lying-over-and-residue-field-eq}
@@ -312,13 +313,7 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
     then $L \otimes_A B$ has a nontrivial idempotent for some (separable) 
     algebraic field extension $L/\kappa(\mathfrak{p})$.
 
-Let $L/\kappa(\mathfrak{p})$ be an algebraic field extension. Let $A' \subset L$ be the 
-integral closure of $A/\mathfrak{p}$ in $L$. By Lemma 15.105.23 we see that $A'$ is a 
-strictly henselian local ring whose residue field is a purely inseparable extension of 
-the residue field of $A$. Thus $B \otimes_A A'$ is a local ring by Algebra, Lemma 10.156.5.
-On the other hand, $B \otimes_A A'$ is integrally closed in $B \otimes_A L$ by Lemma 15.105.22. 
-Since $B \otimes_A A'$ is local, it follows that the ring $B \otimes_A L$ does not have 
-nontrivial idempotents which is what we wanted to prove.
+    Now the statement follows from \Cref{lemma:weakly-etale-over-sh-aux}.
 \end{proof}
 
 \begin{theorem}
