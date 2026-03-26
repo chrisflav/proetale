@@ -22,6 +22,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
+    % TODO
     Omitted.
 \end{proof}
 
@@ -32,6 +33,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
+    % Not needed at the moment.
     Omitted.
 \end{proof}
 
@@ -42,6 +44,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:colimit-local, lemma:finite-over-henselian-local}
     Since $S$ is integral over $R$, it is the colimit of its finite $R$-sub-algebras. Since
     a subring of an integral domain is still an integral domain, by \Cref{lemma:colimit-local} we
     may assume that $S$ is finite over $R$.
@@ -55,7 +58,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
-    This follows from going-up (use `\verb`Ideal.IsMaximal.under`).
+    This follows from going-up (use \verb`Ideal.IsMaximal.under`).
 \end{proof}
 
 \begin{lemma}
@@ -65,6 +68,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
+    % TODO
     Omitted.
 \end{proof}
 
@@ -112,10 +116,53 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
 \begin{lemma}[\stacksproject{092H}]
     \label{lem:weakly-etale-base-change}
     Base change preserves weakly etale. More specifically, for any ring maps $A \to A'$, $A \to B$,
-    let $B' = B \otime_A A'$ be the base change of $B$.
+    let $B' = B \otimes_A A'$ be the base change of $B$.
     (1) If $B \otimes_A B \to B$ is flat, then $B' \otimes_{A'} B' \to B'$ is flat.
-    (2) If $A \to B$ is weakly étale, then $A' to B'$ is weakly étale. 
+    (2) If $A \to B$ is weakly étale, then $A' to B'$ is weakly étale.
 \end{lemma}
+
+\begin{lemma}
+    Let $A$ be a ring such that every ideal $I$ of $A$ is flat over $A$. Let $B$ be a
+    flat $A$-algebra such that $A \to B$ is injective and an epimorphism of rings. Then
+    $A$ is integrally closed in $B$.
+    \label{lemma:weak-dim-integrally-closed}
+\end{lemma}
+
+\begin{lemma}
+    Let $A$ be a domain and $B$ a weakly étale $A$-algebra. Let $L$ be an algebraic extension
+    of $\mathrm{Frac}(A)$ and assume that $A$ is integrally closed in $L$.
+    Then $B$ is integrally closed
+    in $B \otimes_{A} L$.
+    \uses{def:weakly-etale-algebra}
+    \label{lemma:weakly-etale-integrally-closed}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:weak-dim-integrally-closed}
+    % TODO
+\end{proof}
+
+\begin{lemma}
+    Let $R$ be a Henselian local ring with separably closed residue field and $S$ a weakly étale local
+    $R$-algebra with $R \to S$ a local homomorphism.
+    Let $\mathfrak{p}$ be a prime ideal of $R$ and $L$ an algebraic field
+    extension of $\kappa(\mathfrak{p})$. Then $L \otimes_{R} S$ has no non-trivial idempotents.
+    \label{lemma:weakly-etale-over-sh-aux}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable, lemma:henselian-local-integral-local}
+    Let $R'$ be the integral closure of $R / \mathfrak{p}$ in $L$. Since $R \to R / \mathfrak{p} \to R'$
+    is integral, $R'$ is local by \Cref{lemma:henselian-local-integral-local}. Moreover,
+    the residue field $\kappa(R')$ is an algebraic extension of $\kappa(R)$
+    by \Cref{lemma:integral-local-algebraic-residue-field}. Since $\kappa(R)$ is
+    separably closed, the extension is purely inseparable. Hence
+    $R' \otimes_{R} S$ is local by \Cref{lemma:tensorprod-local-purely-inseparable}. By
+    \Cref{lemma:weakly-etale-integrally-closed} and since $R'$ is integrally closed in $L$,
+    the tensor product $R' \otimes_{R} S$ is integrally closed in $L \otimes_{R} S$.
+    Since $R' \otimes_{R} S$ is local and any idempotent of $L \otimes_{R} S$ is integral over
+    $R' \otimes_{R} S$, the latter can not have any non-trivial idemponent elements.
+\end{proof}
 
 \begin{proof}
     TBA.
