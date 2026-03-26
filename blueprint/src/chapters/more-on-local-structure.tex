@@ -145,7 +145,7 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
 \end{lemma}
 
 \begin{proof}
-    TBA. Analuze nilpotent ideal of B.
+    TBA. Analyze nilpotent ideal of B.
 \end{proof}
 
 \begin{lemma}
@@ -164,18 +164,22 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
     Then $A \to B$ is an isomrophism.
 \end{lemma}
 
+\begin{proof}
+    TBA.
+\end{proof}
+
 \begin{lemma}
-    \uses{isom-of-unique-lying-over-and-residue-field-eq, 
-    def:weakly-etale-algebra, 
-    lem:iso-of-bij-on-spectrum-and-surj-and-flat, 
-    lem:isom-of-ff-and-mul-isom}
     Let $A \to B$ be a local homomorphism of local rings. For all $\mathfrak{p} \subset A$, 
     there is a unique prime $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and 
     $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $A \to B$ is an isomorphism.
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq}
+    \uses{lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq,
+    isom-of-unique-lying-over-and-residue-field-eq, 
+    def:weakly-etale-algebra, 
+    lem:iso-of-bij-on-spectrum-and-surj-and-flat, 
+    lem:isom-of-ff-and-mul-isom}
     To see this, suppose that we are under the above hypothesis. 
     This implies that $\mu : B \otimes_A B \to B$ is bijective on spectra by 
     \Cref{lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq},
@@ -185,27 +189,80 @@ $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $B \otimes_A B \to B$ is bij
     \Cref{lem:isom-of-ff-and-mul-isom} to conclude $A = B$.
 \end{proof}
 
-%092Y, 092X, 092W
+\begin{lemma}
+    \label{lem:totally-disconnected-inverse-limit}
+    Let $I$ be a directed set. Let $T_i, \, i \in I$ be a series of totally disconnected 
+    topological spaces. Then 
+    $$T = \varprojlim_{i \in I} T_i $$ is also totally disconnected.
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:idempotent-in-ind-etale-of-primes}
+    % It is unclear whether this lemma is in the most general form.
+    Let $B$ be a ind-\'etale algebra over some field $K$. If there are 
+    two different prime ideals $q_1$ and $q_2$ in $B$, then $B$ has a nontrivial 
+    idempotent element $e$ (i.i. $e^2 = e$).
+\end{lemma}
+
+\begin{proof}
+    \uses{lem:totally-disconnected-inverse-limit}
+    Writing $B$ as a filtered colimit $\colim B_i$ of \'etale algebra over $K$. Each $B_i$ is a
+    product of separable field extensions of $K$. In particular, the spectrum of $B_i$'s are totally 
+    disconnected. By \Cref{lem:totally-disconnected-inverse-limit}, the spectrum of $B$ is again
+    totally disconnected. Thus different prime ideals $q_1$ and $q_2$ livs in 
+    different connected components. This giving the desire nontrivial idempotent element.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:idempotent-in-ind-etale-of-field-ext}
+    % It is unclear whether this lemma is in the most general form.
+    Let $B$ be a ind-\'etale algebra over some field $K$. If there exists 
+    a prime ideal $q$ of $B$, such that the residue field of $q$ is not $K$, then
+    $\kappa(q) \otimes_A B$ has a nontrivial element.
+    \uses{def:ind-etale}
+\end{lemma}
+
+\begin{proof}
+    Writing $B$ as a filtered colimit $\colim B_i$ of \'etale algebra over $K$. (Each $B_i$ is a
+    product of separable field extensions of $K$.) Let $q_i$ be the inverse image of $q$ in $B_i$,
+    $\kappa(q_i)$ be the residue field of $q_i$, then $K_i$ is a separable field extensions of $K$.
+    Now $\kappa(q) = \colim \kappa(q_i)$ is again a separable extension of $K$. Then 
+    $\kappa(q) \otimes_A B = \kappa(q) \otimes_K \kappa(q)$ splits. The conclusion follows.
+\end{proof}
+
 \begin{theorem}[\stacksproject{097Z} (Olivier).]
-    \label{thm:weakly-etale-over-sh}
-    Let $A \to B$ be a local homomorphism of local rings. If $A$ is strictly henselian and $A \to B$ 
-    is weakly étale, then $A = B$.
-    \uses{def:weakly-etale-algebra, 
-    def:p-henselian}
+    \label{thm:weakly-etale-over-henselian-sep-closed}
+    Let $A \to B$ be a local homomorphism of local rings. If $A$ is henselian, the residue field
+    of $A$ is separably closed, and $A \to B$ is weakly étale, then $A = B$.
+    \uses{def:weakly-etale-algebra}
 \end{theorem}
 
 \begin{proof}
-    \uses{isom-of-unique-lying-over-and-residue-field-eq}
+    \uses{isom-of-unique-lying-over-and-residue-field-eq,
+    lem:weakly-etale-base-change,
+    thm:weakly-etale-imples-ind-etale-over-fields,
+    lem:idempotent-in-ind-etale-of-primes,
+    lem:idempotent-in-ind-etale-of-field-ext}
     It suffices to show that for all $\mathfrak{p} \subset A$ there is a unique prime 
     $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) = 
     \kappa(\mathfrak{q})$ by \Cref{isom-of-unique-lying-over-and-residue-field-eq}
     
-    Note that the fibre ring $B \otimes_A \kappa(\mathfrak{p})$ is weakly etale over 
+    Note that the fibre ring $\kappa(\mathfrak{p}) \otimes_A B$ is weakly etale over 
     $\kappa(\mathfrak{p})$ by \Cref{lem:weakly-etale-base-change}, thus it is a colimit of étale 
-    extensions of $\kappa(\mathfrak{p})$ by \Cref{thm:weakly-etale-imples-ind-etale-over-fields}. 
-    Hence, if there exists more than one prime $\mathfrak{q}\_1, \mathfrak{q}\_2$ lying over 
-    $\mathfrak{p}$ or if $\kappa(\mathfrak{p}) \neq \kappa(\mathfrak{q})$ for 
-    some $\mathfrak{q}$, then $B \otimes_A L$ has a nontrivial idempotent for some (separable) 
+    extensions of $\kappa(\mathfrak{p})$ by \Cref{thm:weakly-etale-imples-ind-etale-over-fields}.
+    If the conclusion does not hold, at least one of the following cases is true:
+    \begin{enumerate}
+        \item there exists more than one prime $\mathfrak{q}\_1, \mathfrak{q}\_2$ lying over 
+    $\mathfrak{p}$;
+        \item if $\kappa(\mathfrak{p}) \neq \kappa(\mathfrak{q})$ for some $\mathfrak{q}$.
+    \end{enumerate}
+    In the first case, by \Cref{lem:idempotent-in-ind-etale-of-primes}; in the second case, by 
+    \Cref{lem:idempotent-in-ind-etale-of-field-ext}, we can always find some $L$ 
+    then $L \otimes_A B$ has a nontrivial idempotent for some (separable) 
     algebraic field extension $L/\kappa(\mathfrak{p})$.
 
 Let $L/\kappa(\mathfrak{p})$ be an algebraic field extension. Let $A' \subset L$ be the 
@@ -218,7 +275,27 @@ nontrivial idempotents which is what we wanted to prove.
 \end{proof}
 
 \begin{theorem}
+    \label{thm:weakly-etale-over-sh}
+    Let $A \to B$ be a local homomorphism of local rings. If $A$ is strictly henselian, 
+    and $A \to B$ is weakly étale, then $A = B$.
+    \uses{def:weakly-etale-algebra, 
+    def:strictly-henselian-local-ring}
+\end{theorem}
+
+\begin{proof}
+    \uses{thm:weakly-etale-over-henselian-sep-closed,
+    lem:sh-iff-henselian-and-sep-closed}
+    This is simply \Cref{thm:weakly-etale-over-henselian-sep-closed} plus 
+    \Cref{lem:sh-iff-henselian-and-sep-closed}.
+\end{proof}
+
+\begin{theorem}
     Let $R \to S$ be weakly étale. Then there exists a faithfully flat ind-étale morphism
     $S \to T$ such that the composition $R \to T$ is ind-étale.
     \label{thm:weakly-etale-ind-etale}
 \end{theorem}
+
+\begin{proof}
+    \uses{thm:weakly-etale-over-sh}
+    TBA.
+\end{proof}
