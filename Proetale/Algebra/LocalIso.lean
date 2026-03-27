@@ -140,7 +140,7 @@ end Flat
 
 /-- A ring homomorphism is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
-@[stacks 096E "(1)"]
+@[stacks 096E "(1)", algebraize RingHom.IsLocalIso.toAlgebra]
 def RingHom.IsLocalIso {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.IsLocalIso R S
@@ -152,6 +152,10 @@ lemma RingHom.isLocalIso_algebraMap [Algebra R S] :
   rw [RingHom.IsLocalIso, toAlgebra_algebraMap]
 
 namespace RingHom.IsLocalIso
+
+lemma toAlgebra {f : R →+* S} (hf : f.IsLocalIso) :
+    @Algebra.IsLocalIso R S _ _ f.toAlgebra :=
+  letI := f.toAlgebra; hf
 
 lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso :=
   sorry
