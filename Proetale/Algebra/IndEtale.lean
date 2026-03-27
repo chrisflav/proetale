@@ -55,16 +55,18 @@ lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower
   sorry
 
 /-- Finitely presented `R`-algebras are finitely presentable objects in `CommAlgCat R`. -/
-private lemma finitePresentation_le_isFinitelyPresentable :
-    CommAlgCat.finitePresentation R ≤ ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := by
-  intro S hS
-  have hunder : IsFinitelyPresentable.{u} ((commAlgCatEquivUnder (.of R)).functor.obj S) :=
-    CommRingCat.isFinitelyPresentable_under _ _ (by convert hS using 1)
-  haveI : Fact (Cardinal.aleph0 : Cardinal.{u}).IsRegular := Cardinal.fact_isRegular_aleph0
-  exact (@isCardinalPresentable_iff_of_isEquivalence
-    (CommAlgCat.{u} R) _ S (Cardinal.aleph0 : Cardinal.{u}) this
-    (Under (CommRingCat.of.{u} R)) _
-    (commAlgCatEquivUnder (.of R)).functor inferInstance).mp hunder
+private lemma finitePresentation_eq_isFinitelyPresentable :
+    CommAlgCat.finitePresentation R = ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := by
+  ext S
+  refine ⟨fun hS => ?_, fun hS => ?_⟩
+  · have hunder : IsFinitelyPresentable.{u} ((commAlgCatEquivUnder (.of R)).functor.obj S) :=
+      CommRingCat.isFinitelyPresentable_under _ _ (by convert hS using 1)
+    haveI : Fact (Cardinal.aleph0 : Cardinal.{u}).IsRegular := Cardinal.fact_isRegular_aleph0
+    exact (@isCardinalPresentable_iff_of_isEquivalence
+      (CommAlgCat.{u} R) _ S (Cardinal.aleph0 : Cardinal.{u}) this
+      (Under (CommRingCat.of.{u} R)) _
+      (commAlgCatEquivUnder (.of R)).functor inferInstance).mp hunder
+  · sorry
 
 /-- Étale `R`-algebras are finitely presented. -/
 private lemma etale_le_finitePresentation :
@@ -78,7 +80,7 @@ theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))
     (h : ∀ (i : ι), Algebra.IndEtale R (P.diag.obj i)) : Algebra.IndEtale R S := by
   rw [iff_ind_etale, ← ObjectProperty.ind_ind
-    (etale_le_finitePresentation R |>.trans (finitePresentation_le_isFinitelyPresentable R))]
+    (etale_le_finitePresentation R |>.trans (finitePresentation_eq_isFinitelyPresentable R).le)]
   exact ⟨ι, ‹_›, ‹_›, P, fun i => (iff_ind_etale R _).mp (h i)⟩
 
 /-- Local isomorphisms of `R`-algebras are étale. -/
@@ -96,7 +98,7 @@ lemma Algebra.IsLocalIso.etale [Algebra.IsLocalIso R S] : Algebra.Etale R S := b
     rw [← IsScalarTower.algebraMap_eq R S (Localization.Away g)]
     exact RingHom.etale_algebraMap.mpr inferInstance)
 
-private lemma isLocalIso_le_etale (R : Type u) [CommRing R] :
+lemma isLocalIso_le_etale (R : Type u) [CommRing R] :
     CommAlgCat.isLocalIso R ≤ CommAlgCat.etale R := by
   intro X hX
   exact @Algebra.IsLocalIso.etale R X _ _ _ hX
@@ -133,9 +135,8 @@ lemma iff_ind_etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
     f.IndEtale ↔ MorphismProperty.ind.{u} CommRingCat.etale (CommRingCat.ofHom f) := by
   algebraize [f]
   rw [RingHom.IndEtale, Algebra.IndEtale.iff_ind_etale, ← f.algebraMap_toAlgebra,
-    CommAlgCat.etale_eq,
-    ← RingHom.Etale.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty]
-  rfl
+    CommRingCat.etale, RingHom.Etale.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty,
+    CommAlgCat.etale_eq]
 
 /-- A ring hom is ind-étale if and only if it can be written as a colimit of étale ring homs. -/
 lemma iff_exists {R S : CommRingCat.{u}} (f : R ⟶ S) :
@@ -181,13 +182,7 @@ lemma iff_ind_indEtale (f : R →+* S) :
       MorphismProperty.ind.{u} CommRingCat.etale := by
     ext X Y g
     exact iff_ind_etale g.hom
-  rw [heq]
-  constructor
-  · exact MorphismProperty.le_ind _ _
-  · intro h
-    have hle : CommRingCat.etale.{u}.ind.ind ≤ CommRingCat.etale.{u}.ind :=
-      (MorphismProperty.ind_ind CommRingCat.etale_le_isFinitelyPresentable.{u}).le
-    exact hle (CommRingCat.ofHom f) h
+  rw [heq, MorphismProperty.ind_ind CommRingCat.etale_le_isFinitelyPresentable.{u}]
 
 /-- A ring hom is ind-étale if it can be written as a filtered colimit of ind-étale maps. -/
 lemma of_isColimit {R S : CommRingCat.{u}} (f : R ⟶ S) (J : Type u) [SmallCategory J]
