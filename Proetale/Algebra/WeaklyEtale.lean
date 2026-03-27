@@ -349,7 +349,7 @@ lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale 
   exact RingHom.Flat.iff_comp_ringEquiv
 
 @[stacks 092N "(2)"]
-instance (priority := low) [Etale R S] : WeaklyEtale R S where
+instance (priority := low) of_etale [Etale R S] : WeaklyEtale R S where
   flat_lmul' := by
     algebraize [Algebra.TensorProduct.lmul' R (S := S) |>.toRingHom]
     have : IsScalarTower R (S ⊗[R] S) S := .of_algHom (Algebra.TensorProduct.lmul' R (S := S))
@@ -358,7 +358,7 @@ instance (priority := low) [Etale R S] : WeaklyEtale R S where
     exact Smooth.flat (S ⊗[R] S) S
 
 @[stacks 092H]
-instance {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
+instance tensorProduct {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
     WeaklyEtale T (T ⊗[R] S) where
   flat_lmul' := by
     let f : (T ⊗[R] S) ⊗[T] (T ⊗[R] S) →ₐ[T] T ⊗[R] S :=
