@@ -102,6 +102,15 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     \label{def:weakly-etale-algebra}
 \end{definition}
 
+Historically, the property weakly étale is studied under the name of \emph{absolutely flat}. 
+\Cref{lemma:weakly-etale-flat} partially justifies this name. Furthermore, we have an absolute version 
+of this property.
+
+\begin{definition}
+    \label{def:absolutely-flat}
+    A ring $A$ is called \emph{absolutely flat} if every $A$-module is flat over $A$. 
+\end{definition}
+
 \begin{lemma}
     Every étale algebra is weakly étale.
     \label{lemma:etale-weakly-etale-algebra}
@@ -113,6 +122,25 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     an open immersion, hence flat.
 \end{proof}
 
+\begin{lemma}
+    \label{lem:field-absolutely-flat}
+    A field is absolutely flat.
+    \uses{def:absolutely-flat}
+\end{lemma}
+
+\begin{proof}
+    Omitted.
+\end{proof}
+
+\begin{lemma}[\stacksproject{092J}]
+    \lemma{lem:weakly-etale-comp}
+    If $A \to B$ and $B \to C$ are weakly étale, then $A \to C$ is weakly étale.
+\end{lemma}
+
+\begin{proof}
+    Ommited, see \stacksproject{092J}.
+\end{proof}
+
 \begin{lemma}[\stacksproject{092H}]
     \label{lem:weakly-etale-base-change}
     Base change preserves weakly etale. More specifically, for any ring maps $A \to A'$, $A \to B$,
@@ -120,6 +148,10 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     (1) If $B \otimes_A B \to B$ is flat, then $B' \otimes_{A'} B' \to B'$ is flat.
     (2) If $A \to B$ is weakly étale, then $A' to B'$ is weakly étale.
 \end{lemma}
+
+\begin{proof}
+    Ommited, see \stacksproject{092H}.
+\end{proof}
 
 \begin{lemma}[\stacksproject{092C}]
     Let $B$ be an $A$-algebra such that $B \otimes_{A} B \to B$ is flat. Let $N$ be a $B$-module.
@@ -133,6 +165,36 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
         N \otimes_B N' = B \otimes_{B \otimes_{A} B} (N \otimes_{A} N')
     .\]
     Hence this follows from the definitions.
+\end{proof}
+
+\begin{lemma}[\stacksproject{092I} (1)]
+    \label{lem:weakly-etale-preserves-absolutely-flat}
+    Let $A \to B$ be a ring map such that $B \otimes_{A} B \to B$ is flat. If $A$ is an absolutely 
+    flat ring, then so is $B$.
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:weakly-etale-flat}
+    It follows from \Cref{lemma:weakly-etale-flat} immediately.
+\end{proof}
+
+% \begin{lemma}[\stacksproject{092I} (2)]
+%     \label{lem:weakly-etale-preserves-reduced}
+%     Let $A \to B$ be a weakly \'etale ring map. If $A$ is reduced, then $B$ is reduced.
+% \end{lemma}
+
+% \begin{proof}
+%     TBA.
+% \end{proof}
+
+\begin{lemma}[\stacksproject{092F} (2) => (3) (4)]
+    \label{lem:local-ring-is-field-of-absolutely-flat}
+    If $A$ is an absolutely flat ring, then $A$ is reduced and every prime is maximal. 
+    Furthermore, every local ring of $A$ is a field.
+\end{lemma}
+
+\begin{proof}
+    TBA.
 \end{proof}
 
 \section{Weak dimension}
@@ -227,16 +289,59 @@ suffices for our purposes.
 
 \section{Fields}
 
-\begin{theorem}[\stacksproject{092Q}, (2) => (3)]
+\begin{lemma}[\stacksproject{092P}]
+    \label{lem:flat-tensor-over-field-imples-algebraic}
+    Let $L/K$ be an extension of fields. If $L \otimes_K L \to L$is flat, then $L$ is an algebraic 
+    separable extension of $K$.
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{theorem}[\stacksproject{092Q}, (2) => (3) and last part]
     \label{thm:weakly-etale-imples-ind-etale-over-fields}
-    Let $K$ be a field. Suppose that $K \to B$ is weakly étale, then $B$ is a filtered colimit of 
+    Let $K$ be a field. Suppose that $K \to B$ is weakly étale, then 
+    \begin{enumerate}
+        \item every finitely generated $K$-subalgebra of $B$ is étale over K,
+        \item $B$ is a filtered colimit of 
     étale $K$-algebras, i.e. $B$ is ind-\'etale. 
+    \end{enumerate}
     \uses{def:weakly-etale-algebra, 
     def:ind-etale}
 \end{theorem}
 
 \begin{proof}
-    TBA.
+    \uses{lem:field-absolutely-flat,
+    lem:weakly-etale-preserves-absolutely-flat,
+    lemma:etale-weakly-etale-algebra,
+    lem:local-ring-is-field-of-absolutely-flat,
+    lemma:etale-weakly-etale-algebra,
+    lem:weakly-etale-comp,
+    lem:flat-tensor-over-field-imples-algebraic}
+    It suffices to show the first statement.
+    A field is absolutely flat ring by \Cref{lem:field-absolutely-flat}, 
+    hence $B$ is a absolutely flat ring by \Cref{lem:weakly-etale-preserves-absolutely-flat}. 
+    And $B$ is reduced and every local 
+    ring is a field, by \Cref{lem:local-ring-is-field-of-absolutely-flat}.
+
+    Let $q \subset B$ be a prime. The ring map $B \to B_q$ is weakly étale by 
+    \Cref{lemma:etale-weakly-etale-algebra}, hence $B_q$ is weakly étale over $K$ 
+    (\Cref{lem:weakly-etale-comp}). Thus $B_q$ is a separable algebraic extension of $K$ by 
+    \Cref{lem:flat-tensor-over-field-imples-algebraic}.
+
+    Let $K \subset A \subset B$ be a finitely generated $K$-sub algebra. We will show that 
+    $A$ is étale over $K$ which will finish the proof of the lemma. 
+    
+    TBA. 
+
+    Then every minimal prime 
+    $p \subset A$ is the image of a prime $q$ of $B$, see Algebra, Lemma 00FK. 
+    Thus κ(p) as a subfield of Bq=κ(q) is separable algebraic over K. Hence 
+    every generic point of Spec(A) is closed (Algebra, Lemma 00GA). Thus dim(A)=0. Then 
+    A is the product of its local rings, e.g., by Algebra, Proposition 00KJ. Moreover, since A is 
+    reduced, all local rings are equal to their residue fields which are finite separable over K. 
+    This means that A is étale over K by Algebra, Lemma 00U3 and finishes the proof.
 \end{proof}
 
 \section{Local rings}
