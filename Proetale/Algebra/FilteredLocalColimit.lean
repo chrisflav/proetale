@@ -6,40 +6,43 @@ Authors: Jingting Wang, Christian Merten
 
 import Mathlib
 
-#check IsLocalRing
-
-universe u v
+/-!
+# Filtered colimit of local rings
+-/
+universe u
 
 open CategoryTheory Limits
 
-section
+variable {J : Type u} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{u}) {c : Cocone F}
 
-variable {J : Type*} [Category* J] [IsFiltered J] (F : J ⥤ CommRingCat.{v}) {c : Cocone F} (hc : IsColimit c)
+/- [TODO]: generalize the upstream instance `CommRingCat.FilteredColimits.forget_preservesFilteredColimits`
+  to remove the universe constraint on `J`. -/
 
-#check CategoryTheory.Limits.Concrete.colimit_exists_of_rep_eq
+namespace CommRingCat.FilteredColimits
 
-instance [IsFiltered J] : PreservesColimit F (forget CommRingCat) := by sorry
-
-include hc in
-lemma CommRingCat.FilteredColimits.nonunits_colimits_le :
+lemma nonunits_colimits_le (hc : IsColimit c) :
     (nonunits c.pt : Set _) ≤ ⋃ (j : J), (c.ι.app j) '' (nonunits (F.obj j)) := by
   intro x hx
-  obtain ⟨j, y, rfl⟩ := CategoryTheory.Limits.Concrete.isColimit_exists_rep F hc x
+  obtain ⟨j, y, rfl⟩ := Concrete.isColimit_exists_rep F hc x
   exact Set.mem_iUnion.mpr ⟨j, ⟨y, fun h ↦ hx (h.map _), rfl⟩⟩
 
-include hc in
-lemma CommRingCat.FilteredColimits.ι_isLocalHom
+lemma ι_isLocalHom (hc : IsColimit c)
     (h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom) (j : J) :
     IsLocalHom (c.ι.app j).hom := by
-  refine IsLocalHom.mk fun x hx ↦ ?_
-  obtain ⟨y, hy⟩ := hx
-  obtain ⟨j', z, hz⟩ := CategoryTheory.Limits.Concrete.isColimit_exists_rep F hc y.inv
-  obtain ⟨j'', f', g', _⟩ := IsFilteredOrEmpty.cocone_objs j j'
+  apply IsLocalHom.mk
+  rintro x ⟨y, hy⟩
+  obtain ⟨j1, z, hz⟩ := Concrete.isColimit_exists_rep F hc (y⁻¹).1
+  obtain ⟨j2, f', g', _⟩ := IsFilteredOrEmpty.cocone_objs j j1
+  have : (c.ι.app j2).hom ((F.map f' x) * (F.map g' z)) = (c.ι.app j2).hom 1 := by
+    simp only [map_mul, map_one, ← comp_apply .., Cocone.w, ← y.mul_inv, hy, ← hz]
+    rfl
+  obtain ⟨j3, f3, g3, hfg3⟩ := Concrete.isColimit_exists_of_rep_eq F hc _ _ this
+  obtain ⟨j4, i4, h4⟩ := IsFilteredOrEmpty.cocone_maps f3 g3
+  refine isUnit_of_map_unit (F.map (f' ≫ f3 ≫ i4)).hom x <| isUnit_iff_exists_inv.mpr <|
+    ⟨(F.map (g' ≫ g3 ≫ i4)).hom z, h4 ▸ ?_⟩
+  simpa using congr((F.map i4).hom $hfg3)
 
-  sorry
-
-include hc in
-lemma CommRingCat.FilteredColimits.nonunits_colimits_eq_of_isLocalHom
+lemma nonunits_colimits_eq_of_isLocalHom (hc : IsColimit c)
     (h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom) :
     (nonunits c.pt : Set _) = ⋃ (j : J), (c.ι.app j) '' (nonunits (F.obj j)) := by
   apply le_antisymm (nonunits_colimits_le F hc) (fun x hx ↦ ?_)
@@ -47,13 +50,9 @@ lemma CommRingCat.FilteredColimits.nonunits_colimits_eq_of_isLocalHom
   have := ι_isLocalHom F hc h_hom
   exact (map_mem_nonunits_iff _ _).mpr hy
 
-end
-#check NatTrans
 /- [TODO]: generalize the upstream lemma `CommRingCat.FilteredColimits.nontrivial` to remove the
   requirement of `SmallCategory J`. -/
-
-theorem CommRingCat.FilteredColimits.colimit_isLocalRing {J : Type v} [SmallCategory J]
-    [IsFiltered J] (F : J ⥤ CommRingCat.{v}) {c : Cocone F} (hc : IsColimit c)
+theorem CommRingCat.FilteredColimits.colimit_isLocalRing (hc : IsColimit c)
     (h_obj : ∀ (j : J), IsLocalRing (F.obj j)) (h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom) :
     IsLocalRing c.pt := by
   have : Nontrivial c.pt := CommRingCat.FilteredColimits.nontrivial (c := c) hc
@@ -66,5 +65,7 @@ theorem CommRingCat.FilteredColimits.colimit_isLocalRing {J : Type v} [SmallCate
   obtain ⟨j'', f, g, _⟩ := IsFilteredOrEmpty.cocone_objs j j'
   refine ⟨j'', ⟨F.map f a + F.map g b, (h_obj j'').nonunits_add
     ((map_mem_nonunits_iff _ _).mpr ha) ((map_mem_nonunits_iff _ _).mpr hb), ?_⟩⟩
-  rw [map_add, ← comp_apply .., ← comp_apply .., Cocone.w c f, Cocone.w c g]
+  simp only [map_add, ← comp_apply .., Cocone.w c _]
   rfl
+
+end CommRingCat.FilteredColimits
