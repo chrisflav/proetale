@@ -111,9 +111,11 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     Every étale algebra is weakly étale.
     \label{lemma:etale-weakly-etale-algebra}
     \lean{Algebra.WeaklyEtale.of_etale}
+    \uses{def:weakly-etale-algebra}
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $S$ be an étale $R$-algebra. Then $S$ is $R$-flat. Also
     $S \otimes_{R} S \cong S × T$ for some ring $T$, in particular $\spec{S \otimes_{R} S} \to \spec{S}$ is
     an open immersion, hence flat.
