@@ -22,8 +22,10 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
-    % TODO
-    Omitted.
+    Let $R = \colim_i R_i$ with $R_i$ local rings and $R_i \to R_j$ a local ring map.
+    Suppose $x, y \in R_i$ are non-units. Since $R_i$ is local, their sum is a not a unit.
+    If the image of $x + y$ in $\colim_i R_i$ is a unit, their exists a $j$ such that the image of $x + y$ is a
+    unit in $R_j$. But this does not happen because $R_i \to R_j$ is a local ring map.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/04GI}{Tag 04GI}]{stacks-project}}]
@@ -68,8 +70,9 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
-    % TODO
-    Omitted.
+    It suffices to show that $\kappa(S)$ is integral over $R$. Since $S$ is integral over $R$
+    and $\kappa(S)$ is integral over $S$ (the map $S \to \kappa(S)$ is surjective),
+    the composition $R \to S \to \kappa(S)$ is integral.
 \end{proof}
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/092Y}{Tag 092Y}]{stacks-project}}]
@@ -146,13 +149,25 @@ suffices for our purposes.
     \label{def:weak-dim-le-one}
 \end{definition}
 
+\begin{theorem}[Lazard]
+    Let $M$ be a flat $R$-module. Then $M$ is the directed colimit of free, finite $R$-modules.
+    \label{theorem:lazard}
+\end{theorem}
+
+\begin{proof}
+    \cite{\stacksproject{058G}}
+\end{proof}
+
 \begin{lemma}[\stacksproject{092S}, (3) => (4)]
     Let $A$ be a ring of weak dimension $\le 1$ and $M$ a flat $A$-module. Then
     any submodule of $M$ is flat.
     \label{lemma:weak-dim-flat-submodule}
+    \uses{def:weak-dim-le-one}
 \end{lemma}
 
 \begin{proof}
+    \uses{theorem:lazard}
+    This requires Lazard's theorem \Cref{theorem:lazard}.
     TBA.
 \end{proof}
 
