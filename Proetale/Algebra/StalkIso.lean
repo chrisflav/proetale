@@ -37,19 +37,18 @@ lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
   exact (hg p).comp (hf (p.comap g))
 
 /-- If `f : R →+* S` is bijective on stalks, then checking bijectivity at a prime `p` of `S`
-can be done after localizing at any element not in `p`. This is the key locality property. -/
+can be done after localizing at any element not in `p`. -/
 lemma of_localization {f : R →+* S} (g : S) (p : Ideal S) [hp : p.IsPrime] (hgp : g ∉ p)
-    (Sg : Type*) [CommRing Sg] [Algebra S Sg] [IsLocalization.Away g Sg] :
-    let hpM : Disjoint (Submonoid.powers g : Set S) (↑p : Set S) :=
-      (Ideal.disjoint_powers_iff_notMem g hp.isRadical).mpr hgp
-    let p_g := Ideal.map (algebraMap S Sg) p
-    let hp_g : p_g.IsPrime :=
-      IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g) Sg p hp hpM
-    let hcomap_pg : p_g.comap (algebraMap S Sg) = p :=
-      IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
-    Function.Bijective (Localization.localRingHom (p.comap f) p_g ((algebraMap S Sg).comp f)
-      (by rw [← Ideal.comap_comap, hcomap_pg])) →
-    Function.Bijective (Localization.localRingHom (p.comap f) p f rfl) := fun h => by
+    (Sg : Type*) [CommRing Sg] [Algebra S Sg] [IsLocalization.Away g Sg]
+    (h : let hpM : Disjoint (Submonoid.powers g : Set S) (↑p : Set S) :=
+           (Ideal.disjoint_powers_iff_notMem g hp.isRadical).mpr hgp
+         haveI : (Ideal.map (algebraMap S Sg) p).IsPrime :=
+           IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g) Sg p hp hpM
+         Function.Bijective (Localization.localRingHom (p.comap f)
+           (Ideal.map (algebraMap S Sg) p) ((algebraMap S Sg).comp f)
+           (by rw [← Ideal.comap_comap,
+             IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM]))) :
+    Function.Bijective (Localization.localRingHom (p.comap f) p f rfl) := by
   set p_g := Ideal.map (algebraMap S Sg) p
   have hpM : Disjoint (Submonoid.powers g : Set S) (↑p : Set S) :=
     (Ideal.disjoint_powers_iff_notMem g hp.isRadical).mpr hgp
@@ -75,6 +74,23 @@ lemma of_localization {f : R →+* S} (g : S) (p : Ideal S) [hp : p.IsPrime] (hg
        (Localization.localRingHom (p.comap f) p f rfl)) :=
     hfactor ▸ h
   exact (h_alg_bij.of_comp_iff' _).mp hfactor'
+
+/-- A ring homomorphism `f : R →+* S` is bijective on stalks if there exists a set of elements
+of `S` spanning the unit ideal such that for every such element, the composition of `f` with
+the localization map is bijective on stalks. -/
+lemma of_span_unit_ideal {f : R →+* S} (s : Finset S)
+    (hs : Ideal.span (s : Set S) = ⊤)
+    (h : ∀ g ∈ s, ∀ (Sg : Type*) [CommRing Sg] [Algebra S Sg] [IsLocalization.Away g Sg],
+      ((algebraMap S Sg).comp f).BijectiveOnStalks) :
+    f.BijectiveOnStalks := by
+  intro p hp
+  obtain ⟨g, hgs, hgp⟩ : ∃ g ∈ s, g ∉ p := by
+    by_contra! h_contra
+    have : (s : Set S) ⊆ p := h_contra
+    rw [← Ideal.span_le, hs] at this
+    exact hp.ne_top (le_antisymm le_top this)
+  exact of_localization g p hgp (Localization.Away g)
+    (h g hgs (Localization.Away g) (Ideal.map (algebraMap S (Localization.Away g)) p))
 
 end RingHom.BijectiveOnStalks
 
