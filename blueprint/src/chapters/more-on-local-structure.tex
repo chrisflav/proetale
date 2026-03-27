@@ -103,11 +103,14 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
     An $R$-algebra $S$ is \emph{weakly étale} if it is flat over $R$ and flat over $S \otimes_{R} S$.
     A ring homorphism $f \colon R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra.
     \label{def:weakly-etale-algebra}
+    \lean{Algebra.WeaklyEtale}
+    \leanok
 \end{definition}
 
 \begin{lemma}
     Every étale algebra is weakly étale.
     \label{lemma:etale-weakly-etale-algebra}
+    \lean{Algebra.WeaklyEtale.of_etale}
 \end{lemma}
 
 \begin{proof}
@@ -118,11 +121,17 @@ define the pro-étale site of a scheme, we use the notion of weakly étale ring 
 
 \begin{lemma}[\stacksproject{092H}]
     \label{lem:weakly-etale-base-change}
-    Base change preserves weakly etale. More specifically, for any ring maps $A \to A'$, $A \to B$,
-    let $B' = B \otimes_A A'$ be the base change of $B$.
-    (1) If $B \otimes_A B \to B$ is flat, then $B' \otimes_{A'} B' \to B'$ is flat.
-    (2) If $A \to B$ is weakly étale, then $A' to B'$ is weakly étale.
+    If $B$ is a weakly-étale $A$-algebra and $A'$ is any $A$-algebra, the base change
+    $A' \otimes_{A} B$ is a weakly-étale $A'$-algebra.
+    \uses{def:weakly-etale-algebra}
+    \lean{Algebra.WeaklyEtale.tensorProduct}
+    \leanok
 \end{lemma}
+
+\begin{proof}
+    Calculation.
+    \leanok
+\end{proof}
 
 \begin{lemma}[\stacksproject{092C}]
     Let $B$ be an $A$-algebra such that $B \otimes_{A} B \to B$ is flat. Let $N$ be a $B$-module.
@@ -147,6 +156,8 @@ suffices for our purposes.
     Let $A$ be a ring. We say it is of \emph{weak dimension} $\le 1$ if every finitely generated ideal of
     $A$ is flat over $A$.
     \label{def:weak-dim-le-one}
+    \lean{Ring.WeakDimensionLEOne}
+    \leanok
 \end{definition}
 
 \begin{theorem}[Lazard]
@@ -162,6 +173,8 @@ suffices for our purposes.
     Let $A$ be a ring of weak dimension $\le 1$ and $M$ a flat $A$-module. Then
     any submodule of $M$ is flat.
     \label{lemma:weak-dim-flat-submodule}
+    \lean{Ring.WeakDimensionLEOne.flat_submodule}
+    \leanok
     \uses{def:weak-dim-le-one}
 \end{lemma}
 

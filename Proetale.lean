@@ -16,6 +16,7 @@ import Proetale.Algebra.WLocal
 import Proetale.Algebra.WLocalization.Basic
 import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Algebra.WStrictLocalization
+import Proetale.Algebra.WeakDimension
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Basic
 import Proetale.FromPi1.Etale
