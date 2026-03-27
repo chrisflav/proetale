@@ -52,10 +52,9 @@ lemma nonunits_colimits_eq_of_isLocalHom (hc : IsColimit c)
 
 /- [TODO]: generalize the upstream lemma `CommRingCat.FilteredColimits.nontrivial` to remove the
   requirement of `SmallCategory J`. -/
-theorem CommRingCat.FilteredColimits.colimit_isLocalRing (hc : IsColimit c)
-    (h_obj : ∀ (j : J), IsLocalRing (F.obj j)) (h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom) :
-    IsLocalRing c.pt := by
-  have : Nontrivial c.pt := CommRingCat.FilteredColimits.nontrivial (c := c) hc
+theorem colimit_isLocalRing (hc : IsColimit c) (h_obj : ∀ (j : J), IsLocalRing (F.obj j))
+    (h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom) : IsLocalRing c.pt := by
+  have : Nontrivial c.pt := FilteredColimits.nontrivial (c := c) hc
   have h_nonunits_eq := nonunits_colimits_eq_of_isLocalHom F hc h_hom
   have h_isLocalHom := ι_isLocalHom F hc h_hom
   refine IsLocalRing.of_nonunits_add (fun a b ha hb ↦ h_nonunits_eq ▸ (Set.mem_iUnion.mpr ?_))
