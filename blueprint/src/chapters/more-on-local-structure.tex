@@ -229,7 +229,29 @@ suffices for our purposes.
     \stacksproject{058G}
 \end{proof}
 
-\begin{lemma}[\stacksproject{092S}, (3) => (4)]
+\begin{lemma}[\stacksproject{092S}, (1) => (2)]
+    If $A$ is of weak-dimension $\le 1$, then every ideal $I \subseteq A$ is flat.
+    \uses{def:weak-dim-le-one}
+    \label{lemma:weak-dim-ideal-flat}
+\end{lemma}
+
+\begin{proof}
+    Use the fact that a filtered colimit of flat modules is flat and that
+    any ideal is the filtered colimit of its finitely generated subideals.
+\end{proof}
+
+\begin{lemma}
+    Let $M$ be an $R$-module and $0 = M_0 \subseteq M_1 \subseteq M_n = M$ a
+    sequence of submodules. If $M_{j + 1} / M_j$ is flat for all $j$, then
+    $M$ is flat.
+    \label{lemma:flat-filtration}
+\end{lemma}
+
+\begin{proof}
+    Inductively apply that extensions of flat modules are flat.
+\end{proof}
+
+\begin{lemma}[\stacksproject{092S}, (2) => (4)]
     Let $A$ be a ring of weak dimension $\le 1$ and $M$ a flat $A$-module. Then
     any submodule of $M$ is flat.
     \label{lemma:weak-dim-flat-submodule}
@@ -238,10 +260,17 @@ suffices for our purposes.
     \uses{def:weak-dim-le-one}
 \end{lemma}
 
+% There is a much better proof that avoids Lazard, but uses Tor instead.
 \begin{proof}
-    \uses{theorem:lazard}
-    This requires Lazard's theorem \Cref{theorem:lazard}.
-    TBA.
+    \uses{theorem:lazard, lemma:flat-filtration, lemma:weak-dim-ideal-flat}
+    By \Cref{theorem:lazard} we may write $M = \colim_i M_i$ for finite and free $A$-modules $M_i$.
+    Denote by $N_i$ the preimage of $M_i$ in $N$. Then $N = \colim_i N_i$ and
+    since the filtered colimit of flat modules is flat, we reduce to the case where $M = R^{\oplus n}$.
+    By applying \Cref{lemma:flat-filtration} to the sequence $N_j = N \cap R^{\oplus j}$, it remains
+    to show that $N_{j+1} / N_j$ is flat. For this consider
+    the projection on the $j + 1$-th factor $N_{j+1} \to R$. Its image is an ideal $I \subseteq R$
+    and its kernel is $N_j$. Hence $N_{j + 1} / N_j \cong I$ and $I$ is flat by
+    \Cref{lemma:weak-dim-ideal-flat}.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092E}]
