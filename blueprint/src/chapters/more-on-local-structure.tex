@@ -155,7 +155,7 @@ suffices for our purposes.
 \end{theorem}
 
 \begin{proof}
-    \cite{\stacksproject{058G}}
+    \stacksproject{058G}
 \end{proof}
 
 \begin{lemma}[\stacksproject{092S}, (3) => (4)]
@@ -175,6 +175,21 @@ suffices for our purposes.
     Let $A$ be of weak dimension $\le 1$ and $B$ a weakly étale $A$-algebra. Then
     $B$ is of weak dimension $\le 1$.
     \label{lemma:weakly-etale-preserve-weak-dim}
+    \uses{def:weak-dim-le-one}
+\end{lemma}
+
+\begin{proof}
+    \uses{lemma:weakly-etale-flat, lemma:weak-dim-flat-submodule}
+    Let $M$ be a flat $B$-module and $N \subseteq M$ a submodule. By
+    \Cref{lemma:weakly-etale-flat} it suffices to show that $N$ is $A$-flat.
+    Since $B$ is $A$-flat, $M$ is also $A$-flat and hence its submodule $N$
+    is $A$-flat by \Cref{lemma:weak-dim-flat-submodule}.
+\end{proof}
+
+\begin{lemma}
+    Let $I$ be a finitely generated ideal of $\prod_{i \in I} A_i$. Then
+    $I = \prod_{i \in I} I_i$ where $I_i$ is the image of $A$ in $A_i$.
+    \label{lemma:prod-ideal-fg}
 \end{lemma}
 
 \begin{proof}
@@ -185,9 +200,17 @@ suffices for our purposes.
     Let $(A_i)_{i \in I}$ be a family of valuation rings. Then
     $\prod_{i \in I} A_i$ is of weak dimension $\le 1$.
     \label{lemma:prod-valuation-ring-weak-dim-integrally-closed}
+    \uses{def:weak-dim-le-one}
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:prod-ideal-fg}
+    Let $I \subseteq \prod_{i \in I} A_i$ be a finitely generated ideal. Let $I_i \subseteq A_i$
+    be the image of $I$ in $A_i$.
+    By \Cref{lemma:prod-ideal-fg}, $I$ is the product of the $I_i$.
+    Since each $A_i$ is a valuation ring, there exists $e_i \in A_i$ such
+    that $I_i = (e_i)$.
+
     TBA.
 \end{proof}
 
