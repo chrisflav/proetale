@@ -76,9 +76,9 @@ lemma maximalIdeal_eq_iUnion_of_isColimit (hc : IsColimit c) :
 -- Is it possible to make `Functor.const.obj` reducible somehow? Is it possible to remove `let`?
 set_option linter.unusedVariables false in
 lemma residueField_eq_iUnion_of_isColimit (hc : IsColimit c) :
-    let inst_isLocalRing := isLocalRing_of_isColimit F hc
-    let inst_isLocalHom := isLocalHom_ι F hc
-    let (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := inst_isLocalRing
+    letI inst_isLocalRing := isLocalRing_of_isColimit F hc
+    letI inst_isLocalHom := isLocalHom_ι F hc
+    letI (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := inst_isLocalRing
     ⋃ (j : J), (ResidueField.map (c.ι.app j).hom).fieldRange.carrier = (⊤ : Set (ResidueField c.pt)):= by
   ext x
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
