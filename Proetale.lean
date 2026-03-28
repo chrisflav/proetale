@@ -2,6 +2,7 @@ import Proetale.Algebra.Contraction.Covers
 import Proetale.Algebra.Contraction.IndContraction
 import Proetale.Algebra.Etale
 import Proetale.Algebra.FaithfullyFlat
+import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.Ind
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndZariski
