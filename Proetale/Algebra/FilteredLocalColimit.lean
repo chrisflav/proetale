@@ -22,14 +22,14 @@ variable {J : Type u} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{u
 namespace CommRingCat.FilteredColimits
 
 omit h_obj h_hom in
-lemma nonunits_colimits_le (hc : IsColimit c):
+lemma nonunits_le_of_isColimit (hc : IsColimit c):
     (nonunits c.pt : Set _) ≤ ⋃ (j : J), (c.ι.app j) '' (nonunits (F.obj j)) := by
   intro x hx
   obtain ⟨j, y, rfl⟩ := Concrete.isColimit_exists_rep F hc x
   exact Set.mem_iUnion.mpr ⟨j, ⟨y, fun h ↦ hx (h.map _), rfl⟩⟩
 
 omit h_obj in
-lemma ι_isLocalHom (hc : IsColimit c) (j : J) :
+lemma isLocalHom_ι (hc : IsColimit c) (j : J) :
     IsLocalHom (c.ι.app j).hom := by
   apply IsLocalHom.mk
   rintro x ⟨y, hy⟩
@@ -45,19 +45,19 @@ lemma ι_isLocalHom (hc : IsColimit c) (j : J) :
   simpa using congr((F.map i4).hom $hfg3)
 
 omit h_obj in
-lemma nonunits_colimits_eq_of_isLocalHom (hc : IsColimit c) :
+lemma nonunits_eq_iUnion_of_isColimit (hc : IsColimit c) :
     (nonunits c.pt : Set _) = ⋃ (j : J), (c.ι.app j) '' (nonunits (F.obj j)) := by
-  apply le_antisymm (nonunits_colimits_le F hc) (fun x hx ↦ ?_)
+  apply le_antisymm (nonunits_le_of_isColimit F hc) (fun x hx ↦ ?_)
   obtain ⟨j, y, hy, rfl⟩ := Set.mem_iUnion.mp hx
-  have := ι_isLocalHom F hc
+  have := isLocalHom_ι F hc
   exact (map_mem_nonunits_iff _ _).mpr hy
 
 /- [TODO]: generalize the upstream lemma `CommRingCat.FilteredColimits.nontrivial` to remove the
   requirement of `SmallCategory J`. -/
-theorem colimit_isLocalRing (hc : IsColimit c) : IsLocalRing c.pt := by
+theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by
   have : Nontrivial c.pt := FilteredColimits.nontrivial (c := c) hc
-  have h_nonunits_eq := nonunits_colimits_eq_of_isLocalHom F hc
-  have h_isLocalHom := ι_isLocalHom F hc
+  have h_nonunits_eq := nonunits_eq_iUnion_of_isColimit F hc
+  have h_isLocalHom := isLocalHom_ι F hc
   refine IsLocalRing.of_nonunits_add (fun a b ha hb ↦ h_nonunits_eq ▸ (Set.mem_iUnion.mpr ?_))
   simp only [h_nonunits_eq, Functor.const_obj_obj, Set.mem_iUnion, Set.mem_image] at ha hb
   obtain ⟨j, a, ha, rfl⟩ := ha
@@ -69,15 +69,15 @@ theorem colimit_isLocalRing (hc : IsColimit c) : IsLocalRing c.pt := by
   rfl
 
 lemma colimit_isLocalRing_maximalIdeal (hc : IsColimit c) :
-    (colimit_isLocalRing F hc).maximalIdeal.carrier =
+    (isLocalRing_of_isColimit F hc).maximalIdeal.carrier =
     ⋃ (j : J), (c.ι.app j) '' (maximalIdeal (F.obj j)).carrier :=
-  nonunits_colimits_eq_of_isLocalHom F hc
+  nonunits_eq_iUnion_of_isColimit F hc
 
 -- Is it possible to make `Functor.const.obj` reducible somehow? Is it possible to remove `let`?
 set_option linter.unusedVariables false in
 lemma colimit_residueField (hc : IsColimit c) :
-    let inst_isLocalRing := colimit_isLocalRing F hc
-    let inst_isLocalHom := ι_isLocalHom F hc
+    let inst_isLocalRing := isLocalRing_of_isColimit F hc
+    let inst_isLocalHom := isLocalHom_ι F hc
     let (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := inst_isLocalRing
     ⋃ (j : J), (ResidueField.map (c.ι.app j).hom).fieldRange.carrier = (⊤ : Set (ResidueField c.pt)):= by
   ext x

@@ -19,9 +19,12 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \begin{lemma}
     A filtered colimit of local rings along local homomorphisms is local.
     \label{lemma:colimit-local}
+    \lean{CommRingCat.FilteredColimits.isLocalRing_of_isColimit}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $R = \colim_i R_i$ with $R_i$ local rings and $R_i \to R_j$ a local ring map.
     Suppose $x, y \in R_i$ are non-units. Since $R_i$ is local, their sum is a not a unit.
     If the image of $x + y$ in $\colim_i R_i$ is a unit, their exists a $j$ such that the image of $x + y$ is a
