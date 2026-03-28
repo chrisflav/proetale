@@ -68,14 +68,14 @@ theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by
   simp only [map_add, ← comp_apply .., Cocone.w c _]
   rfl
 
-lemma colimit_isLocalRing_maximalIdeal (hc : IsColimit c) :
+lemma maximalIdeal_eq_iUnion_of_isColimit (hc : IsColimit c) :
     (isLocalRing_of_isColimit F hc).maximalIdeal.carrier =
     ⋃ (j : J), (c.ι.app j) '' (maximalIdeal (F.obj j)).carrier :=
   nonunits_eq_iUnion_of_isColimit F hc
 
 -- Is it possible to make `Functor.const.obj` reducible somehow? Is it possible to remove `let`?
 set_option linter.unusedVariables false in
-lemma colimit_residueField (hc : IsColimit c) :
+lemma residueField_eq_iUnion_of_isColimit (hc : IsColimit c) :
     let inst_isLocalRing := isLocalRing_of_isColimit F hc
     let inst_isLocalHom := isLocalHom_ι F hc
     let (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := inst_isLocalRing
