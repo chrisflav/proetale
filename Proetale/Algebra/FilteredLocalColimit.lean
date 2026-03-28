@@ -69,9 +69,20 @@ theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by
   rfl
 
 lemma maximalIdeal_eq_iUnion_of_isColimit (hc : IsColimit c) :
-    (isLocalRing_of_isColimit F hc).maximalIdeal.carrier =
-    ⋃ (j : J), (c.ι.app j) '' (maximalIdeal (F.obj j)).carrier :=
+    (isLocalRing_of_isColimit F hc).maximalIdeal =
+    ⋃ (j : J), ((c.ι.app j) '' (maximalIdeal (F.obj j)) : Set c.pt) :=
   nonunits_eq_iUnion_of_isColimit F hc
+
+lemma maximalIdeal_eq_iSup_of_isColimit (hc : IsColimit c) :
+    (isLocalRing_of_isColimit F hc).maximalIdeal =
+    ⨆ (j : J), ((maximalIdeal (F.obj j)).map (c.ι.app j).hom : Ideal c.pt) := by
+  refine le_antisymm ?_ (iSup_le fun j ↦ ?_)
+  · show (_ : Set _) ≤ _
+    rw [maximalIdeal_eq_iUnion_of_isColimit F hc]
+    apply Set.iUnion_subset fun j ↦ le_trans ?_ (SetLike.coe_mono (le_iSup _ j))
+    exact Ideal.subset_span
+  · have : IsLocalRing (((Functor.const J).obj c.pt).obj j) := isLocalRing_of_isColimit F hc
+    exact ((IsLocalRing.local_hom_TFAE (c.ι.app j).hom).out 0 2).mp (isLocalHom_ι F hc j)
 
 -- Is it possible to make `Functor.const.obj` reducible somehow? Is it possible to remove `let`?
 set_option linter.unusedVariables false in
