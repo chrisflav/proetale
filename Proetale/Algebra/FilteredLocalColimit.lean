@@ -133,7 +133,7 @@ instance : ReflectsFilteredColimits (forget CommRingCat.{u}) where
 /-- For a filtered colimit cocone `c` of local homomorphisms between local rings, the `residueFieldCocone`
   constructed from `c` is also a colimit cocone, i.e. the residue field of colimit of local rings
   (and local homomorphisms) is a colimit of the residue field of these local rings. -/
-noncomputable def residueFieldCocone_isColimit (hc : IsColimit c) :
+noncomputable def isColimit_residueFieldCocone (hc : IsColimit c) :
     IsColimit (residueFieldCocone F hc) :=
   letI (j : J) : Field ((residueFieldFunctor F).obj j) := inferInstanceAs <| Field (ResidueField _)
   letI := isLocalRing_of_isColimit F hc
