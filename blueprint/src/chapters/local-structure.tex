@@ -441,6 +441,16 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
   Omitted.
 \end{proof}
 
+\begin{lemma}[\stacksproject{096D}]
+    Let $A$ be a ring and $B \to C$ be an $A$-algebra map. Suppose both
+    $A \to B$ and $A \to C$ are bijective on stalks. Then $B \to C$ is bijective on stalks.
+    \label{lemma:bijective-on-stalks-of-comp}
+\end{lemma}
+
+\begin{proof}
+    Holds because the same holds for bijective maps of sets.
+\end{proof}
+
 \begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}}]
   \label{def:identifies-local-ring-to-top}
   \uses{def:identify-local-rings,thm:identifies-local-rings-composition}
@@ -783,6 +793,14 @@ The following example shows that our definition agrees with the one in
     \lean{IsWLocalMap}
     \leanok
 \end{definition}
+
+\begin{definition}[w-purely-local morphisms]
+    Let \(X\) and \(Y\) be w-local spaces. A morphism $f\colon X \to Y$ is \emph{w-purely-local} if
+    it $f^{-1}(X^c) = Y^c$.
+    \label{def:w-purely-local-space-map}
+\end{definition}
+
+Obviously, every w-purely-local morphism is w-local.
 
 \begin{lemma}
     Let \(f: X \to Y\) and \(g: Y \to Z\) be w-local maps between w-local spaces. Then the composition \(g \circ f: X \to Z\) is w-local.
@@ -1535,6 +1553,30 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
     the closed subset $V(I)$ contains all closed points of $\spec{A_{\widetilde{V(I)}}}$. Hence,
     if $V(I)$ only contains closed points, the closed points are exactly $V(I)$.
 \end{proof}
+
+\begin{proposition}[Universal property of w-localization, \stacksproject{0977}]
+    Let $A \to B$ be a ring map with $B$ w-local. There exists a unique
+    factorization $A \to A_w \to B$ such that $A_w \to B$ is w-local.
+    \uses{def:w-localization, def:w-local-ring-map}
+    \label{lemma:univ-prop-w-localization}
+\end{proposition}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{definition}[w-localization of ring map]
+    Let $f\colon A \to B$ be a ring map. We denote by $f_w\colon A_w \to B_w$ the
+    unique w-local ring map making
+    \[
+    \begin{tikzcd}
+        A \arrow{r} \arrow{d} & B \arrow{d} \\
+        A_w \arrow{r} & B_w
+    \end{tikzcd}
+    \] commute.
+    \label{def:w-localization-map}
+    \uses{lemma:univ-prop-w-localization}
+\end{definition}
 
 \begin{lemma}
     Let $A \to B$ be a ring map that induces algebraic extensions on residue fields

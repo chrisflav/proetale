@@ -356,7 +356,16 @@ suffices for our purposes.
         0 & f_i = 0 \\
         1 & f_i \neq 0
     \end{cases}
-    .\]
+    \] and let $g$ be the element defined by
+    \[
+    g_i = \begin{cases}
+        1 & f_i = 0 \\
+        f_i & f_i \neq 0
+    \end{cases}
+    .\] Since every $A_i$ is a domain, $g$ is a non-zerodivisor and $f = g e$. In particular,
+    the $A$-linear map $(e) \to (ge) = (f)$ is an isomorphism: It is surjective by construction
+    and injective because $g$ is a nonzerodivisor. Since $e$ is idempotent,
+    we have $A = (e) \oplus (1 - e)$ as $A$-modules, so $(e)$ is projective.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092V}]
@@ -680,18 +689,46 @@ suffices for our purposes.
 
 \begin{theorem}
     \label{thm:weakly-etale-over-sh}
-    Let $A \to B$ be a local homomorphism of local rings. If $A$ is strictly henselian, 
+    Let $A \to B$ be a local homomorphism of local rings. If $A$ is strictly henselian,
     and $A \to B$ is weakly étale, then $A = B$.
-    \uses{def:weakly-etale-algebra, 
+    \uses{def:weakly-etale-algebra,
     def:strictly-henselian-local-ring}
 \end{theorem}
 
 \begin{proof}
     \uses{thm:weakly-etale-over-henselian-sep-closed,
     lem:sh-iff-henselian-and-sep-closed}
-    This is simply \Cref{thm:weakly-etale-over-henselian-sep-closed} plus 
+    This is simply \Cref{thm:weakly-etale-over-henselian-sep-closed} plus
     \Cref{lem:sh-iff-henselian-and-sep-closed}.
 \end{proof}
+
+\section{Bijective on stalks and ind-Zariski}
+
+\begin{lemma}[\stacksproject{097F}]
+    Let $A \to B$ be a w-local ring map of w-local-rings that identifies local rings. Then
+    $A \to B$ is ind-Zariski.
+    \label{lemma:w-local-bijective-on-stalks-ind-zariski}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{proposition}[\stacksproject{097G}]
+    Let $A \to B$ be a ring map that is bijective on stalks. Then there exists a faithfully flat,
+    ind-Zariski map $B \to B'$ such that $A \to B'$ is ind-Zariski.
+    \label{prop:bijective-on-stalks-ind-zariski}
+\end{proposition}
+
+\begin{proof}
+    \uses{def:w-localization-map, lemma:bijective-on-stalks-of-comp, lemma:w-local-bijective-on-stalks-ind-zariski}
+    By \Cref{lemma:bijective-on-stalks-of-comp}, the induced map $A_w \to B_w$ is again
+    bijective on stalks and hence ind-Zariski by \Cref{lemma:w-local-bijective-on-stalks-ind-zariski}.
+    Since $B \to B_w$ is ind-Zariski and faithfully flat and the composition $A \to B \to B_w$ is ind-Zariski,
+    the claim follows.
+\end{proof}
+
+\section{Weakly étale and ind-étale}
 
 \begin{theorem}
     Let $R \to S$ be weakly étale. Then there exists a faithfully flat ind-étale morphism
@@ -700,6 +737,6 @@ suffices for our purposes.
 \end{theorem}
 
 \begin{proof}
-    \uses{thm:weakly-etale-over-sh}
+    \uses{thm:weakly-etale-over-sh, prop:bijective-on-stalks-ind-zariski}
     TBA.
 \end{proof}
