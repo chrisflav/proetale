@@ -182,7 +182,7 @@ of this property.
 
 \begin{lemma}[\stacksproject{092I} (1)]
     \label{lem:weakly-etale-preserves-absolutely-flat}
-    Let $A \to B$ be a ring map such that $B \otimes_{A} B \to B$ is flat. If $A$ is an absolutely 
+    Let $A \to B$ be a ring map such that $B \otimes_{A} B \to B$ is flat. If $A$ is an absolutely
     flat ring, then so is $B$.
 \end{lemma}
 
@@ -325,9 +325,11 @@ suffices for our purposes.
 \end{proof}
 
 \begin{lemma}
-    Let $I$ be a finitely generated ideal of $\prod_{i \in I} A_i$. Then
-    $I = \prod_{i \in I} I_i$ where $I_i$ is the image of $A$ in $A_i$.
-    \label{lemma:prod-ideal-fg}
+    Let $(A_i)_{i \in I}$ be a family of rings and for every $i$ an $A_i$-module $M_i$.
+    Let $N$ be a $\prod_{i \in I} A_i$-submodule of $\prod_{i \in I} M_i$.
+    Then $N \subseteq \prod_{i \in I} N_i$.
+    If $N$ is finitely generated, equality holds.
+    \label{lemma:prod-submodule-fg}
 \end{lemma}
 
 \begin{proof}
@@ -342,14 +344,19 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:prod-ideal-fg}
+    \uses{lemma:prod-submodule-fg}
     Let $I \subseteq \prod_{i \in I} A_i$ be a finitely generated ideal. Let $I_i \subseteq A_i$
     be the image of $I$ in $A_i$.
-    By \Cref{lemma:prod-ideal-fg}, $I$ is the product of the $I_i$.
-    Since each $A_i$ is a valuation ring, there exists $e_i \in A_i$ such
-    that $I_i = (e_i)$.
-
-    TBA.
+    By \Cref{lemma:prod-submodule-fg}, $I$ is the product of the $I_i$.
+    Since each $A_i$ is a valuation ring, there exists $f_i \in A_i$ such
+    that $I_i = (f_i)$. Hence $I = (f)$ where $f = (f_i)$. Let $e \in A$
+    be the idempotent element defined by
+    \[
+    e_i = \begin{cases}
+        0 & f_i = 0 \\
+        1 & f_i \neq 0
+    \end{cases}
+    .\]
 \end{proof}
 
 \begin{lemma}[\stacksproject{092V}]
