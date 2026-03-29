@@ -25,7 +25,16 @@ lemma exists_eq_mul_of_surjective_flat {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.Flat) (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := sorry
 
 lemma exists_eq_mul_of_surjective_flat' {R S ι : Type*} [CommRing R] [CommRing S] [Finite ι]
-    (f : R →+* S) (hf : f.Flat) (x : ι → R) (hx : ∀ i, f (x i) = 0) : ∃ y : R, f y = 1 ∧ ∀ i : ι, y * x i = 0 := sorry
+    (f : R →+* S) (hf : f.Flat) (x : ι → R) (hx : ∀ i, f (x i) = 0) : ∃ y : R, f y = 1 ∧ ∀ i : ι, y * x i = 0 := by
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e h =>
+    obtain ⟨y, hy, hy'⟩ := h (x.comp e) (by grind)
+    refine ⟨y, hy, fun i ↦ by simpa using hy' (e.symm i)⟩
+  | h_empty => exact ⟨1, by simp, by simp⟩
+  | h_option h =>
+    obtain ⟨y, hy, hy'⟩ := h (x.comp Option.some) (by grind)
+    obtain ⟨z, hz, hz'⟩ := exists_eq_mul_of_surjective_flat f hf (x .none) (by grind)
+    refine ⟨y * z, by simp [hy, hz], fun | some i => by grind | none => by grind⟩
 
 namespace Ring.WeakDimensionLEOne
 
