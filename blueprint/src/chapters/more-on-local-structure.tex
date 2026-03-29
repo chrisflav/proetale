@@ -114,6 +114,7 @@ of this property.
 \begin{definition}
     \label{def:absolutely-flat}
     A ring $A$ is called \emph{absolutely flat} if every $A$-module is flat over $A$. 
+    \lean{Ring.AbsolutelyFlat, Ring.AbsolutelyFlat.instFlat}
 \end{definition}
 
 \begin{lemma}
@@ -181,6 +182,8 @@ of this property.
     \label{lem:weakly-etale-preserves-absolutely-flat}
     Let $A \to B$ be a ring map such that $B \otimes_{A} B \to B$ is flat. If $A$ is an absolutely 
     flat ring, then so is $B$.
+    \lean{Ring.AbsolutelyFlat.of_flat_lmul'}
+    \leanok
 \end{lemma}
 
 \begin{proof}

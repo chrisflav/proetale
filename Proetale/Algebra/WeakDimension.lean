@@ -30,3 +30,29 @@ lemma flat_submodule [Ring.WeakDimensionLEOne R] {M : Type*} [AddCommGroup M] [M
   sorry
 
 end Ring.WeakDimensionLEOne
+
+namespace Ring.AbsolutelyFlat
+
+variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
+
+instance [AbsolutelyFlat R] : Module.Flat R M := by
+  sorry
+
+variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : (Algebra.TensorProduct.lmul' (S := S) R).Flat)
+
+include h in
+@[stacks 092C]
+theorem _root_.Module.Flat.of_flat_lmul'_of_flat [Module.Flat R M] : Module.Flat S M := by
+  constructor
+  rintro P _ _ _ N h
+
+  sorry
+
+include h in
+@[stacks 092I "(2)"]
+theorem of_flat_lmul' [AbsolutelyFlat R] : AbsolutelyFlat S :=
+  ⟨fun _ ↦ Module.Flat.of_flat_lmul'_of_flat R S _ h⟩
+
+end Ring.AbsolutelyFlat
