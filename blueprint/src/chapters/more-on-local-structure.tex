@@ -168,15 +168,95 @@ of this property.
     Let $B$ be an $A$-algebra such that $B \otimes_{A} B \to B$ is flat. Let $N$ be a $B$-module.
     If $N$ is flat as a $A$-module, then $N$ is flat as a $B$-module.
     \label{lemma:weakly-etale-flat}
+    \lean{Module.Flat.of_flat_lmul'_of_flat}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok 
+    % Note: the formal proof actually goes through element chasing, see the commented proof below.
     If $N'$ is a second $B$-module, then
     \[
         N \otimes_B N' = B \otimes_{B \otimes_{A} B} (N \otimes_{A} N')
     .\]
     Hence this follows from the definitions.
 \end{proof}
+
+% Note: Another proof by Gemmini using element chasing
+
+% \begin{theorem}
+% Let $A$ be a commutative ring, and let $B$ be an $A$-algebra such that the multiplication map $\mu: B \otimes_A B \to B$ is flat. Let $M$ be a $B$-module. If $M$ is flat as an $A$-module, then $M$ is flat as a $B$-module.
+% \end{theorem}
+
+% \begin{proof}
+% To prove that $M$ is flat as a $B$-module, we will use the equational criterion for flatness: we must show that for any finite relation $\sum_{i=1}^n b_i m_i = 0$ in $M$ (where $b_i \in B$ and $m_i \in M$), there exist elements $m'_s \in M$ and $d_{is} \in B$ such that $m_i = \sum_{s=1}^S d_{is} m'_s$ for all $i$, and $\sum_{i=1}^n b_i d_{is} = 0$ for all $s$.
+
+% \medskip\noindent
+% \textbf{Step 1: The flat epimorphism property.} \\
+% Let $I = \ker(\mu)$. Since $B$ is a flat $B \otimes_A B$-module, $I$ is a pure ideal. Consider the elements $z_i = 1 \otimes b_i - b_i \otimes 1 \in B \otimes_A B$. Clearly, $\mu(z_i) = b_i - b_i = 0$, so $z_i \in I$ for all $i = 1, \dots, n$. 
+
+% By the pureness of $I$, there exists an element $t = \sum_{k=1}^K u_k \otimes v_k \in B \otimes_A B$ such that $\mu(t) = 1$ and $t z_i = 0$ for all $i$. 
+% The condition $\mu(t) = 1$ means $\sum_{k=1}^K u_k v_k = 1$. 
+% The condition $t z_i = 0$ implies $t(1 \otimes b_i) = t(b_i \otimes 1)$, which expands to:
+% \begin{equation} \label{eq:bump}
+% \sum_{k=1}^K u_k \otimes v_k b_i = \sum_{k=1}^K b_i u_k \otimes v_k \quad \text{in } B \otimes_A B.
+% \end{equation}
+
+% \medskip\noindent
+% \textbf{Step 2: Constructing a relation in $B \otimes_A M$.} \\
+% Define the elements $y_i \in B \otimes_A M$ for $i = 1, \dots, n$ by:
+% \[
+% y_i = \sum_{k=1}^K u_k \otimes (v_k m_i).
+% \]
+% Let us evaluate the sum $\sum_{i=1}^n b_i y_i$ in the $B$-module $B \otimes_A M$ (where $B$ acts on the left factor):
+% \[
+% \sum_{i=1}^n b_i y_i = \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i).
+% \]
+% Because the map $x \otimes y \mapsto x \otimes ym_i$ from $B \otimes_A B \to B \otimes_A M$ is a well-defined $A$-linear homomorphism, we can apply it to equation (\ref{eq:bump}) to shift the $b_i$ factor:
+% \[
+% \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i) = \sum_{k=1}^K u_k \otimes (v_k b_i m_i).
+% \]
+% Summing this over all $i$ yields:
+% \[
+% \sum_{i=1}^n b_i y_i = \sum_{i=1}^n \sum_{k=1}^K u_k \otimes (v_k b_i m_i) = \sum_{k=1}^K u_k \otimes \Big( v_k \sum_{i=1}^n b_i m_i \Big).
+% \]
+% By our initial assumption, $\sum_{i=1}^n b_i m_i = 0$ in $M$. Therefore:
+% \begin{equation} \label{eq:tensor_rel}
+% \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i) = 0 \quad \text{in } B \otimes_A M.
+% \end{equation}
+
+% \medskip\noindent
+% \textbf{Step 3: Utilizing the $A$-flatness of $M$.} \\
+% We now leverage a standard element-theoretic property of flat modules: because $M$ is flat over $A$, any relation of the form $\sum e_l \otimes x_l = 0$ in $E \otimes_A M$ (for any $A$-module $E$) implies there exist $x'_s \in M$ and $a_{ls} \in A$ such that $x_l = \sum_s a_{ls} x'_s$ and $\sum_l e_l a_{ls} = 0$.
+
+% Applying this principle to equation (\ref{eq:tensor_rel}) with $E = B$, where the terms are indexed by pairs $(i, k)$, there exist elements $m'_s \in M$ (for $s = 1, \dots, S$) and scalars $a_{iks} \in A$ such that:
+% \begin{align}
+% v_k m_i &= \sum_{s=1}^S a_{iks} m'_s \quad \text{in } M \text{ for all } i, k, \label{eq:trivial1} \\
+% \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) a_{iks} &= 0 \quad \text{in } B \text{ for all } s. \label{eq:trivial2}
+% \end{align}
+
+% \medskip\noindent
+% \textbf{Step 4: Reconstructing the $B$-trivialization.} \\
+% Consider the evaluation map $\mu_M: B \otimes_A M \to M$ given by $b \otimes m \mapsto bm$. Applying $\mu_M$ to $y_i$ gives:
+% \[
+% \mu_M(y_i) = \sum_{k=1}^K u_k (v_k m_i) = \Big(\sum_{k=1}^K u_k v_k\Big) m_i = 1 \cdot m_i = m_i.
+% \]
+% Substitute equation (\ref{eq:trivial1}) into this expansion of $m_i$:
+% \[
+% m_i = \sum_{k=1}^K u_k \Big( \sum_{s=1}^S a_{iks} m'_s \Big) = \sum_{s=1}^S \Big( \sum_{k=1}^K u_k a_{iks} \Big) m'_s.
+% \]
+% Define $d_{is} = \sum_{k=1}^K u_k a_{iks} \in B$. This immediately gives our required reconstruction:
+% \[
+% m_i = \sum_{s=1}^S d_{is} m'_s \quad \text{for all } i = 1, \dots, n.
+% \]
+% Finally, we must verify that these coefficients annihilate $b_i$. We compute:
+% \[
+% \sum_{i=1}^n b_i d_{is} = \sum_{i=1}^n b_i \Big( \sum_{k=1}^K u_k a_{iks} \Big) = \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) a_{iks}.
+% \]
+% By equation (\ref{eq:trivial2}), this sum is exactly $0$ in $B$ for every $s$. 
+
+% Thus, we have successfully trivialized the arbitrary relation $\sum_{i=1}^n b_i m_i = 0$ over $B$. By the equational criterion, $M$ is a flat $B$-module.
+% \end{proof}
 
 \begin{lemma}[\stacksproject{092I} (1)]
     \label{lem:weakly-etale-preserves-absolutely-flat}
@@ -187,6 +267,7 @@ of this property.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:weakly-etale-flat}
     It follows from \Cref{lemma:weakly-etale-flat} immediately.
 \end{proof}
