@@ -50,7 +50,12 @@ end Ring.WeakDimensionLEOne
 
 namespace Ring.AbsolutelyFlat
 
+instance of_field (R : Type*) [Field R] : AbsolutelyFlat R where
+  flat _ := inferInstance
+
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
+
+lemma of_isField (h : IsField R) : AbsolutelyFlat R := @of_field R h.toField
 
 instance [AbsolutelyFlat R] : Module.Flat R M := by
   sorry
@@ -91,7 +96,7 @@ theorem _root_.Module.Flat.of_flat_lmul'_of_flat [Module.Flat R M] : Module.Flat
       (by simp_rw [← mul_assoc, mul_comm (f _), mul_comm (_ * _), Algebra.smul_def, forall_true_iff])
 
 include h in
-@[stacks 092I "(2)"]
+@[stacks 092I "(1)"]
 theorem of_flat_lmul' [AbsolutelyFlat R] : AbsolutelyFlat S :=
   ⟨fun _ ↦ Module.Flat.of_flat_lmul'_of_flat R S _ h⟩
 
