@@ -115,6 +115,7 @@ of this property.
     \label{def:absolutely-flat}
     A ring $A$ is called \emph{absolutely flat} if every $A$-module is flat over $A$. 
     \lean{Ring.AbsolutelyFlat, Ring.AbsolutelyFlat.instFlat}
+    \leanok
 \end{definition}
 
 \begin{lemma}
@@ -338,6 +339,8 @@ of this property.
     %\label{lem:local-ring-is-field-of-absolutely-flat}
     \label{lem:reduced-prime-maximal-of-absolutely-flat}
     If $A$ is an absolutely flat ring, then $A$ is reduced and every prime is maximal.
+    \lean{Ring.AbsolutelyFlat.tfae}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -355,6 +358,8 @@ of this property.
 \begin{lemma}
     If $A$ is reduced and every prime is maximal, then every local ring of $A$ is a field.
     \label{lemma:reduced-prime-maximal-field}
+    \lean{Ring.AbsolutelyFlat.tfae}
+    \leanok
 \end{lemma}
 
 \begin{proof}
