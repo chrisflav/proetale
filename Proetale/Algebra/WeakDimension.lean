@@ -72,11 +72,14 @@ variable {R} in
 lemma of_isLocalization [AbsolutelyFlat R] (s : Submonoid R)
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization s S] : AbsolutelyFlat S := by
   refine .mk fun I ↦ ?_
-  let I' := I.comap (algebraMap R S)
+  -- `obtain` is used to erase the value so that `subst` doesn't give a recursive error.
+  obtain ⟨I', hI'⟩ : ∃ I' : Ideal R, I' = I.comap (algebraMap R S) := ⟨_, rfl⟩
   have := AbsolutelyFlat.flat I'
-  let f : R ⧸ I' →ₗ[R] S ⧸ I := by sorry
-  have : IsLocalizedModule s f := sorry
-  exact Module.Flat.of_isLocalizedModule (R := R) (M := R ⧸ I') (Mp := S ⧸ I) S s f
+  have : I = Submodule.localized' S s (Algebra.linearMap R S) I' := by
+    simp only [Ideal.localized'_eq_map, hI', IsLocalization.map_comap s S I]
+  subst this
+  let f := Submodule.toLocalizedQuotient' S s (Algebra.linearMap R S) I'
+  exact Module.Flat.of_isLocalizedModule (R := R) (M := R ⧸ I') S s f
 
 lemma localizationPreserves : LocalizationPreserves fun R _ ↦ AbsolutelyFlat R :=
     fun s S _ _ _ _ ↦ of_isLocalization s S
@@ -96,6 +99,17 @@ lemma _root_.Module.Flat.of_isField {k N : Type*} [CommRing k] (h : IsField k)
   subst h
   infer_instance
 
+lemma _root_.IsReduced.of_isField {k : Type*} [CommRing k] (h : IsField k) : IsReduced k := by
+  obtain ⟨inst, h⟩ : ∃ inst : Field k, ‹CommRing k› = inst.toCommRing := ⟨h.toField, rfl⟩
+  subst h
+  infer_instance
+
+lemma _root_.Ring.KrullDimLE_zero_of_isField {k : Type*} [CommRing k] (h : IsField k) :
+    Ring.KrullDimLE 0 k := by
+  obtain ⟨inst, h⟩ : ∃ inst : Field k, ‹CommRing k› = inst.toCommRing := ⟨h.toField, rfl⟩
+  subst h
+  infer_instance
+
 lemma _root_.Module.flat_of_localization_atPrime_isField
     (h : ∀ (P : Ideal R) [P.IsPrime], IsField (Localization.AtPrime P)) : Module.Flat R M := by
   refine Module.flat_of_localized_maximal (R := R) M fun P hP ↦ ?_
@@ -106,7 +120,6 @@ lemma _root_.Module.flat_of_localization_atPrime_isField
 instance [AbsolutelyFlat R] : Module.Flat R M :=
   Module.flat_of_localization_atPrime_isField _ _ (fun _ _ ↦ isField_of_isLocalRing _)
 
-#check Ring.KrullDimLE
 theorem tfae : [AbsolutelyFlat R,
     IsReduced R ∧ ∀ P : Ideal R, P.IsPrime → P.IsMaximal,
     IsReduced R ∧ Ring.KrullDimLE 0 R,
@@ -114,12 +127,18 @@ theorem tfae : [AbsolutelyFlat R,
   tfae_have 1 ↔ 4 := ⟨fun _ _ ↦ isField_of_isLocalRing _,
     fun h ↦ .mk fun I ↦ Module.flat_of_localization_atPrime_isField _ _ h⟩
   tfae_have 2 ↔ 3 := and_congr_right_iff.mpr fun _ ↦ krullDimLE_zero_iff.symm
-  tfae_have 3 → 4 := by
-    rintro ⟨h, h'⟩ P hP
-    -- have := Ring.krullDimLE.of_isLocalization
-    -- exact Ring.KrullDimLE.isField_of_isReduced
-    sorry
-  tfae_have 4 → 2 := sorry
+  tfae_have 2 → 4 := by
+    rintro ⟨_, h'⟩ P hP
+    have : KrullDimLE 0 (Localization.AtPrime P) := Ring.krullDimLE_iff.mpr <| le_trans
+      (by simpa [IsLocalization.AtPrime.ringKrullDim_eq_height P] using
+        P.height_le_ringKrullDim_of_ne_top hP.ne_top)
+      ((Ring.krullDimLE_iff (R := R)).mp (.mk₀ h'))
+    exact Ring.KrullDimLE.isField_of_isReduced
+  tfae_have 4 → 2 := fun h ↦ by
+    refine ⟨isReduced_ofLocalizationMaximal _ fun P hP ↦ ?_, Ring.krullDimLE_zero_iff.mp ?_⟩
+    · exact IsReduced.of_isField (h P)
+    · exact Ring.krullDimLE_of_isLocalization_maximal (fun P hP ↦ Localization.AtPrime P)
+        fun P hP ↦ Ring.KrullDimLE_zero_of_isField (h P)
   tfae_finish
 
 variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S]
