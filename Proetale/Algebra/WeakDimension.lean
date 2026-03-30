@@ -57,6 +57,17 @@ variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
 lemma of_isField (h : IsField R) : AbsolutelyFlat R := @of_field R h.toField
 
+lemma isField_of_isLocalRing [IsLocalRing R] [AbsolutelyFlat R] : IsField R := by
+  apply Ring.isField_iff_maximal_bot.mpr
+  suffices h : IsLocalRing.maximalIdeal R = ⊥ from h ▸ inferInstance
+  refine le_antisymm (fun x hx ↦ ?_) bot_le
+  obtain ⟨y, hy, hy'⟩ := exists_eq_mul_of_surjective_flat
+    (Ideal.Quotient.mk (IsLocalRing.maximalIdeal R)) (AbsolutelyFlat.flat _)
+    x (Ideal.Quotient.eq_zero_iff_mem.mpr hx)
+  obtain ⟨y, rfl⟩ := IsLocalRing.notMem_maximalIdeal.mp
+    fun hy'' ↦ one_ne_zero <| hy.symm.trans (Ideal.Quotient.eq_zero_iff_mem.mpr hy'')
+  simpa using congr(y⁻¹ * $hy')
+
 instance [AbsolutelyFlat R] : Module.Flat R M := by
   sorry
 
