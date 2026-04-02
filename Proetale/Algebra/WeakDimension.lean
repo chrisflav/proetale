@@ -92,30 +92,13 @@ lemma isField_of_isLocalization_prime [AbsolutelyFlat R] (p : Ideal R) [p.IsPrim
     IsField S := @isField_of_isLocalRing _ _ (IsLocalization.AtPrime.isLocalRing S p)
   (of_isLocalization p.primeCompl S)
 
-lemma _root_.Module.Flat.of_isField {k N : Type*} [CommRing k] (h : IsField k)
-    [AddCommGroup N] [Module k N] : Module.Flat k N := by
-  -- `obtain` is used to erase the value so that `subst` doesn't give a recursive error.
-  obtain ⟨inst, h⟩ : ∃ inst : Field k, ‹CommRing k› = inst.toCommRing := ⟨h.toField, rfl⟩
-  subst h
-  infer_instance
-
-lemma _root_.IsReduced.of_isField {k : Type*} [CommRing k] (h : IsField k) : IsReduced k := by
-  obtain ⟨inst, h⟩ : ∃ inst : Field k, ‹CommRing k› = inst.toCommRing := ⟨h.toField, rfl⟩
-  subst h
-  infer_instance
-
-lemma _root_.Ring.KrullDimLE_zero_of_isField {k : Type*} [CommRing k] (h : IsField k) :
-    Ring.KrullDimLE 0 k := by
-  obtain ⟨inst, h⟩ : ∃ inst : Field k, ‹CommRing k› = inst.toCommRing := ⟨h.toField, rfl⟩
-  subst h
-  infer_instance
-
 lemma _root_.Module.flat_of_localization_atPrime_isField
     (h : ∀ (P : Ideal R) [P.IsPrime], IsField (Localization.AtPrime P)) : Module.Flat R M := by
   refine Module.flat_of_localized_maximal (R := R) M fun P hP ↦ ?_
   suffices Module.Flat (Localization P.primeCompl) (LocalizedModule P.primeCompl M)
     from (Localization.flat R P.primeCompl).trans _ _ _
-  exact .of_isField <| h P
+  let := (h P).toField
+  infer_instance
 
 instance [AbsolutelyFlat R] : Module.Flat R M :=
   Module.flat_of_localization_atPrime_isField _ _ (fun _ _ ↦ isField_of_isLocalRing _)
@@ -135,10 +118,11 @@ theorem tfae : [AbsolutelyFlat R,
       ((Ring.krullDimLE_iff (R := R)).mp (.mk₀ h'))
     exact Ring.KrullDimLE.isField_of_isReduced
   tfae_have 4 → 2 := fun h ↦ by
+    let (P : Ideal R) [P.IsPrime] := (h P).toField
     refine ⟨isReduced_ofLocalizationMaximal _ fun P hP ↦ ?_, Ring.krullDimLE_zero_iff.mp ?_⟩
-    · exact IsReduced.of_isField (h P)
+    · infer_instance
     · exact Ring.krullDimLE_of_isLocalization_maximal (fun P hP ↦ Localization.AtPrime P)
-        fun P hP ↦ Ring.KrullDimLE_zero_of_isField (h P)
+        fun P hP ↦ inferInstance
   tfae_finish
 
 variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S]
