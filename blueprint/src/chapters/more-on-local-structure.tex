@@ -117,6 +117,8 @@ of this property.
 \begin{definition}
     \label{def:absolutely-flat}
     A ring $A$ is called \emph{absolutely flat} if every $A$-module is flat over $A$. 
+    \lean{Ring.AbsolutelyFlat, Ring.AbsolutelyFlat.instFlat}
+    \leanok
 \end{definition}
 
 \begin{lemma}
@@ -137,9 +139,12 @@ of this property.
     \label{lem:field-absolutely-flat}
     A field is absolutely flat.
     \uses{def:absolutely-flat}
+    \lean{Ring.AbsolutelyFlat.of_field, Ring.AbsolutelyFlat.of_isField}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Omitted.
 \end{proof}
 
@@ -170,25 +175,137 @@ of this property.
     Let $B$ be an $A$-algebra such that $B \otimes_{A} B \to B$ is flat. Let $N$ be a $B$-module.
     If $N$ is flat as a $A$-module, then $N$ is flat as a $B$-module.
     \label{lemma:weakly-etale-flat}
+    \lean{Module.Flat.of_flat_lmul'_of_flat}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok 
+    First proof:
+
     If $N'$ is a second $B$-module, then
     \[
         N \otimes_B N' = B \otimes_{B \otimes_{A} B} (N \otimes_{A} N')
     .\]
     Hence this follows from the definitions.
+
+    Second proof by element chasing (which is the proof we actually formalized):
+
+    To prove that $M$ is flat as a $B$-module, we will use the equational criterion for flatness: we must show that for any finite relation $\sum_{i=1}^n b_i m_i = 0$ in $M$ (where $b_i \in B$ and $m_i \in M$), there exist elements $m'_s \in M$ and $d_{is} \in B$ such that $m_i = \sum_{s=1}^S d_{is} m'_s$ for all $i$, and $\sum_{i=1}^n b_i d_{is} = 0$ for all $s$.
+
+    \medskip\noindent
+    \textbf{Step 1: The flat epimorphism property.} \\
+    Let $I = \ker(\mu)$. Since $B$ is a flat $B \otimes_A B$-module, $I$ is a pure ideal. Consider the elements $z_i = 1 \otimes b_i - b_i \otimes 1 \in B \otimes_A B$. Clearly, $\mu(z_i) = b_i - b_i = 0$, so $z_i \in I$ for all $i = 1, \dots, n$. 
+
+    By the pureness of $I$, there exists an element $t = \sum_{k=1}^K u_k \otimes v_k \in B \otimes_A B$ such that $\mu(t) = 1$ and $t z_i = 0$ for all $i$. 
+    The condition $\mu(t) = 1$ means $\sum_{k=1}^K u_k v_k = 1$. 
+    The condition $t z_i = 0$ implies $t(1 \otimes b_i) = t(b_i \otimes 1)$, which expands to:
+    \begin{equation} \label{eq:bump}
+    \sum_{k=1}^K u_k \otimes v_k b_i = \sum_{k=1}^K b_i u_k \otimes v_k \quad \text{in } B \otimes_A B.
+    \end{equation}
+
+    \medskip\noindent
+    \textbf{Step 2: Constructing a relation in $B \otimes_A M$.} \\
+    Define the elements $y_i \in B \otimes_A M$ for $i = 1, \dots, n$ by:
+    \[
+    y_i = \sum_{k=1}^K u_k \otimes (v_k m_i).
+    \]
+    Let us evaluate the sum $\sum_{i=1}^n b_i y_i$ in the $B$-module $B \otimes_A M$ (where $B$ acts on the left factor):
+    \[
+    \sum_{i=1}^n b_i y_i = \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i).
+    \]
+    Because the map $x \otimes y \mapsto x \otimes ym_i$ from $B \otimes_A B \to B \otimes_A M$ is a well-defined $A$-linear homomorphism, we can apply it to equation (\ref{eq:bump}) to shift the $b_i$ factor:
+    \[
+    \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i) = \sum_{k=1}^K u_k \otimes (v_k b_i m_i).
+    \]
+    Summing this over all $i$ yields:
+    \[
+    \sum_{i=1}^n b_i y_i = \sum_{i=1}^n \sum_{k=1}^K u_k \otimes (v_k b_i m_i) = \sum_{k=1}^K u_k \otimes \Big( v_k \sum_{i=1}^n b_i m_i \Big).
+    \]
+    By our initial assumption, $\sum_{i=1}^n b_i m_i = 0$ in $M$. Therefore:
+    \begin{equation} \label{eq:tensor_rel}
+    \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i) = 0 \quad \text{in } B \otimes_A M.
+    \end{equation}
+
+    \medskip\noindent
+    \textbf{Step 3: Utilizing the $A$-flatness of $M$.} \\
+    We now leverage a standard element-theoretic property of flat modules: because $M$ is flat over $A$, any relation of the form $\sum e_l \otimes x_l = 0$ in $E \otimes_A M$ (for any $A$-module $E$) implies there exist $x'_s \in M$ and $a_{ls} \in A$ such that $x_l = \sum_s a_{ls} x'_s$ and $\sum_l e_l a_{ls} = 0$.
+
+    Applying this principle to equation (\ref{eq:tensor_rel}) with $E = B$, where the terms are indexed by pairs $(i, k)$, there exist elements $m'_s \in M$ (for $s = 1, \dots, S$) and scalars $a_{iks} \in A$ such that:
+    \begin{align}
+    v_k m_i &= \sum_{s=1}^S a_{iks} m'_s \quad \text{in } M \text{ for all } i, k, \label{eq:trivial1} \\
+    \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) a_{iks} &= 0 \quad \text{in } B \text{ for all } s. \label{eq:trivial2}
+    \end{align}
+
+    \medskip\noindent
+    \textbf{Step 4: Reconstructing the $B$-trivialization.} \\
+    Consider the evaluation map $\mu_M: B \otimes_A M \to M$ given by $b \otimes m \mapsto bm$. Applying $\mu_M$ to $y_i$ gives:
+    \[
+    \mu_M(y_i) = \sum_{k=1}^K u_k (v_k m_i) = \Big(\sum_{k=1}^K u_k v_k\Big) m_i = 1 \cdot m_i = m_i.
+    \]
+    Substitute equation (\ref{eq:trivial1}) into this expansion of $m_i$:
+    \[
+    m_i = \sum_{k=1}^K u_k \Big( \sum_{s=1}^S a_{iks} m'_s \Big) = \sum_{s=1}^S \Big( \sum_{k=1}^K u_k a_{iks} \Big) m'_s.
+    \]
+    Define $d_{is} = \sum_{k=1}^K u_k a_{iks} \in B$. This immediately gives our required reconstruction:
+    \[
+    m_i = \sum_{s=1}^S d_{is} m'_s \quad \text{for all } i = 1, \dots, n.
+    \]
+    Finally, we must verify that these coefficients annihilate $b_i$. We compute:
+    \[
+    \sum_{i=1}^n b_i d_{is} = \sum_{i=1}^n b_i \Big( \sum_{k=1}^K u_k a_{iks} \Big) = \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) a_{iks}.
+    \]
+    By equation (\ref{eq:trivial2}), this sum is exactly $0$ in $B$ for every $s$. 
+
+    Thus, we have successfully trivialized the arbitrary relation $\sum_{i=1}^n b_i m_i = 0$ over $B$. By the equational criterion, $M$ is a flat $B$-module.
+    
 \end{proof}
 
 \begin{lemma}[\stacksproject{092I} (1)]
     \label{lem:weakly-etale-preserves-absolutely-flat}
     Let $A \to B$ be a ring map such that $B \otimes_{A} B \to B$ is flat. If $A$ is an absolutely
     flat ring, then so is $B$.
+    \lean{Ring.AbsolutelyFlat.of_flat_lmul'}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
+    First proof (the formalized version):
+
     \uses{lemma:weakly-etale-flat}
     It follows from \Cref{lemma:weakly-etale-flat} immediately.
+
+    Second proof by element chasing:
+
+    Let $A = B \otimes_k B$. The multiplication map $\mu: A \to B$ is a surjective ring homomorphism. Because $B$ is assumed to be a flat $A$-module, $\mu$ is a \emph{flat epimorphism}. A fundamental property of flat epimorphisms is that their kernel, $J = \ker(\mu)$, is a \emph{pure ideal}. The equational criterion for flatness dictates that for any element $z \in J$, there exists a "localizing" element $t \in A$ such that $\mu(t) = 1$ and $t z = 0$.
+
+    Let $\mathfrak{m}$ be the unique maximal ideal of the local ring $B$. We wish to show that $\mathfrak{m} = 0$. Suppose for the sake of contradiction that there exists a non-zero element $x \in \mathfrak{m}$.
+
+    Consider the element $z = x \otimes 1 - 1 \otimes x \in A$. Clearly, $\mu(z) = x - x = 0$, so $z \in J$. By the pureness of $J$, there exists $t \in B \otimes_k B$ such that $\mu(t) = 1$ and 
+    \[
+    t(x \otimes 1 - 1 \otimes x) = 0 \quad \text{in } B \otimes_k B.
+    \]
+
+    Let $K = B/\mathfrak{m}$ be the residue field of $B$, and let $\pi: B \to K$ be the natural quotient map. We base-change our equation along the homomorphism $1 \otimes \pi: B \otimes_k B \to B \otimes_k K$. Because $x \in \mathfrak{m}$, we have $\pi(x) = 0$, which means $(1 \otimes \pi)(1 \otimes x) = 1 \otimes 0 = 0$. 
+
+    Let $\bar{t} = (1 \otimes \pi)(t) \in B \otimes_k K$. Applying $1 \otimes \pi$ to our annihilator equation isolates the $x \otimes 1$ term:
+    \[
+    \bar{t} \cdot (x \otimes 1) = 0 \quad \text{in } B \otimes_k K.
+    \]
+
+    Since $K$ is a field extension of $k$, it is a free $k$-module. Because tensor products preserve freeness, $N = B \otimes_k K$ is a free left $B$-module. The element $x \otimes 1$ represents scalar multiplication by $x$ on $N$. Thus, the relation $x \bar{t} = 0$ implies that $x$ annihilates the \emph{content ideal} $c(\bar{t})$ of $\bar{t}$ in $B$ (the ideal generated by the coordinates of $\bar{t}$ with respect to a basis), meaning $x \cdot c(\bar{t}) = 0$.
+
+    Now, consider the evaluation map $\mu_K: B \otimes_k K \to K$ given by $b \otimes v \mapsto \pi(b)v$. This evaluates $\bar{t}$ at the central point of the local ring:
+    \[
+    \mu_K(\bar{t}) = \mu_K\big((1 \otimes \pi)(t)\big) = \pi(\mu(t)) = \pi(1) = 1.
+    \]
+    Since $\mu_K(\bar{t}) = 1 \neq 0$, the coordinates of $\bar{t}$ cannot all map to zero under $\pi$. Thus, they cannot all lie in $\mathfrak{m}$. This implies the content ideal $c(\bar{t})$ is not contained in $\mathfrak{m}$. 
+
+    Because $B$ is a local ring, the only ideal not contained in the unique maximal ideal is the unit ideal itself. Therefore, $c(\bar{t}) = B$.
+
+    Substituting this into our annihilator relation yields $x \cdot B = 0$, which forces $x = 0$. This directly contradicts our initial assumption that $x \neq 0$. We conclude that $\mathfrak{m} = 0$, meaning the local ring $B$ has only the trivial maximal ideal. Therefore, $B$ is a field.
+
 \end{proof}
 
 % \begin{lemma}[\stacksproject{092I} (2)]
@@ -219,9 +336,12 @@ of this property.
     %\label{lem:local-ring-is-field-of-absolutely-flat}
     \label{lem:reduced-prime-maximal-of-absolutely-flat}
     If $A$ is an absolutely flat ring, then $A$ is reduced and every prime is maximal.
+    \lean{Ring.AbsolutelyFlat.tfae}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     It suffices to show that for every $f \in A$, there exists an idempotent element $e \in A$ such that
     $(f) = (e)$. Indeed, if $f ^ n = 0$ for some $n$, then $e = e ^ n \in (f ^ n) = 0$. Hence $f = 0$.
     For the second claim observe that every quasi-compact open $D(f) = D(e)$ is closed. Hence the claim
@@ -236,9 +356,12 @@ of this property.
 \begin{lemma}
     If $A$ is reduced and every prime is maximal, then every local ring of $A$ is a field.
     \label{lemma:reduced-prime-maximal-field}
+    \lean{Ring.AbsolutelyFlat.tfae}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Localizations of reduced rings are reduced and reduced, local rings of Krull dimension $\le 0$
     are fields.
 \end{proof}
