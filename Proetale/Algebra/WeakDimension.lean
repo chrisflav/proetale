@@ -22,10 +22,12 @@ class Ring.WeakDimensionLEOne (R : Type*) [CommRing R] where
 
 -- Follows from `Ideal.exists_eq_mul_of_pure` in mathlib
 lemma exists_eq_mul_of_surjective_flat {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (hf : f.Flat) (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := sorry
+    (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
+    (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := sorry
 
 lemma exists_eq_mul_of_surjective_flat' {R S ι : Type*} [CommRing R] [CommRing S] [Finite ι]
-    (f : R →+* S) (hf : f.Flat) (x : ι → R) (hx : ∀ i, f (x i) = 0) : ∃ y : R, f y = 1 ∧ ∀ i : ι, y * x i = 0 := by
+    (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
+    (x : ι → R) (hx : ∀ i, f (x i) = 0) : ∃ y : R, f y = 1 ∧ ∀ i : ι, y * x i = 0 := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e h =>
     obtain ⟨y, hy, hy'⟩ := h (x.comp e) (by grind)
@@ -33,7 +35,7 @@ lemma exists_eq_mul_of_surjective_flat' {R S ι : Type*} [CommRing R] [CommRing 
   | h_empty => exact ⟨1, by simp, by simp⟩
   | h_option h =>
     obtain ⟨y, hy, hy'⟩ := h (x.comp Option.some) (by grind)
-    obtain ⟨z, hz, hz'⟩ := exists_eq_mul_of_surjective_flat f hf (x .none) (by grind)
+    obtain ⟨z, hz, hz'⟩ := exists_eq_mul_of_surjective_flat f hf hsurj (x .none) (by grind)
     refine ⟨y * z, by simp [hy, hz], fun | some i => by grind | none => by grind⟩
 
 namespace Ring.WeakDimensionLEOne
@@ -63,7 +65,7 @@ lemma isField_of_isLocalRing [IsLocalRing R] [AbsolutelyFlat R] : IsField R := b
   refine le_antisymm (fun x hx ↦ ?_) bot_le
   obtain ⟨y, hy, hy'⟩ := exists_eq_mul_of_surjective_flat
     (Ideal.Quotient.mk (IsLocalRing.maximalIdeal R)) (AbsolutelyFlat.flat _)
-    x (Ideal.Quotient.eq_zero_iff_mem.mpr hx)
+    Ideal.Quotient.mk_surjective x (Ideal.Quotient.eq_zero_iff_mem.mpr hx)
   obtain ⟨y, rfl⟩ := IsLocalRing.notMem_maximalIdeal.mp
     fun hy'' ↦ one_ne_zero <| hy.symm.trans (Ideal.Quotient.eq_zero_iff_mem.mpr hy'')
   simpa using congr(y⁻¹ * $hy')
@@ -135,7 +137,7 @@ include h in
 @[stacks 092C]
 theorem _root_.Module.Flat.of_flat_lmul'_of_flat [Module.Flat R M] : Module.Flat S M := by
   refine Module.Flat.of_forall_isTrivialRelation fun {l f x} hx ↦ ?_
-  obtain ⟨t, ht, ht'⟩ := exists_eq_mul_of_surjective_flat' _ h
+  obtain ⟨t, ht, ht'⟩ := exists_eq_mul_of_surjective_flat' _ h (fun x ↦ ⟨1 ⊗ₜ[R] x, by simp⟩)
     (fun i : Fin l ↦ (1 : S) ⊗ₜ[R] (f i) - (f i) ⊗ₜ[R] (1 : S)) (fun i ↦ by simp)
   obtain ⟨s, rfl⟩ := TensorProduct.exists_finset t
   simp only [AlgHom.toRingHom_eq_coe, map_sum, RingHom.coe_coe,
