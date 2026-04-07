@@ -36,3 +36,10 @@ lemma Topology.IsEmbedding.specializes_iff {X Y : Type*} [TopologicalSpace X]
     f x ⤳ f y ↔ x ⤳ y := by
   rw [specializes_iff_mem_closure, ← Set.mem_preimage, ← Set.image_singleton,
     ← hf.closure_eq_preimage_closure_image, specializes_iff_mem_closure]
+
+/-- An injective generalizing map reflects specialization: if `g x ⤳ g y` then `x ⤳ y`. -/
+lemma GeneralizingMap.specializes_of_map_specializes {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] {g : X → Y} (hg : GeneralizingMap g) (hinj : Function.Injective g)
+    {x y : X} (h : g x ⤳ g y) : x ⤳ y := by
+  obtain ⟨x', hx', hgx'⟩ := hg h
+  exact hinj hgx' ▸ hx'
