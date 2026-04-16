@@ -21,3 +21,11 @@ lemma Algebra.IsStandardOpenImmersion.of_algEquiv (T : Type*) [CommSemiring T] [
   use r
   exact IsLocalization.isLocalization_of_algEquiv _ e
 
+lemma Algebra.IsStandardOpenImmersion.of_isPushout
+    (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+    (R' S' : Type*) [CommSemiring R'] [CommSemiring S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+    [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+    [Algebra.IsPushout R S R' S'] [Algebra.IsStandardOpenImmersion R S] :
+    Algebra.IsStandardOpenImmersion R' S' :=
+  have : Algebra.IsPushout R R' S S' := by rwa [Algebra.IsPushout.comm]
+  .of_algEquiv _ _ _ (IsPushout.equiv R _ S _)
