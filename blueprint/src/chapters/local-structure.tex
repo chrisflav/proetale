@@ -1,9 +1,10 @@
-\chapter{Local structure}
+\chapter{Local structures}
 
-This chapter serves for the commutative algebra preparation of the remaining part of the paper. The key results are
+This chapter serves for the first half of the commutative algebra preparation of the remaining part of the paper. The key result is
 \begin{enumerate}
-  \item \Cref{thm:ind-etale-w-contractible-cover-exists} expressing that every affine scheme has a w-contractible cover in the proetale site.
-  \item \Cref{thm:weakly-etale-ind-etale} expressing that every weakly etale map can be covered by ind-etale maps.
+  \item \Cref{thm:ind-etale-w-contractible-cover-exists} expressing that For any ring $A$, there 
+  exists an ind-étale faithfully flat $A$-algebra $D$ with $D$ w-contractible. That is to say, 
+  every affine scheme has a w-contractible cover in the "pro-(etale site)".
 \end{enumerate}
 
 % Question: Can we avoid using weakly etale algebra, only use ind-etale algebra? This would need a modification of theorem 5.4.2, by directly mimicking the proof of topological invariance of étale sites for weakly étale.
@@ -221,6 +222,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:connected-component-intersection-closed-open}
   It is clear that (a) implies (b). Assume (b). Let $x \in X$, $x \notin T$. Let $x \in C \subset X$ be the connected component of $X$ containing $x$. By \Cref{thm:connected-component-intersection-closed-open} we see that $C = \bigcap V_\alpha$ is the intersection of all open and closed subsets $V_\alpha$ of $X$ which contain $C$. In particular, any pairwise intersection $V_\alpha \cap V_\beta$ occurs as a $V_\alpha$ i.e. is still open and closed. As $T$ is a union of connected components of $X$ we see that $C \cap T = \emptyset$. Hence $T \cap \bigcap V_\alpha = \emptyset$. Since $T$ is quasi-compact as a closed subset of a quasi-compact space, we deduce that $T \cap V_\alpha = \emptyset$ for some $\alpha$. For this $\alpha$ we see that $U_\alpha = X - V_\alpha$ is an open and closed subset of $X$ which contains $T$ and not $x$. The lemma follows.
 \end{proof}
@@ -233,6 +235,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:connected-component-intersection-closed-open}
   We will show that \(\pi_0(X)\) is Hausdorff, quasi-compact, and totally disconnected.
   By \Cref{thm:connected-component-intersection-closed-open}, every connected component of \(X\) is the intersection of the open and closed subsets containing it. Since \(\pi_0(X)\) is the image of a quasi-compact space, it is also quasi-compact. It is totally disconnected by construction. Let \(C,D \subset X\) be distinct connected components of \(X\). Write \(C = \bigcap_{\alpha} U_\alpha\) as the intersection of the open and closed subsets of \(X\) containing \(C\). Any finite intersection of \(U_\alpha\)'s is another \(U_\alpha\). Since \(\bigcap_\alpha U_\alpha \cap D = \emptyset\) we conclude that \(U_\alpha \cap D = \emptyset\) for some \(\alpha\) (connected components are closed, thus quasi-compact). Since \(U_\alpha\) is open and closed, it is the union of the connected components it contains, i.e., \(U_\alpha\) is the inverse image of some open and closed subset \(V_\alpha \subset \pi_0(X)\). This proves that the points corresponding to \(C\) and \(D\) are contained in disjoint open subsets, i.e., \(\pi_0(X)\) is Hausdorff.
@@ -297,6 +300,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -324,6 +328,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -416,7 +421,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
   \uses{def:identify-local-rings}
   \lean{RingHom.BijectiveOnStalks.prod}
   \leanok
-  The map \(A \to \prod_{i = 1}^{n} A_i \) identifies local rings, if \(A \to A_i\) identifies 
+  The map \(A \to \prod_{i = 1}^{n} A_i \) identifies local rings, if \(A \to A_i\) identifies
   local rings for all \(i\).
 \end{lemma}
 
@@ -434,6 +439,16 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 
 \begin{proof}
   Omitted.
+\end{proof}
+
+\begin{lemma}[\stacksproject{096D}]
+    Let $A$ be a ring and $B \to C$ be an $A$-algebra map. Suppose both
+    $A \to B$ and $A \to C$ are bijective on stalks. Then $B \to C$ is bijective on stalks.
+    \label{lemma:bijective-on-stalks-of-comp}
+\end{lemma}
+
+\begin{proof}
+    Holds because the same holds for bijective maps of sets.
 \end{proof}
 
 \begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/096L}{Tag 096L}]{stacks-project}}]
@@ -528,7 +543,8 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{lemma}
 
 \begin{proof}
-  An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat.
+    \leanok
+    An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is flat.
 \end{proof}
 
 \begin{lemma}
@@ -556,15 +572,16 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{lemma}
 
 \begin{proof}
-  This is the consequence of the more general fact that if a property $p$ of ring maps is stable 
-  under finite products, then Ind-$p$ is also stable under finite products since finite product 
-  of filtered index category is again filtered. 
-  
-  It suffices to show that being local isomorphism is stable under finite products. Suppose 
-  $A \to B_i$ is a local isomorphism for each $i$ for finitely many $i$'s. Every prime $\q$ in 
-  $\prod_i B_i$ is an extension prime ideal of one of the factors, say $B_0$. Since there exists 
-  $f_0 \in B_0$, $f_0 \notin \q$ such that $A \to (B_0)_{f_0}$ induces an open immersion, 
-  localize $\prod_i B_i$ at the corresponding idempotent times this element \(f_0\) to obtain 
+    \leanok
+  This is the consequence of the more general fact that if a property $p$ of ring maps is stable
+  under finite products, then Ind-$p$ is also stable under finite products since finite product
+  of filtered index category is again filtered.
+
+  It suffices to show that being local isomorphism is stable under finite products. Suppose
+  $A \to B_i$ is a local isomorphism for each $i$ for finitely many $i$'s. Every prime $\q$ in
+  $\prod_i B_i$ is an extension prime ideal of one of the factors, say $B_0$. Since there exists
+  $f_0 \in B_0$, $f_0 \notin \q$ such that $A \to (B_0)_{f_0}$ induces an open immersion,
+  localize $\prod_i B_i$ at the corresponding idempotent times this element \(f_0\) to obtain
   the desired result.
 \end{proof}
 
@@ -644,9 +661,15 @@ and $P$ a property of morphisms.
 The following example shows that our definition agrees with the one in
 \cite[\href{https://stacks.math.columbia.edu/tag/04GF}{Tag 04GF}]{stacks-project}.
 
-\begin{example}
+\begin{lemma}
+    \label{lem:sh-iff-henselian-and-sep-closed}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
-\end{example}
+    \uses{def:strictly-henselian-local-ring}
+\end{lemma}
+
+\begin{proof}
+    TBA.
+\end{proof}
 
 \begin{proposition}
     \label{thm:strictly-henselian-good-retraction}
@@ -771,6 +794,14 @@ The following example shows that our definition agrees with the one in
     \leanok
 \end{definition}
 
+\begin{definition}[w-purely-local morphisms]
+    Let \(X\) and \(Y\) be w-local spaces. A morphism $f\colon X \to Y$ is \emph{w-purely-local} if
+    it $f^{-1}(X^c) = Y^c$.
+    \label{def:w-purely-local-space-map}
+\end{definition}
+
+Obviously, every w-purely-local morphism is w-local.
+
 \begin{lemma}
     Let \(f: X \to Y\) and \(g: Y \to Z\) be w-local maps between w-local spaces. Then the composition \(g \circ f: X \to Z\) is w-local.
     \label{thm:w-local-map-composition}
@@ -780,6 +811,7 @@ The following example shows that our definition agrees with the one in
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Omitted.
 \end{proof}
 
@@ -1110,6 +1142,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \begin{lemma}[\stacksproject{097E}]
   \label{thm:isom-of-identifies-local-rings-w-local-isom-pi0}
   \lean{RingHom.IsWLocal.bijective_of_bijective}
+  \leanok
   \uses{def:identify-local-rings,def:w-local-ring,def:w-local-ring-map}
   Let $A \to B$ be a w-local ring map between w-local rings such that
   \begin{enumerate}
@@ -1489,6 +1522,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+    \leanok
     We have a factorization $\kappa(\mathfrak{m}) = R / \mathfrak{m} \to S / \mathfrak{q} \to \kappa(\mathfrak{q})$.
     Hence $S / \mathfrak{q}$ is an intermediate subring of an algebraic field extension and therefore
     a field.
@@ -1519,6 +1553,30 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
     the closed subset $V(I)$ contains all closed points of $\spec{A_{\widetilde{V(I)}}}$. Hence,
     if $V(I)$ only contains closed points, the closed points are exactly $V(I)$.
 \end{proof}
+
+\begin{proposition}[Universal property of w-localization, \stacksproject{0977}]
+    Let $A \to B$ be a ring map with $B$ w-local. There exists a unique
+    factorization $A \to A_w \to B$ such that $A_w \to B$ is w-local.
+    \uses{def:w-localization, def:w-local-ring-map}
+    \label{lemma:univ-prop-w-localization}
+\end{proposition}
+
+\begin{proof}
+    TBA.
+\end{proof}
+
+\begin{definition}[w-localization of ring map]
+    Let $f\colon A \to B$ be a ring map. We denote by $f_w\colon A_w \to B_w$ the
+    unique w-local ring map making
+    \[
+    \begin{tikzcd}
+        A \arrow{r} \arrow{d} & B \arrow{d} \\
+        A_w \arrow{r} & B_w
+    \end{tikzcd}
+    \] commute.
+    \label{def:w-localization-map}
+    \uses{lemma:univ-prop-w-localization}
+\end{definition}
 
 \begin{lemma}
     Let $A \to B$ be a ring map that induces algebraic extensions on residue fields
@@ -1842,6 +1900,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
     \uses{def:etale-contraction}
     \label{prop:etale-contraction-retraction}
     \lean{RingHom.Etale.exists_comp_eq_id_indContraction}
+    \leanok
 \end{proposition}
 
 \begin{proof}
@@ -2008,6 +2067,7 @@ In the following series of constructions, we will modify the connected component
   \uses{def:modify-pi0-finite,def:ind-Zariski,def:identify-local-rings}
   \lean{WContractification.Pullback.indZariski,
         WContractification.Pullback.bijectiveOnStalks_algebraMap}
+  \leanok
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be profinite space and let $f : T \to \pi_0(X)$ be a continuous map. Let \(S\) be a finite discrete quotient of \(T\) with quotient map \(q : T \to S\). Then the $A^S$-algebra defined in \Cref{def:modify-pi0-finite} viewed as $A$-algebra through $A \to A^S \to A^f_{q}$ is ind-Zariski. In particular, it identifies local rings. The map $A^S \to A^f_{q}$ induces a homeomorphism of $\Spec (A^f_{q})$ onto \((X \times S) \times_{\pi_0(X) \times S} Z = X \times_{\pi_0(X)} Z\).
 \end{lemma}
 
@@ -2220,34 +2280,3 @@ this we will perform a series of reductions.
     \uses{thm:ind-etale-w-contractible-cover-exists, thm:w-contractible-retraction}
     This follows from \Cref{thm:ind-etale-w-contractible-cover-exists} and \Cref{thm:w-contractible-retraction}.
 \end{proof}
-
-\section{Weakly étale algebras}
-
-Ind-étale is a practical notion, since it usually allows reducing proofs to the étale case. Geometrically,
-ind-étale is badly behaved though, since it is not local on the (geometric) target. For this reason, when we later
-define the pro-étale site of a scheme, we use the notion of weakly étale ring maps instead.
-
-\begin{definition}[Weakly étale algebras]
-    An $R$-algebra $S$ is \emph{weakly étale} if it is flat over $R$ and flat over $S \otimes_{R} S$.
-    A ring homorphism $f \colon R \to S$ is \emph{weakly étale} if $S$ is weakly étale as an $R$-algebra.
-    \label{def:weakly-etale-algebra}
-\end{definition}
-
-\begin{lemma}
-    Every étale algebra is weakly étale.
-    \label{lemma:etale-weakly-etale-algebra}
-\end{lemma}
-
-\begin{proof}
-    Let $S$ be an étale $R$-algebra. Then $S$ is $R$-flat. Also
-    $S \otimes_{R} S \cong S × T$ for some ring $T$, in particular $\spec{S \otimes_{R} S} \to \spec{S}$ is
-    an open immersion, hence flat.
-\end{proof}
-
-The following theorem is difficult to prove and we will try to avoid it for now.
-
-\begin{theorem}
-    Let $R \to S$ be weakly étale. Then there exists a faithfully flat ind-étale morphism
-    $S \to T$ such that the composition $R \to T$ is ind-étale.
-    \label{thm:weakly-etale-ind-etale}
-\end{theorem}

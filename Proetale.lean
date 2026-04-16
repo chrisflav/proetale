@@ -2,6 +2,7 @@ import Proetale.Algebra.Contraction.Covers
 import Proetale.Algebra.Contraction.IndContraction
 import Proetale.Algebra.Etale
 import Proetale.Algebra.FaithfullyFlat
+import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.Ind
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndZariski
@@ -16,9 +17,11 @@ import Proetale.Algebra.WLocal
 import Proetale.Algebra.WLocalization.Basic
 import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Algebra.WStrictLocalization
+import Proetale.Algebra.WeakDimension
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Basic
 import Proetale.FromPi1.Etale
+import Proetale.Mathlib.Algebra.Algebra.Pi
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Basic
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
@@ -49,6 +52,8 @@ import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
+import Proetale.Mathlib.CategoryTheory.NatIso
+import Proetale.Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
@@ -72,6 +77,7 @@ import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 import Proetale.Mathlib.Topology.Constructions
 import Proetale.Mathlib.Topology.Inseparable
 import Proetale.Mathlib.Topology.JacobsonSpace
+import Proetale.Mathlib.Topology.Maps.Basic
 import Proetale.Mathlib.Topology.QuasiSeparated
 import Proetale.Mathlib.Topology.Separation.Basic
 import Proetale.Mathlib.Topology.Separation.Hausdorff

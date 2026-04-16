@@ -1,3 +1,4 @@
+.claude
 /.lake
 blueprint/print
 blueprint/web
@@ -13,3 +14,4 @@ blueprint/src/print.log
 blueprint/src/print.out
 blueprint/src/print.synctex.gz
 blueprint/src/print.pdf
+.agent/.initialized
