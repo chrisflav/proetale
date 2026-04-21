@@ -23,42 +23,6 @@ instance {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : Algebra (UL
   commutes' _ _ := Algebra.commutes ..
   smul_def' _ _ := Algebra.smul_def' ..
 
-def RingHom.ulift {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) :
-    ULift.{u₁} R →+* ULift.{u₂} S :=
-  RingHom.comp ULift.ringEquiv.symm.toRingHom (f.comp ULift.ringEquiv.toRingHom)
-
-@[simp]
-lemma RingHom.down_ulift_apply {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (x : ULift.{u₁} R) :
-    (f.ulift x).down = f x.down :=
-  rfl
-
-lemma RingHom.comp_ulift_eq {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) :
-    ULift.ringEquiv.toRingHom.comp ((ulift.{u₁, u₂} f).comp ULift.ringEquiv.symm.toRingHom) = f :=
-  rfl
-
-def AlgHom.ulift {R S T : Type*} [CommSemiring R] [Semiring S]
-    [Semiring T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) :
-    ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
-  __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
-  commutes' _ := by simp
-
-@[simp]
-lemma AlgHom.down_ulift_apply {R S T : Type*} [CommSemiring R] [Semiring S]
-    [Semiring T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) (x : ULift S) :
-    (f.ulift x).down = f x.down :=
-  rfl
-
-lemma AlgHom.ulift_apply {R S T : Type*} [CommSemiring R] [Semiring S]
-    [Semiring T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) (x : ULift S) :
-    f.ulift x = ⟨f x.down⟩ :=
-  rfl
-
 lemma RingHom.Flat.iff_ringEquiv_comp {R S T : Type*} [CommRing R] [CommRing S]
     [CommRing T] {f : R →+* S}
     {e : S ≃+* T} :
@@ -209,15 +173,6 @@ lemma Algebra.TensorProduct.uliftEquiv_symm_tmul
     [Semiring B] [Algebra R B] (a : ULift A) (b : ULift B) :
     (uliftEquiv R S A B).symm (a ⊗ₜ b) = ⟨a.down ⊗ₜ b.down⟩ :=
   rfl
-
-lemma ULift.algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    (a : A) :
-    ULift.algEquiv (R := R).symm a = ⟨a⟩ := rfl
-
-@[simp]
-lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    (a : A) :
-    (ULift.algEquiv (R := R).symm a).down = a := rfl
 
 open CategoryTheory Limits
 

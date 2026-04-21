@@ -29,60 +29,9 @@ instance (K : Type*) [Category K] [PreservesLimitsOfShape K F] [HasLimitsOfShape
   CategoryTheory.Limits.preservesLimitsOfShape_of_reflects_of_preserves _
     (sheafToPresheaf J B)
 
-@[simp]
-lemma Presieve.isSheafFor_comp_uliftFunctor_iff {F : Cᵒᵖ ⥤ Type u} {X : C} {R : Presieve X} :
-    R.IsSheafFor (F ⋙ uliftFunctor.{v}) ↔ R.IsSheafFor F := by
-  rw [Presieve.IsSheafFor, Presieve.IsSheafFor]
-  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
-  · let x' : R.FamilyOfElements (F ⋙ uliftFunctor.{v}) := fun Y f hf ↦ ⟨x f hf⟩
-    have hx' : x'.Compatible := by
-      introv Y₁ h
-      simp [x', hx g₁ g₂ h₁ h₂ h]
-    obtain ⟨t, ht, huniq⟩ := h _ hx'
-    refine ⟨t.down, ?_, ?_⟩
-    · intro Y g hg
-      exact Equiv.ulift.symm.injective (ht g hg)
-    · intro t' ht'
-      exact Equiv.ulift.symm.injective (huniq _ fun Y g hg ↦ Equiv.ulift.injective (ht' g hg))
-  · let x' : R.FamilyOfElements F := fun Y f hf ↦ (x f hf).down
-    have hx' : x'.Compatible := by
-      introv Y₁ h
-      simpa [x'] using hx g₁ g₂ h₁ h₂ h
-    obtain ⟨t, ht, huniq⟩ := h _ hx'
-    refine ⟨⟨t⟩, ?_, ?_⟩
-    · intro Y g hg
-      exact Equiv.ulift.injective (ht g hg)
-    · intro t' ht'
-      exact Equiv.ulift.injective (huniq _ fun Y g hg ↦ Equiv.ulift.symm.injective (ht' g hg))
-
 end CategoryTheory
 
 namespace AlgebraicGeometry
-
-noncomputable
-instance : BinaryCoproductsDisjoint Scheme.{u} := by
-  refine .mk fun X Y ↦ ?_
-  have : Mono (BinaryCofan.mk (coprod.inl (X := X) (Y := Y)) coprod.inr).inl := by
-    dsimp
-    infer_instance
-  have : Mono (BinaryCofan.mk (coprod.inl (X := X) (Y := Y)) coprod.inr).inr := by
-    dsimp
-    infer_instance
-  refine BinaryCoproductDisjoint.of_binaryCofan (c := .mk coprod.inl coprod.inr) ?_
-      (pullback.isLimit _ _) ?_
-  · exact coprodIsCoprod X Y
-  · apply Nonempty.some
-    rw [isInitial_iff_isEmpty]
-    exact isEmpty_of_commSq_sigmaι_of_ne.{u} (σ := WalkingPair) (g := fun j ↦ j.casesOn X Y)
-      (i := .left) (j := .right) ⟨pullback.condition⟩ (by simp)
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance : HasSheafify Scheme.zariskiTopology.{u} (Type (u + 1)) := inferInstance
-
-instance : MonoCoprod Scheme.{u} := by
-  refine .mk' fun X Y ↦ ⟨BinaryCofan.mk coprod.inl coprod.inr, coprodIsCoprod X Y, ?_⟩
-  dsimp
-  infer_instance
 
 instance {ι : Type*} [Finite ι] : Finite (Discrete ι) :=
   discreteEquiv.finite_iff.mpr inferInstance

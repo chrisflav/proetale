@@ -133,7 +133,7 @@ instance : PreservesColimit (K ⋙ L) (L.leftKanExtension F) := by
   refine ⟨?_⟩
   refine IsColimit.equivOfNatIsoOfIso natIso.symm (cocone L F K c)
       ((L.leftKanExtension F).mapCocone c) ?_ ?_
-  · refine Cocones.ext (Iso.refl _) ?_
+  · refine Cocone.ext (Iso.refl _) ?_
     intro j
     simp [natIso]
     rfl

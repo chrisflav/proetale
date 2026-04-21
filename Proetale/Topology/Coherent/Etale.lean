@@ -42,9 +42,9 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] (F : C ⥤ D) (G
     (F ⋙ G).ReflectsEffectiveEpis where
   reflects _ hf := F.effectiveEpi_of_map _ (G.effectiveEpi_of_map _ hf)
 
-instance {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
-    [HasPullbacks C] [HasPullbacks D] [PreservesLimitsOfShape WalkingCospan F]
-    [ReflectsColimitsOfShape WalkingParallelPair F] :
+instance Functor.ReflectsEffectiveEpis.of_preservesLimitsOfShape {C D : Type*} [Category C]
+    [Category D] (F : C ⥤ D) [HasPullbacks C] [HasPullbacks D]
+    [PreservesLimitsOfShape WalkingCospan F] [ReflectsColimitsOfShape WalkingParallelPair F] :
     F.ReflectsEffectiveEpis where
   reflects {X Y} f hf := by
     apply effectiveEpi_of_kernelPair
@@ -57,9 +57,9 @@ instance {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
         | .zero => exact PreservesPullback.iso _ _ _
       · rcases f <;> simp
     refine IsColimit.precomposeInvEquiv n (F.mapCocone (Cofork.ofπ f pullback.condition)) ?_
-    let e : (Cocones.precompose n.inv).obj (F.mapCocone (Cofork.ofπ f pullback.condition)) ≅
+    let e : (Cocone.precompose n.inv).obj (F.mapCocone (Cofork.ofπ f pullback.condition)) ≅
         Cofork.ofπ (F.map f) pullback.condition := by
-      refine Cocones.ext (Iso.refl _) fun j ↦ ?_
+      refine Cocone.ext (Iso.refl _) fun j ↦ ?_
       cases j <;> simp [n]
     refine .ofIsoColimit ?_ e.symm
     exact (regularEpiOfEffectiveEpi (F.map f)).isColimit
@@ -278,6 +278,12 @@ lemma Scheme.Etale.forget_map {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y) :
 
 instance {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y) : Etale f.left :=
   MorphismProperty.of_postcomp @Etale f.left Y.hom Y.prop (by simp [X.prop])
+
+-- These are regressions in mathlib
+instance (S : Scheme) : (Scheme.Etale.forget S).Full :=
+  inferInstanceAs <| (MorphismProperty.Over.forget _ _ _).Full
+instance (S : Scheme) : (Scheme.Etale.forget S).Faithful :=
+  inferInstanceAs <| (MorphismProperty.Over.forget _ _ _).Faithful
 
 /-- A morphism in the small étale site is an epimorphism if and only if it is surjective. -/
 instance Scheme.Etale.effectiveEpi_of_surjective {S : Scheme} {X Y : S.Etale} (f : X ⟶ Y)

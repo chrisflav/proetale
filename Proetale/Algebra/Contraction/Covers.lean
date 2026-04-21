@@ -233,7 +233,7 @@ variable (K) in
 def toCov (X : C) : (SCov K X)ᵒᵖ ⥤ Cov.{max u v} K X where
   obj U := ⟨U.1.zeroHypercover⟩
   map {U V} f :=
-    { σ i := ⟨i.1, leOfHom f.1 _ i.2⟩
+    { σ i := ⟨i.1, leOfHom f.1 _ _ i.2⟩
       iso i := 𝟙 _
       w i := by simp only [Category.id_comp]; rfl }
   map_id _ := rfl
@@ -247,7 +247,7 @@ noncomputable
 def diag (X : C) : (SCov K X)ᵒᵖ ⥤ Over X where
   obj U := Over.mk (WidePullback.base U.1.zeroHypercover.f)
   map {U V} f := Over.homMk <| WidePullback.lift (WidePullback.base _)
-    (fun j ↦ WidePullback.π _ (⟨j.1, leOfHom f.1 _ j.2⟩ : U.1.zeroHypercover.I₀))
+    (fun j ↦ WidePullback.π _ (⟨j.1, leOfHom f.1 _ _ j.2⟩ : U.1.zeroHypercover.I₀))
     (by intro; exact WidePullback.π_arrow _ _)
 
 instance [K.HasIsos] : Nonempty (SCov K X) :=
@@ -312,7 +312,7 @@ lemma pro_precontraction_hom [P.IsMultiplicative] [P.IsStableUnderBaseChange] :
     apply widePullbackBase
     intro i
     apply FiniteFamilies.property_hom
-  · simp only [Functor.id_obj, Functor.const_obj_obj, Functor.comp_obj, Over.forget_obj,
+  · simp only [Functor.const_obj_obj, Functor.comp_obj, Over.forget_obj,
       limit.cone_x, Functor.whiskerRight_app, limit.cone_π, Over.forget_map, CategoryTheory.Over.w]
     rfl
 
