@@ -96,10 +96,10 @@ def Restriction : Type u :=
 
 namespace Restriction
 
-instance commRing : CommRing (Restriction T) := fast_instance%
+instance commRing : CommRing (Restriction T) :=
   inferInstanceAs <| CommRing <| colimit (C := CommAlgCat A) (Restriction.diag T)
 
-instance algebra : Algebra A (Restriction T) := fast_instance%
+instance algebra : Algebra A (Restriction T) :=
   inferInstanceAs <| Algebra A <| colimit (C := CommAlgCat A) (Restriction.diag T)
 
 instance indZariski : Algebra.IndZariski A (Restriction T) := sorry
@@ -133,10 +133,10 @@ def Pullback := Restriction (Z S f)
 
 namespace Pullback
 
-instance commRing : CommRing (Pullback S f) := fast_instance%
+instance commRing : CommRing (Pullback S f) :=
   inferInstanceAs <| CommRing <| Restriction (Z S f)
 
-instance algebra' : Algebra (S → A) (Pullback S f) := fast_instance%
+instance algebra' : Algebra (S → A) (Pullback S f) :=
   inferInstanceAs <| Algebra (S → A) <| Restriction (Z S f)
 
 instance algebra : Algebra A (Pullback S f) := Algebra.compHom _ (Pi.ringHom fun _ : S ↦ RingHom.id A)

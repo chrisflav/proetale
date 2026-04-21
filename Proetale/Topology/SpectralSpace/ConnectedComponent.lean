@@ -71,7 +71,7 @@ theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
   have : ∃ (U V : Set X), IsOpen U ∧ IsOpen V ∧ IsCompact U ∧
       IsCompact V ∧ (U ∩ V) ∩ S = ∅ ∧ S ⊆ U ∪ V ∧ (U ∩ S).Nonempty ∧ (V ∩ S).Nonempty := by
     obtain ⟨B, C, hB, hC, hBC, hBn, hCn, h⟩ := this
-    push_neg at h
+    push Not at h
     have hS : IsClosed S := isClosed_iInter fun U ↦ U.2.1.1
     obtain ⟨U, hUB, hU, hUc, hUSB⟩ :=
         exists_subset_isOpen_isCompact_inter_eq_inter_of_prespectralSpace S B hB <| by

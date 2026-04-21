@@ -36,7 +36,7 @@ def IndEtaleContraction (R : Type u) [CommRing R] : Type u :=
     CommRingCat.faithfullyFlat.op
     (op <| CommRingCat.of R) : CommRingCat.{u}ᵒᵖ).unop
 
-noncomputable instance : CommRing (IndEtaleContraction R) := fast_instance%
+noncomputable instance : CommRing (IndEtaleContraction R) :=
   inferInstanceAs <| CommRing (_ : CommRingCat.{u})
 
 noncomputable instance : Algebra R (IndEtaleContraction R) :=

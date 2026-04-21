@@ -235,10 +235,10 @@ namespace WLocalization
 
 variable (A : Type u) [CommRing A]
 
-noncomputable instance commRing : CommRing (WLocalization A) := fast_instance%
+noncomputable instance commRing : CommRing (WLocalization A) :=
   inferInstanceAs <| CommRing (WLocalization.commAlgCat A)
 
-noncomputable instance algebra : Algebra A (WLocalization A) := fast_instance%
+noncomputable instance algebra : Algebra A (WLocalization A) :=
   inferInstanceAs <| Algebra A (WLocalization.commAlgCat A)
 
 noncomputable def ideal : Ideal (WLocalization A) :=
