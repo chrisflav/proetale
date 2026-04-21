@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 import Mathlib
 import Proetale.Mathlib.RingTheory.RingHom.Flat
-import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 
 /-!

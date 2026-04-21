@@ -1,7 +1,8 @@
 import Upstreamer
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Sites.Subcanonical
-import Proetale.Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 universe u
 

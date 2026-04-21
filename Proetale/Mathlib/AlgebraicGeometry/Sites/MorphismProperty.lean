@@ -1,6 +1,6 @@
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Mathlib.AlgebraicGeometry.Sites.Pretopology
-import Proetale.Mathlib.AlgebraicGeometry.Limits
+import Mathlib.AlgebraicGeometry.Limits
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 
 universe v u

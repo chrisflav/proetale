@@ -8,10 +8,11 @@ import Mathlib.CategoryTheory.Sites.Preserves
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Proetale.Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Topology.Flat.QuasiCompactCover
-import Proetale.Mathlib.CategoryTheory.Extensive
+import Mathlib.CategoryTheory.Extensive
 
 /-!
 # The quasi-compact topology of a scheme

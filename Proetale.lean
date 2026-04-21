@@ -9,7 +9,6 @@ import Proetale.Algebra.IndZariski
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
 import Proetale.Algebra.ProEtaleContraction
-import Proetale.Algebra.PureIdeal
 import Proetale.Algebra.StalkAlgebraic
 import Proetale.Algebra.StalkIso
 import Proetale.Algebra.WContractible
@@ -28,14 +27,11 @@ import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
-import Proetale.Mathlib.AlgebraicGeometry.Limits
-import Proetale.Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Proetale.Mathlib.CategoryTheory.Extensive
 import Proetale.Mathlib.CategoryTheory.Limits.Comma
 import Proetale.Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Proetale.Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
@@ -43,8 +39,6 @@ import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Proetale.Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
@@ -57,12 +51,10 @@ import Proetale.Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
-import Proetale.Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
 import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
-import Proetale.Mathlib.CategoryTheory.Sites.Sheaf
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
@@ -92,7 +84,6 @@ import Proetale.Topology.Coherent.Affine
 import Proetale.Topology.Coherent.Etale
 import Proetale.Topology.Comparison.Affine
 import Proetale.Topology.Comparison.Etale
-import Proetale.Topology.Comparison.Pullback
 import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Topology.Flat.ConstantSheaf
 import Proetale.Topology.Flat.QuasiCompactCover

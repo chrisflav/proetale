@@ -7,7 +7,7 @@ import Mathlib
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Proetale.Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
