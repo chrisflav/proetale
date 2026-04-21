@@ -14,13 +14,13 @@ variable {C D : Type*} [Category* C] [Category D]
 @[simps]
 def Adjunction.sheaf [L.IsContinuous J K] [R.IsContinuous K J] (adj : L ⊣ R) :
     L.sheafPushforwardContinuous A J K ⊣ R.sheafPushforwardContinuous A K J where
-  unit.app F := ⟨(adj.op.whiskerLeft A).unit.app F.val⟩
-  counit.app F := ⟨(adj.op.whiskerLeft A).counit.app F.val⟩
+  unit.app F := ⟨(adj.op.whiskerLeft A).unit.app F.obj⟩
+  counit.app F := ⟨(adj.op.whiskerLeft A).counit.app F.obj⟩
   right_triangle_components F := by
     ext1
-    exact (adj.op.whiskerLeft A).right_triangle_components F.val
+    exact (adj.op.whiskerLeft A).right_triangle_components F.obj
   left_triangle_components F := by
     ext1
-    exact (adj.op.whiskerLeft A).left_triangle_components F.val
+    exact (adj.op.whiskerLeft A).left_triangle_components F.obj
 
 end CategoryTheory

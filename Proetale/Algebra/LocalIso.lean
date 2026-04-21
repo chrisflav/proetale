@@ -81,7 +81,7 @@ lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.rang
       refine .of_algebraMap_eq' ?_
       rw [RingHom.algebraMap_toAlgebra, ← RingHom.cancel_left (g := e.toRingHom) e.injective]
       ext
-      simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+      simp only [RingEquiv.toRingHom_eq_coe,
         AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
         AlgEquiv.toAlgHom_eq_coe, AlgHomClass.toRingHom_toAlgHom, AlgEquiv.apply_symm_apply]
       simp [e]

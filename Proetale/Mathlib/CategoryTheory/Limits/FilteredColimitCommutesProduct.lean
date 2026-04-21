@@ -110,7 +110,7 @@ noncomputable
 def coconePointwiseProductIso (F : ∀ i, J i ⥤ C) [∀ i, HasColimit (F i)]
     [∀ (i : ι), HasColimitsOfShape (J i) C] :
     coconePointwiseProduct F ≅ coconePointwiseProduct' fun i ↦ colimit.cocone (F i) := by
-  refine Cocones.ext (Iso.refl _) fun _ ↦ ?_
+  refine Cocone.ext (Iso.refl _) fun _ ↦ ?_
   apply Pi.hom_ext
   simp [Functor.pi]
 
@@ -137,7 +137,7 @@ lemma IsIPCOfShape.of_equiv {ι' : Type*} [HasProductsOfShape ι' C] [IsIPCOfSha
     · exact (Pi.equivalenceOfEquivCompPiFunctorIso F e)
     · -- Without the double `symm`, one runs into (hard) DTT hell
       symm
-      refine Cocones.ext ?_ ?_
+      refine Cocone.ext ?_ ?_
       · exact (Pi.whiskerEquiv e fun _ ↦ Iso.refl _).symm
       · intro a
         apply Pi.hom_ext
@@ -158,7 +158,7 @@ lemma IsIPC.of_isIPCOfShape [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w, w
     dsimp only [colimit.desc]
     rw [← IsColimit.nonempty_isColimit_iff_isIso_desc]
     let e : coconePointwiseProduct F ≅ coconePointwiseProduct' fun i ↦ colimit.cocone (F i) := by
-      refine Cocones.ext (Iso.refl _) fun _ ↦ ?_
+      refine Cocone.ext (Iso.refl _) fun _ ↦ ?_
       apply Pi.hom_ext
       simp [Functor.pi]
     rw [(IsColimit.equivIsoColimit e).nonempty_congr]
@@ -202,7 +202,7 @@ lemma IsIPCOfShape.of_preservesFilteredColimitsOfSize {D : Type*} [Category* D] 
         (Functor.associator _ _ _) ≪≫
         (Functor.isoWhiskerLeft _ <| (Pi.functorCompIso _ _).symm) ≪≫
         (Functor.associator _ _ _).symm
-    · refine Cocones.ext (PreservesProduct.iso F _).symm ?_
+    · refine Cocone.ext (PreservesProduct.iso F _).symm ?_
       intro a
       dsimp
       simp only [Category.id_comp, Category.comp_id, Category.assoc]
