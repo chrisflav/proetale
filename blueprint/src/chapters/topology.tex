@@ -206,6 +206,17 @@ by objects in $\affproet{X}$:
     from the comparison lemma for sites.
 \end{proof}
 
+\begin{corollary}
+    Restriction along the inclusion $\affproet{X} \to \proet{X}$ commutes with sheafification.
+    \label{cor:affproet-sheafification-commute}%
+    \uses{def:affproet-site}
+\end{corollary}
+
+\begin{proof}
+    \uses{cor:affproet-equivalence}
+    This follows immediately from \ref{cor:affproet-equivalence}.
+\end{proof}
+
 \subsection{Repleteness}
 
 An important property of the pro-étale site is the following:
@@ -307,17 +318,19 @@ In contrast to \cite{proetale}, we write $R \nu_{*}$ for the derived functor of 
 \end{proposition}
 
 \begin{proof}
-    \uses{lemma:affproet-relatively-pro-prepresentable, prop:sheaf-relatively-representable-generated, lemma:affproet-pushforward-presheaf-filtered-colim}
-    By \ref{lemma:affproet-relatively-pro-prepresentable} and
-    \ref{lemma:affproet-pushforward-presheaf-filtered-colim}, this follows from
-    \ref{prop:sheaf-relatively-representable-generated}. The in particular follows
-    because we have a commutative diagram
+    \uses{lemma:affproet-relatively-pro-prepresentable,
+      prop:sheaf-relatively-representable-generated,
+      lemma:affproet-pushforward-presheaf-filtered-colim,
+      cor:affproet-sheafification-commute}
+    By \Cref{lemma:affproet-relatively-pro-prepresentable} and
+    \Cref{lemma:affproet-pushforward-presheaf-filtered-colim}, this follows from
+    \Cref{prop:sheaf-relatively-representable-generated}.
+    Hence we have the following chain of isomorphisms
     \[
-    \begin{tikzcd}
-        \affet{X} \arrow{r} \arrow{d} & \affproet{X} \arrow{d} \\
-        \et{X} \arrow{r} & \proet{X}.
-    \end{tikzcd}
-    \]
+        (\nu^*F)|_{\affproet{X}} \cong (\nu^pF)^{\#}|_{\affproet{X}}
+        \cong ((\nu^pF)|_{\affproet{X}})^{\#}
+        \cong (\nu^pF)|_{\affproet{X}}
+    .\] The second isomorphism is \Cref{cor:affproet-sheafification-commute} and the last is the first part of this proposition.
 \end{proof}
 
 \begin{corollary}[{\cite[Lemma 5.1.1]{proetale}}]
