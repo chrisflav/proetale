@@ -31,7 +31,13 @@ theorem TopCat.isClosedEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} [T2Space 
           rw[← ConcreteCategory.comp_apply]
           simp[pullback.condition]
         · intro ha
-          sorry
+          -- For this part, there is a mathlib lemma "range_pullback_to_prod", but if we want to apply that lemma, we see that in this lemma we have 'TopCat: Type 1', but we are in 'TopCat : Type (u + 1)' so Lean shows a mismatch and cannot state 'range_pullback_to_prod f g' for our f and g. But since the proof lines are essentially the same, I just adapted the original proof lines below. I don't know if there is a better way of doing it. -- Haowen
+          use (pullbackIsoProdSubtype f g).inv ⟨(X.prodIsoProd Y).hom x , ha⟩
+          apply Concrete.limit_ext
+          rintro ⟨⟨⟩⟩ <;>
+             rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, limit.lift_π] <;>
+              -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
+          cat_disch
       have hfg := Continuous.prodMap (map_continuous f1) (map_continuous g1)
       have hc := IsClosed.preimage hfg (t2Space_iff_diagonal_closed.mp ‹T2Space Z›)
       have hc1 := (TopCat.homeoOfIso (TopCat.prodIsoProd X Y)).isClosed_preimage.mpr hc
