@@ -7,8 +7,11 @@ import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Coherent.Affine
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Basic
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Proetale.Pro.PresheafColimit
+import Proetale.Morphisms.ProAffineEtale
+import Proetale.Topology.LocalProperties
 
 universe w u
 
@@ -107,37 +110,71 @@ end
 
 variable {S : Scheme.{u}}
 
-/-- An object of the pro-étale site of `S` is pro-affine, if it can be written
-as `limᵢ (Spec Aᵢ)` where `Spec Aᵢ` is an étale `S`-scheme. -/
-def ProEt.proAffine (S : Scheme.{u}) : ObjectProperty S.ProEt :=
-  fun X ↦ ∃ (J : Type u) (_ : SmallCategory J) (_ : IsCofiltered J),
-    Nonempty (RelativeLimitPresentation J (AffineEtale.Spec S ⋙ S.toProEtale) X)
-
 /-- The pro-étale affine site is the full subcategory of the pro-étale site where every
 object can be written as a cofiltered limit of affine étale schemes over `S`. -/
 def AffineProEt (S : Scheme.{u}) : Type (u + 1) :=
-  (ProEt.proAffine S).FullSubcategory
+  proAffineEtale.Over ⊤ S
+
+abbrev AffineProEt.ofEtale {S : Scheme.{u}} {X : Scheme.{u}} [IsAffine X] (f : X ⟶ S)
+    [Etale f] :
+    S.AffineProEt :=
+  .mk _ f (.of_isAffine _)
 
 variable (S : Scheme.{u})
 variable (A : Type*) [Category A]
 
 noncomputable instance : Category S.AffineProEt :=
-  inferInstanceAs <| Category <| ObjectProperty.FullSubcategory _
+  inferInstanceAs <| Category <| proAffineEtale.Over ⊤ S
 
 namespace AffineProEt
 
+variable {S}
+
+instance {X Y : S.ProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
+  have : WeaklyEtale (f.left ≫ Y.hom) := by simp [X.prop]
+  .of_comp _ Y.hom
+
 /-- The inclusion of the affine pro-étale site into the pro-étale site. -/
 def toProEt (S : Scheme.{u}) : S.AffineProEt ⥤ S.ProEt :=
-  (ProEt.proAffine S).ι
+  MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale le_rfl
 
-instance : (toProEt S).Full := inferInstanceAs <| (ProEt.proAffine S).ι.Full
-instance : (toProEt S).Faithful := inferInstanceAs <| (ProEt.proAffine S).ι.Faithful
+instance : (toProEt S).Full :=
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale _).Full
+instance : (toProEt S).Faithful :=
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale le_rfl).Faithful
 
-instance : (toProEt S).LocallyCoverDense (ProEt.topology S) :=
+instance isCoverDense_toProEt : (toProEt S).IsCoverDense (ProEt.topology S) := by
+  wlog hS : ∃ R, S = Spec R generalizing S
+  · let X (i : S.affineCover.I₀) : S.AffineProEt := .ofEtale (S.affineCover.f i)
+    refine .of_coversTop _ _ (fun i : S.affineCover.I₀ ↦ X i) ?_ ?_
+    · dsimp
+      sorry
+    · intro i
+      let eL : Over (X i) ≌ (X i).left.AffineProEt :=
+        (CategoryTheory.MorphismProperty.Comma.equivOfEqTop _ _ (by sorry)).symm.trans
+          (MorphismProperty.Over.iteratedSliceEquiv _)
+      let eR : (X i).left.ProEt ≌ Over ((toProEt S).obj (X i)) :=
+        (MorphismProperty.Over.iteratedSliceEquiv <| (toProEt S).obj (X i)).symm.trans
+            (CategoryTheory.MorphismProperty.Comma.equivOfEqTop _ _ (by sorry))
+      let e : Over.post (X := X i) (toProEt S) ≅
+          (eL.functor ⋙ (toProEt <| (X i).left)) ⋙ eR.functor :=
+        sorry
+      rw [CategoryTheory.Functor.IsCoverDense.iff_of_natIso e]
+      rw [CategoryTheory.Functor.IsCoverDense.comp_iff_of_locallyCoverDense]
+      rw [CategoryTheory.Functor.IsCoverDense.comp_iff_of_isEquivalence]
+      have heq : eR.functor.inducedTopology
+          ((ProEt.topology S).over ((toProEt S).obj ((fun i ↦ X i) i))) =
+            ProEt.topology _ :=
+        sorry
+      rw [heq]
+      exact this ⟨_, rfl⟩
+  obtain ⟨R, rfl⟩ := hS
   sorry
 
 instance : (toProEt S).LocallyCoverDense (ProEt.zariskiTopology S) :=
   sorry
+
+variable (S)
 
 noncomputable def topology : GrothendieckTopology S.AffineProEt :=
   (toProEt S).inducedTopology (ProEt.topology S)
@@ -172,15 +209,19 @@ noncomputable def ProEt.baseChange {S T : Scheme.{u}} (f : S ⟶ T) :
     T.ProEt ⥤ S.ProEt :=
   MorphismProperty.Over.pullback _ _ f
 
-noncomputable def AffineProEt.baseChange {S T : Scheme.{u}} (f : S ⟶ T) :
+noncomputable def AffineProEt.baseChange {S T : Scheme.{u}} (f : S ⟶ T) [IsAffineHom f] :
     T.AffineProEt ⥤ S.AffineProEt :=
-  ObjectProperty.lift _ (AffineProEt.toProEt _ ⋙ ProEt.baseChange f) sorry
+  MorphismProperty.Over.pullback _ _ f
 
 /-- The inclusion of the affine étale site into the affine pro-étale site. -/
 noncomputable def AffineEtale.toAffineProEt (S : Scheme.{u}) :
     S.AffineEtale ⥤ S.AffineProEt :=
-  ObjectProperty.lift _ (AffineEtale.Spec S ⋙ S.toProEtale) <| fun _ ↦
-    ⟨PUnit, inferInstance, inferInstance, ⟨.self _⟩⟩
+  MorphismProperty.CostructuredArrow.pre Scheme.Spec (𝟭 _) S
+    (by
+      intro X Y f ⟨hf, hf'⟩
+      rw [ofObjectProperty_top_right_iff, Functor.comp_id, essImage_Spec] at hf'
+      exact .of_isAffine f)
+    (by simp)
 
 /-- The topology on the affine pro-étale site is generated by limits
 of `1`-hypercovers in the affine étale site. -/

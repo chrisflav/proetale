@@ -92,4 +92,58 @@ lemma foo (F : Sheaf K A) [HasColimitsOfShape J A] [(forget A).ReflectsIsomorphi
 
 end Sheaf
 
+lemma _root_.CategoryTheory.Sieve.le_pullback_coverByImage {C D : Type*} [Category* C] [Category* D]
+    (F : C ⥤ D)
+    {X Y : D} (f : X ⟶ Y) :
+    Sieve.coverByImage F X ≤ Sieve.pullback f (Sieve.coverByImage F Y) := by
+  simp only [Sieve.coverByImage]
+  intro Z g
+  rintro ⟨⟨W, b, c, heq⟩⟩
+  refine ⟨⟨?_, ?_, ?_, ?_⟩⟩
+  · use W
+  · use b
+  · use c ≫ f
+  · rw [reassoc_of% heq]
+
+lemma _root_.CategoryTheory.Functor.IsCoverDense.of_coversTop {C D : Type*} [Category* C]
+    [Category* D] (F : C ⥤ D) (J : GrothendieckTopology D) {ι : Type*} (X : ι → C)
+    (hX : J.CoversTop (fun i ↦ F.obj (X i)))
+    (H : ∀ i, (Over.post (X := X i) F).IsCoverDense (J.over _)) :
+    F.IsCoverDense J := by
+  constructor
+  intro U
+  let S := hX.cover U
+  refine J.transitive S.2 _ ?_
+  rintro Y f ⟨i, ⟨g⟩⟩
+  refine J.superset_covering (CategoryTheory.Sieve.le_pullback_coverByImage _ _) ?_
+  have := (H i).is_cover (Over.mk g)
+  rw [GrothendieckTopology.mem_over_iff] at this
+  dsimp at this
+  refine J.superset_covering ?_ this
+  intro W a ha
+  rw [dsimp% Sieve.overEquiv_iff (Y := Over.mk g) _ a] at ha
+  obtain ⟨⟨Z, v, w, huv⟩⟩ := ha
+  refine ⟨⟨?_, ?_, ?_, ?_⟩⟩
+  · use Z.left
+  · use v.left
+  · use w.left
+  · exact congr($(huv).left)
+
+lemma _root_.CategoryTheory.Functor.IsCoverDense.iff_of_natIso {C D : Type*} [Category* C]
+    [Category* D] {F G : C ⥤ D} {J : GrothendieckTopology D} (e : F ≅ G) :
+    F.IsCoverDense J ↔ G.IsCoverDense J :=
+  sorry
+
+lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_locallyCoverDense {C D E : Type*}
+    [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E} {J : GrothendieckTopology E}
+    [G.LocallyCoverDense J] [G.IsLocallyFull J] [G.IsLocallyFaithful J] :
+    (F ⋙ G).IsCoverDense J ↔ F.IsCoverDense (G.inducedTopology J) := by
+  sorry
+
+lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_isEquivalence {C D E : Type*}
+    [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E}
+    {J : GrothendieckTopology E} [F.IsEquivalence] :
+    (F ⋙ G).IsCoverDense J ↔ G.IsCoverDense J := by
+  sorry
+
 end CategoryTheory
