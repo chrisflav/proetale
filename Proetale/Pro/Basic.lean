@@ -80,6 +80,14 @@ noncomputable def self (X : C) : RelativeColimitPresentation PUnit.{s + 1} F (F.
     (Cocone.mk _ (F.constComp _ X).hom) (Cocone.ext (Iso.refl _))
     (isColimitConstCocone PUnit.{s + 1} (F.obj X))
 
+/-- Map a relative colimit presentation under an isomorphism. -/
+@[simps]
+def ofIso (pres : RelativeColimitPresentation J F X) {Y : D} (e : X ≅ Y) :
+    RelativeColimitPresentation J F Y where
+  diag := pres.diag
+  ι := pres.ι ≫ (Functor.const _).map e.hom
+  isColimit := pres.isColimit.ofIsoColimit (Cocone.ext e)
+
 /-- A morphism between relative colimit presentations is a natural transformation between
 the diagrams. -/
 @[ext]
@@ -139,6 +147,14 @@ noncomputable def self (X : C) : RelativeLimitPresentation PUnit.{s + 1} F (F.ob
   isLimit := .equivOfNatIsoOfIso (F.constComp _ X).symm _
     (Cone.mk _ (F.constComp _ X).inv) (Cone.ext (Iso.refl _))
     (isLimitConstCone PUnit.{s + 1} (F.obj X))
+
+/-- Map a relative limit presentation under an isomorphism. -/
+@[simps]
+def ofIso (pres : RelativeLimitPresentation J F X) {Y : D} (e : X ≅ Y) :
+    RelativeLimitPresentation J F Y where
+  diag := pres.diag
+  π := (Functor.const _).map e.inv ≫ pres.π
+  isLimit := pres.isLimit.ofIsoLimit (Cone.ext e)
 
 /-- A morphism between relative colimit presentations is a natural transformation between
 the diagrams. -/
