@@ -26,7 +26,7 @@ variable {R S : Type*} [CommRing R] [CommRing S]
 
 /-- A ring homomorphism is injective if all stalk maps at maximal ideals are injective and
 `PrimeSpectrum.comap f` is surjective. -/
-lemma RingHom.injective_of_injectiveOnStalks {f : R →+* S}
+lemma RingHom.injective_of_localRingHom_injective {f : R →+* S}
     (hf : ∀ (p : Ideal S) [p.IsMaximal],
         Function.Injective (Localization.localRingHom (p.comap f) p f rfl))
     (hb : Function.Surjective (PrimeSpectrum.comap f)) : Function.Injective f := by
@@ -47,7 +47,7 @@ lemma RingHom.injective_of_injectiveOnStalks {f : R →+* S}
 
 /-- A ring homomorphism `f : R →+* S` is flat if the induced maps on localizations at each
 maximal ideal are flat. -/
-lemma RingHom.flat_of_localizations_flat {f : R →+* S}
+lemma RingHom.flat_of_flat_localRingHom {f : R →+* S}
     (h : ∀ (p : Ideal S) [p.IsMaximal],
         (Localization.localRingHom (p.comap f) p f rfl).Flat) :
     f.Flat := by
@@ -55,12 +55,11 @@ lemma RingHom.flat_of_localizations_flat {f : R →+* S}
   rw [RingHom.Flat]
   apply Module.flat_of_isLocalized_maximal S S (fun P ↦ Localization.AtPrime P)
     (fun P ↦ Algebra.linearMap S _)
-  intro P hPmax
-  haveI : P.IsMaximal := hPmax
+  intro P _
   algebraize [Localization.localRingHom (Ideal.comap f P) P f rfl]
-  haveI : IsScalarTower R (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) :=
+  have : IsScalarTower R (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) :=
     .of_algebraMap_eq fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
-  haveI : Module.Flat (Localization.AtPrime (Ideal.comap f P))
+  have : Module.Flat (Localization.AtPrime (Ideal.comap f P))
       (Localization.AtPrime P) := h P
   exact Module.Flat.trans R (Localization.AtPrime <| Ideal.comap f P) (Localization.AtPrime P)
 
