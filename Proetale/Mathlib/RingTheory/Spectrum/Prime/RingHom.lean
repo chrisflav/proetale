@@ -42,7 +42,7 @@ lemma RingHom.injective_of_injectiveOnStalks {f : R →+* S}
   subst hmcomap
   haveI := hm
   apply hf m
-  simp only [MaximalSpectrum.toPiLocalization, Pi.algebraMap_apply,
+  simp only [MaximalSpectrum.toPiLocalization_apply_apply,
     Localization.localRingHom_to_map, hr]
 
 /-- A ring homomorphism `f : R →+* S` is flat if the induced maps on localizations at each

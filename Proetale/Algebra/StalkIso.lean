@@ -24,7 +24,9 @@ def RingHom.BijectiveOnStalks {R S : Type*} [CommRing R] [CommRing S] (f : R →
   ∀ (p : Ideal S) [p.IsPrime],
     Function.Bijective (Localization.localRingHom (p.comap f) p f rfl)
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+universe u v
+
+variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 
 namespace RingHom.BijectiveOnStalks
 
@@ -36,23 +38,24 @@ lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
     (I := p.comap (g.comp f)) (p.comap g) p f (Ideal.comap_comap f g) g rfl]
   exact (hg p).comp (hf (p.comap g))
 
-/-- If `f : R →+* S` is bijective on stalks, then checking bijectivity at a prime `p` of `S`
-can be done after localizing at any element not in `p`. -/
-lemma of_localization {f : R →+* S} (g : S) (p : Ideal S) [hp : p.IsPrime] (hgp : g ∉ p)
-    (Sg : Type*) [CommRing Sg] [Algebra S Sg] [IsLocalization.Away g Sg]
-    (h : let hpM : Disjoint (Submonoid.powers g : Set S) (↑p : Set S) :=
-           (Ideal.disjoint_powers_iff_notMem g hp.isRadical).mpr hgp
-         haveI : (Ideal.map (algebraMap S Sg) p).IsPrime :=
-           IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g) Sg p hp hpM
-         Function.Bijective (Localization.localRingHom (p.comap f)
-           (Ideal.map (algebraMap S Sg) p) ((algebraMap S Sg).comp f)
-           (by rw [← Ideal.comap_comap,
-             IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM]))) :
-    Function.Bijective (Localization.localRingHom (p.comap f) p f rfl) := by
+/-- A ring homomorphism `f : R →+* S` is bijective on stalks if there exists a set of elements
+of `S` spanning the unit ideal such that for every such element, the composition of `f` with
+the localization map is bijective on stalks. -/
+lemma of_span_unit_ideal {f : R →+* S} (s : Set S)
+    (hs : Ideal.span s = ⊤)
+    (h : ∀ g ∈ s, ∀ (Sg : Type v) [CommRing Sg] [Algebra S Sg] [IsLocalization.Away g Sg],
+      ((algebraMap S Sg).comp f).BijectiveOnStalks) :
+    f.BijectiveOnStalks := by
+  intro p hp
+  obtain ⟨g, hgs, hgp⟩ : ∃ g ∈ s, g ∉ p := by
+    by_contra! h_contra
+    exact hp.ne_top <| le_antisymm le_top <|
+      hs ▸ Ideal.span_le.mpr h_contra
+  set Sg := Localization.Away g
   set p_g := Ideal.map (algebraMap S Sg) p
   have hpM : Disjoint (Submonoid.powers g : Set S) (↑p : Set S) :=
     (Ideal.disjoint_powers_iff_notMem g hp.isRadical).mpr hgp
-  have hp_g : p_g.IsPrime :=
+  haveI : p_g.IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g) Sg p hp hpM
   have hcomap_pg : p_g.comap (algebraMap S Sg) = p :=
     IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
@@ -69,66 +72,54 @@ lemma of_localization {f : R →+* S} (g : S) (p : Ideal S) [hp : p.IsPrime] (hg
       exact (IsScalarTower.algebraMap_apply S Sg (Localization.AtPrime p_g) x).symm)
   have hfactor := Localization.localRingHom_comp (p.comap f) p p_g f rfl
     (algebraMap S Sg) hcomap_pg.symm
-  have hfactor' : Function.Bijective
-      ((Localization.localRingHom p p_g (algebraMap S Sg) hcomap_pg.symm).comp
-       (Localization.localRingHom (p.comap f) p f rfl)) :=
-    hfactor ▸ h
-  exact (h_alg_bij.of_comp_iff' _).mp hfactor'
+  have hcomap_eq : p_g.comap ((algebraMap S Sg).comp f) = p.comap f := by
+    rw [← Ideal.comap_comap, hcomap_pg]
+  have h_inner : Function.Bijective (Localization.localRingHom (p.comap f) p_g
+      ((algebraMap S Sg).comp f) hcomap_eq.symm) := by
+    have aux : ∀ {J : Ideal R} [J.IsPrime] (heq : J = p.comap f)
+        (hb : Function.Bijective (Localization.localRingHom J p_g
+          ((algebraMap S Sg).comp f) (heq.trans hcomap_eq.symm))),
+        Function.Bijective (Localization.localRingHom (p.comap f) p_g
+          ((algebraMap S Sg).comp f) hcomap_eq.symm) := by
+      rintro J _ rfl hb
+      exact hb
+    haveI : (p_g.comap ((algebraMap S Sg).comp f)).IsPrime :=
+      hcomap_eq ▸ inferInstanceAs (p.comap f).IsPrime
+    exact aux hcomap_eq (h g hgs Sg p_g)
+  refine (h_alg_bij.of_comp_iff' _).mp ?_
+  rw [← RingHom.coe_comp, ← hfactor]
+  exact h_inner
 
-/-- A ring homomorphism `f : R →+* S` is bijective on stalks if there exists a set of elements
-of `S` spanning the unit ideal such that for every such element, the composition of `f` with
-the localization map is bijective on stalks. -/
-lemma of_span_unit_ideal {f : R →+* S} (s : Finset S)
-    (hs : Ideal.span (s : Set S) = ⊤)
-    (h : ∀ g ∈ s, ∀ (Sg : Type*) [CommRing Sg] [Algebra S Sg] [IsLocalization.Away g Sg],
-      ((algebraMap S Sg).comp f).BijectiveOnStalks) :
-    f.BijectiveOnStalks := by
-  intro p hp
-  obtain ⟨g, hgs, hgp⟩ : ∃ g ∈ s, g ∉ p := by
-    by_contra! h_contra
-    have : (s : Set S) ⊆ p := h_contra
-    rw [← Ideal.span_le, hs] at this
-    exact hp.ne_top (le_antisymm le_top this)
-  exact of_localization g p hgp (Localization.Away g)
-    (h g hgs (Localization.Away g) (Ideal.map (algebraMap S (Localization.Away g)) p))
+/-- The algebra map of a standard open immersion is bijective on stalks. -/
+lemma of_isStandardOpenImmersion (R T : Type*) [CommRing R] [CommRing T] [Algebra R T]
+    [Algebra.IsStandardOpenImmersion R T] : (algebraMap R T).BijectiveOnStalks := by
+  obtain ⟨r, _⟩ := Algebra.IsStandardOpenImmersion.exists_away R T
+  intro q hq
+  letI : IsLocalization.AtPrime (Localization.AtPrime q) (q.comap (algebraMap R T)) :=
+    IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
+      (Submonoid.powers r) (Localization.AtPrime q) q
+  exact IsLocalization.bijective (q.comap (algebraMap R T)).primeCompl _ (by
+    ext x
+    rw [RingHom.comp_apply, Localization.localRingHom_to_map]
+    exact (IsScalarTower.algebraMap_apply R T (Localization.AtPrime q) x).symm)
 
 end RingHom.BijectiveOnStalks
 
 /-- Local isomorphisms are bijective on stalks. -/
 lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
     f.BijectiveOnStalks := by
-  intro p hp
   algebraize [f]
-  obtain ⟨g, hgp, hstd⟩ := Algebra.IsLocalIso.exists_notMem_isStandardOpenImmersion (R := R) p
-  obtain ⟨r, hr⟩ := Algebra.IsStandardOpenImmersion.exists_away R (Localization.Away g)
-  set Sg := Localization.Away g
-  set p_g := Ideal.map (algebraMap S Sg) p
-  have hpM : Disjoint (Submonoid.powers g : Set S) (↑p : Set S) :=
-    (Ideal.disjoint_powers_iff_notMem g hp.isRadical).mpr hgp
-  have hp_g : p_g.IsPrime :=
-    IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g) Sg p hp hpM
-  have hcomap_pg : p_g.comap (algebraMap S Sg) = p :=
-    IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
-  letI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
-  have halg_eq : (algebraMap S Sg).comp f = algebraMap R Sg := by
-    ext x
-    exact (IsScalarTower.algebraMap_apply R S Sg x).symm
-  have hcomap_comp : p.comap f = p_g.comap ((algebraMap S Sg).comp f) := by
-    rw [← Ideal.comap_comap, hcomap_pg]
-  refine RingHom.BijectiveOnStalks.of_localization g p hgp Sg ?_
-  have hcomap_R : p_g.comap (algebraMap R Sg) = p.comap f := by
-    rw [← halg_eq, ← Ideal.comap_comap, hcomap_pg]
-  letI : IsLocalization.AtPrime (Localization.AtPrime p_g) (p.comap f) := by
-    have := IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
-      (Submonoid.powers r) (Localization.AtPrime p_g) p_g
-    simp_rw [hcomap_R] at this
-    exact this
-  exact IsLocalization.bijective (p.comap f).primeCompl _ (by
-    ext x
-    simp only [RingHom.comp_apply, Localization.localRingHom_to_map]
-    have : (algebraMap S Sg) (f x) = (algebraMap R Sg) x :=
-      (IsScalarTower.algebraMap_apply R S Sg x).symm
-    rw [this, IsScalarTower.algebraMap_apply R Sg (Localization.AtPrime p_g)])
+  exact RingHom.BijectiveOnStalks.of_span_unit_ideal
+    {g : S | Algebra.IsStandardOpenImmersion R (Localization.Away g)}
+    (Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top R S)
+    (fun g hg Sg _ _ _ ↦ by
+      letI : Algebra.IsStandardOpenImmersion R (Localization.Away g) := hg
+      algebraize [(algebraMap S Sg).comp f]
+      haveI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
+      haveI : Algebra.IsStandardOpenImmersion R Sg :=
+        .of_algEquiv R (Localization.Away g) Sg
+          ((IsLocalization.algEquiv (Submonoid.powers g) (Localization.Away g) Sg).restrictScalars R)
+      exact RingHom.BijectiveOnStalks.of_isStandardOpenImmersion R Sg)
 
 namespace RingHom.BijectiveOnStalks
 
