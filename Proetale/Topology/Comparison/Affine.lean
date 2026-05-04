@@ -160,7 +160,7 @@ instance isCoverDense_toProEt : (toProEt S).IsCoverDense (ProEt.topology S) := b
           (eL.functor ⋙ (toProEt <| (X i).left)) ⋙ eR.functor :=
         sorry
       rw [CategoryTheory.Functor.IsCoverDense.iff_of_natIso e]
-      rw [CategoryTheory.Functor.IsCoverDense.comp_iff_of_locallyCoverDense]
+      rw [CategoryTheory.Functor.IsCoverDense.comp_iff_of_isCoverDense]
       rw [CategoryTheory.Functor.IsCoverDense.comp_iff_of_isEquivalence]
       have heq : eR.functor.inducedTopology
           ((ProEt.topology S).over ((toProEt S).obj ((fun i ↦ X i) i))) =
