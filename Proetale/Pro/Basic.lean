@@ -31,13 +31,13 @@ def Limits.IsLimit.ofPreservesLimitColim {J K C : Type*} [Category J] [Category 
   let natiso : D.flip ⋙ colim ≅ d.pt :=
     (Limits.colimitIsoFlipCompColim _).symm ≪≫ (colimit.isColimit _).coconePointUniqueUpToIso hd
   let hc' : IsLimit (colim.mapCone c) := isLimitOfPreserves _ hc
-  let t : (Cones.postcompose natiso.hom).obj (colim.mapCone c) ≅ e := by
-    refine Cones.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) hf ≪≫ iso) ?_
+  let t : (Cone.postcompose natiso.hom).obj (colim.mapCone c) ≅ e := by
+    refine Cone.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) hf ≪≫ iso) ?_
     intro k
     apply colimit.hom_ext
     intro j
-    simp only [Iso.trans_hom, Iso.symm_hom, Cones.postcompose_obj_pt, Functor.mapCone_pt,
-      colim_obj, Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj,
+    simp only [Iso.trans_hom, Iso.symm_hom, Cone.postcompose_obj_pt, Functor.mapCone_pt,
+      colim_obj, Cone.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj,
       Functor.comp_obj, Functor.mapCone_π_app, colim_map, colimitIsoFlipCompColim_inv_app,
       ι_colimMap_assoc, Functor.flip_obj_obj, Category.assoc,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc, natiso]
@@ -77,7 +77,7 @@ noncomputable def self (X : C) : RelativeColimitPresentation PUnit.{s + 1} F (F.
   diag := (Functor.const _).obj X
   ι := (F.constComp _ X).hom
   isColimit := .equivOfNatIsoOfIso (F.constComp _ X).symm _
-    (Cocone.mk _ (F.constComp _ X).hom) (Cocones.ext (Iso.refl _))
+    (Cocone.mk _ (F.constComp _ X).hom) (Cocone.ext (Iso.refl _))
     (isColimitConstCocone PUnit.{s + 1} (F.obj X))
 
 /-- A morphism between relative colimit presentations is a natural transformation between
@@ -137,7 +137,7 @@ noncomputable def self (X : C) : RelativeLimitPresentation PUnit.{s + 1} F (F.ob
   diag := (Functor.const _).obj X
   π := (F.constComp _ X).inv
   isLimit := .equivOfNatIsoOfIso (F.constComp _ X).symm _
-    (Cone.mk _ (F.constComp _ X).inv) (Cones.ext (Iso.refl _))
+    (Cone.mk _ (F.constComp _ X).inv) (Cone.ext (Iso.refl _))
     (isLimitConstCone PUnit.{s + 1} (F.obj X))
 
 /-- A morphism between relative colimit presentations is a natural transformation between
@@ -387,7 +387,7 @@ def PreOneHypercover.RelativeLimitPresentation.isLimit (P : Dᵒᵖ ⥤ A)
   refine IsLimit.ofPreservesLimitColim (pres.multifork P) ?_ (pres.cocone P) (pres.isColimit P)
       (P.mapCocone pres.pres.cone.op) (isColimitOfPreserves _ pres.pres.isLimit.op) _ (.refl _) ?_
   · refine evaluationJointlyReflectsLimits _ fun j ↦ ?_
-    refine IsLimit.ofIsoLimit (h j.1) (Cones.ext (Iso.refl _) ?_)
+    refine IsLimit.ofIsoLimit (h j.1) (Cone.ext (Iso.refl _) ?_)
     intro l
     simp only [Functor.const_obj_obj, MulticospanIndex.multicospan_obj, multicospanShape_L,
       preOneHypercover_I₀, multicospanIndex_left, preOneHypercover_X, Functor.comp_obj,

@@ -17,27 +17,9 @@ end
 
 universe w' w v₂ u₂ v u
 
-@[simps]
-def ContinuousMap.uliftEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] :
-    C(ULift.{v} X, ULift.{u} Y) ≃ C(X, Y) where
-  toFun f := ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop⟩
-  invFun f := ⟨ULift.up ∘ f ∘ ULift.down, by fun_prop⟩
-
-@[simps]
-def TopCat.Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
-  toFun f := f.hom
-  invFun f := ofHom f
-
 namespace CategoryTheory
 
 open Limits
-
-lemma Functor.op_comp_isSheaf_of_isSheaf {C D : Type*} [Category* C] [Category* D]
-    {A : Type*} [Category.{w} A]
-    (F : C ⥤ D) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    [IsContinuous.{w} F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
-    Presheaf.IsSheaf J (F.op ⋙ P) :=
-  F.op_comp_isSheaf J K ⟨P, h⟩
 
 lemma Precoverage.functorPushforward_mem_toGrothendieck {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) {J : Precoverage C} {K : Precoverage D}
@@ -131,100 +113,4 @@ lemma mem_grothendieckTopology_iff {X : TopCat.{u}} {S : Sieve X} :
     exact Presieve.ofArrows.mk _
   · use E.presieve₀, E.mem₀
 
-lemma precoverage_le_comap_uliftFunctor :
-    precoverage.{u} ≤ precoverage.comap uliftFunctor.{v} := by
-  refine Precoverage.le_of_zeroHypercover fun X E ↦ ?_
-  refine ⟨?_, ?_⟩
-  · simp only [Presieve.map_ofArrows, Precoverage.mem_comap_iff,
-      ConcreteCategory.forget_map_eq_coe, Types.ofArrows_mem_jointlySurjectivePrecoverage_iff,
-      Set.mem_range]
-    intro ⟨x⟩
-    obtain ⟨i, y, rfl⟩ := exists_mem_zeroHypercover_range E x
-    use i, ⟨y⟩
-    rfl
-  · simp only [Presieve.map_ofArrows, MorphismProperty.ofArrows_mem_precoverage,
-      isOpenEmbedding_iff]
-    intro i
-    dsimp [uliftFunctor]
-    apply Topology.IsOpenEmbedding.uliftMap
-    apply isOpenEmbedding_f_zeroHypercover
-
-instance : uliftFunctor.IsContinuous grothendieckTopology grothendieckTopology := by
-  apply Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy
-  apply precoverage_le_comap_uliftFunctor
-
 end TopCat
-
-namespace AlgebraicGeometry.Scheme
-
-lemma forgetToTop_comp_forget : forgetToTop ⋙ CategoryTheory.forget TopCat = forget := rfl
-
-instance : Scheme.forgetToTop.{u}.IsContinuous zariskiTopology TopCat.grothendieckTopology := by
-  rw [zariskiTopology, grothendieckTopology]
-  have : (precoverage IsOpenImmersion).PullbacksPreservedBy forgetToTop := by
-    refine ⟨fun _ _ hR ↦ ⟨fun _ _ f _ hf _ ↦ ?_⟩⟩
-    have : IsOpenImmersion f := hR.2 hf
-    infer_instance
-  apply Precoverage.isContinuous_toGrothendieck_of_pullbacksPreservedBy
-  rw [TopCat.precoverage, Precoverage.comap_inf, precoverage]
-  gcongr
-  · rw [← Precoverage.comap_comp, forgetToTop_comp_forget]
-  · rw [MorphismProperty.comap_precoverage]
-    exact MorphismProperty.precoverage_monotone fun X Y f hf ↦ f.isOpenEmbedding
-
-variable (S : Scheme.{u}) (T : Type v) [TopologicalSpace T]
-
-/-- The yoneda embedding of `TopCat` precomposed with the forgetful functor from `Scheme`. This
-is the presheaf `U ↦ C(U, T)`.
-For universe reasons, we implement it by hand. -/
-@[simps]
-def topYoneda (T : Type v) [TopologicalSpace T] : Scheme.{u}ᵒᵖ ⥤ Type (max v u) where
-  obj U := C(U.unop, T)
-  map {U V} f g := g.comp ⟨f.unop.base, f.unop.continuous⟩
-
-noncomputable
-def Zl (ℓ : Nat) [Fact ℓ.Prime] : Scheme.{u}ᵒᵖ ⥤ Type _ :=
-  topYoneda (PadicInt ℓ)
-
-def topYonedaIsoUlift :
-    topYoneda T ≅ Scheme.forgetToTop.op ⋙ TopCat.uliftFunctor.op ⋙ yoneda.obj (.of <| ULift T) :=
-  NatIso.ofComponents fun U ↦ equivEquivIso <|
-    (ContinuousMap.uliftEquiv U.1 T).symm.trans
-    (TopCat.Hom.equivContinuousMap
-      (TopCat.uliftFunctor.obj <| forgetToTop.obj U.1)
-      (TopCat.uliftFunctor.obj (TopCat.of T))).symm
-
-lemma isSheaf_grothendieckTopology_topYoneda : Presheaf.IsSheaf zariskiTopology (topYoneda T) := by
-  rw [Presheaf.isSheaf_of_iso_iff (topYonedaIsoUlift T)]
-  apply forgetToTop.op_comp_isSheaf_of_isSheaf _ TopCat.grothendieckTopology
-  apply TopCat.uliftFunctor.op_comp_isSheaf_of_isSheaf _ TopCat.grothendieckTopology
-  rw [isSheaf_iff_isSheaf_of_type]
-  exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable _
-
-/-- The presheaf `U ↦ C(U, T)` is a sheaf for the fpqc topology. -/
-lemma isSheaf_fpqcTopology_topYoneda : Presheaf.IsSheaf fpqcTopology (topYoneda T) := by
-  rw [isSheaf_iff_isSheaf_of_type, isSheaf_fpqcTopology_iff]
-  refine ⟨?_, fun {R S} f hf₁ hf₂ ↦ ?_⟩
-  · rw [← isSheaf_iff_isSheaf_of_type]
-    exact isSheaf_grothendieckTopology_topYoneda T
-  · rw [Presieve.isSheafFor_singleton]
-    have : Flat (Spec.map f) := by rwa [HasRingHomProperty.Spec_iff (P := @Flat)]
-    have : Topology.IsQuotientMap (Spec.map f) := Flat.isQuotientMap_of_surjective _
-    intro (x : C(Spec S, T)) h
-    refine ⟨?_, ?_, ?_⟩
-    · refine Topology.IsQuotientMap.lift this x fun a b hfab ↦ ?_
-      obtain ⟨c, rfl, rfl⟩ := Pullback.exists_preimage_pullback a b hfab
-      exact congr($(h (pullback.fst (Spec.map f) (Spec.map f))
-        (pullback.snd _ _) pullback.condition).1 c)
-    · apply Topology.IsQuotientMap.lift_comp
-    · intro y hy
-      rwa [← ContinuousMap.cancel_right (Spec.map f).surjective, Topology.IsQuotientMap.lift_comp]
-
-/-- The yoneda embedding of `TopCat` precomposed with the forgetful functor from `Scheme`
-as a sheaf in the fpqc topology. -/
-@[simps]
-def topYonedaSheaf : Sheaf fpqcTopology (Type _) where
-  val := topYoneda T
-  cond := isSheaf_fpqcTopology_topYoneda T
-
-end AlgebraicGeometry.Scheme

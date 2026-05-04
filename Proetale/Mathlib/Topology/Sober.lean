@@ -67,7 +67,7 @@ instance QuasiSober.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     isOpen_prod_iff.mp hSclosed.isOpen_compl _ _ hmem
   have : S ⊆ (Uᶜ ×ˢ Set.univ) ∪ (Set.univ ×ˢ Vᶜ) := fun ⟨a, b⟩ hab => by
     simp only [Set.mem_union, Set.mem_prod, Set.mem_compl_iff, Set.mem_univ, and_true, true_and]
-    by_contra h; push_neg at h; exact hUV (Set.mk_mem_prod h.1 h.2) hab
+    by_contra h; push Not at h; exact hUV (Set.mk_mem_prod h.1 h.2) hab
   rcases (isPreirreducible_iff_isClosed_union_isClosed.mp hS.isPreirreducible) _ _
     (hU.isClosed_compl.prod isClosed_univ) (isClosed_univ.prod hV.isClosed_compl) this with h | h
   · have : Prod.fst '' S ⊆ Uᶜ := Set.image_subset_iff.mpr fun p hp => (h hp).1
