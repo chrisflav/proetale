@@ -46,12 +46,6 @@ instance : proAffineEtale.RespectsIso := by
 instance : proAffineEtale.HasOfPostcompProperty proAffineEtale :=
   sorry
 
-/-- `ofObjectProperty (IsAffine ·) ⊤` is stable under composition, since it only depends on the
-source object. -/
-instance : (ofObjectProperty (IsAffine ·) (⊤ : ObjectProperty Scheme.{u})).IsStableUnderComposition
-    where
-  comp_mem {_X _Y _Z} _f _g hf _hg := hf
-
 /-- The property `Etale ⊓ ofObjectProperty (IsAffine ·) ⊤` pre-pro-spreads.
 This is needed to show that `proAffineEtale` is stable under composition. -/
 instance : MorphismProperty.PreProSpreads.{u}
