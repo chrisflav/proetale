@@ -87,11 +87,7 @@ theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
 lemma Algebra.IsLocalIso.etale [Algebra.IsLocalIso R S] : Algebra.Etale R S := by
   rw [← RingHom.etale_algebraMap]
   let s : Set S := {g | Algebra.IsStandardOpenImmersion R (Localization.Away g)}
-  have hs : Ideal.span s = ⊤ := by
-    by_contra hne
-    obtain ⟨m, hm, hms⟩ := Ideal.exists_le_maximal _ hne
-    obtain ⟨g, hgm, hstd⟩ := inferInstanceAs (Algebra.IsLocalIso R S) |>.exists_notMem_isStandardOpenImmersion m
-    exact hgm (hms (Ideal.subset_span hstd))
+  have hs : Ideal.span s = ⊤ := Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top R S
   exact RingHom.Etale.ofLocalizationSpanTarget (algebraMap R S) s hs (fun ⟨g, hg⟩ => by
     obtain ⟨r, hr⟩ := hg.exists_away
     haveI : Algebra.Etale R (Localization.Away g) := Algebra.Etale.of_isLocalizationAway r
