@@ -129,16 +129,19 @@ lemma _root_.CategoryTheory.Functor.IsCoverDense.of_coversTop {C D : Type*} [Cat
   · use w.left
   · exact congr($(huv).left)
 
-lemma _root_.CategoryTheory.Functor.IsCoverDense.iff_of_natIso {C D : Type*} [Category* C]
-    [Category* D] {F G : C ⥤ D} {J : GrothendieckTopology D} (e : F ≅ G) :
-    F.IsCoverDense J ↔ G.IsCoverDense J := by
-  suffices h : ∀ {F G : C ⥤ D} (_ : F ≅ G), F.IsCoverDense J → G.IsCoverDense J from
-    ⟨h e, h e.symm⟩
-  rintro F G e ⟨hF⟩
+lemma _root_.CategoryTheory.Functor.IsCoverDense.of_natIso {C D : Type*} [Category* C]
+    [Category* D] {F G : C ⥤ D} {J : GrothendieckTopology D} (e : F ≅ G)
+    [F.IsCoverDense J] : G.IsCoverDense J := by
+  obtain ⟨hF⟩ := ‹F.IsCoverDense J›
   refine ⟨fun U => J.superset_covering ?_ (hF U)⟩
   rintro Y f ⟨⟨Z, ℓ, k, hfg⟩⟩
   refine ⟨⟨Z, ℓ ≫ e.hom.app Z, e.inv.app Z ≫ k, ?_⟩⟩
   simp [hfg]
+
+lemma _root_.CategoryTheory.Functor.IsCoverDense.iff_of_natIso {C D : Type*} [Category* C]
+    [Category* D] {F G : C ⥤ D} {J : GrothendieckTopology D} (e : F ≅ G) :
+    F.IsCoverDense J ↔ G.IsCoverDense J :=
+  ⟨fun _ => .of_natIso e, fun _ => .of_natIso e.symm⟩
 
 lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_isCoverDense {C D E : Type*}
     [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E} {J : GrothendieckTopology E}
