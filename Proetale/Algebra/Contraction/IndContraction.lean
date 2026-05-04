@@ -143,7 +143,7 @@ noncomputable
 def isColimitIndContractionCocone (S : Under X) :
     IsColimit (indContractionCocone P S) :=
   .ofIsoColimit (colimit.isColimit _)
-    (Cocones.ext (CategoryTheory.Functor.leftKanExtensionObjIsoColimit _ _ _).symm)
+    (Cocone.ext (CategoryTheory.Functor.leftKanExtensionObjIsoColimit _ _ _).symm)
 
 variable {X} in
 noncomputable

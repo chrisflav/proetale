@@ -23,16 +23,16 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback'' (F : Cᵒᵖ ⥤ Type*) {X : 
     refine (H (g ≫ f) (by simp [hf])).isSeparatedFor.ext fun U o ho ↦ ?_
     simp only [Sieve.pullback_apply] at ho
     dsimp only [FamilyOfElements.IsAmalgamation, FamilyOfElements.pullback] at hs
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, hs _ _ _ ho, hs _ _ _ (by simpa)]
+    rw [← Functor.map_comp_apply, ← op_comp, hs _ _ _ ho, hs _ _ _ (by simpa)]
     congr 1
     simp
   obtain ⟨t', ht', hunique⟩ := hF s hr
   refine ⟨t', fun Y f hf ↦ (hF' f).ext fun Z g hg ↦ ?_, fun y hy ↦ ?_⟩
-  · rw [← FunctorToTypes.map_comp_apply, ← op_comp, ht' (g ≫ f) hg, ← t.comp_of_compatible _ ht]
+  · rw [← Functor.map_comp_apply, ← op_comp, ht' (g ≫ f) hg, ← t.comp_of_compatible _ ht]
     have := hs (g ≫ f) hg (𝟙 _)
     dsimp only [Presieve.FamilyOfElements.IsAmalgamation,
       Presieve.FamilyOfElements.pullback] at this
-    simp only [Sieve.pullback_apply, Category.id_comp, op_id, FunctorToTypes.map_id_apply] at this
+    simp only [Sieve.pullback_apply, Category.id_comp, op_id, Functor.map_id_apply] at this
     rw [this]
     · congr 1
       simp
@@ -61,7 +61,7 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback
     haveI := HasPairwisePullbacks.has_pullbacks hf hg
     obtain ⟨R, hR, h⟩ := H' f g hf hg
     refine hR.ext fun W w hw ↦ (h w hw).ext fun U u hu ↦ ?_
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+    simp only [← Functor.map_comp_apply, ← op_comp]
     dsimp only [FamilyOfElements.IsAmalgamation, FamilyOfElements.pullback] at hs
     rw [hs f hf (u ≫ w ≫ pullback.fst f g) (by simpa),
       hs g hg (u ≫ w ≫ pullback.snd f g) (by simpa [← pullback.condition])]
@@ -69,10 +69,10 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback
     simp [pullback.condition]
   obtain ⟨t', ht', hunique⟩ := hF s hr
   refine ⟨t', fun Y f hf ↦ (hF' f).ext fun Z g hg ↦ ?_, fun y hy ↦ ?_⟩
-  · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  · rw [← Functor.map_comp_apply, ← op_comp]
     simp only [Sieve.pullback_apply, Sieve.generate_apply] at hg
     obtain ⟨W, w, u, hu, heq⟩ := hg
-    simp only [← heq, op_comp, FunctorToTypes.map_comp_apply, ht' u hu]
+    simp only [← heq, op_comp, Functor.map_comp_apply, ht' u hu]
     have : t (g ≫ f) (by simp [hf]) = t (w ≫ u) (by simp [heq, hf]) := by
       congr 1
       rw [heq]
