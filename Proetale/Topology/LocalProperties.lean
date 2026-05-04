@@ -131,8 +131,14 @@ lemma _root_.CategoryTheory.Functor.IsCoverDense.of_coversTop {C D : Type*} [Cat
 
 lemma _root_.CategoryTheory.Functor.IsCoverDense.iff_of_natIso {C D : Type*} [Category* C]
     [Category* D] {F G : C ⥤ D} {J : GrothendieckTopology D} (e : F ≅ G) :
-    F.IsCoverDense J ↔ G.IsCoverDense J :=
-  sorry
+    F.IsCoverDense J ↔ G.IsCoverDense J := by
+  suffices h : ∀ {F G : C ⥤ D} (_ : F ≅ G), F.IsCoverDense J → G.IsCoverDense J from
+    ⟨h e, h e.symm⟩
+  rintro F G e ⟨hF⟩
+  refine ⟨fun U => J.superset_covering ?_ (hF U)⟩
+  rintro Y f ⟨⟨Z, ℓ, k, hfg⟩⟩
+  refine ⟨⟨Z, ℓ ≫ e.hom.app Z, e.inv.app Z ≫ k, ?_⟩⟩
+  simp [hfg]
 
 lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_locallyCoverDense {C D E : Type*}
     [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E} {J : GrothendieckTopology E}
@@ -144,6 +150,13 @@ lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_isEquivalence {C D 
     [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E}
     {J : GrothendieckTopology E} [F.IsEquivalence] :
     (F ⋙ G).IsCoverDense J ↔ G.IsCoverDense J := by
-  sorry
+  refine ⟨fun ⟨h⟩ => ⟨fun U => J.superset_covering ?_ (h U)⟩,
+    fun ⟨h⟩ => ⟨fun U => J.superset_covering ?_ (h U)⟩⟩
+  · rintro Y f ⟨⟨Z, ℓ, k, hfg⟩⟩
+    exact ⟨⟨F.obj Z, ℓ, k, hfg⟩⟩
+  · rintro Y f ⟨⟨Z, ℓ, k, hfg⟩⟩
+    refine ⟨⟨F.objPreimage Z, ℓ ≫ G.map (F.objObjPreimageIso Z).inv,
+      G.map (F.objObjPreimageIso Z).hom ≫ k, ?_⟩⟩
+    simp [← G.map_comp_assoc, hfg]
 
 end CategoryTheory
