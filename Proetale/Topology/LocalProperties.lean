@@ -142,9 +142,19 @@ lemma _root_.CategoryTheory.Functor.IsCoverDense.iff_of_natIso {C D : Type*} [Ca
 
 lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_locallyCoverDense {C D E : Type*}
     [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E} {J : GrothendieckTopology E}
-    [G.LocallyCoverDense J] [G.IsLocallyFull J] [G.IsLocallyFaithful J] :
+    [G.IsCoverDense J] [G.IsLocallyFull J] [G.IsLocallyFaithful J] :
     (F ⋙ G).IsCoverDense J ↔ F.IsCoverDense (G.inducedTopology J) := by
-  sorry
+  refine ⟨fun ⟨h⟩ => ?_, fun ⟨h⟩ => ⟨fun U => ?_⟩⟩
+  · -- forward direction
+    sorry
+  · -- reverse direction: F cover-dense in induced ⟹ F⋙G cover-dense in J
+    apply J.transitive (G.is_cover_of_isCoverDense J U)
+    rintro Y _ ⟨⟨X, lift_b, map_b, rfl⟩⟩
+    refine J.superset_covering ?_ (J.pullback_stable lift_b (h X))
+    rintro V c ⟨T, k, h_c, ⟨⟨W, lift_a, map_a, hfac⟩⟩, hac⟩
+    refine ⟨⟨W, h_c ≫ G.map lift_a, G.map map_a ≫ map_b, ?_⟩⟩
+    rw [reassoc_of% hac, ← hfac, G.map_comp]
+    simp
 
 lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_isEquivalence {C D E : Type*}
     [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E}
