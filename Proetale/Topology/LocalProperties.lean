@@ -140,13 +140,16 @@ lemma _root_.CategoryTheory.Functor.IsCoverDense.iff_of_natIso {C D : Type*} [Ca
   refine ⟨⟨Z, ℓ ≫ e.hom.app Z, e.inv.app Z ≫ k, ?_⟩⟩
   simp [hfg]
 
-lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_locallyCoverDense {C D E : Type*}
+lemma _root_.CategoryTheory.Functor.IsCoverDense.comp_iff_of_isCoverDense {C D E : Type*}
     [Category* C] [Category* D] [Category* E] {F : C ⥤ D} {G : D ⥤ E} {J : GrothendieckTopology E}
-    [G.IsCoverDense J] [G.IsLocallyFull J] [G.IsLocallyFaithful J] :
+    [G.IsCoverDense J] [G.Full] [G.Faithful] :
     (F ⋙ G).IsCoverDense J ↔ F.IsCoverDense (G.inducedTopology J) := by
-  refine ⟨fun ⟨h⟩ => ?_, fun ⟨h⟩ => ⟨fun U => ?_⟩⟩
+  refine ⟨fun ⟨h⟩ => ⟨fun U => J.superset_covering ?_ (h (G.obj U))⟩,
+    fun ⟨h⟩ => ⟨fun U => ?_⟩⟩
   · -- forward direction
-    sorry
+    rintro Y f ⟨⟨Z, lift, map, rfl⟩⟩
+    refine ⟨F.obj Z, G.preimage map, lift, ⟨⟨Z, 𝟙 _, G.preimage map, ?_⟩⟩, by simp⟩
+    simp
   · -- reverse direction: F cover-dense in induced ⟹ F⋙G cover-dense in J
     apply J.transitive (G.is_cover_of_isCoverDense J U)
     rintro Y _ ⟨⟨X, lift_b, map_b, rfl⟩⟩
