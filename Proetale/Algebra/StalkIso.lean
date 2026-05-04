@@ -32,27 +32,30 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 
 /-- A ring homomorphism `R →+* S` is bijective on stalks if `R_q →+* S_p` is bijective
 for every pair of primes `q = f⁻¹(p)`. -/
-@[algebraize Algebra.BijectiveOnStalks]
 def RingHom.BijectiveOnStalks (f : R →+* S) : Prop :=
+  ∀ (p : Ideal S) [p.IsPrime],
+    Function.Bijective (Localization.localRingHom (p.comap f) p f rfl)
+
+@[algebraize Algebra.BijectiveOnStalks.mk]
+lemma RingHom.BijectiveOnStalks.toAlgebra {f : R →+* S} (hf : f.BijectiveOnStalks) :
+    letI := f.toAlgebra
+    Algebra.BijectiveOnStalks R S :=
   letI := f.toAlgebra
-  Algebra.BijectiveOnStalks R S
+  ⟨hf⟩
 
 lemma RingHom.bijectiveOnStalks_algebraMap [Algebra R S] :
     (algebraMap R S).BijectiveOnStalks ↔ Algebra.BijectiveOnStalks R S :=
-  toAlgebra_algebraMap (R := R) (S := S).symm ▸ Iff.rfl
+  ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
 
 namespace RingHom.BijectiveOnStalks
 
 lemma localRingHom {f : R →+* S} (hf : f.BijectiveOnStalks) (p : Ideal S) [p.IsPrime] :
-    Function.Bijective (Localization.localRingHom (p.comap f) p f rfl) := by
-  letI := f.toAlgebra
-  exact hf.bijective_localRingHom p
+    Function.Bijective (Localization.localRingHom (p.comap f) p f rfl) :=
+  hf p
 
 lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) : (g.comp f).BijectiveOnStalks := by
-  letI := (g.comp f).toAlgebra
-  refine ⟨fun p hp ↦ ?_⟩
-  show Function.Bijective (Localization.localRingHom (p.comap (g.comp f)) p (g.comp f) rfl)
+  intro p hp
   have hq : (p.comap g).IsPrime := Ideal.IsPrime.comap g
   rw [Localization.localRingHom_comp
     (I := p.comap (g.comp f)) (p.comap g) p f (Ideal.comap_comap f g) g rfl]
@@ -66,9 +69,7 @@ lemma of_span_unit_ideal {f : R →+* S} (s : Set S)
     (h : ∀ g ∈ s, ∀ (Sg : Type v) [CommRing Sg] [Algebra S Sg] [IsLocalization.Away g Sg],
       ((algebraMap S Sg).comp f).BijectiveOnStalks) :
     f.BijectiveOnStalks := by
-  letI := f.toAlgebra
-  refine ⟨fun p hp ↦ ?_⟩
-  show Function.Bijective (Localization.localRingHom (p.comap f) p f rfl)
+  intro p hp
   obtain ⟨g, hgs, hgp⟩ : ∃ g ∈ s, g ∉ p := by
     by_contra! h_contra
     exact hp.ne_top <| le_antisymm le_top <|
@@ -116,9 +117,7 @@ lemma of_span_unit_ideal {f : R →+* S} (s : Set S)
 lemma of_isStandardOpenImmersion (R T : Type*) [CommRing R] [CommRing T] [Algebra R T]
     [Algebra.IsStandardOpenImmersion R T] : (algebraMap R T).BijectiveOnStalks := by
   obtain ⟨r, _⟩ := Algebra.IsStandardOpenImmersion.exists_away R T
-  refine RingHom.bijectiveOnStalks_algebraMap.mpr ⟨fun q hq ↦ ?_⟩
-  show Function.Bijective (Localization.localRingHom
-    (q.comap (algebraMap R T)) q (algebraMap R T) rfl)
+  intro q hq
   letI : IsLocalization.AtPrime (Localization.AtPrime q) (q.comap (algebraMap R T)) :=
     IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
       (Submonoid.powers r) (Localization.AtPrime q) q
