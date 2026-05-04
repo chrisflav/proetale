@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
 
@@ -30,18 +31,36 @@ lemma proAffineEtale.of_isAffine {X Y : Scheme.{u}} [IsAffine X] (f : X ⟶ Y) [
     proAffineEtale f :=
   MorphismProperty.le_pro _ _ ⟨‹_›, ⟨‹_›, trivial⟩⟩
 
+/-- `IsAffine` is preserved under isomorphisms. -/
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme.{u}) (IsAffine ·) where
+  of_iso e h := (IsAffine.iff_of_isIso e.hom).mp h
+
 /-- Every pro-affine étale morphism is weakly-étale. -/
 lemma proAffineEtale_le_weaklyEtale : proAffineEtale ≤ @WeaklyEtale :=
   sorry
 
-instance : proAffineEtale.RespectsIso :=
-  sorry
+instance : proAffineEtale.RespectsIso := by
+  rw [proAffineEtale, pro_eq_unop_ind_op]
+  infer_instance
 
 instance : proAffineEtale.HasOfPostcompProperty proAffineEtale :=
   sorry
 
-instance : proAffineEtale.IsStableUnderComposition :=
+/-- `ofObjectProperty (IsAffine ·) ⊤` is stable under composition, since it only depends on the
+source object. -/
+instance : (ofObjectProperty (IsAffine ·) (⊤ : ObjectProperty Scheme.{u})).IsStableUnderComposition
+    where
+  comp_mem {_X _Y _Z} _f _g hf _hg := hf
+
+/-- The property `Etale ⊓ ofObjectProperty (IsAffine ·) ⊤` pre-pro-spreads.
+This is needed to show that `proAffineEtale` is stable under composition. -/
+instance : MorphismProperty.PreProSpreads.{u}
+    (@Etale ⊓ .ofObjectProperty (IsAffine ·) (⊤ : ObjectProperty Scheme.{u})) :=
   sorry
+
+instance : proAffineEtale.IsStableUnderComposition := by
+  rw [proAffineEtale]
+  infer_instance
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffineHom f] :
     proAffineEtale.IsStableUnderBaseChangeAlong f := by
