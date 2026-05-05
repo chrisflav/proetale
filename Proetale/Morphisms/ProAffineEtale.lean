@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
 import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
+import Proetale.Algebra.IndEtale
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
 
 /-!
@@ -56,5 +57,9 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffineHom f] :
     rw [ofObjectProperty_top_right_iff]
     exact isAffine_of_isAffineHom f'
   infer_instance
+
+lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
+    proAffineEtale (Spec.map f) ↔ f.hom.IndEtale :=
+  sorry
 
 end AlgebraicGeometry

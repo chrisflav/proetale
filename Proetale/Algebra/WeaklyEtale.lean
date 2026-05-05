@@ -360,3 +360,18 @@ instance (priority := low) [WeaklyEtale R S] [FinitePresentation R S] : Etale R 
 end WeaklyEtale
 
 end Algebra
+
+namespace RingHom
+
+@[algebraize]
+def WeaklyEtale {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.WeaklyEtale R S
+
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+
+lemma weaklyEtale_algebraMap_iff [Algebra R S] :
+    (algebraMap R S).WeaklyEtale ↔ Algebra.WeaklyEtale R S := by
+  rw [WeaklyEtale, toAlgebra_algebraMap]
+
+end RingHom
