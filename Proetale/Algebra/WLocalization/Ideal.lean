@@ -219,7 +219,8 @@ private lemma Generalization.ideal_eq_map_of_submonoid (J : Ideal (WLocalization
 
 variable (I) in
 @[stacks 097A "(2)(a)"]
-theorem quotientMap_algebraMap_bijective :
+theorem quotientMap_algebraMap_bijective
+    (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     Function.Bijective (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map) := by
   set J := I.map (algebraMap A (WLocalization A)) with hJ_def
   -- Step (a): I.map(A→I.WLocalization) = J.map(WLocA→I.WLocalization)
@@ -227,7 +228,7 @@ theorem quotientMap_algebraMap_bijective :
       J.map (algebraMap (WLocalization A) I.WLocalization) := by
     rw [hJ_def, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
   -- Step (c): α : A/I → WLocA/J bijective (sorry'd helper)
-  have hα := WLocalization.quotientMap_algebraMap_bijective_of_ideal (A := A) I
+  have hα := WLocalization.quotientMap_algebraMap_bijective_of_ideal (A := A) I hI
   -- The submonoid (Generalization.submonoid 1 J) maps to units in WLocA/J:
   -- m ∈ submonoid 1 J means image of m in Localization.Away (mk J 1) is a unit.
   -- Since mk J 1 = 1, Loc.Away (1 : WLocA/J) ≃ WLocA/J via atUnits, so mk J m is a unit.
@@ -341,7 +342,8 @@ theorem quotientMap_algebraMap_bijective :
   exact hφbij.comp (hβ.comp hα)
 
 variable (I) in
-theorem bijOn_zeroLocus_map : Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLocalization))
+theorem bijOn_zeroLocus_map (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
+    Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLocalization))
     (zeroLocus (I.map (algebraMap A I.WLocalization))) (zeroLocus I) := by
     rw [← mk_ker (I := I.map _)]
     conv =>
@@ -357,14 +359,14 @@ theorem bijOn_zeroLocus_map : Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLo
       simp only [comap_asIdeal, comap_comap, Quotient.mk_comp_algebraMap]
       congr 1
     · rw [Set.bijOn_univ]
-      exact (PrimeSpectrum.comapEquiv (RingEquiv.ofBijective _ (quotientMap_algebraMap_bijective I))).symm.bijective
+      exact (PrimeSpectrum.comapEquiv (RingEquiv.ofBijective _ (quotientMap_algebraMap_bijective I hI))).symm.bijective
     · apply Set.InjOn.image_of_comp
       rw [Set.injOn_univ, ← PrimeSpectrum.comap_comp]
       apply PrimeSpectrum.comap_injective_of_surjective
       rw [← Ideal.quotientMap_comp_mk I.le_comap_map]
       simp
       apply Function.Surjective.comp
-      · exact (quotientMap_algebraMap_bijective I).surjective
+      · exact (quotientMap_algebraMap_bijective I hI).surjective
       · exact Ideal.Quotient.mk_surjective
 
 noncomputable instance [Algebra A B] : Algebra A (I.map (algebraMap A B)).WLocalization :=
@@ -388,10 +390,14 @@ theorem algebraMap_specComap_preimage_closedPoints_eq [IsWLocalRing A] [Algebra 
   exact zeroLocus_map_algebraMap_eq_closedPoints hJ_sub
 
 theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.FaithfullyFlat A B]
-  (hI : zeroLocus I = closedPoints (PrimeSpectrum A)) :
+  (hI : zeroLocus I = closedPoints (PrimeSpectrum A))
+  (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime],
+    Algebra.IsAlgebraic m.ResidueField q.ResidueField) :
   Module.FaithfullyFlat A (I.map (algebraMap A B)).WLocalization := by
   have : Module.Flat A (I.map (algebraMap A B)).WLocalization :=
     Module.Flat.trans A B (I.map (algebraMap A B)).WLocalization
+  have hJ_sub : zeroLocus (I.map (algebraMap A B)) ⊆ closedPoints (PrimeSpectrum B) :=
+    zeroLocus_map_algebraMap_subset_closedPoints h (hI ▸ le_refl _)
   apply Module.FaithfullyFlat.of_comap_surjective
   apply Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage
   rw [← hI]
@@ -411,7 +417,7 @@ theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.Fai
       apply Set.image_mono
       rw [← Ideal.map_map]
       intro p hp
-      rw [(bijOn_zeroLocus_map (map (algebraMap A B) I)).image_eq]
+      rw [(bijOn_zeroLocus_map (map (algebraMap A B) I) hJ_sub).image_eq]
       exact hp
     _ ⊆ _ := by
       rw [← Set.image_comp, ← comap_comp]

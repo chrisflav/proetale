@@ -265,8 +265,10 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) :=
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
 
-/-- For any ideal `I ⊆ A`, the quotient map `A/I → WLocA/IB` is bijective. -/
-lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A) :
+/-- If `V(I) ⊆ Spec A` consists only of closed points, then the quotient map
+`A/I → WLocA/(I·WLocA)` is bijective. -/
+lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A)
+    (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     Function.Bijective
       (Ideal.quotientMap (I.map (algebraMap A (WLocalization A)))
         (algebraMap A (WLocalization A)) I.le_comap_map) :=
