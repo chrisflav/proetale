@@ -5,6 +5,7 @@ import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.Ind
 import Proetale.Algebra.IndEtale
+import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
@@ -54,6 +55,7 @@ import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
+import Proetale.Mathlib.CategoryTheory.Sites.InducedTopology
 import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
