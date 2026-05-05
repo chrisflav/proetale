@@ -14,4 +14,8 @@ lemma ofObjectProperty_top_left_iff {C : Type*} [Category* C] {X Y : C} {f : X �
     ofObjectProperty ⊤ P f ↔ P Y :=
   ⟨fun h ↦ h.right, fun h ↦ ⟨trivial, h⟩⟩
 
+instance {C : Type*} [Category* C] (P Q : ObjectProperty C) :
+    (ofObjectProperty P Q).IsStableUnderComposition where
+  comp_mem _ _ hf hg := ⟨hf.left, hg.right⟩
+
 end CategoryTheory.MorphismProperty
