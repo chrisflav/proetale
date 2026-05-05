@@ -41,11 +41,13 @@ import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Basic
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
 import Proetale.Mathlib.CategoryTheory.NatIso
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
@@ -76,6 +78,7 @@ import Proetale.Mathlib.Topology.Separation.Hausdorff
 import Proetale.Mathlib.Topology.Sober
 import Proetale.Mathlib.Topology.Spectral.Basic
 import Proetale.Mathlib.Topology.Spectral.Prespectral
+import Proetale.Morphisms.ProAffineEtale
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Pro.Basic
 import Proetale.Pro.PresheafColimit
