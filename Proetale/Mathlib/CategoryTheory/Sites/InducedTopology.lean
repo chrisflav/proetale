@@ -70,6 +70,8 @@ lemma mem_finestTopology_of_forall_isSheafFor (Ps : Set (Cᵒᵖ ⥤ Type*)) {X 
   intro Y f
   exact H P hP _
 
+/-- The induced topology by a topology on `D` along a functor `F : C ⥤ D` is the finest
+topology making `F` continuous. -/
 def Functor.inducedTopology' (F : C ⥤ D) (J : GrothendieckTopology D) :
     GrothendieckTopology C :=
   Fix.finestTopology
@@ -164,6 +166,29 @@ lemma CoverPreserving.of_isContinuous (J : GrothendieckTopology C) (K : Grothend
     intro x hx
     refine this x fun i j Z gi gj hgij ↦ hx _ _ _ _ _ ?_
     simp [← Functor.map_comp, hgij]
+
+-- TODO: is this true?
+lemma foo [F.LocallyCoverDense J] [F.IsLocallyFull J] [F.IsLocallyFaithful J] :
+    F.IsContinuous (F.inducedTopology J) J where
+  op_comp_isSheaf_of_types G := by
+    intro X S hS
+    obtain ⟨ι, Y, f, rfl⟩ := S.exists_eq_ofArrows
+    simp only [Functor.mem_inducedTopology_sieves_iff, Sieve.ofArrows,
+      ← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows] at hS
+    have := G.property
+    rw [isSheaf_iff_isSheaf_of_type] at this
+    have := this _ hS
+    rw [← Presieve.isSheafFor_iff_generate] at this ⊢
+    rw [Presieve.isSheafFor_arrows_iff] at this ⊢
+    intro x hx
+    refine this x ?_
+    intro i j Z gi gj hgij
+    have := hx i j
+    dsimp at this gi gj hgij
+    -- apply hx
+    simp
+    -- apply Functor.IsLocallyFull.ext
+    sorry
 
 -- TODO: can this be relaxed to `LocallyCoverDense`?
 lemma inducedTopology_eq_inducedTopology' [F.IsCoverDense J] [F.IsLocallyFull J]
