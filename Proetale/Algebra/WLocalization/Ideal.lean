@@ -3,8 +3,10 @@ Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
+import Mathlib.FieldTheory.Separable
 import Proetale.Algebra.WLocalization.Basic
 import Proetale.Algebra.StalkAlgebraic
+import Proetale.Algebra.IndEtale
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 
 /-!
@@ -121,6 +123,12 @@ noncomputable instance algebraWLocalization: Algebra (WLocalization A) I.WLocali
   fast_instance% inferInstanceAs <| Algebra (WLocalization A) <|
     Generalization 1 (I.map (algebraMap A (WLocalization A)))
 
+instance isLocalization :
+    IsLocalization (Generalization.submonoid 1 (I.map (algebraMap A (WLocalization A))))
+      I.WLocalization :=
+  inferInstanceAs <| IsLocalization _ <|
+    Generalization 1 (I.map (algebraMap A (WLocalization A)))
+
 noncomputable instance algebra : Algebra A I.WLocalization :=
   Algebra.compHom _ (algebraMap A (WLocalization A))
 
@@ -140,12 +148,13 @@ theorem zeroLocus_map_algebraMap_eq_closedPoints
     closedPoints (PrimeSpectrum I.WLocalization) := by
   -- I.WLocalization = Generalization 1 (I.map (algebraMap A (WLocalization A)))
   -- Step 1: zeroLocus(I.map(A→WLocalization A)) ⊆ closedPoints(Spec(WLocalization A))
-  -- This follows from IndZariski (hence algebraic residue fields) and hI
-  -- V(I.map(A→WLocA)) ⊆ closedPoints(Spec(WLocA)) follows from IndZariski ⟹ bijectiveOnStalks
-  -- ⟹ residue field extensions are algebraic. Depends on sorry'd upstream lemmas.
+  -- IndZariski → IndEtale → residue field extensions are separable, hence algebraic.
   have hJ : zeroLocus (I.map (algebraMap A (WLocalization A))) ⊆
             closedPoints (PrimeSpectrum (WLocalization A)) :=
-    zeroLocus_map_algebraMap_subset_closedPoints (fun m q _ _ _ => sorry) hI
+    zeroLocus_map_algebraMap_subset_closedPoints (fun m q _ _ _ => by
+      haveI : Algebra.IsSeparable m.ResidueField q.ResidueField :=
+        Algebra.IndEtale.isSeparable_residueField (R := A) (S := WLocalization A) m q
+      infer_instance) hI
   -- Step 2: Rewrite I.map(A→I.WLocalization) = (I.map(A→WLocalization A)).map(WLocalization A→I.WLocalization)
   have hrw : I.map (algebraMap A I.WLocalization) =
       (I.map (algebraMap A (WLocalization A))).map (algebraMap (WLocalization A) I.WLocalization) := by
@@ -212,14 +221,124 @@ variable (I) in
 @[stacks 097A "(2)(a)"]
 theorem quotientMap_algebraMap_bijective :
     Function.Bijective (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map) := by
-  -- The key: A/I ≅ I.WLocalization / I.map(A→I.WLocalization)
-  -- This follows from:
-  -- (a) I.map(A→I.WLocalization) = J.map(WLocA→I.WLocalization) = ideal 1 J
-  --     (where J = I.map(A→WLocA))
-  -- (b) I.WLocalization / ideal 1 J ≅ WLocA/J
-  --     (IsLocalization.atUnits applied to submonoid 1 J becoming units in WLocA/J)
-  -- (c) A/I ≅ WLocA/J (from faithfully flat A→WLocA, sorry)
-  sorry
+  set J := I.map (algebraMap A (WLocalization A)) with hJ_def
+  -- Step (a): I.map(A→I.WLocalization) = J.map(WLocA→I.WLocalization)
+  have hKJ : I.map (algebraMap A I.WLocalization) =
+      J.map (algebraMap (WLocalization A) I.WLocalization) := by
+    rw [hJ_def, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
+  -- Step (c): α : A/I → WLocA/J bijective (sorry'd helper)
+  have hα := WLocalization.quotientMap_algebraMap_bijective_of_ideal (A := A) I
+  -- The submonoid (Generalization.submonoid 1 J) maps to units in WLocA/J:
+  -- m ∈ submonoid 1 J means image of m in Localization.Away (mk J 1) is a unit.
+  -- Since mk J 1 = 1, Loc.Away (1 : WLocA/J) ≃ WLocA/J via atUnits, so mk J m is a unit.
+  have h1 : Ideal.Quotient.mk J (1 : WLocalization A) = (1 : WLocalization A ⧸ J) := map_one _
+  haveI hpow : Submonoid.powers (Ideal.Quotient.mk J (1 : WLocalization A)) ≤
+      IsUnit.submonoid (WLocalization A ⧸ J) := by
+    rintro x ⟨n, rfl⟩; simp [h1]
+  have hLocAway_bij : Function.Bijective
+      (algebraMap (WLocalization A ⧸ J)
+        (Localization.Away (Ideal.Quotient.mk J (1 : WLocalization A)))) :=
+    (IsLocalization.atUnits (WLocalization A ⧸ J)
+      (Submonoid.powers (Ideal.Quotient.mk J (1 : WLocalization A)))
+      (S := Localization.Away (Ideal.Quotient.mk J (1 : WLocalization A))) hpow).bijective
+  let e : (WLocalization A ⧸ J) ≃+*
+      Localization.Away (Ideal.Quotient.mk J (1 : WLocalization A)) :=
+    (IsLocalization.atUnits (WLocalization A ⧸ J)
+      (Submonoid.powers (Ideal.Quotient.mk J (1 : WLocalization A)))
+      (S := Localization.Away (Ideal.Quotient.mk J (1 : WLocalization A))) hpow).toRingEquiv
+  have hsub_unit : ∀ m ∈ Generalization.submonoid 1 J,
+      IsUnit (Ideal.Quotient.mk J m) := by
+    intro m hm
+    have hu : IsUnit (algebraMap (WLocalization A) (Localization.Away
+        (Ideal.Quotient.mk J (1 : WLocalization A))) m) := Submonoid.mem_comap.mp hm
+    have heq : algebraMap (WLocalization A) (Localization.Away
+        (Ideal.Quotient.mk J (1 : WLocalization A))) m = e (Ideal.Quotient.mk J m) := by
+      show algebraMap (WLocalization A) _ m =
+        algebraMap (WLocalization A ⧸ J) _ (Ideal.Quotient.mk J m)
+      rw [show (Ideal.Quotient.mk J m : WLocalization A ⧸ J) =
+        algebraMap (WLocalization A) (WLocalization A ⧸ J) m from rfl,
+        ← IsScalarTower.algebraMap_apply]
+    rw [heq] at hu
+    have := hu.map e.symm.toRingHom
+    rwa [show e.symm.toRingHom (e (Ideal.Quotient.mk J m)) = Ideal.Quotient.mk J m from
+      e.symm_apply_apply _] at this
+  -- Step (b): β : WLocA/J → I.WLocalization/(J.map(WLocA→I.WLocalization)) bijective
+  have hβ : Function.Bijective (Ideal.quotientMap
+      (J.map (algebraMap (WLocalization A) I.WLocalization))
+      (algebraMap (WLocalization A) I.WLocalization) Ideal.le_comap_map) := by
+    refine ⟨?_, ?_⟩
+    · -- Injective
+      intro x y hxy
+      obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+      obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
+      rw [Ideal.quotientMap_mk, Ideal.quotientMap_mk, ← sub_eq_zero, ← map_sub,
+        Ideal.Quotient.eq_zero_iff_mem,
+        ← map_sub (algebraMap (WLocalization A) I.WLocalization),
+        IsLocalization.algebraMap_mem_map_algebraMap_iff (Generalization.submonoid 1 J)] at hxy
+      obtain ⟨m, hm, hmem⟩ := hxy
+      have hu := hsub_unit m hm
+      have : Ideal.Quotient.mk J m * Ideal.Quotient.mk J (x - y) = 0 := by
+        rw [← map_mul, Ideal.Quotient.eq_zero_iff_mem]; exact hmem
+      have : Ideal.Quotient.mk J (x - y) = 0 := by
+        rcases hu with ⟨u, hu⟩
+        rw [← hu] at this
+        exact (Units.mul_right_eq_zero u).mp this
+      rw [map_sub, sub_eq_zero] at this
+      exact this
+    · -- Surjective
+      intro y
+      obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
+      obtain ⟨x, hrs⟩ := IsLocalization.surj (Generalization.submonoid 1 J) y
+      set r := x.1
+      set s := x.2.1 with hs_def
+      have hs : s ∈ Generalization.submonoid 1 J := x.2.2
+      -- y * algebraMap s = algebraMap r, with s ∈ submonoid 1 J
+      -- mk J s is a unit; let v be its inverse in WLocA/J
+      obtain ⟨u, hueq⟩ := hsub_unit s hs
+      -- We claim [algebraMap WLocA I.WLocalization r] / [algebraMap WLocA I.WLocalization s] = [y]
+      -- and that quotient is in the image of WLocA/J via algebraMap (mk J r * (mk J s)⁻¹)
+      obtain ⟨t, ht⟩ : ∃ t : WLocalization A, Ideal.Quotient.mk J (s * t - 1) = 0 := by
+        obtain ⟨t, ht⟩ := Ideal.Quotient.mk_surjective (↑u⁻¹ : WLocalization A ⧸ J)
+        refine ⟨t, ?_⟩
+        rw [map_sub, map_mul, ht, ← hueq, map_one, Units.mul_inv, sub_self]
+      rw [Ideal.Quotient.eq_zero_iff_mem] at ht
+      refine ⟨Ideal.Quotient.mk J (r * t), ?_⟩
+      rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
+      -- Goal: algebraMap (r*t) - y ∈ J.map(WLocA → I.WLocalization)
+      have hu_s : IsUnit (algebraMap (WLocalization A) I.WLocalization s) :=
+        IsLocalization.map_units I.WLocalization (⟨s, hs⟩ : Generalization.submonoid 1 J)
+      rw [← Ideal.unit_mul_mem_iff_mem _ hu_s]
+      have key : algebraMap (WLocalization A) I.WLocalization s *
+          (algebraMap (WLocalization A) I.WLocalization (r * t) - y) =
+          algebraMap (WLocalization A) I.WLocalization (r * (s * t - 1)) := by
+        have hy : y * algebraMap (WLocalization A) I.WLocalization s =
+            algebraMap (WLocalization A) I.WLocalization r := hrs
+        rw [mul_sub, mul_comm _ y, hy, ← map_mul, ← map_sub]
+        congr 1
+        ring
+      rw [key]
+      exact Ideal.mem_map_of_mem _ (J.mul_mem_left _ ht)
+  -- Compose α and β. Need to identify the codomain via hKJ.
+  have hφbij : Function.Bijective (Ideal.quotEquivOfEq hKJ.symm :
+      I.WLocalization ⧸ J.map (algebraMap (WLocalization A) I.WLocalization) ≃+*
+      I.WLocalization ⧸ I.map (algebraMap A I.WLocalization)) :=
+    (Ideal.quotEquivOfEq hKJ.symm).bijective
+  have hcomp_eq : (Ideal.quotientMap (I.map (algebraMap A I.WLocalization))
+      (algebraMap A I.WLocalization) I.le_comap_map) =
+      (Ideal.quotEquivOfEq hKJ.symm).toRingHom.comp ((Ideal.quotientMap _
+        (algebraMap (WLocalization A) I.WLocalization) Ideal.le_comap_map).comp
+        (Ideal.quotientMap J (algebraMap A (WLocalization A)) I.le_comap_map)) := by
+    apply Ideal.Quotient.ringHom_ext
+    ext a
+    show Ideal.Quotient.mk (I.map (algebraMap A I.WLocalization))
+        (algebraMap A I.WLocalization a) =
+      (Ideal.quotEquivOfEq hKJ.symm) (Ideal.Quotient.mk _
+        (algebraMap (WLocalization A) I.WLocalization
+          (algebraMap A (WLocalization A) a)))
+    rw [Ideal.quotEquivOfEq_mk,
+      IsScalarTower.algebraMap_apply A (WLocalization A) I.WLocalization]
+  rw [hcomp_eq]
+  exact hφbij.comp (hβ.comp hα)
 
 variable (I) in
 theorem bijOn_zeroLocus_map : Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLocalization))

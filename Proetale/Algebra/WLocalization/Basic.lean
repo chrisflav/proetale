@@ -265,4 +265,11 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) :=
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
 
+/-- For any ideal `I ⊆ A`, the quotient map `A/I → WLocA/IB` is bijective. -/
+lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A) :
+    Function.Bijective
+      (Ideal.quotientMap (I.map (algebraMap A (WLocalization A)))
+        (algebraMap A (WLocalization A)) I.le_comap_map) :=
+  sorry
+
 open PrimeSpectrum
