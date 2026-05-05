@@ -215,7 +215,7 @@ instance preservesColimitsOfShape_tensorLeft
 instance preservesFilteredColimitsOfSize_forget_commRingCat :
     PreservesFilteredColimitsOfSize.{u, u} (forget₂ (CommAlgCat.{u} R) CommRingCat.{u}) where
   preserves_filtered_colimits J _ _ := by
-    haveI : IsConnected J := IsFiltered.isConnected J
+    have : IsConnected J := IsFiltered.isConnected J
     exact (inferInstance :
       PreservesColimitsOfShape J
         ((commAlgCatEquivUnder (CommRingCat.of R)).functor ⋙
@@ -233,15 +233,15 @@ instance preservesFilteredColimitsOfSize_forget_algCat (R : Type u) [CommRing R]
   preserves_filtered_colimits J _ _ := by
     have h : forget₂ (CommAlgCat.{u} R) (AlgCat.{u} R) ⋙ forget (AlgCat.{u} R) =
         forget (CommAlgCat.{u} R) := HasForget₂.forget_comp
-    haveI hhas : HasColimitsOfShape J (AlgCat.{u} R) :=
-      { has_colimit := fun F => ⟨_, AlgCat.FilteredColimits.colimitCoconeIsColimit F⟩ }
-    haveI hpres_algcat : PreservesColimitsOfShape J (forget (AlgCat.{u} R)) :=
+    have : HasColimitsOfShape J (AlgCat.{u} R) :=
+      { has_colimit := fun F ↦ ⟨_, AlgCat.FilteredColimits.colimitCoconeIsColimit F⟩ }
+    have : PreservesColimitsOfShape J (forget (AlgCat.{u} R)) :=
       PreservesFilteredColimitsOfSize.preserves_filtered_colimits J
-    haveI hrefl : ReflectsColimitsOfShape J (forget (AlgCat.{u} R)) :=
+    have : ReflectsColimitsOfShape J (forget (AlgCat.{u} R)) :=
       reflectsColimitsOfShape_of_reflectsIsomorphisms (J := J) (G := forget (AlgCat.{u} R))
-    haveI hpres : PreservesColimitsOfShape J (forget (CommAlgCat.{u} R)) :=
+    have hpres : PreservesColimitsOfShape J (forget (CommAlgCat.{u} R)) :=
       PreservesFilteredColimitsOfSize.preserves_filtered_colimits J
-    haveI hpres' : PreservesColimitsOfShape J
+    have : PreservesColimitsOfShape J
         (forget₂ (CommAlgCat.{u} R) (AlgCat.{u} R) ⋙ forget (AlgCat.{u} R)) :=
       h.symm ▸ hpres
     exact preservesColimitsOfShape_of_reflects_of_preserves
@@ -249,11 +249,9 @@ instance preservesFilteredColimitsOfSize_forget_algCat (R : Type u) [CommRing R]
 
 instance preservesLimitsOfSize_forget (R : Type u) [CommRing R] :
     PreservesLimitsOfSize.{u, u} (forget (CommAlgCat.{u} R)) := by
-  -- forget₂ (CommAlgCat R) CommRingCat = (commAlgCatEquivUnder R).functor ⋙ Under.forget,
-  -- which is a composition of an equivalence (preserves limits) and a right adjoint (preserves limits)
   have hfunctor : forget₂ (CommAlgCat.{u} R) CommRingCat.{u} =
       (commAlgCatEquivUnder (CommRingCat.of R)).functor ⋙ Under.forget (CommRingCat.of R) := rfl
-  haveI hf2 : PreservesLimitsOfSize.{u, u} (forget₂ (CommAlgCat.{u} R) CommRingCat.{u}) := by
+  have : PreservesLimitsOfSize.{u, u} (forget₂ (CommAlgCat.{u} R) CommRingCat.{u}) := by
     rw [hfunctor]
     infer_instance
   have h : forget₂ (CommAlgCat.{u} R) CommRingCat.{u} ⋙ forget CommRingCat.{u} =
@@ -279,7 +277,7 @@ def piFan : Fan S :=
 /-- The categorical product of `R`-algebras is the type theoretic product. -/
 def isLimitPiFan : IsLimit (piFan S) where
   lift s := ofHom <| Pi.algHom R (fun i ↦ S i) (fun i ↦ (s.π.app ⟨i⟩).hom)
-  fac s := fun ⟨i⟩ => by
+  fac s := fun ⟨i⟩ ↦ by
     apply CommAlgCat.hom_ext
     ext x
     rfl
@@ -300,14 +298,13 @@ instance AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat (R : Type u) [C
   preserves_filtered_colimits J _ _ := by
     have h : forget₂ (AlgCat.{u} R) (ModuleCat.{u} R) ⋙ forget (ModuleCat.{u} R) =
         forget (AlgCat.{u} R) := HasForget₂.forget_comp
-    haveI hhas : HasColimitsOfShape J (ModuleCat.{u} R) := inferInstance
-    haveI hpres_mod : PreservesColimitsOfShape J (forget (ModuleCat.{u} R)) :=
+    have : PreservesColimitsOfShape J (forget (ModuleCat.{u} R)) :=
       PreservesFilteredColimitsOfSize.preserves_filtered_colimits J
-    haveI hrefl : ReflectsColimitsOfShape J (forget (ModuleCat.{u} R)) :=
+    have : ReflectsColimitsOfShape J (forget (ModuleCat.{u} R)) :=
       reflectsColimitsOfShape_of_reflectsIsomorphisms (J := J) (G := forget (ModuleCat.{u} R))
-    haveI hpres : PreservesColimitsOfShape J (forget (AlgCat.{u} R)) :=
+    have hpres : PreservesColimitsOfShape J (forget (AlgCat.{u} R)) :=
       PreservesFilteredColimitsOfSize.preserves_filtered_colimits J
-    haveI hpres' : PreservesColimitsOfShape J
+    have : PreservesColimitsOfShape J
         (forget₂ (AlgCat.{u} R) (ModuleCat.{u} R) ⋙ forget (ModuleCat.{u} R)) :=
       h.symm ▸ hpres
     exact preservesColimitsOfShape_of_reflects_of_preserves

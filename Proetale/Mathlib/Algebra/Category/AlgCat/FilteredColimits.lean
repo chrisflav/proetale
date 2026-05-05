@@ -64,7 +64,8 @@ private lemma algMapToColimit_eq (j : J) (r : R) :
 private lemma algMapToColimit_commutes (r : R) (x : (algColimitRingCocone F).pt) :
     algMapToColimit F r * x = x * algMapToColimit F r := by
   refine Quot.inductionOn x ?_
-  clear x; intro ⟨j, y⟩
+  clear x
+  intro ⟨j, y⟩
   rw [algMapToColimit_eq F j r]
   simp only [algColimitRingCocone, algRingDiagram]
   erw [MonCat.FilteredColimits.colimit_mul_mk_eq
@@ -73,14 +74,8 @@ private lemma algMapToColimit_commutes (r : R) (x : (algColimitRingCocone F).pt)
          (algMonDiagram F) ⟨j, y⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
   apply MonCat.FilteredColimits.M.mk_eq
   refine ⟨j, 𝟙 j, 𝟙 j, ?_⟩
-  -- After unfolding the diagram maps and applying id, the goal reduces to showing
-  -- (id ∘ ...) (algebraMap r * y) = (id ∘ ...) (y * algebraMap r) in the monoid type.
-  -- We simplify the identity homs and reduce to mul_comm in the commutative ring F.obj j.
   simp only [algMonDiagram, algRingDiagram, Functor.comp_map, Functor.comp_obj,
-    CategoryTheory.Functor.map_id, CategoryTheory.hom_id, id_eq]
-  -- The goal is: algebraMap R (F.obj j) r * y = y * algebraMap R (F.obj j) r
-  -- where the elements have a complex functor-composition type definitionally equal to F.obj j.
-  -- We use Algebra.commutes to close the goal.
+    CategoryTheory.Functor.map_id]
   exact Algebra.commutes r (show F.obj j from y)
 
 /-- The `R`-algebra structure on the colimit ring. -/
@@ -101,10 +96,9 @@ noncomputable def colimitCocone : Cocone F where
     apply AlgCat.hom_ext
     ext x
     have := ConcreteCategory.congr_hom ((algColimitRingCocone F).ι.naturality f) x
-    simp only [Functor.const_obj_obj, AlgCat.hom_comp, colimitAlgHom, AlgHom.coe_mk,
-      RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    simp only [Functor.const_obj_obj, AlgCat.hom_comp, colimitAlgHom]
     simp only [algColimitRingCocone, algRingDiagram, Functor.comp_obj, Functor.comp_map,
-      Functor.const_obj_obj, Functor.mapCocone_ι_app, ConcreteCategory.hom_ofHom] at this
+      Functor.const_obj_obj] at this
     exact this
 
 /-- The mediating ring hom. -/
@@ -116,16 +110,15 @@ private lemma descRingHom_fac (s : Cocone F) (j : J) (x : F.obj j) :
     descRingHom F s ((algColimitRingCocone F).ι.app j x) = (s.ι.app j).hom x := by
   have := ConcreteCategory.congr_hom
     ((algColimitRingIsColimit F).fac ((forget₂ (AlgCat R) RingCat).mapCocone s) j) x
-  simp only [Functor.mapCocone_ι_app, Functor.comp_obj, Functor.comp_map,
-    ConcreteCategory.hom_ofHom, descRingHom, algColimitRingCocone, algRingDiagram] at this ⊢
+  simp only [Functor.mapCocone_ι_app, Functor.comp_obj,
+    descRingHom, algColimitRingCocone, algRingDiagram] at this ⊢
   exact this
 
 private lemma descRingHom_commutes (s : Cocone F) (r : R) :
     descRingHom F s (algebraMap R (algColimitRingCocone F).pt r) = algebraMap R s.pt r := by
   let j := IsFiltered.nonempty.some (α := J)
-  show descRingHom F s (algMapToColimit F r) = algebraMap R s.pt r
-  rw [algMapToColimit_eq F j r]
-  rw [descRingHom_fac F s j]
+  rw [show algebraMap R (algColimitRingCocone F).pt r = algMapToColimit F r from rfl,
+    algMapToColimit_eq F j r, descRingHom_fac F s j]
   exact (s.ι.app j).hom.commutes r
 
 /-- The filtered colimit cocone is a limiting cocone. -/
@@ -136,33 +129,27 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   fac s j := by
     apply AlgCat.hom_ext
     ext x
-    simp only [colimitCocone, AlgCat.hom_comp, colimitAlgHom, AlgHom.coe_mk, RingHom.coe_mk,
-      MonoidHom.coe_mk, OneHom.coe_mk]
+    simp only [colimitCocone, AlgCat.hom_comp, colimitAlgHom]
     exact descRingHom_fac F s j x
   uniq s m hm := by
     apply AlgCat.hom_ext
     have key : RingCat.ofHom m.hom.toRingHom =
         (algColimitRingIsColimit F).desc ((forget₂ (AlgCat R) RingCat).mapCocone s) :=
-      (algColimitRingIsColimit F).hom_ext (fun j => by
-          apply RingCat.hom_ext; ext z
-          -- Goal: m.hom.toRingHom (ι.app j z) = (algColimitRingIsColimit F).desc (mapCocone s) (ι.app j z)
-          -- Both sides equal (s.ι.app j).hom z.
-          have hmj : (colimitCocone F).ι.app j ≫ m = s.ι.app j := hm j
-          have hlhs : m.hom ((colimitAlgHom F j) z) = (s.ι.app j).hom z := by
-            have h := congrArg AlgCat.Hom.hom hmj
-            simp only [AlgCat.hom_comp, colimitCocone, colimitAlgHom, AlgHom.coe_mk] at h
-            exact congrFun (congrArg DFunLike.coe h) z
-          -- Use descRingHom_fac for the RHS
-          have hrhs : descRingHom F s ((algColimitRingCocone F).ι.app j z) = (s.ι.app j).hom z :=
-            descRingHom_fac F s j z
-          -- descRingHom is definitionally (desc ...).hom, so we can use hrhs
-          simp only [RingCat.ofHom_hom, AlgHom.coe_toRingHom, colimitAlgHom, AlgHom.coe_mk,
-            descRingHom] at *
-          exact hlhs.trans hrhs.symm)
+      (algColimitRingIsColimit F).hom_ext fun j ↦ by
+        apply RingCat.hom_ext
+        ext z
+        have hmj : (colimitCocone F).ι.app j ≫ m = s.ι.app j := hm j
+        have hlhs : m.hom ((colimitAlgHom F j) z) = (s.ι.app j).hom z := by
+          have h := congrArg AlgCat.Hom.hom hmj
+          simp only [AlgCat.hom_comp, colimitCocone, colimitAlgHom] at h
+          exact congrFun (congrArg DFunLike.coe h) z
+        have hrhs : descRingHom F s ((algColimitRingCocone F).ι.app j z) = (s.ι.app j).hom z :=
+          descRingHom_fac F s j z
+        simp only [colimitAlgHom, AlgHom.coe_mk, descRingHom] at *
+        exact hlhs.trans hrhs.symm
     ext x
     have h := DFunLike.congr_fun (congrArg RingCat.Hom.hom key) x
-    simp only [RingCat.ofHom_hom, AlgHom.coe_toRingHom] at h
-    simp only [AlgCat.ofHom_hom, AlgHom.coe_mk, descRingHom]
+    simp only [descRingHom]
     exact h
 
 end AlgCat.FilteredColimits
