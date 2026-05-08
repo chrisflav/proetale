@@ -55,6 +55,8 @@ import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
+import Proetale.Mathlib.CategoryTheory.Sites.Grothendieck
+import Proetale.Mathlib.CategoryTheory.Sites.Hypercover.Zero
 import Proetale.Mathlib.CategoryTheory.Sites.InducedTopology
 import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty

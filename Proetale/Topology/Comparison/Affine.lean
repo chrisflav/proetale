@@ -13,6 +13,16 @@ import Proetale.Pro.PresheafColimit
 import Proetale.Morphisms.ProAffineEtale
 import Proetale.Topology.LocalProperties
 import Proetale.Algebra.IndWeaklyEtale
+import Proetale.Mathlib.CategoryTheory.Sites.Grothendieck
+import Proetale.Mathlib.CategoryTheory.Sites.Hypercover.Zero
+
+/-!
+# Affine pro-étale site
+
+In this file we study the small affine pro-étale site of a scheme `S`: Its objects
+are affine schemes `X` that can be written as `X = limᵢ Xᵢ` where `Xᵢ` is an
+affine étale `S`-scheme.
+-/
 
 universe w u
 
@@ -51,63 +61,6 @@ end MorphismProperty
 end CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
-
-section
-
-variable {S T : Scheme.{u}} (f : S ⟶ T)
-  (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative] [P.RespectsIso]
-  [P.IsStableUnderBaseChange]
-variable (A : Type*) [Category* A]
-
-instance :
-    (Over.pullback P ⊤ f).PreservesOneHypercovers
-      (T.smallGrothendieckTopology P)
-      (S.smallGrothendieckTopology P) := by
-  intro X E
-  constructor
-  · sorry
-  · sorry
-
-noncomputable
-abbrev smallPushforward :
-    Sheaf (S.smallGrothendieckTopology P) A ⥤ Sheaf (T.smallGrothendieckTopology P) A :=
-  (Over.pullback P ⊤ f).sheafPushforwardContinuous _ _ _
-
-instance :
-    ((Over.pullback P ⊤ f).sheafPushforwardContinuous A (smallGrothendieckTopology P)
-      (smallGrothendieckTopology P)).IsRightAdjoint :=
-  sorry
-
-noncomputable
-abbrev smallPullback :
-    Sheaf (T.smallGrothendieckTopology P) A ⥤ Sheaf (S.smallGrothendieckTopology P) A :=
-  (Over.pullback P ⊤ f).sheafPullback _ _ _
-
-noncomputable
-def smallPullbackPushforwardAdj :
-    smallPullback f P A ⊣ smallPushforward f P A :=
-  (Over.pullback P ⊤ f).sheafAdjunctionContinuous A _ _
-
-instance (hf : P f) :
-    (Over.map ⊤ hf).IsContinuous (smallGrothendieckTopology P) (smallGrothendieckTopology P) :=
-  sorry
-
-def smallSheafRestrict (hf : P f) :
-    Sheaf (T.smallGrothendieckTopology P) A ⥤ Sheaf (S.smallGrothendieckTopology P) A :=
-  (Over.map ⊤ hf).sheafPushforwardContinuous _ _ _
-
-noncomputable def smallSheafRestrictAdj (hf : P f) :
-    smallSheafRestrict f P A hf ⊣ smallPushforward f P A :=
-  (Over.mapPullbackAdj P ⊤ f hf trivial).sheaf _ _
-
-/-- If `f : S ⟶ T` satisfies `P` the pullback functor `Shv(T) ⥤ Shv(S)` is
-naturally isomorphic to the restriction functor. -/
-noncomputable def smallPullbackIsoRestrict (hf : P f) :
-    smallPullback f P A ≅ smallSheafRestrict f P A hf :=
-  (conjugateIsoEquiv (smallSheafRestrictAdj f P A hf) (smallPullbackPushforwardAdj f P A)).symm
-    (Iso.refl _)
-
-end
 
 variable {S : Scheme.{u}}
 
@@ -159,136 +112,8 @@ instance : (toProEt S).Full :=
 instance : (toProEt S).Faithful :=
   inferInstanceAs <| (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale le_rfl).Faithful
 
--- TODO: move me
-lemma _root_.CategoryTheory.GrothendieckTopology.transitive_of_presieve {C : Type*} [Category* C]
-    {J : GrothendieckTopology C} {X : C} (R : Presieve X) (hR : .generate R ∈ J X) (S : Sieve X)
-    (h : ∀ ⦃Y : C⦄ (g : Y ⟶ X), R g → S.pullback g ∈ J Y) :
-    S ∈ J X := by
-  refine J.transitive hR _ ?_
-  rintro Y f ⟨W, g, v, hv, rfl⟩
-  rw [Sieve.pullback_comp]
-  exact J.pullback_stable _ (h _ hv)
-
-@[simp]
-lemma _root_.CategoryTheory.Presieve.map_comp {C D E : Type*} [Category* C] [Category* D]
-    [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X : C} (R : Presieve X) :
-    R.map (F ⋙ G) = (R.map F).map G := by
-  refine le_antisymm ?_ ?_
-  · rw [Presieve.map_le_iff_le_functorPullback]
-    intro Y f hf
-    apply Presieve.map_map
-    apply Presieve.map_map
-    exact hf
-  · rw [Presieve.map_le_iff_le_functorPullback, Presieve.map_le_iff_le_functorPullback]
-    intro Y f hf
-    apply Presieve.map_map
-    exact hf
-
-@[simps]
-def _root_.CategoryTheory.PreZeroHypercover.equivOfIso {C : Type*} [Category* C] {X : C}
-    {E F : PreZeroHypercover.{w} X} (e : E ≅ F) :
-    E.I₀ ≃ F.I₀ where
-  toFun := e.hom.s₀
-  invFun := e.inv.s₀
-  left_inv _ := by simp
-  right_inv _ := by simp
-
-lemma _root_.CategoryTheory.PreZeroHypercover.mem_of_iso {C : Type*} [Category* C]
-    {K : Precoverage C} [K.IsStableUnderComposition] [K.HasIsos] {X : C}
-    {E F : PreZeroHypercover.{w} X} (e : E ≅ F)
-    (hE : E.presieve₀ ∈ K X) :
-    F.presieve₀ ∈ K X := by
-  have : F.presieve₀ =
-      Presieve.ofArrows (fun (i : Σ (_ : F.I₀), Unit) ↦ _)
-        (fun i ↦ e.inv.h₀ i.1 ≫ E.f _) := by
-    simp [PreZeroHypercover.presieve₀]
-    refine le_antisymm ?_ ?_
-    · rw [Presieve.ofArrows_le_iff]
-      intro i
-      exact .mk (⟨i, ⟨⟩⟩ : Σ (_ : F.I₀), Unit)
-    · rw [Presieve.ofArrows_le_iff]
-      simp
-  rw [this]
-  refine K.comp_mem_coverings (fun i ↦ E.f (e.inv.s₀ i)) ?_ (fun i (k : Unit) ↦ e.inv.h₀ i) ?_
-  · rwa [← E.presieve₀_reindex (PreZeroHypercover.equivOfIso e.symm)] at hE
-  · intro i
-    rw [Presieve.ofArrows_pUnit]
-    exact K.mem_coverings_of_isIso _
-
-lemma _root_.CategoryTheory.PreZeroHypercover.mem_iff_of_iso {C : Type*} [Category* C]
-    {K : Precoverage C} [K.IsStableUnderComposition] [K.HasIsos] {X : C}
-    {E F : PreZeroHypercover.{w} X} (e : E ≅ F) :
-    E.presieve₀ ∈ K X ↔ F.presieve₀ ∈ K X :=
-  ⟨fun h ↦ PreZeroHypercover.mem_of_iso e h, fun h ↦ PreZeroHypercover.mem_of_iso e.symm h⟩
-
---lemma _root_.CategoryTheory.Precoverage.mem_of_asdf {C : Type*} [Category* C]
---    {K : Precoverage C} [K.IsStableUnderComposition] [K.HasIsos]
---    {X : C} {R S : Presieve X} (h : R ∈ K X)
---    (h₁ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), R f → ∃ (Z : C) (e : Z ≅ Y), S (e.hom ≫ f))
---    (h₂ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), S f → ∃ (Z : C) (e : Z ≅ Y), R (e.hom ≫ f)) :
---    S ∈ K X := by
---  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
---  obtain ⟨σ, Z, g, rfl⟩ := S.exists_eq_ofArrows
---  choose W₁ a₁ ha₁ using fun i ↦ h₁ (f i) ⟨i⟩
---  have : Presieve.ofArrows Z g =
---      Presieve.ofArrows (fun (k : Σ (_ : ι), Unit) ↦ _)
---        (fun k ↦ (a₁ k.1).hom ≫ f _) := by
---    refine le_antisymm ?_ ?_
---    · rw [Presieve.ofArrows_le_iff]
---      intro j
---      obtain ⟨W, u, v⟩ := h₂ _ ⟨j⟩
---      refine Presieve.ofArrows.mk' ⟨v.idx, ⟨⟩⟩ ?_ ?_
---      · sorry
---      · sorry
---    · rw [Presieve.ofArrows_le_iff]
---      intro i
---      apply ha₁
---  sorry
---  --let E := R.preZeroHypercover
---  --let F := S.preZeroHypercover
---  ---- rw [← S.presieve₀_preZeroHypercover]
---  --have (i : E.I₀) := h₁ (E.f i) i.2
---  --choose W₁ a₁ ha₁ using fun i ↦ h₁ (E.f i) i.2
---  --choose W₂ a₂ ha₂ using fun i ↦ h₂ (F.f i) i.2
---  --let u (i : E.I₀) : F.I₀ := ⟨⟨_, _⟩, ha₁ i⟩
---  --let v (i : F.I₀) : E.I₀ := ⟨⟨_, _⟩, ha₂ i⟩
---  --have h1 (i : E.I₀) : v (u i) = i := by
---  --  simp [v, u]
---  --  dsimp [E, F, Presieve.preZeroHypercover]
---  --  ext
---  --  simp
---  --  sorry
---  --  sorry
---  --have : Function.Bijective u := by
---  --  refine ⟨?_, ?_⟩
---  --  · sorry
---  --  · intro j
---  --    sorry
---  ----let eq : E.I₀ ≃ F.I₀ :=
---  ----  Equiv.ofBijective _ _
---  --let e : E ≅ F :=
---  --  sorry
---  ----have : Presieve.ofArrows Z g =
---  ----    _ :=
---  ----  sorry
---  --sorry
-
-lemma _root_.CategoryTheory.Presieve.map_functorPullback_of_forall_exists
-    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {X : C}
-    (R : Presieve (F.obj X)) [F.Full]
-    (H : ∀ ⦃Y : D⦄ (f : Y ⟶ F.obj X), ∃ (Z : C) (g : Z ⟶ X) (e : F.obj Z = Y),
-      F.map g = eqToHom e ≫ f) :
-    Presieve.map F (Presieve.functorPullback F R) = R := by
-  refine le_antisymm ?_ ?_
-  · rw [Presieve.map_le_iff_le_functorPullback]
-  · intro Y f hf
-    obtain ⟨Z, g, rfl, hg⟩ := H f
-    rw [Presieve.map_iff]
-    use Z, rfl, g
-    simpa [Presieve.functorPullback_mem, hg, and_true]
-
-attribute [ext] CategoryTheory.Comma
-attribute [ext] CategoryTheory.MorphismProperty.Comma
+instance : HasPullbacks (AffineProEt S) :=
+  sorry
 
 /-- The affine pro-étale site embeds densely in the pro-étale site. The key ingredient
 of the proof is the commutative algebra lemma `RingHom.WeaklyEtale.exists_indEtale_comp`. -/
@@ -348,62 +173,12 @@ instance isCoverDense_toProEt : (toProEt S).IsCoverDense (ProEt.topology S) := b
       have heq : eR.functor.inducedTopology
           ((ProEt.topology S).over ((toProEt S).obj ((fun i ↦ X i) i))) =
             ProEt.topology _ := by
-        rw [ProEt.topology_eq_inducedTopology]
-        rw [ProEt.topology_eq_inducedTopology]
+        rw [ProEt.topology_eq_inducedTopology, ProEt.topology_eq_inducedTopology]
         dsimp
         ext U R
-        refine ⟨?_, ?_⟩
-        · intro hR
-          simp [GrothendieckTopology.mem_over_iff] at hR
-          sorry
-        · sorry
-        --rw [over_toGrothendieck_eq_toGrothendieck_comap_forget,
-        --  ← Precoverage.toGrothendieck_comap_eq_inducedTopology]
-        --· rw [ProEt.topology, ProEt.precoverage, ProEt.precoverage]
-        --  simp_rw [← Precoverage.comap_comp]
-        --  rfl
-        --· intro U R hR
-        --  simp at hR ⊢
-        --  obtain ⟨E, rfl⟩ := R.exists_eq_preZeroHypercover
-        --  rw [← E.presieve₀_map] at hR
-        --  -- rw [← PreZeroHypercover.presieve₀_map]
-        --  convert hR
-        --  apply Presieve.map_functorPullback_of_forall_exists
-        --  intro Y g
-        --  refine ⟨.mk Y.hom.left, Over.homMk g.left.left (congr($(Over.w g).left)), ?_, ?_⟩
-        --  · dsimp [eR]
-        --    apply CategoryTheory.Comma.ext
-        --    dsimp
-        --    apply MorphismProperty.Comma.ext
-        --    · dsimp
-        --    · simp
-        --    · simp
-        --      exact Over.w Y.hom
-        --    · simp
-        --    · simp
-        --      sorry
-        --  · ext
-        --    simp [eR]
-        --    apply MorphismProperty.Comma.Hom.ext
-        --    · simp
-        --      rw [MorphismProperty.Comma.comp_left]
-        --      simp
-        --      rw [← Category.id_comp g.left.left]
-        --      congr
-        --      symm
-        --      sorry
-        --    · simp
-        --  --refine le_antisymm ?_ ?_
-          --· rw [Presieve.map_le_iff_le_functorPullback]
-          --· intro A f hf
-          --  -- have : f = eR.functor.map (eR.inverse.map f) := sorry
-          --  rw [Presieve.map_iff]
-          --  refine ⟨?_, ?_, ?_, ?_, ?_⟩
-          --  · exact ProEt.mk A.hom.left
-          --  · sorry
-          --  · exact Over.homMk f.left.left sorry
-          --  · sorry
-          --  · sorry
+        simp only [Functor.mem_inducedTopology_sieves_iff, GrothendieckTopology.mem_over_iff,
+          Sieve.overEquiv, Equiv.coe_fn_mk, ProEt.forget_obj, ← Sieve.functorPushforward_comp]
+        rfl
       rw [heq]
       exact this ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hS
@@ -482,9 +257,6 @@ noncomputable
 def sheafPushforward :
     Sheaf (ProEt.topology S) A ⥤ Sheaf (AffineProEt.topology S) A :=
   (toProEt S).sheafPushforwardContinuous _ _ _
-
-instance : HasPullbacks (AffineProEt S) :=
-  sorry
 
 /-- To show a presheaf of types is a sheaf on the affine pro-étale site, it suffices to show
 it is a Zariksi sheaf and satifies the sheaf condition for single surjective morphisms. -/
