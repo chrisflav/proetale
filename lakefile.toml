@@ -6,7 +6,9 @@ defaultTargets = ["Proetale"]
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
 autoImplicit = false
+relaxedAutoImplicit = false
 backward.isDefEq.respectTransparency = false
+weak.linter.mathlibStandardSet = true
 
 [[require]]
 name = "mathlib"
