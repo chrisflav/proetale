@@ -77,7 +77,88 @@ def Functor.inducedTopology' (F : C ⥤ D) (J : GrothendieckTopology D) :
   Fix.finestTopology
     (Set.range fun G : Sheaf J (Type (max u₁ v₁ u₂ v₂)) ↦ F.op ⋙ G.obj)
 
+/--
+The coinduced topology by a topology on `C` along a functor `F : C ⥤ D` is the finest
+topology making `F` cocontinuous.
+It is implemented by an explicit description of the covering sieves.
+`CategoryTheory.Functor.le_coinducedTopology_iff` shows that these descriptions are equivalent.
+-/
+def Functor.coinducedTopology (F : C ⥤ D) (J : GrothendieckTopology C) :
+    GrothendieckTopology D where
+  sieves X :=
+    { S | ∀ (U : C) (f : F.obj U ⟶ X), Sieve.functorPullback F (S.pullback f) ∈ J _ }
+  top_mem' := by simp
+  pullback_stable' X Y S f hS := by
+    simp only [Set.mem_setOf_eq]
+    intro U f
+    rw [← Sieve.pullback_comp]
+    apply hS
+  transitive' X S hS R hR := by
+    simp only [Set.mem_setOf_eq]
+    intro U f
+    apply J.transitive (hS U f)
+    intro Y g hg
+    simp only [Set.mem_setOf_eq] at hR
+    simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem,
+      Sieve.pullback_apply] at hg
+    have := hR hg _ (𝟙 _)
+    simp only [Sieve.pullback_id] at this
+    rwa [← Sieve.functorPullback_pullback, ← Sieve.pullback_comp]
+
 variable (F : C ⥤ D) (J : GrothendieckTopology D)
+
+variable {F} in
+lemma Functor.mem_coinducedTopology_iff {J : GrothendieckTopology C} {X : D} {S : Sieve X} :
+    S ∈ F.coinducedTopology J X ↔
+      ∀ (U : C) (f : F.obj U ⟶ X), Sieve.functorPullback F (S.pullback f) ∈ J _ :=
+  .rfl
+
+instance (J : GrothendieckTopology C) : F.IsCocontinuous J (F.coinducedTopology J) where
+  cover_lift {U} S hS := by
+    rw [Functor.mem_coinducedTopology_iff] at hS
+    simpa using hS _ (𝟙 _)
+
+lemma Functor.le_coinducedTopology_iff (J : GrothendieckTopology C)
+    (K : GrothendieckTopology D) :
+    K ≤ F.coinducedTopology J ↔ F.IsCocontinuous J K := by
+  refine ⟨?_, ?_⟩
+  · intro h
+    constructor
+    intro U S hS
+    simpa using h _ hS _ (𝟙 _)
+  · intro h X S hS U f
+    exact F.cover_lift _ K (K.pullback_stable _ hS)
+
+lemma Functor.coinducedTopology_comp (J : GrothendieckTopology C) (F : C ⥤ D) (G : D ⥤ E) :
+    (F ⋙ G).coinducedTopology J = G.coinducedTopology (F.coinducedTopology J) := by
+  refine le_antisymm ?_ ?_
+  · intro X S hS
+    simp [Functor.mem_coinducedTopology_iff] at hS ⊢
+    intro V f U g
+    rw [← Sieve.functorPullback_pullback, ← Sieve.functorPullback_comp, ← Sieve.pullback_comp]
+    apply hS
+  · rw [Functor.le_coinducedTopology_iff]
+    apply isCocontinuous_comp _ _ _ (F.coinducedTopology J)
+
+lemma Functor.IsCocontinuous.of_iso {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    {F G : C ⥤ D} (e : F ≅ G) [F.IsCocontinuous J K] :
+    G.IsCocontinuous J K where
+  cover_lift {U} S hS := by
+    sorry
+
+lemma Functor.IsCocontinuous.iff_of_iso {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    {F G : C ⥤ D} (e : F ≅ G) :
+    F.IsCocontinuous J K ↔ G.IsCocontinuous J K :=
+  ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
+
+variable {F} in
+lemma Functor.coinducedTopology_eq_of_iso {J : GrothendieckTopology C} {G : C ⥤ D} (e : F ≅ G) :
+    F.coinducedTopology J = G.coinducedTopology J := by
+  refine le_antisymm ?_ ?_
+  · rw [Functor.le_coinducedTopology_iff, Functor.IsCocontinuous.iff_of_iso e.symm]
+    infer_instance
+  · rw [Functor.le_coinducedTopology_iff, Functor.IsCocontinuous.iff_of_iso e]
+    infer_instance
 
 instance : F.IsContinuous (F.inducedTopology' J) J where
   op_comp_isSheaf_of_types G := by
@@ -122,6 +203,20 @@ lemma induced_induced_le (G : D ⥤ E) (J : GrothendieckTopology E) :
   rw [le_inducedTopology'_iff]
   exact Functor.isContinuous_comp _ _ _ (G.inducedTopology' J) _
 
+-- TODO: this probably needs more assumptions
+lemma induced_comp
+    {C : Type u₁} [Category.{v₁} C]
+    {D : Type u₁} [Category.{v₁} D]
+    {E : Type u₁} [Category.{v₁} E]
+    (F : C ⥤ D) (G : D ⥤ E) (J : GrothendieckTopology E) :
+    (F ⋙ G).inducedTopology' J = F.inducedTopology' (G.inducedTopology' J) := by
+  refine le_antisymm ?_ (induced_induced_le _ _ _)
+  intro U S hS
+  rw [mem_inducedTopology'_iff (G := F.op.lan) (adj := F.op.lanAdjunction _)]
+  intro Y f
+  -- apply CategoryTheory.le_topology_of_closedSieves_isSheaf
+  sorry
+
 -- This is not true in this generality, possibly with more assumptions?
 --def asdfasdfasdf (X : C) :
 --    { S : Sieve X // (F.inducedTopology' J).IsClosed S } ≃
@@ -137,12 +232,43 @@ lemma induced_induced_le (G : D ⥤ E) (J : GrothendieckTopology E) :
 --  left_inv := sorry
 --  right_inv := sorry
 
--- TODO: this probably needs more assumptions
-lemma induced_comp (G : D ⥤ E) (J : GrothendieckTopology E) :
-    (F ⋙ G).inducedTopology' J = F.inducedTopology' (G.inducedTopology' J) := by
-  refine le_antisymm ?_ (induced_induced_le _ _ _)
-  apply CategoryTheory.le_topology_of_closedSieves_isSheaf
-  sorry
+lemma inducedTopology_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) :
+    F.inducedTopology' J = G.inducedTopology' J := by
+  refine le_antisymm ?_ ?_ <;> rw [le_inducedTopology'_iff]
+  · apply Functor.isContinuous_of_iso e
+  · apply Functor.isContinuous_of_iso e.symm
+
+def Functor.weakInducedTopology : GrothendieckTopology C :=
+  Precoverage.toGrothendieck (Precoverage.comap F J.toPrecoverage)
+
+variable {F} in
+lemma mem_weakInducedTopology_of_functorPushforward_mem {X : C} {S : Sieve X}
+    (hS : S.functorPushforward F ∈ J _) :
+    S ∈ F.weakInducedTopology J X := by
+  rw [← Sieve.generate_sieve S]
+  apply Precoverage.generate_mem_toGrothendieck
+  simpa [GrothendieckTopology.mem_toPrecoverage_iff, Sieve.generate_map_eq_functorPushforward]
+
+lemma fooo : CoverPreserving (F.weakInducedTopology J) J F where
+  cover_preserve {U} S hS := by
+    suffices h : ∀ (Y : C) (f : Y ⟶ U),
+        Sieve.functorPushforward F (Sieve.pullback f S) ∈ J (F.obj Y) by
+      simpa using h _ (𝟙 U)
+    induction hS with
+    | of X S hS =>
+      intro Y f
+      simp [GrothendieckTopology.mem_toPrecoverage_iff,
+        Sieve.generate_map_eq_functorPushforward] at hS
+      sorry
+      --simpa [GrothendieckTopology.mem_toPrecoverage_iff,
+      --  Sieve.generate_map_eq_functorPushforward] using hS
+    | top X => simp
+    | pullback X S _ Y f ih =>
+      intros
+      rw [← Sieve.pullback_comp]
+      apply ih
+    | transitive X S R _ _ _ _ =>
+      sorry
 
 lemma Functor.op_comp_isSheaf_of_isSheaf_type (J : GrothendieckTopology C)
     {K : GrothendieckTopology D} [F.IsContinuous J K] {G : Dᵒᵖ ⥤ Type*} (h : Presieve.IsSheaf K G) :
@@ -167,30 +293,15 @@ lemma CoverPreserving.of_isContinuous (J : GrothendieckTopology C) (K : Grothend
     refine this x fun i j Z gi gj hgij ↦ hx _ _ _ _ _ ?_
     simp [← Functor.map_comp, hgij]
 
--- TODO: is this true?
-lemma foo [F.LocallyCoverDense J] [F.IsLocallyFull J] [F.IsLocallyFaithful J] :
-    F.IsContinuous (F.inducedTopology J) J where
-  op_comp_isSheaf_of_types G := by
-    intro X S hS
-    obtain ⟨ι, Y, f, rfl⟩ := S.exists_eq_ofArrows
-    simp only [Functor.mem_inducedTopology_sieves_iff, Sieve.ofArrows,
-      ← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows] at hS
-    have := G.property
-    rw [isSheaf_iff_isSheaf_of_type] at this
-    have := this _ hS
-    rw [← Presieve.isSheafFor_iff_generate] at this ⊢
-    rw [Presieve.isSheafFor_arrows_iff] at this ⊢
-    intro x hx
-    refine this x ?_
-    intro i j Z gi gj hgij
-    have := hx i j
-    dsimp at this gi gj hgij
-    -- apply hx
-    simp
-    -- apply Functor.IsLocallyFull.ext
-    sorry
+--lemma booasdf {X : C} (S : Sieve (F.obj X)) (hs : S ∈ J (F.obj X)) :
+--    Sieve.functorPullback F S ∈ F.inducedTopology' J X := by
+--  rw [GrothendieckTopology.mem_iff_isSheafFor_closedSieves]
+--  obtain ⟨ι, Y, f, rfl⟩ := S.exists_eq_ofArrows
+--  simp
+--  -- rw?
+--  sorry
 
--- TODO: can this be relaxed to `LocallyCoverDense`?
+-- this is false with only `LocallyCoverDense`.
 lemma inducedTopology_eq_inducedTopology' [F.IsCoverDense J] [F.IsLocallyFull J]
     [F.IsLocallyFaithful J] :
     F.inducedTopology J = F.inducedTopology' J := by
@@ -240,5 +351,61 @@ lemma inducedTopology'_forget (X : D) :
     exact classifier_isSheaf J
   · rw [le_inducedTopology'_iff]
     infer_instance
+
+lemma foobarasdfasdf (J : GrothendieckTopology C) :
+    F.inducedTopology' (F.coinducedTopology J) ≤ J := by
+  intro U S hS
+  have : CoverPreserving (F.inducedTopology' (F.coinducedTopology J))
+    (F.coinducedTopology J) F :=
+    CoverPreserving.of_isContinuous _ _ _
+  have := this.cover_preserve hS
+  simp [Functor.mem_coinducedTopology_iff] at this
+  have := this U (𝟙 _)
+  simp at this
+  refine J.superset_covering ?_ this
+  sorry
+
+lemma foobarasdfasdf' (K : GrothendieckTopology D) :
+    K ≤ F.coinducedTopology (F.inducedTopology' K) := by
+  rw [Functor.le_coinducedTopology_iff]
+  sorry
+
+lemma asdfasdf (J : GrothendieckTopology C) (K : GrothendieckTopology D) :
+    F.inducedTopology' K ≤ J ↔ K ≤ F.coinducedTopology J := by
+  refine ⟨?_, ?_⟩
+  · intro h X S hS
+    simp only [Functor.mem_coinducedTopology_iff]
+    intro U f
+    apply h
+    sorry
+  · sorry
+
+variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+
+/-- If `F` is flat, it is continuous if and only if it preserves covers. -/
+lemma Functor.isContinuous_iff_coverPreserving [RepresentablyFlat F] :
+    F.IsContinuous J K ↔ CoverPreserving J K F := by
+  refine ⟨fun h ↦ .of_isContinuous _ _ _, fun h ↦ ?_⟩
+  apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) h
+
+lemma aux [RepresentablyFlat F] {X : C} (S : Sieve X)
+    (hS : Sieve.functorPushforward F S ∈ K _) :
+    S ∈ F.inducedTopology' K X := by
+  rw [mem_inducedTopology'_iff (adj := F.op.lanAdjunction _)]
+  intro Y f
+  -- rw [GrothendieckTopology.mem_iff_isSheafFor_closedSieves]
+  sorry
+
+lemma bla [RepresentablyFlat F] : F.inducedTopology' K = F.weakInducedTopology K := by
+  refine le_antisymm ?_ ?_
+  · intro X S hS
+    apply mem_weakInducedTopology_of_functorPushforward_mem
+    apply (CoverPreserving.of_isContinuous F _ K).cover_preserve hS
+  · --rw [le_inducedTopology'_iff, Functor.isContinuous_iff_coverPreserving]
+    --constructor
+    rw [Functor.weakInducedTopology, Precoverage.toGrothendieck_le_iff_le_toPrecoverage]
+    intro U S hS
+    simp at hS
+    sorry
 
 end CategoryTheory
