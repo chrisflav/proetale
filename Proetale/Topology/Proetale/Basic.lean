@@ -17,24 +17,30 @@ open CategoryTheory MorphismProperty
 
 namespace AlgebraicGeometry.Scheme
 
-/-- The small pro-étale site on `X` is the category of schemes, weakly étale over `X`. -/
-def ProEt (X : Scheme.{u}) := MorphismProperty.Over @WeaklyEtale ⊤ X
-
-def proetaleTopology : GrothendieckTopology Scheme.{u} :=
-  propqcTopology @WeaklyEtale
-
 namespace ProEt
 
 variable (X : Scheme.{u})
 
-instance : Category (ProEt X) :=
-  inferInstanceAs <| Category (MorphismProperty.Over _ _ _)
-
-def topology : GrothendieckTopology (ProEt X) :=
-  smallGrothendieckTopology @WeaklyEtale
-
-def zariskiTopology : GrothendieckTopology (ProEt X) :=
+def zariskiTopology : GrothendieckTopology X.ProEt :=
   smallGrothendieckTopologyOfLE (P := @IsOpenImmersion) _ fun _ _ _ _ ↦ inferInstance
+
+instance : (precoverage X).HasIsos := by
+  dsimp [precoverage]
+  infer_instance
+
+instance : (precoverage X).IsStableUnderComposition := by
+  dsimp [precoverage]
+  infer_instance
+
+instance : (precoverage X).IsStableUnderBaseChange := by
+  dsimp [precoverage]
+  infer_instance
+
+variable {S : Scheme.{u}}
+
+instance {X Y : S.ProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
+  have : WeaklyEtale (f.left ≫ Y.hom) := by simp [X.prop]
+  .of_comp _ Y.hom
 
 end ProEt
 

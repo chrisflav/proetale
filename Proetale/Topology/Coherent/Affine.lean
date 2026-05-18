@@ -111,6 +111,7 @@ variable {S : Scheme.{u}}
 section
 
 @[simps! hom left]
+noncomputable
 def affineOverMk {P : MorphismProperty Scheme.{u}} {R : CommRingCat.{u}}
     (f : Spec R ⟶ S) (hf : P f) :
     P.CostructuredArrow ⊤ Scheme.Spec S :=
@@ -197,9 +198,10 @@ def AffineEtale (S : Scheme.{u}) : Type (u + 1) :=
 namespace AffineEtale
 
 @[simps!]
-protected def mk {R : CommRingCat} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
+protected noncomputable def mk {R : CommRingCat} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
   MorphismProperty.CostructuredArrow.mk ⊤ f ‹_›
 
+noncomputable
 instance : Category S.AffineEtale :=
   inferInstanceAs <| Category (MorphismProperty.CostructuredArrow _ _ _ _)
 
