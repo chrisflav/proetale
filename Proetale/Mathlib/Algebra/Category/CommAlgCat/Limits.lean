@@ -258,7 +258,8 @@ def isLimitPiFan : IsLimit (piFan S) where
     ext x
     funext i
     have hi := DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (hm ⟨i⟩)) x
-    simp [piFan, Pi.algHom, Pi.evalAlgHom] at hi ⊢
+    simp only [piFan_pt, Functor.const_obj_obj, Discrete.functor_obj_eq_as,
+      ConcreteCategory.hom_ofHom, Pi.algHom_apply] at hi ⊢
     exact hi
 
 end Pi
