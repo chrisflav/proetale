@@ -35,7 +35,7 @@ private instance : Algebra R (S f) := by
 private def presentationS : Presentation R (S f) (Fin 2) (Fin 2) := by
   let s : (S f) → (MvPolynomial (Fin 2) R) :=
     Function.surjInv (f := (Ideal.Quotient.mk (idealJ f))) Quotient.mk_surjective
-  have hs (x : S f) : mk _ (s x) = x := by
+  have hs (x : S f) : Ideal.Quotient.mk _ (s x) = x := by
     rw [Function.surjInv_eq (f := (Ideal.Quotient.mk (idealJ f)))]
   apply Presentation.naive s hs
 

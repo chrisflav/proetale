@@ -5,8 +5,8 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
 import Proetale.FromPi1.Etale
-import Mathlib.AlgebraicGeometry.Morphisms.Flat
-import Mathlib.AlgebraicGeometry.Morphisms.Etale
+import Proetale.Algebra.WeaklyEtale
+import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 
 /-!
 # Weakly étale morphisms
@@ -19,52 +19,22 @@ open CategoryTheory Limits MorphismProperty
 
 namespace AlgebraicGeometry
 
-/-- A morphism of schemes is said to be weakly étale if it is flat and the diagonal is flat. -/
-@[mk_iff]
-class WeaklyEtale {X Y : Scheme.{u}} (f : X ⟶ Y) extends Flat f where
-  flat_diagonal : Flat (pullback.diagonal f)
-
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 namespace WeaklyEtale
 
-lemma eq_inf :
-    @WeaklyEtale = ((@Flat ⊓ MorphismProperty.diagonal @Flat) : MorphismProperty Scheme.{u}) := by
-  ext X Y f
-  rw [weaklyEtale_iff]
-  rfl
-
-instance : RespectsIso @WeaklyEtale := by
-  rw [eq_inf]
-  infer_instance
-
-instance isStableUnderComposition : IsStableUnderComposition @WeaklyEtale := by
-  rw [eq_inf]
-  infer_instance
-
-instance isStableUnderBaseChange : IsStableUnderBaseChange @WeaklyEtale := by
-  rw [eq_inf]
-  infer_instance
-
-instance : IsZariskiLocalAtTarget @WeaklyEtale := by
-  rw [eq_inf]
-  infer_instance
-
-instance : ContainsIdentities @WeaklyEtale := by
-  rw [eq_inf]
-  infer_instance
-
-instance : IsMultiplicative @WeaklyEtale where
-
-instance (priority := 900) of_etale [Etale f] : WeaklyEtale f where
-  flat_diagonal := inferInstance
-
 instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f] : Etale f :=
   sorry
 
-end WeaklyEtale
+@[simp]
+lemma Spec_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    WeaklyEtale (Spec.map f) ↔ f.hom.WeaklyEtale := by
+  sorry
 
-lemma etale_le_weaklyEtale : @Etale ≤ @WeaklyEtale :=
-  fun _ _ _ _ ↦ inferInstance
+instance : HasRingHomProperty @WeaklyEtale.{u} RingHom.WeaklyEtale := by
+  convert HasRingHomProperty.of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget @WeaklyEtale.{u}
+  simp
+
+end WeaklyEtale
 
 end AlgebraicGeometry

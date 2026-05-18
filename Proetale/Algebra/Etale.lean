@@ -40,6 +40,7 @@ end CategoryTheory
 
 open TensorProduct CategoryTheory Limits
 
+@[reducible]
 def Subalgebra.FG.finiteType {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
     {A : Subalgebra R S} (h : A.FG) :
     Algebra.FiniteType R A :=

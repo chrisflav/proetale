@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 import Mathlib
 import Proetale.Mathlib.RingTheory.RingHom.Flat
-import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
@@ -22,42 +21,6 @@ instance {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : Algebra (UL
   algebraMap := (algebraMap R A).comp ULift.ringEquiv.toRingHom
   commutes' _ _ := Algebra.commutes ..
   smul_def' _ _ := Algebra.smul_def' ..
-
-def RingHom.ulift {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) :
-    ULift.{u₁} R →+* ULift.{u₂} S :=
-  RingHom.comp ULift.ringEquiv.symm.toRingHom (f.comp ULift.ringEquiv.toRingHom)
-
-@[simp]
-lemma RingHom.down_ulift_apply {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (x : ULift.{u₁} R) :
-    (f.ulift x).down = f x.down :=
-  rfl
-
-lemma RingHom.comp_ulift_eq {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) :
-    ULift.ringEquiv.toRingHom.comp ((ulift.{u₁, u₂} f).comp ULift.ringEquiv.symm.toRingHom) = f :=
-  rfl
-
-def AlgHom.ulift {R S T : Type*} [CommSemiring R] [Semiring S]
-    [Semiring T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) :
-    ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
-  __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
-  commutes' _ := by simp
-
-@[simp]
-lemma AlgHom.down_ulift_apply {R S T : Type*} [CommSemiring R] [Semiring S]
-    [Semiring T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) (x : ULift S) :
-    (f.ulift x).down = f x.down :=
-  rfl
-
-lemma AlgHom.ulift_apply {R S T : Type*} [CommSemiring R] [Semiring S]
-    [Semiring T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) (x : ULift S) :
-    f.ulift x = ⟨f x.down⟩ :=
-  rfl
 
 lemma RingHom.Flat.iff_ringEquiv_comp {R S T : Type*} [CommRing R] [CommRing S]
     [CommRing T] {f : R →+* S}
@@ -210,15 +173,6 @@ lemma Algebra.TensorProduct.uliftEquiv_symm_tmul
     (uliftEquiv R S A B).symm (a ⊗ₜ b) = ⟨a.down ⊗ₜ b.down⟩ :=
   rfl
 
-lemma ULift.algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    (a : A) :
-    ULift.algEquiv (R := R).symm a = ⟨a⟩ := rfl
-
-@[simp]
-lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    (a : A) :
-    (ULift.algEquiv (R := R).symm a).down = a := rfl
-
 open CategoryTheory Limits
 
 -- `(S ⊗[R] S) (T ⊗[R] A) S (T ⊗[S] A)`
@@ -349,7 +303,7 @@ lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale 
   exact RingHom.Flat.iff_comp_ringEquiv
 
 @[stacks 092N "(2)"]
-instance (priority := low) [Etale R S] : WeaklyEtale R S where
+instance (priority := low) of_etale [Etale R S] : WeaklyEtale R S where
   flat_lmul' := by
     algebraize [Algebra.TensorProduct.lmul' R (S := S) |>.toRingHom]
     have : IsScalarTower R (S ⊗[R] S) S := .of_algHom (Algebra.TensorProduct.lmul' R (S := S))
@@ -358,7 +312,7 @@ instance (priority := low) [Etale R S] : WeaklyEtale R S where
     exact Smooth.flat (S ⊗[R] S) S
 
 @[stacks 092H]
-instance {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
+instance tensorProduct {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
     WeaklyEtale T (T ⊗[R] S) where
   flat_lmul' := by
     let f : (T ⊗[R] S) ⊗[T] (T ⊗[R] S) →ₐ[T] T ⊗[R] S :=
@@ -406,3 +360,18 @@ instance (priority := low) [WeaklyEtale R S] [FinitePresentation R S] : Etale R 
 end WeaklyEtale
 
 end Algebra
+
+namespace RingHom
+
+@[algebraize]
+def WeaklyEtale {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.WeaklyEtale R S
+
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+
+lemma weaklyEtale_algebraMap_iff [Algebra R S] :
+    (algebraMap R S).WeaklyEtale ↔ Algebra.WeaklyEtale R S := by
+  rw [WeaklyEtale, toAlgebra_algebraMap]
+
+end RingHom

@@ -1,4 +1,5 @@
 import Mathlib.Topology.Separation.Basic
+import Proetale.Mathlib.Topology.Maps.Basic
 
 /-- In a compact, T0 space every point specializes to a (not necessarily unique) closed point. -/
 lemma exists_isClosed_specializes {X : Type*} [TopologicalSpace X] [CompactSpace X]
