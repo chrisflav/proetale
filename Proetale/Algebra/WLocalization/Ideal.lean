@@ -118,7 +118,7 @@ theorem bijOn_zeroLocus_map : Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLo
       rw [Set.injOn_univ, ← PrimeSpectrum.comap_comp]
       apply PrimeSpectrum.comap_injective_of_surjective
       rw [← Ideal.quotientMap_comp_mk I.le_comap_map]
-      simp
+      simp only [RingHom.coe_comp]
       apply Function.Surjective.comp
       · exact (quotientMap_algebraMap_bijective I).surjective
       · exact Ideal.Quotient.mk_surjective
