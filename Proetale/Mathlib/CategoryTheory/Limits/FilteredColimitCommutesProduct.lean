@@ -133,7 +133,8 @@ lemma IsIPCOfShape.of_equiv {ι' : Type*} [HasProductsOfShape ι' C] [IsIPCOfSha
   nonempty_isColimit J _ _ F c hc := by
     obtain ⟨h⟩ := nonempty_isColimit fun i : ι ↦ hc (e i)
     constructor
-    apply IsColimit.equivOfNatIsoOfIso _ _ _ _ <| h.whiskerEquivalence (Pi.equivalenceOfEquiv J e).symm
+    apply IsColimit.equivOfNatIsoOfIso _ _ _ _ <|
+        h.whiskerEquivalence (Pi.equivalenceOfEquiv J e).symm
     · exact (Pi.equivalenceOfEquivCompPiFunctorIso F e)
     · -- Without the double `symm`, one runs into (hard) DTT hell
       symm

@@ -53,7 +53,7 @@ lemma RingHom.Etale.smooth {R S : Type u} [CommRing R] [CommRing S]
   exact hf.2
 
 instance {J : Type*} [Category J] {C : Type*} [Category C] [Preadditive C]
-    [HasLimitsOfShape WalkingParallelPair C] [HasColimitsOfShape WalkingParallelPair C]  (j : J) :
+    [HasLimitsOfShape WalkingParallelPair C] [HasColimitsOfShape WalkingParallelPair C] (j : J) :
     ((evaluation J C).obj j).PreservesHomology where
 
 instance CategoryTheory.MonoidalCategory.Limits.preservesLimitsOfShape_tensorRight_of_braided
@@ -103,8 +103,8 @@ instance : etale.IsMultiplicative where
   id_mem R := .of_bijective Function.bijective_id
   comp_mem {R S T} f g hf hg := by
     apply RingHom.Etale.stableUnderComposition
-    exact hf
-    exact hg
+    · exact hf
+    · exact hg
 
 variable {J : Type*} [Category J] (D : J ⥤ CommRingCat.{u})
 

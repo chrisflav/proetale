@@ -26,9 +26,9 @@ instance preservesColimitsOfShape_tensorLeft
   refine ⟨?_⟩
   let t : Cocone (K ⋙ MonoidalCategory.tensorLeft M) :=
     (MonoidalCategory.tensorLeft M).mapCocone c
-
   -- A cocone on the constant diagram `M`, induced by left injections.
-  let leftCocone (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) : Cocone ((Functor.const J).obj M) :=
+  let leftCocone (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) :
+      Cocone ((Functor.const J).obj M) :=
     { pt := s.pt
       ι :=
         { app := fun j => (binaryCofan M (K.obj j)).inl ≫ s.ι.app j
@@ -48,10 +48,8 @@ instance preservesColimitsOfShape_tensorLeft
                   = (binaryCofan M (K.obj j)).inl ≫ (M ◁ K.map u) ≫ s.ι.app j' := by
                     simpa [Category.assoc] using congrArg (fun f => f ≫ s.ι.app j') hinl.symm
               _ = (binaryCofan M (K.obj j)).inl ≫ s.ι.app j := hu' } }
-
   let leftMap (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) : M ⟶ s.pt :=
     (isColimitConstCocone J M).desc (leftCocone s)
-
   -- A cocone on `K`, induced by right injections.
   let rightCocone (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) : Cocone K :=
     { pt := s.pt
@@ -68,33 +66,26 @@ instance preservesColimitsOfShape_tensorLeft
               simp [binaryCofan, whiskerLeft_hom]
             simpa [Category.assoc, hinr] using
               congrArg (fun f => (binaryCofan M (K.obj j)).inr ≫ f) hu } }
-
   let rightMap (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) : c.pt ⟶ s.pt :=
     hc.desc (rightCocone s)
-
   let descFun (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) : t.pt ⟶ s.pt :=
     (binaryCofanIsColimit M c.pt).desc (BinaryCofan.mk (leftMap s) (rightMap s))
-
   have leftMap_eq (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) (j : J) :
       leftMap s = (binaryCofan M (K.obj j)).inl ≫ s.ι.app j := by
     simpa [leftMap, leftCocone] using (isColimitConstCocone J M).fac (leftCocone s) j
-
   have rightMap_eq (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) (j : J) :
       c.ι.app j ≫ rightMap s = (binaryCofan M (K.obj j)).inr ≫ s.ι.app j := by
     simp [rightMap, rightCocone]
-
   have descFun_inl (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) :
       (binaryCofan M c.pt).inl ≫ descFun s = leftMap s := by
     simpa [descFun, BinaryCofan.ι_app_left] using
       (binaryCofanIsColimit M c.pt).fac (BinaryCofan.mk (leftMap s) (rightMap s))
         (Discrete.mk WalkingPair.left)
-
   have descFun_inr (s : Cocone (K ⋙ MonoidalCategory.tensorLeft M)) :
       (binaryCofan M c.pt).inr ≫ descFun s = rightMap s := by
     simpa [descFun, BinaryCofan.ι_app_right] using
       (binaryCofanIsColimit M c.pt).fac (BinaryCofan.mk (leftMap s) (rightMap s))
         (Discrete.mk WalkingPair.right)
-
   refine (show IsColimit t from ?_)
   refine ⟨descFun, ?_, ?_⟩
   · intro s j
