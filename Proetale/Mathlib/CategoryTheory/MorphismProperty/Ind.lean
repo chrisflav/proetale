@@ -158,4 +158,8 @@ lemma pro_coneπ {J : Type w} [SmallCategory J] [IsCofiltered J]
   rw [pro_eq_unop_ind_op]
   exact ind_coconeι P.op hc.op _ (fun _ ↦ H _)
 
+instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [P.IsStableUnderBaseChangeAlong f] :
+    (pro.{w} P).IsStableUnderBaseChangeAlong f :=
+  sorry
+
 end CategoryTheory.MorphismProperty

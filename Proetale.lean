@@ -5,6 +5,7 @@ import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.Ind
 import Proetale.Algebra.IndEtale
+import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
@@ -21,6 +22,7 @@ import Proetale.Algebra.WeaklyEtale
 import Proetale.Basic
 import Proetale.FromPi1.Etale
 import Proetale.Mathlib.Algebra.Algebra.Pi
+import Proetale.Mathlib.Algebra.Category.AlgCat.FilteredColimits
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Basic
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
@@ -41,17 +43,22 @@ import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Basic
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Limits
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
 import Proetale.Mathlib.CategoryTheory.NatIso
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
+import Proetale.Mathlib.CategoryTheory.Sites.Grothendieck
+import Proetale.Mathlib.CategoryTheory.Sites.Hypercover.Zero
+import Proetale.Mathlib.CategoryTheory.Sites.InducedTopology
 import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
@@ -77,6 +84,7 @@ import Proetale.Mathlib.Topology.Separation.Hausdorff
 import Proetale.Mathlib.Topology.Sober
 import Proetale.Mathlib.Topology.Spectral.Basic
 import Proetale.Mathlib.Topology.Spectral.Prespectral
+import Proetale.Morphisms.ProAffineEtale
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Pro.Basic
 import Proetale.Pro.PresheafColimit
