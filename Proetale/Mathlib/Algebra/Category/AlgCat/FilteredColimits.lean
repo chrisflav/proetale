@@ -64,19 +64,12 @@ private lemma algMapToColimit_eq (j : J) (r : R) :
 private lemma algMapToColimit_commutes (r : R) (x : (algColimitRingCocone F).pt) :
     algMapToColimit F r * x = x * algMapToColimit F r := by
   refine Quot.inductionOn x ?_
-  clear x
-  intro ⟨j, y⟩
+  rintro ⟨j, y⟩
   rw [algMapToColimit_eq F j r]
-  simp only [algColimitRingCocone, algRingDiagram]
-  erw [MonCat.FilteredColimits.colimit_mul_mk_eq
-         (algMonDiagram F) ⟨j, _⟩ ⟨j, y⟩ j (𝟙 j) (𝟙 j),
-       MonCat.FilteredColimits.colimit_mul_mk_eq
-         (algMonDiagram F) ⟨j, y⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
-  apply MonCat.FilteredColimits.M.mk_eq
-  refine ⟨j, 𝟙 j, 𝟙 j, ?_⟩
-  simp only [algMonDiagram, algRingDiagram, Functor.comp_map, Functor.comp_obj,
-    CategoryTheory.Functor.map_id]
-  exact Algebra.commutes r (show F.obj j from y)
+  let f : F.obj j →+* (algColimitRingCocone F).pt :=
+    ((algColimitRingCocone F).ι.app j).hom
+  show f (algebraMap R (F.obj j) r) * f y = f y * f (algebraMap R (F.obj j) r)
+  rw [← map_mul, ← map_mul, Algebra.commutes]
 
 /-- The `R`-algebra structure on the colimit ring. -/
 noncomputable instance colimitAlgebra : Algebra R (algColimitRingCocone F).pt :=
@@ -153,3 +146,23 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
     exact h
 
 end AlgCat.FilteredColimits
+
+namespace AlgCat
+
+instance forget₂Ring_preservesFilteredColimits (R : Type u) [CommRing R] :
+    PreservesFilteredColimitsOfSize.{u, u} (forget₂ (AlgCat.{u} R) RingCat.{u}) where
+  preserves_filtered_colimits _ _ _ :=
+    { preservesColimit := fun {F} =>
+        preservesColimit_of_preserves_colimit_cocone
+          (AlgCat.FilteredColimits.colimitCoconeIsColimit F)
+          (RingCat.FilteredColimits.colimitCoconeIsColimit
+            (F ⋙ forget₂ (AlgCat.{u} R) RingCat.{u})) }
+
+instance forget_preservesFilteredColimits (R : Type u) [CommRing R] :
+    PreservesFilteredColimitsOfSize.{u, u} (forget (AlgCat.{u} R)) :=
+  HasForget₂.forget_comp (C := AlgCat.{u} R) (D := RingCat.{u}) ▸
+    (Limits.comp_preservesFilteredColimits
+        (forget₂ (AlgCat.{u} R) RingCat.{u})
+        (forget RingCat.{u}) : PreservesFilteredColimitsOfSize.{u, u} _)
+
+end AlgCat

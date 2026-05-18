@@ -12,25 +12,6 @@ universe u
 open CategoryTheory Limits
 open scoped MonoidalCategory
 
--- `forget₂ (AlgCat R) RingCat` preserves filtered colimits via `AlgCat.FilteredColimits`
-private instance AlgCat.forget₂Ring_preservesFilteredColimits (R : Type u) [CommRing R] :
-    PreservesFilteredColimitsOfSize.{u, u} (forget₂ (AlgCat.{u} R) RingCat.{u}) where
-  preserves_filtered_colimits J _ _ := {
-    preservesColimit := fun {F} =>
-      preservesColimit_of_preserves_colimit_cocone
-        (AlgCat.FilteredColimits.colimitCoconeIsColimit F)
-        -- The mapped cocone is definitionally the RingCat filtered colimit cocone.
-        (by exact RingCat.FilteredColimits.colimitCoconeIsColimit
-              (F ⋙ forget₂ (AlgCat.{u} R) RingCat.{u})) }
-
--- `forget (AlgCat R)` preserves filtered colimits as the composition of forget₂ and forget RingCat
-private instance AlgCat.forget_preservesFilteredColimits (R : Type u) [CommRing R] :
-    PreservesFilteredColimitsOfSize.{u, u} (forget (AlgCat.{u} R)) :=
-  HasForget₂.forget_comp (C := AlgCat.{u} R) (D := RingCat.{u}) ▸
-    (Limits.comp_preservesFilteredColimits
-        (forget₂ (AlgCat.{u} R) RingCat.{u})
-        (forget RingCat.{u}) : PreservesFilteredColimitsOfSize.{u, u} _)
-
 namespace CommAlgCat
 
 variable {R : Type u} [CommRing R]
