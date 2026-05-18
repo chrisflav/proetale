@@ -5,6 +5,8 @@ Authors: Christian Merten
 -/
 import Proetale.Algebra.WLocal
 import Proetale.Algebra.IndZariski
+import Proetale.Algebra.IndEtale
+import Proetale.Algebra.StalkAlgebraic
 import Proetale.Algebra.Preliminaries.Ideal
 
 /-!
@@ -265,8 +267,48 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) :=
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
 
+/-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
+This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/
+lemma bijOn_specComap_zeroLocus_map (I : Ideal A)
+    (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
+    Set.BijOn (PrimeSpectrum.comap (algebraMap A (WLocalization A)))
+      (zeroLocus (I.map (algebraMap A (WLocalization A)))) (zeroLocus I) := by
+  have hsub : zeroLocus (I.map (algebraMap A (WLocalization A))) ⊆
+      zeroLocus (WLocalization.ideal A : Set (WLocalization A)) := by
+    rw [zeroLocus_ideal_eq]
+    intro q hq
+    simp only [mem_zeroLocus, SetLike.coe_subset_coe, mem_closedPoints_iff,
+      isClosed_singleton_iff_isMaximal] at ⊢ hq
+    set m := PrimeSpectrum.comap (algebraMap A (WLocalization A)) q with hm_def
+    have hm : m.asIdeal.IsMaximal := by
+      simpa [isClosed_singleton_iff_isMaximal] using hI (Ideal.le_comap_of_map_le hq)
+    have : q.asIdeal.LiesOver m.asIdeal := ⟨PrimeSpectrum.ext_iff.mp hm_def⟩
+    haveI : Algebra.IsSeparable m.asIdeal.ResidueField q.asIdeal.ResidueField :=
+      Algebra.IndEtale.isSeparable_residueField (R := A) (S := WLocalization A) m.asIdeal
+        q.asIdeal
+    exact Ideal.IsMaximal.of_isAlgebraic m.asIdeal q.asIdeal
+  have hbij := bijOn_algebraMap_specComap_zeroLocus_ideal A
+  refine ⟨?_, ?_, ?_⟩
+  · intro p hp
+    simp only [mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
+    rwa [comap_asIdeal, ← Ideal.map_le_iff_le_comap]
+  · exact hbij.injOn.mono hsub
+  · intro q hq
+    obtain ⟨p, hp, hpq⟩ := hbij.surjOn (Set.mem_univ q)
+    refine ⟨p, ?_, hpq⟩
+    simp only [mem_zeroLocus, SetLike.coe_subset_coe] at hq ⊢
+    rw [Ideal.map_le_iff_le_comap, show p.asIdeal.comap (algebraMap A (WLocalization A))
+      = q.asIdeal from by rw [← comap_asIdeal, hpq]]
+    exact hq
+
 /-- If `V(I) ⊆ Spec A` consists only of closed points, then the quotient map
-`A/I → WLocA/(I·WLocA)` is bijective. -/
+`A/I → WLocA/(I·WLocA)` is bijective.
+
+The intended proof goes via `RingHom.BijectiveOnStalks.bijective_of_bijective`:
+* The induced map on prime spectra is bijective: it corresponds to the bijection
+  `V(I·WLocA) → V(I)` from `bijOn_specComap_zeroLocus_map`.
+* The quotient map is bijective on stalks since `A → WLocA` is bijective on stalks
+  (via the ind-Zariski instance) and bijective-on-stalks is preserved under quotient. -/
 lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A)
     (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     Function.Bijective
