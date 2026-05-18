@@ -110,7 +110,8 @@ lemma toProEt_obj_hom (X : S.AffineProEt) : ((toProEt S).obj X).hom = X.hom := r
 instance : (toProEt S).Full :=
   inferInstanceAs <| (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale _).Full
 instance : (toProEt S).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale le_rfl).Faithful
+  inferInstanceAs <|
+    (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale le_rfl).Faithful
 
 instance : HasPullbacks (AffineProEt S) :=
   sorry
@@ -120,7 +121,8 @@ of the proof is the commutative algebra lemma `RingHom.WeaklyEtale.exists_indEta
 instance isCoverDense_toProEt : (toProEt S).IsCoverDense (ProEt.topology S) := by
   wlog hS : ∃ R, S = Spec R generalizing S
   · let X (i : S.affineCover.I₀) : S.AffineProEt := .ofEtale (S.affineCover.f i)
-    let f (i : S.affineCover.I₀) : (toProEt S).obj (X i) ⟶ .mk (𝟙 S) := Over.homMk (S.affineCover.f i)
+    let f (i : S.affineCover.I₀) : (toProEt S).obj (X i) ⟶ .mk (𝟙 S) :=
+      Over.homMk (S.affineCover.f i)
     refine .of_coversTop _ _ (fun i : S.affineCover.I₀ ↦ X i) ?_ ?_
     · dsimp
       rw [GrothendieckTopology.coversTop_iff_of_isTerminal _ (.mk (𝟙 S))]
@@ -222,7 +224,8 @@ instance isCoverDense_toProEt : (toProEt S).IsCoverDense (ProEt.topology S) := b
       ProEt.mk_left, Presieve.map_singleton, toProEt_obj_left, Functor.comp_map, ProEt.forget_map,
       Over.forget_map]
     apply Hom.singleton_mem_propQCPrecoverage
-    simp [g']
+    change WeaklyEtale (Spec.map (CommRingCat.ofHom g))
+    rw [WeaklyEtale.Spec_iff]
     exact h₁.weaklyEtale
 
 instance : (toProEt S).LocallyCoverDense (ProEt.zariskiTopology S) :=
