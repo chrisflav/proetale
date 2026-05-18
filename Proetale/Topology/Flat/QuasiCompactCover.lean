@@ -66,7 +66,8 @@ lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover (precover
       Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.h₀ j) := by
   obtain ⟨n, f, V, hV, h⟩ := QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.1
     (show IsCompact (⊤ : Opens S).carrier from isCompact_univ)
-  simp only [← Set.univ_subset_iff, Set.subset_def] at h
+  simp only [coe_top, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_iUnion,
+    Set.mem_image, SetLike.mem_coe, forall_const] at h
   choose idx x hmem hx using h
   refine ⟨?_, ?_, ?_, ?_⟩
   · exact
