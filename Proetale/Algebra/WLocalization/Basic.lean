@@ -266,3 +266,5 @@ instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
 
 open PrimeSpectrum
+
+end WLocalization

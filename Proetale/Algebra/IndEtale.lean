@@ -180,7 +180,8 @@ theorem _root_.Algebra.IndEtale.iff_ind_indEtale [Algebra R S] :
       (RingHom.toObjectProperty RingHom.IndEtale R) (.of R S) :=
   (algebraMap_iff (R := R) S).symm.trans
     ((RingHom.IndEtale.iff_ind_indEtale _).trans
-      isStableUnderBaseChange.localizationPreserves.away.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty)
+      isStableUnderBaseChange.localizationPreserves.away.respectsIso
+        .ind_toMorphismProperty_iff_ind_toObjectProperty)
 
 lemma _root_.RingHom.IndZariski.indEtale {f : R →+* S}
     (hf : f.IndZariski) : f.IndEtale := by

@@ -209,9 +209,12 @@ instance : Category (Cov K X) where
   Hom := Hom
   id := Hom.id
   comp := Hom.comp
-  id_comp := by intros; ext <;> simp; ext; simp
-  comp_id := by intros; ext <;> simp; ext; simp
-  assoc := by intros; ext <;> simp; ext; simp
+  id_comp := by
+    intros; ext <;> simp only [Hom.comp_σ, Hom.id_σ, id_eq, heq_eq_eq]; ext; simp
+  comp_id := by
+    intros; ext <;> simp only [Hom.comp_σ, Hom.id_σ, id_eq, heq_eq_eq]; ext; simp
+  assoc := by
+    intros; ext <;> simp only [Hom.comp_σ, heq_eq_eq]; ext; simp
 
 instance [K.HasIsos] : Nonempty (Cov K X) :=
   ⟨⟨Precoverage.ZeroHypercover.singleton (𝟙 X) (K.mem_coverings_of_isIso _)⟩⟩
