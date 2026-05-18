@@ -914,7 +914,7 @@ Obviously, every w-purely-local morphism is w-local.
   Let $X$ be a spectral space and $E \subseteq X$ a quasi-compact subset. Then the generalization $E^g$ is an intersection of quasi-compact open subsets.
   \label{lemma:spectral-generalization-intersection-open}
   \uses{def:generalization}
-  \lean{generalizationHull.eq_sUnion_of_isCompact}
+  \lean{generalizationHull.eq_sInter_of_isCompact}
   \leanok
 \end{lemma}
 
@@ -1824,13 +1824,13 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
         \item The forgetful functors from commutative $R$-algebras to $R$-algebras and
             from $R$-algebras to $R$-modules preserve filtered colimits.
         \item The forgetful functor from commutative $R$-algebras to commutative rings
-            preserves colimits.
+            preserves filtered colimits.
         \item Tensoring on the left with an $R$-algebra preserves colimits on the
             category of commutative $R$-algebras.
     \end{itemize}
     \label{lemma:commalgcat-colimits}
     \lean{CommAlgCat.preservesColimitsOfShape_tensorLeft,
-        CommAlgCat.preservesColimitsOfSize_forget_commRingCat,
+        CommAlgCat.preservesFilteredColimitsOfSize_forget_commRingCat,
         CommAlgCat.preservesFilteredColimitsOfSize_forget_algCat,
         AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat}
     \leanok
