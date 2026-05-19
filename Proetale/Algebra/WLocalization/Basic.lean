@@ -313,7 +313,49 @@ lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A)
     (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     Function.Bijective
       (Ideal.quotientMap (I.map (algebraMap A (WLocalization A)))
-        (algebraMap A (WLocalization A)) I.le_comap_map) :=
-  sorry
+        (algebraMap A (WLocalization A)) I.le_comap_map) := by
+  set f := algebraMap A (WLocalization A) with hf_def
+  set J := I.map f with hJ_def
+  set φ := Ideal.quotientMap J f I.le_comap_map with hφ_def
+  refine RingHom.BijectiveOnStalks.bijective_of_bijective ?_ ?_
+  · -- BijectiveOnStalks: `A → WLocA` is bijective on stalks (from the
+    -- `Algebra.IndZariski A (WLocalization A)` instance) and this property is
+    -- preserved under taking quotients by `I` and `I·WLocA`.
+    -- For a prime `P ⊇ I·WLocA` in `WLocA` (with `q = P.comap f ⊇ I`), the stalk
+    -- of `A/I → WLocA/(I·WLocA)` at `P/(I·WLocA)` is the quotient of the
+    -- bijective `A_q → WLocA_P` by `I·A_q → I·WLocA_P`, hence bijective.
+    sorry
+  · -- Bijection on prime spectra: the comap of `φ` corresponds to the
+    -- bijection `V(I·WLocA) → V(I)` from `bijOn_specComap_zeroLocus_map`
+    -- under the closed-embedding identifications `Spec(R/I) ≃ V(I)` and
+    -- `Spec(S/J) ≃ V(J)`.
+    have hbij : Set.BijOn (PrimeSpectrum.comap f) (zeroLocus J) (zeroLocus I) :=
+      bijOn_specComap_zeroLocus_map A I hI
+    have hI_inj : Function.Injective (PrimeSpectrum.comap (Ideal.Quotient.mk I)) :=
+      PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+    have hJ_inj : Function.Injective (PrimeSpectrum.comap (Ideal.Quotient.mk J)) :=
+      PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+    have hI_range : Set.range (PrimeSpectrum.comap (Ideal.Quotient.mk I)) = zeroLocus I := by
+      rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+    have hJ_range : Set.range (PrimeSpectrum.comap (Ideal.Quotient.mk J)) = zeroLocus J := by
+      rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+    have hcommutes : ∀ y : PrimeSpectrum (WLocalization A ⧸ J),
+        PrimeSpectrum.comap (Ideal.Quotient.mk I) (PrimeSpectrum.comap φ y) =
+          PrimeSpectrum.comap f (PrimeSpectrum.comap (Ideal.Quotient.mk J) y) := fun y ↦ by
+      rw [← PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply,
+        Ideal.quotientMap_comp_mk]
+    refine ⟨fun x y hxy ↦ ?_, fun x ↦ ?_⟩
+    · have hx : PrimeSpectrum.comap (Ideal.Quotient.mk J) x ∈ zeroLocus J :=
+        hJ_range ▸ Set.mem_range_self x
+      have hy : PrimeSpectrum.comap (Ideal.Quotient.mk J) y ∈ zeroLocus J :=
+        hJ_range ▸ Set.mem_range_self y
+      have heq : PrimeSpectrum.comap f (PrimeSpectrum.comap (Ideal.Quotient.mk J) x) =
+          PrimeSpectrum.comap f (PrimeSpectrum.comap (Ideal.Quotient.mk J) y) := by
+        rw [← hcommutes, ← hcommutes, hxy]
+      exact hJ_inj (hbij.injOn hx hy heq)
+    · obtain ⟨y', hy'mem, hy'⟩ := hbij.surjOn (hI_range ▸ Set.mem_range_self x)
+      obtain ⟨y, rfl⟩ : ∃ y, PrimeSpectrum.comap (Ideal.Quotient.mk J) y = y' := by
+        rwa [← Set.mem_range, hJ_range]
+      exact ⟨y, hI_inj <| (hcommutes y).trans hy'⟩
 
 open PrimeSpectrum
