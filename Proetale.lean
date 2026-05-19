@@ -29,6 +29,8 @@ import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
+import Proetale.Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+import Proetale.Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
@@ -108,4 +110,5 @@ import Proetale.Topology.SpectralSpace.ConnectedComponent
 import Proetale.Topology.SpectralSpace.Constructible
 import Proetale.Topology.SpectralSpace.WLocal.Basic
 import Proetale.Topology.SpectralSpace.WLocal.ClosedPoints
+import Proetale.Topology.SpectralSpace.WLocal.ConnectedComponents
 import Proetale.Topology.SpectralSpace.WLocal.Pullback

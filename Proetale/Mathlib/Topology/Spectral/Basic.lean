@@ -43,7 +43,6 @@ instance SpectralSpace.prod [SpectralSpace X] [SpectralSpace Y] : SpectralSpace 
   toPrespectralSpace := inferInstance
 
 variable {X} in
-theorem
- generalizationHull.eq_sInter_of_isCompact [SpectralSpace X] {s : Set X} (hs : IsCompact s) :
+theorem generalizationHull.eq_sInter_of_isCompact [SpectralSpace X] {s : Set X} (hs : IsCompact s) :
     ∃ S ⊆ {U : Set X | IsOpen U ∧ IsCompact U}, (generalizationHull s) = ⋂₀ S :=
   sorry
