@@ -324,7 +324,7 @@ lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A)
     -- For a prime `P ⊇ I·WLocA` in `WLocA` (with `q = P.comap f ⊇ I`), the stalk
     -- of `A/I → WLocA/(I·WLocA)` at `P/(I·WLocA)` is the quotient of the
     -- bijective `A_q → WLocA_P` by `I·A_q → I·WLocA_P`, hence bijective.
-    sorry
+    exact (Algebra.IndZariski.bijectiveOnStalks_algebraMap A (WLocalization A)).quotientMap I
   · -- Bijection on prime spectra: the comap of `φ` corresponds to the
     -- bijection `V(I·WLocA) → V(I)` from `bijOn_specComap_zeroLocus_map`
     -- under the closed-embedding identifications `Spec(R/I) ≃ V(I)` and
