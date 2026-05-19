@@ -50,14 +50,14 @@ lemma PreIndSpreads.of_isInitial [HasPushouts C] [P.IsStableUnderCobaseChange]
 lemma PreIndSpreads.of_univLE [UnivLE.{w, w'}] [PreIndSpreads.{w'} P] :
     PreIndSpreads.{w} P where
   exists_isPushout {J} _ _ D c hc T f hf := by
-    haveI : EssentiallySmall.{w'} J :=
-      @essentiallySmall_of_small_of_locallySmall J _ (UnivLE.small J) inferInstance
+    have : Small.{w'} J := UnivLE.small J
+    have : EssentiallySmall.{w'} J := essentiallySmall_of_small_of_locallySmall J
     let e := equivSmallModel.{w'} J
     let D' := e.inverse ⋙ D
     let c' : Cocone D' := c.whisker e.inverse
     have hc' : IsColimit c' :=
       (Functor.Final.isColimitWhiskerEquiv e.inverse c).symm hc
-    haveI : IsFiltered (SmallModel.{w'} J) := IsFiltered.of_equivalence e
+    have : IsFiltered (SmallModel.{w'} J) := IsFiltered.of_equivalence e
     obtain ⟨j', T', f', g, hpb, hf'⟩ := P.exists_isPushout_of_isFiltered hc' f hf
     exact ⟨e.inverse.obj j', T', f', g, hpb, hf'⟩
 
