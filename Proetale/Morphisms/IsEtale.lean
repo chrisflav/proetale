@@ -22,8 +22,8 @@ end ring
 
 namespace AlgebraicGeometry
 
-theorem IsEtale.of_flat_of_locallyOfFinitePresentation_of_formallyUnramified {X Y : Scheme.{u}}
-    (f : X ⟶ Y) [Flat f] [LocallyOfFinitePresentation f] [FormallyUnramified f] : IsEtale f := by
+theorem Etale.of_flat_of_locallyOfFinitePresentation_of_formallyUnramified {X Y : Scheme.{u}}
+    (f : X ⟶ Y) [Flat f] [LocallyOfFinitePresentation f] [FormallyUnramified f] : Etale f := by
   sorry
 
 end AlgebraicGeometry
