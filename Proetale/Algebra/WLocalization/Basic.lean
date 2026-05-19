@@ -83,7 +83,8 @@ theorem submonoid_le {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ 
     submonoid f I ≤ submonoid f' I' :=
   sorry
 
-noncomputable def map {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
+noncomputable def map {f f' : A} {I I' : Ideal A}
+    (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
     Generalization f I →ₐ[A] Generalization f' I' where
   toRingHom := IsLocalization.map (T := Generalization.submonoid f' I')
     (Generalization f' I') (RingHom.id A) (submonoid_le h)
@@ -359,3 +360,5 @@ lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A)
       exact ⟨y, hI_inj <| (hcommutes y).trans hy'⟩
 
 open PrimeSpectrum
+
+end WLocalization

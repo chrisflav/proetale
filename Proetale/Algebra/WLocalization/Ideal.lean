@@ -30,7 +30,7 @@ universe u
 
 open WLocalization PrimeSpectrum
 
-variable {A B : Type u} [CommRing A] [CommRing B] (I :Ideal A)
+variable {A B : Type u} [CommRing A] [CommRing B] (I : Ideal A)
 
 instance isWLocalRing_generalization_one [IsWLocalRing A] : IsWLocalRing (Generalization 1 I) := by
   haveI : WLocalSpace (PrimeSpectrum A) := IsWLocalRing.wLocalSpace_primeSepectrum
@@ -114,7 +114,7 @@ noncomputable instance commRing : CommRing I.WLocalization := fast_instance%
 instance isWLocalRing : IsWLocalRing I.WLocalization :=
   inferInstanceAs <| IsWLocalRing <| Generalization 1 (I.map (algebraMap A (WLocalization A)))
 
-noncomputable instance algebraWLocalization: Algebra (WLocalization A) I.WLocalization :=
+noncomputable instance algebraWLocalization : Algebra (WLocalization A) I.WLocalization :=
   fast_instance% inferInstanceAs <| Algebra (WLocalization A) <|
     Generalization 1 (I.map (algebraMap A (WLocalization A)))
 

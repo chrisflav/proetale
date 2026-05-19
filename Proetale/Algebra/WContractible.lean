@@ -139,7 +139,8 @@ instance commRing : CommRing (Pullback S f) :=
 instance algebra' : Algebra (S → A) (Pullback S f) :=
   inferInstanceAs <| Algebra (S → A) <| Restriction (Z S f)
 
-instance algebra : Algebra A (Pullback S f) := Algebra.compHom _ (Pi.ringHom fun _ : S ↦ RingHom.id A)
+instance algebra : Algebra A (Pullback S f) :=
+  Algebra.compHom _ (Pi.ringHom fun _ : S ↦ RingHom.id A)
 
 instance isScalarTower : IsScalarTower A (S → A) (Pullback S f) :=
   .of_algebraMap_eq' rfl
@@ -173,8 +174,9 @@ Let `R` be a w-contractible ring and `I` an ideal of `R` cutting out the set `X^
 points in `Spec R`. Then every faithfully flat ind-étale map `R →+* S` with `S` w-local and
 whose closed points of `Spec S` are exactly `V(IB)` has a retraction.
 -/
-theorem IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints [IsWContractibleRing R]
-    {I :Ideal R} (hI : zeroLocus I = closedPoints (PrimeSpectrum R)) {S : Type u} [CommRing S]
+theorem IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints
+    [IsWContractibleRing R]
+    {I : Ideal R} (hI : zeroLocus I = closedPoints (PrimeSpectrum R)) {S : Type u} [CommRing S]
     [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S]
     (hS : zeroLocus (I.map (algebraMap R S)) = closedPoints (PrimeSpectrum S)) :
     ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R := by
@@ -188,7 +190,8 @@ theorem IsWContractibleRing.exists_retraction [IsWContractibleRing R]
     ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R := by
   let I := vanishingIdeal (closedPoints (PrimeSpectrum R))
   have hI : zeroLocus I = closedPoints (PrimeSpectrum R) := by
-    rw [zeroLocus_vanishingIdeal_eq_closure, IsClosed.closure_eq (IsWLocalRing.wLocalSpace_primeSepectrum.isClosed_closedPoints)]
+    rw [zeroLocus_vanishingIdeal_eq_closure,
+      IsClosed.closure_eq IsWLocalRing.wLocalSpace_primeSepectrum.isClosed_closedPoints]
   let S' := (I.map (algebraMap R S)).WLocalization
   have : Module.FaithfullyFlat R S' :=
     Ideal.WLocalization.faithfullyFlat_map_algebraMap hI (fun _ _ ↦ inferInstance)

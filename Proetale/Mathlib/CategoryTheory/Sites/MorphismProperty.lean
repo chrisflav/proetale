@@ -12,7 +12,7 @@ lemma singleton_mem_precoverage_iff {X Y : C} {f : X ⟶ Y} :
 instance : P.precoverage.IsStableUnderSup where
   sup_mem_coverings hR hS Y f hf := by
     obtain (h|h) := hf
-    exact hR h
-    exact hS h
+    · exact hR h
+    · exact hS h
 
 end CategoryTheory.MorphismProperty

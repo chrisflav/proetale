@@ -34,7 +34,7 @@ instance (J : Type*) [Category J] [IsConnected J] [HasLimitsOfShape J C]
     have : PreservesLimitsOfShape J (CostructuredArrow.proj F X) := by
       infer_instance
     have : PreservesLimit K (CostructuredArrow.toOver F X ⋙ Over.forget X) := by
-      show PreservesLimit K (CostructuredArrow.proj F X ⋙ F)
+      change PreservesLimit K (CostructuredArrow.proj F X ⋙ F)
       infer_instance
     have : HasLimit (K ⋙ CostructuredArrow.toOver F X) := by
       infer_instance
@@ -91,7 +91,7 @@ instance hasPullbacks : HasPullbacks (P.CostructuredArrow ⊤ F X) :=
 instance : PreservesLimitsOfShape WalkingCospan (CostructuredArrow.toOver P F X) := by
   have : PreservesLimitsOfShape WalkingCospan
       (CostructuredArrow.toOver P F X ⋙ Over.forget P ⊤ X) := by
-    show PreservesLimitsOfShape WalkingCospan <|
+    change PreservesLimitsOfShape WalkingCospan <|
       CostructuredArrow.forget P ⊤ F X ⋙ CategoryTheory.CostructuredArrow.toOver F X
     infer_instance
   exact preservesLimitsOfShape_of_reflects_of_preserves _ (Over.forget _ _ X)
@@ -131,8 +131,8 @@ instance isCoverDense_toOver_Spec (P : MorphismProperty Scheme.{u}) [P.IsMultipl
     · exact ⟨fun i ↦ inferInstance, fun i ↦ ⟨rfl⟩⟩
     · intro i
       apply P.comp_mem
-      exact 𝒰.map_prop i
-      exact U.prop
+      · exact 𝒰.map_prop i
+      · exact U.prop
     · rintro X f ⟨i⟩
       simp only [Sieve.coverByImage]
       refine ⟨⟨affineOverMk (𝒰.f i ≫ U.hom) (P.comp_mem _ _ (𝒰.map_prop i) U.prop), ?_, ?_, ?_⟩⟩
@@ -188,7 +188,7 @@ def Cover.etaleAffineRefinement (𝒰 : S.Cover (precoverage @Etale)) :
   idx := Cover.idx (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance)
   covers := Cover.covers (𝒰.bind fun j => (𝒰.X j).affineCover.changeProp fun _ ↦ inferInstance)
   map_prop j := by
-    simp [Cover.changeProp]
+    simp only [Cover.changeProp]
     have : Etale (𝒰.f j.fst) := 𝒰.map_prop _
     infer_instance
 

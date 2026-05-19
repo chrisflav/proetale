@@ -50,7 +50,8 @@ lemma RingHom.Flat.ulift_iff {R S : Type*} [CommRing R] [CommRing S] {f : R →+
       (.of_bijective <| Equiv.bijective _)
 
 def TensorProduct.congrRing
-    {R S : Type*} (M N : Type*) [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid N]
+    {R S : Type*} (M N : Type*) [CommSemiring R] [CommSemiring S]
+    [AddCommMonoid M] [AddCommMonoid N]
     [Module R M] [Module R N] [Module S M] [Module S N]
     [Algebra R S] [IsScalarTower R S M] [IsScalarTower R S N]
     (h : Function.Surjective (algebraMap R S)) :
@@ -360,3 +361,18 @@ instance (priority := low) [WeaklyEtale R S] [FinitePresentation R S] : Etale R 
 end WeaklyEtale
 
 end Algebra
+
+namespace RingHom
+
+@[algebraize]
+def WeaklyEtale {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.WeaklyEtale R S
+
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+
+lemma weaklyEtale_algebraMap_iff [Algebra R S] :
+    (algebraMap R S).WeaklyEtale ↔ Algebra.WeaklyEtale R S := by
+  rw [WeaklyEtale, toAlgebra_algebraMap]
+
+end RingHom

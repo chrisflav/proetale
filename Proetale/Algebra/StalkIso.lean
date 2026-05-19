@@ -239,9 +239,9 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       letI : Algebra.IsStandardOpenImmersion R (Localization.Away g) := hg
       algebraize [(algebraMap S Sg).comp f]
       haveI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
+      haveI := IsLocalization.algEquiv (Submonoid.powers g) (Localization.Away g) Sg
       haveI : Algebra.IsStandardOpenImmersion R Sg :=
-        .of_algEquiv R (Localization.Away g) Sg
-          ((IsLocalization.algEquiv (Submonoid.powers g) (Localization.Away g) Sg).restrictScalars R)
+        .of_algEquiv R (Localization.Away g) Sg (this.restrictScalars R)
       exact RingHom.BijectiveOnStalks.of_isStandardOpenImmersion R Sg)
 
 namespace RingHom.BijectiveOnStalks
@@ -309,7 +309,7 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
       rw [map_mul, map_mul, mul_assoc, hkey2]
     refine ⟨r₁ * b, ?_, r₁ * r₀, hkey3.symm⟩
     exact mt hm_prime.mul_mem_iff_mem_or_mem.mp (by
-      push_neg
+      push Not
       exact ⟨hr₁m, hqm' ▸ hb⟩)
   exact ⟨hinj, hsurj⟩
 

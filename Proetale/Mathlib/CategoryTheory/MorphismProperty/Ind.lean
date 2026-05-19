@@ -136,7 +136,7 @@ lemma op_isFinitelyPresentable :
     (isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ :=
   sorry
 
-lemma pro_pro [LocallySmall.{w} C] (H :P ≤ isFinitelyPresentable.{w} C) :
+lemma pro_pro [LocallySmall.{w} C] (H : P ≤ isFinitelyPresentable.{w} C) :
     pro.{w} (pro.{w} P) = pro.{w} P := by
   rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind]
   rw [← op_isFinitelyPresentable]
@@ -157,5 +157,9 @@ lemma pro_coneπ {J : Type w} [SmallCategory J] [IsCofiltered J]
     pro.{w} P (c.π.app j) := by
   rw [pro_eq_unop_ind_op]
   exact ind_coconeι P.op hc.op _ (fun _ ↦ H _)
+
+instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [P.IsStableUnderBaseChangeAlong f] :
+    (pro.{w} P).IsStableUnderBaseChangeAlong f :=
+  sorry
 
 end CategoryTheory.MorphismProperty
