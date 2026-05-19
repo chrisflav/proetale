@@ -84,6 +84,8 @@ import Proetale.Mathlib.Topology.Separation.Hausdorff
 import Proetale.Mathlib.Topology.Sober
 import Proetale.Mathlib.Topology.Spectral.Basic
 import Proetale.Mathlib.Topology.Spectral.Prespectral
+import Proetale.Morphisms.DiagonalLocallyOfFinitePresentation
+import Proetale.Morphisms.IsEtale
 import Proetale.Morphisms.ProAffineEtale
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Pro.Basic
@@ -108,4 +110,5 @@ import Proetale.Topology.SpectralSpace.ConnectedComponent
 import Proetale.Topology.SpectralSpace.Constructible
 import Proetale.Topology.SpectralSpace.WLocal.Basic
 import Proetale.Topology.SpectralSpace.WLocal.ClosedPoints
+import Proetale.Topology.SpectralSpace.WLocal.ConnectedComponents
 import Proetale.Topology.SpectralSpace.WLocal.Pullback
