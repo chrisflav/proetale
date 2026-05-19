@@ -5,6 +5,8 @@ Authors: Christian Merten
 -/
 import Proetale.Algebra.WLocal
 import Proetale.Algebra.IndZariski
+import Proetale.Algebra.IndEtale
+import Proetale.Algebra.StalkAlgebraic
 import Proetale.Algebra.Preliminaries.Ideal
 
 /-!
@@ -81,7 +83,8 @@ theorem submonoid_le {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ 
     submonoid f I ≤ submonoid f' I' :=
   sorry
 
-noncomputable def map {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
+noncomputable def map {f f' : A} {I I' : Ideal A}
+    (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
     Generalization f I →ₐ[A] Generalization f' I' where
   toRingHom := IsLocalization.map (T := Generalization.submonoid f' I')
     (Generalization f' I') (RingHom.id A) (submonoid_le h)
@@ -235,10 +238,10 @@ namespace WLocalization
 
 variable (A : Type u) [CommRing A]
 
-noncomputable instance commRing : CommRing (WLocalization A) := fast_instance%
+noncomputable instance commRing : CommRing (WLocalization A) :=
   inferInstanceAs <| CommRing (WLocalization.commAlgCat A)
 
-noncomputable instance algebra : Algebra A (WLocalization A) := fast_instance%
+noncomputable instance algebra : Algebra A (WLocalization A) :=
   inferInstanceAs <| Algebra A (WLocalization.commAlgCat A)
 
 noncomputable def ideal : Ideal (WLocalization A) :=
@@ -265,4 +268,82 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) :=
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
 
+/-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
+This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/
+lemma bijOn_specComap_zeroLocus_map (I : Ideal A)
+    (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
+    Set.BijOn (PrimeSpectrum.comap (algebraMap A (WLocalization A)))
+      (zeroLocus (I.map (algebraMap A (WLocalization A)))) (zeroLocus I) := by
+  have hsub : zeroLocus (I.map (algebraMap A (WLocalization A))) ⊆
+      zeroLocus (WLocalization.ideal A : Set (WLocalization A)) := by
+    rw [zeroLocus_ideal_eq]
+    intro q hq
+    simp only [mem_zeroLocus, SetLike.coe_subset_coe, mem_closedPoints_iff,
+      isClosed_singleton_iff_isMaximal] at hq ⊢
+    set m := PrimeSpectrum.comap (algebraMap A (WLocalization A)) q with hm_def
+    have hm : m.asIdeal.IsMaximal := by
+      simpa [isClosed_singleton_iff_isMaximal] using hI (Ideal.le_comap_of_map_le hq)
+    have : q.asIdeal.LiesOver m.asIdeal := ⟨PrimeSpectrum.ext_iff.mp hm_def⟩
+    have : Algebra.IsSeparable m.asIdeal.ResidueField q.asIdeal.ResidueField :=
+      Algebra.IndEtale.isSeparable_residueField (R := A) (S := WLocalization A) m.asIdeal
+        q.asIdeal
+    exact Ideal.IsMaximal.of_isAlgebraic m.asIdeal q.asIdeal
+  have hbij := bijOn_algebraMap_specComap_zeroLocus_ideal A
+  refine ⟨?_, ?_, ?_⟩
+  · intro p hp
+    simp only [mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
+    rwa [comap_asIdeal, ← Ideal.map_le_iff_le_comap]
+  · exact hbij.injOn.mono hsub
+  · intro q hq
+    obtain ⟨p, hp, hpq⟩ := hbij.surjOn (Set.mem_univ q)
+    refine ⟨p, ?_, hpq⟩
+    simp only [mem_zeroLocus, SetLike.coe_subset_coe] at hq ⊢
+    have hpq' : p.asIdeal.comap (algebraMap A (WLocalization A)) = q.asIdeal := by
+      rw [← comap_asIdeal, hpq]
+    rw [Ideal.map_le_iff_le_comap, hpq']
+    exact hq
+
+/-- If `V(I) ⊆ Spec A` consists only of closed points, then the quotient map
+`A/I → WLocA/(I·WLocA)` is bijective. -/
+lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A)
+    (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
+    Function.Bijective
+      (Ideal.quotientMap (I.map (algebraMap A (WLocalization A)))
+        (algebraMap A (WLocalization A)) I.le_comap_map) := by
+  set f := algebraMap A (WLocalization A)
+  set J := I.map f
+  set φ := Ideal.quotientMap J f I.le_comap_map
+  refine RingHom.BijectiveOnStalks.bijective_of_bijective ?_ ?_
+  · exact (Algebra.IndZariski.bijectiveOnStalks_algebraMap A (WLocalization A)).quotientMap I
+  · have hbij : Set.BijOn (PrimeSpectrum.comap f) (zeroLocus J) (zeroLocus I) :=
+      bijOn_specComap_zeroLocus_map A I hI
+    have hI_inj : Function.Injective (PrimeSpectrum.comap (Ideal.Quotient.mk I)) :=
+      PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+    have hJ_inj : Function.Injective (PrimeSpectrum.comap (Ideal.Quotient.mk J)) :=
+      PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+    have hI_range : Set.range (PrimeSpectrum.comap (Ideal.Quotient.mk I)) = zeroLocus I := by
+      rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+    have hJ_range : Set.range (PrimeSpectrum.comap (Ideal.Quotient.mk J)) = zeroLocus J := by
+      rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+    have hcomm : ∀ y : PrimeSpectrum (WLocalization A ⧸ J),
+        PrimeSpectrum.comap (Ideal.Quotient.mk I) (PrimeSpectrum.comap φ y) =
+          PrimeSpectrum.comap f (PrimeSpectrum.comap (Ideal.Quotient.mk J) y) := fun y ↦ by
+      rw [← PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply,
+        Ideal.quotientMap_comp_mk]
+    refine ⟨fun x y hxy ↦ ?_, fun x ↦ ?_⟩
+    · have hx : PrimeSpectrum.comap (Ideal.Quotient.mk J) x ∈ zeroLocus J :=
+        hJ_range ▸ Set.mem_range_self x
+      have hy : PrimeSpectrum.comap (Ideal.Quotient.mk J) y ∈ zeroLocus J :=
+        hJ_range ▸ Set.mem_range_self y
+      have heq : PrimeSpectrum.comap f (PrimeSpectrum.comap (Ideal.Quotient.mk J) x) =
+          PrimeSpectrum.comap f (PrimeSpectrum.comap (Ideal.Quotient.mk J) y) := by
+        rw [← hcomm, ← hcomm, hxy]
+      exact hJ_inj (hbij.injOn hx hy heq)
+    · obtain ⟨y', hy'mem, hy'⟩ := hbij.surjOn (hI_range ▸ Set.mem_range_self x)
+      obtain ⟨y, rfl⟩ : ∃ y, PrimeSpectrum.comap (Ideal.Quotient.mk J) y = y' := by
+        rwa [← Set.mem_range, hJ_range]
+      exact ⟨y, hI_inj <| (hcomm y).trans hy'⟩
+
 open PrimeSpectrum
+
+end WLocalization

@@ -8,8 +8,6 @@ namespace AlgebraicGeometry
 
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
 
-attribute [ext] Scheme.Cover.Hom
-
 @[simps toPreZeroHypercover]
 abbrev Scheme.Cover.weaken {Q : MorphismProperty Scheme.{u}} (hPQ : P ≤ Q)
     (𝒰 : Cover.{v} (precoverage P) S) :

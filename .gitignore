@@ -1,3 +1,4 @@
+.claude
 /.lake
 blueprint/print
 blueprint/web
@@ -14,3 +15,4 @@ blueprint/src/print.out
 blueprint/src/print.synctex.gz
 blueprint/src/print.pdf
 PHILOSOPHY.md
+.agent/.initialized

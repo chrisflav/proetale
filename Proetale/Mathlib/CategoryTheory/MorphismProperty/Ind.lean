@@ -53,35 +53,6 @@ lemma ind_mono {P Q : ObjectProperty C} (h : P ≤ Q) :
 
 end ObjectProperty
 
--- #33045
-/--
-Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
-`Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
--/
-@[simps]
-def Limits.Cocone.underPost {J C : Type*} [Category J] [Category C]
-    {D : J ⥤ C} (c : Cocone D) (j : J) :
-    Cocone (Under.post (X := j) D) where
-  pt := Under.mk (c.ι.app j)
-  ι.app k := Under.homMk (c.ι.app k.right)
-
--- #33045
-/-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
-preserves the limit. -/
-noncomputable def Limits.IsColimit.underPost
-    {J C : Type*} [Category J] [Category C] {D : J ⥤ C}
-    {c : Cocone D} (hc : IsColimit c) (j : J)
-    [(CategoryTheory.Under.forget j).Final] : IsColimit (c.underPost j) := by
-  haveI : Nonempty (Under j) := ⟨CategoryTheory.Under.mk (𝟙 j)⟩
-  letI c'' := Under.liftCocone (CategoryTheory.Under.forget j ⋙ D) (X := D.obj j)
-    ((Functor.constComp _ _ _).inv ≫ Functor.whiskerRight ((Under.forgetCone j).π) D)
-    (c.whisker (CategoryTheory.Under.forget j)) (c.ι.app j) (by cat_disch)
-  letI hc'' : IsColimit c'' :=
-    Under.isColimitLiftCocone _ _ _ _ _ <| (Functor.Final.isColimitWhiskerEquiv _ _).symm hc
-  refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ hc''
-  · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Under.isoMk (Iso.refl _))
-  · exact Cocones.ext (Iso.refl _)
-
 namespace MorphismProperty
 
 instance [P.ContainsIdentities] : (ind.{w} P).ContainsIdentities where
@@ -165,7 +136,7 @@ lemma op_isFinitelyPresentable :
     (isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ :=
   sorry
 
-lemma pro_pro [LocallySmall.{w} C] (H :P ≤ isFinitelyPresentable.{w} C) :
+lemma pro_pro [LocallySmall.{w} C] (H : P ≤ isFinitelyPresentable.{w} C) :
     pro.{w} (pro.{w} P) = pro.{w} P := by
   rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind]
   rw [← op_isFinitelyPresentable]
@@ -186,5 +157,9 @@ lemma pro_coneπ {J : Type w} [SmallCategory J] [IsCofiltered J]
     pro.{w} P (c.π.app j) := by
   rw [pro_eq_unop_ind_op]
   exact ind_coconeι P.op hc.op _ (fun _ ↦ H _)
+
+instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [P.IsStableUnderBaseChangeAlong f] :
+    (pro.{w} P).IsStableUnderBaseChangeAlong f :=
+  sorry
 
 end CategoryTheory.MorphismProperty

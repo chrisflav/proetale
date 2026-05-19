@@ -8,12 +8,6 @@ namespace AlgebraicGeometry
 
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
 
-@[simps!]
-noncomputable
-def Scheme.Hom.cover {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] :
-    Cover.{v} (precoverage P) S :=
-  .mkOfCovers PUnit.{v + 1} (fun _ ↦ X) (fun _ ↦ f) (fun x ↦ ⟨⟨⟩, f.surjective x⟩) (fun _ ↦ hf)
-
 -- `by copilot`
 lemma ofArrows_homCover {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f] :
     Presieve.ofArrows (f.cover hf).X (f.cover hf).f = Presieve.singleton f := by

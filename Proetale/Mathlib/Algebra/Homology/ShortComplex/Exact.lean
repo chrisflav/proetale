@@ -5,7 +5,7 @@ namespace CategoryTheory
 open Limits
 
 instance {J : Type*} [Category J] {C : Type*} [Category C] [Preadditive C]
-    [HasLimitsOfShape WalkingParallelPair C] [HasColimitsOfShape WalkingParallelPair C]  (j : J) :
+    [HasLimitsOfShape WalkingParallelPair C] [HasColimitsOfShape WalkingParallelPair C] (j : J) :
     ((evaluation J C).obj j).PreservesHomology where
 
 lemma ShortComplex.exact_iff_evaluation {J : Type*} [Category J] {C : Type*}

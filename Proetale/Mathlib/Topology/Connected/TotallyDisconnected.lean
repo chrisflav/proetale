@@ -5,11 +5,13 @@ variable {X : Type*} [TopologicalSpace X]
 
 -- add `@[stacks 0906]` to `ConnectedComponents.totallyDisconnectedSpace`
 
--- after `IsPreconnected.eqOn_const_of_mapsTo` if the proof need some lemma of the form IsPreconnected.foo
+-- after `IsPreconnected.eqOn_const_of_mapsTo` if the proof need some lemma of the form
+-- `IsPreconnected.foo`
 -- `by copilot`
 theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpace X]
     {Y : Type*} [TopologicalSpace Y] [TotallyDisconnectedSpace Y] {f : X → Y} (hf : Continuous f)
-    (h : ∀ y : Y, IsPreconnected (f ⁻¹' {y})) : Function.Injective (hf.connectedComponentsLift) := by
+    (h : ∀ y : Y, IsPreconnected (f ⁻¹' {y})) :
+    Function.Injective (hf.connectedComponentsLift) := by
   intro a b hEq
   set g := hf.connectedComponentsLift
   have hEq' : g a = g b := hEq
@@ -17,7 +19,8 @@ theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpa
   have hgb : g b = y := by simpa [y] using hEq'.symm
   -- Consider the fiber t = g ⁻¹' {y}.
   let t : Set (ConnectedComponents X) := g ⁻¹' {y}
-  -- We show t is preconnected by identifying it with the image of a preconnected set under the projection.
+  -- We show t is preconnected by identifying it with the image of a preconnected set under the
+  -- projection.
   have h_apply_coe : ∀ x : X, g (((↑) : X → ConnectedComponents X) x) = f x := by
     intro x'
     simp [g]
@@ -55,6 +58,12 @@ theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpa
   have : b ∈ ({a} : Set (ConnectedComponents X)) := by simpa [hsingle] using hb_in
   have hba : b = a := by simpa [Set.mem_singleton_iff] using this
   exact hba.symm
+
+theorem IsClopen.connectedComponents_image_isClopen {U : Set X} (hU : IsClopen U) :
+    IsClopen ((↑) '' U : Set (ConnectedComponents X)) := by
+  rw [← ConnectedComponents.isQuotientMap_coe.isClopen_preimage,
+    connectedComponents_preimage_image, hU.biUnion_connectedComponent_eq]
+  exact hU
 
 -- end of the file
 variable (S T : Type*) [TopologicalSpace S] [TopologicalSpace T]

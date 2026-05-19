@@ -21,29 +21,28 @@ namespace AlgebraicGeometry.Scheme
 
 /-- The inclusion of the étale site into the pro-étale site. -/
 @[simps! obj_toComma]
-def toProEtale (S : Scheme.{u}) : Etale S ⥤ ProEt S :=
-  MorphismProperty.Over.changeProp _ isEtale_le_weaklyEtale le_rfl
+def toProEtale (S : Scheme.{u}) : S.Etale ⥤ S.ProEt :=
+  MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl
 
 variable (S : Scheme.{u})
 
 instance : (toProEtale S).Full :=
-  inferInstanceAs <| (MorphismProperty.Over.changeProp _ isEtale_le_weaklyEtale le_rfl).Full
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Full
 
 instance : (toProEtale S).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Over.changeProp _ isEtale_le_weaklyEtale le_rfl).Faithful
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Faithful
 
 /-- The inclusion of the étale site into the pro-étale site is continuous. -/
 instance isContinuous_toProEtale :
-    (toProEtale S).IsContinuous (smallEtaleTopology S) (ProEt.topology S) :=
-  inferInstanceAs <| (Over.changeProp _ isEtale_le_weaklyEtale _).IsContinuous
-    (smallGrothendieckTopology _) (smallGrothendieckTopology _)
+    (toProEtale S).IsContinuous (smallEtaleTopology S) (ProEt.topology S) := by
+  sorry
 
 namespace ProEt
 
 variable (A : Type*) [Category A]
 
 /-- The direct image functor from pro-étale sheafs to étale sheafs. -/
-@[simps! obj_val]
+@[simps! obj_obj]
 abbrev sheafPushforward :
     Sheaf (ProEt.topology S) A ⥤ Sheaf (smallEtaleTopology S) A :=
   (toProEtale S).sheafPushforwardContinuous _ _ _

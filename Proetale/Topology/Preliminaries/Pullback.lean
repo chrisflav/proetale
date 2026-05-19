@@ -3,7 +3,7 @@ Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Proetale.Mathlib.Topology.Spectral.Basic
 
@@ -14,12 +14,14 @@ open CategoryTheory TopCat Limits
 variable {X Y S : Type u} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace S]
 variable (f : C(X, S)) (g : C(Y, S))
 
-variable {P : Type u} [TopologicalSpace P] {f' : C(P, Y)} {g' : C(P, X)} (pb : IsPullback (ofHom g') (ofHom f') (ofHom f) (ofHom g))
+variable {P : Type u} [TopologicalSpace P] {f' : C(P, Y)} {g' : C(P, X)}
+    (pb : IsPullback (ofHom g') (ofHom f') (ofHom f) (ofHom g))
 
 section pullback
 
 instance T0Space.pullback [T0Space X] [T0Space Y] (f : C(X, S)) (g : C(Y, S)) :
-    T0Space (pullback (ofHom f) (ofHom g) : TopCat) := (homeoOfIso (pullbackIsoProdSubtype (ofHom f) (ofHom g))).symm.t0Space
+    T0Space (pullback (ofHom f) (ofHom g) : TopCat) :=
+  (homeoOfIso (pullbackIsoProdSubtype (ofHom f) (ofHom g))).symm.t0Space
 
 variable [T2Space S]
 
@@ -33,7 +35,8 @@ instance CompactSpace.pullback [CompactSpace X] [CompactSpace Y] (f : C(X, S)) (
   let _ := (homeoOfIso (prodIsoProd (of X) (of Y))).symm.compactSpace
   (isClosedEmbedding_pullback_to_prod (ofHom f) (ofHom g)).compactSpace
 
-instance PrespectralSpace.pullback [PrespectralSpace X] [PrespectralSpace Y] (f : C(X, S)) (g : C(Y, S)) :
+instance PrespectralSpace.pullback [PrespectralSpace X] [PrespectralSpace Y]
+    (f : C(X, S)) (g : C(Y, S)) :
     PrespectralSpace (pullback (ofHom f) (ofHom g) : TopCat) :=
   let _ := (homeoOfIso (prodIsoProd (of X) (of Y))).symm.prespectralSpace
   PrespectralSpace.of_isClosedEmbedding _ (isClosedEmbedding_pullback_to_prod (ofHom f) (ofHom g))
@@ -66,7 +69,8 @@ theorem CategoryTheory.IsPullback.prespectralSpace [PrespectralSpace X] [Prespec
     PrespectralSpace P :=
   (homeoOfIso pb.isoPullback).symm.prespectralSpace
 
-theorem CategoryTheory.IsPullback.spectralSpace [SpectralSpace X] [SpectralSpace Y] : SpectralSpace P :=
+theorem CategoryTheory.IsPullback.spectralSpace [SpectralSpace X] [SpectralSpace Y] :
+    SpectralSpace P :=
   (homeoOfIso pb.isoPullback).symm.spectralSpace
 
 end IsPullback

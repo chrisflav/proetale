@@ -1,21 +1,28 @@
 import Mathlib.Topology.Spectral.Prespectral
 
+/-- A prespectral space structure transfers along homeomorphisms. -/
 -- after `PrespectralSpace.of_isTopologicalBasis'`
 theorem Homeomorph.prespectralSpace {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y :=
-  PrespectralSpace.of_isClosedEmbedding f.symm f.symm.isClosedEmbedding
+    [PrespectralSpace X] (f : X ≃ₜ Y) : PrespectralSpace Y := by
+  have hbasis : TopologicalSpace.IsTopologicalBasis
+      (Set.preimage f.symm '' { U : Set X | IsOpen U ∧ IsCompact U }) :=
+    PrespectralSpace.isTopologicalBasis.isInducing f.symm.isInducing
+  apply PrespectralSpace.of_isTopologicalBasis hbasis
+  intro U hU
+  simp only [Set.mem_image, Set.mem_setOf_eq] at hU
+  obtain ⟨V, ⟨_, hVc⟩, rfl⟩ := hU
+  rw [f.preimage_symm]
+  exact hVc.image f.continuous
 
+/-- The product of two prespectral spaces is prespectral. -/
 -- after `PrespectralSpace.sigma`
 instance PrespectralSpace.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [PrespectralSpace X] [PrespectralSpace Y] : PrespectralSpace (X × Y) := by
-  refine PrespectralSpace.of_isTopologicalBasis
-    (B := Set.image2 (· ×ˢ ·) { U : Set X | IsOpen U ∧ IsCompact U }
-      { V : Set Y | IsOpen V ∧ IsCompact V }) ?_ ?_
-  · simpa using TopologicalSpace.IsTopologicalBasis.prod
-      PrespectralSpace.isTopologicalBasis PrespectralSpace.isTopologicalBasis
-  · intro W hW
-    rcases Set.mem_image2.1 hW with ⟨U, hU, V, hV, rfl⟩
-    exact IsCompact.prod hU.2 hV.2
+    [PrespectralSpace X] [PrespectralSpace Y] : PrespectralSpace (X × Y) :=
+  .of_isTopologicalBasis
+    (PrespectralSpace.isTopologicalBasis.prod PrespectralSpace.isTopologicalBasis)
+    (fun _U hU => by
+      obtain ⟨U₁, hU₁, U₂, hU₂, rfl⟩ := Set.mem_image2.mp hU
+      exact hU₁.2.prod hU₂.2)
 
 -- end of file
 theorem Topology.IsClosedEmbedding.isOpen_and_isCompact_and_preimage_eq {X Z : Type*}
