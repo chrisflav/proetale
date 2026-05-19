@@ -234,7 +234,7 @@ theorem quotientMap_algebraMap_bijective
         (algebraMap (WLocalization A) I.WLocalization) Ideal.le_comap_map).comp
         (Ideal.quotientMap J (algebraMap A (WLocalization A)) I.le_comap_map)) := by
     refine Ideal.Quotient.ringHom_ext (RingHom.ext fun a ↦ ?_)
-    show Ideal.Quotient.mk (I.map (algebraMap A I.WLocalization))
+    change Ideal.Quotient.mk (I.map (algebraMap A I.WLocalization))
         (algebraMap A I.WLocalization a) =
       (Ideal.quotEquivOfEq hKJ.symm) (Ideal.Quotient.mk _
         (algebraMap (WLocalization A) I.WLocalization (algebraMap A (WLocalization A) a)))
@@ -267,7 +267,7 @@ theorem bijOn_zeroLocus_map (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)
     rw [Set.injOn_univ, ← PrimeSpectrum.comap_comp]
     apply PrimeSpectrum.comap_injective_of_surjective
     rw [← Ideal.quotientMap_comp_mk I.le_comap_map]
-    simp
+    simp only [RingHom.coe_comp]
     apply Function.Surjective.comp
     · exact (quotientMap_algebraMap_bijective I hI).surjective
     · exact Ideal.Quotient.mk_surjective

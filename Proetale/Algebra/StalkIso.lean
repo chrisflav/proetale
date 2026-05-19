@@ -86,7 +86,7 @@ lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
   set q : Ideal R := q'.comap mkI with hq_def
   haveI hq : q.IsPrime := Ideal.IsPrime.comap mkI
   have hq_eq : q = P.comap f := by
-    show Ideal.comap mkI (Ideal.comap φ P') = Ideal.comap f (Ideal.comap mkJ P')
+    change Ideal.comap mkI (Ideal.comap φ P') = Ideal.comap f (Ideal.comap mkJ P')
     rw [Ideal.comap_comap, Ideal.comap_comap, hφ_mkI]
   -- The four ring homs in the commutative square
   set α : Localization.AtPrime q →+* Localization.AtPrime q' :=
