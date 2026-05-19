@@ -20,16 +20,11 @@ namespace WLocalSpace
 instance spectralSpace_closedPoints [WLocalSpace X] : SpectralSpace (closedPoints X) :=
   SpectralSpace.of_isClosed X
 
-instance t2Space_closedPoints [WLocalSpace X] :
-    T2Space (closedPoints X) :=
-  SpectralSpace.t2Space_of_isClosed_singleton  closedPoints.isClosed_singleton
+instance t1Space_closedPoints : T1Space (closedPoints X) where
+  t1 := closedPoints.isClosed_singleton
 
 instance CompactSpace_closedPoints [WLocalSpace X] :
     CompactSpace (closedPoints X) :=
   (IsClosed.isClosedEmbedding_subtypeVal inferInstance).compactSpace
-
-instance totallyDisconnected_closedPoints [WLocalSpace X] :
-    TotallyDisconnectedSpace (closedPoints X) :=
-  SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton closedPoints.isClosed_singleton
 
 end WLocalSpace

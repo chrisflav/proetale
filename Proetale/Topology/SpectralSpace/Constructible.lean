@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
 import Proetale.Mathlib.Topology.Inseparable
+import Proetale.Mathlib.Topology.Separation.Basic
+import Proetale.Mathlib.Topology.Spectral.ConstructibleTopology
 import Mathlib.Topology.Spectral.Basic
-import Mathlib.Topology.Spectral.ConstructibleTopology
 import Mathlib.Topology.JacobsonSpace
 import Mathlib.Data.Set.Card
 import Mathlib.Topology.Connected.Separation
@@ -27,18 +28,14 @@ it is the specialization of a point in `s`. -/
 lemma exists_specializes_of_isClosed_constructibleTopology_of_mem_closure [SpectralSpace X]
     {s : Set X} (hs : IsClosed[constructibleTopology X] s) {x : X} (hx : x ∈ closure s) :
     ∃ y ∈ s, y ⤳ x := by
-  -- Compact opens are closed in the constructible topology.
-  have hU_closed_constr : ∀ (U : Set X), IsOpen U → IsCompact U →
-      @IsClosed (WithConstructibleTopology X) _ U := fun U hUo hUc => by
-    rw [← @isOpen_compl_iff (WithConstructibleTopology X)]
-    have hUcc : IsCompact Uᶜᶜ := by rwa [compl_compl]
-    exact hUcc.isOpen_constructibleTopology_of_isClosed hUo.isClosed_compl
   -- The family of intersections `U ∩ s` indexed by compact opens `U` containing `x` consists of
   -- closed sets in the constructible topology and has the finite intersection property in `X`
   -- (since `x ∈ closure s` and any finite intersection of compact opens containing `x` is open).
   let ι := { U : Set X // IsOpen U ∧ IsCompact U ∧ x ∈ U }
   have hF_closed (i : ι) : @IsClosed (WithConstructibleTopology X) _ ((i : Set X) ∩ s) :=
-    (hU_closed_constr i i.2.1 i.2.2.1).inter hs
+    have : @IsClosed (WithConstructibleTopology X) _ (i : Set X) :=
+      i.2.2.1.isClosed_constructibleTopology_of_isOpen i.2.1
+    this.inter hs
   have h_inter : (⋂ i : ι, ((i : Set X) ∩ s)).Nonempty := by
     refine CompactSpace.iInter_nonempty (X := WithConstructibleTopology X) hF_closed fun T => ?_
     have hopen : IsOpen (⋂ j ∈ T, (j : Set X)) :=
@@ -69,42 +66,19 @@ lemma IsClosed.of_isClosed_constructibleTopology [SpectralSpace X] {s : Set X}
     exists_specializes_of_isClosed_constructibleTopology_of_mem_closure hs hx
   exact h hx hy
 
-private lemma SpectralSpace.totallySeparatedSpace_of_isClosed_singleton [SpectralSpace X]
-    (h : ∀ x : X, IsClosed ({x} : Set X)) : TotallySeparatedSpace X := by
-  -- When all singletons are closed, the specialization order is discrete, so every subset is
-  -- stable under specialization.
-  have stable (s : Set X) : StableUnderSpecialization s := fun x y hxy hx => by
-    have hxy_eq : x = y := by
-      rw [specializes_iff_mem_closure, (h x).closure_eq, Set.mem_singleton_iff] at hxy
-      exact hxy.symm
-    rwa [← hxy_eq]
-  -- Hence every compact open `U` is clopen: it is constructibly closed (by
-  -- `IsCompact.isOpen_constructibleTopology_of_isClosed` applied to `Uᶜ`) and
-  -- specialization-stable.
-  have clopen (U : Set X) (hUo : IsOpen U) (hUc : IsCompact U) : IsClopen U := by
-    refine ⟨?_, hUo⟩
-    refine IsClosed.of_isClosed_constructibleTopology ?_ (stable U)
-    have hUcc : IsCompact Uᶜᶜ := by rwa [compl_compl]
-    exact @IsClosed.mk X (constructibleTopology X) U
-      (hUcc.isOpen_constructibleTopology_of_isClosed hUo.isClosed_compl)
+@[stacks 0905 "(6) → (1)"]
+instance SpectralSpace.totallySeparatedSpace [SpectralSpace X] [T1Space X] :
+    TotallySeparatedSpace X := by
+  -- Every compact open `U` is clopen: it is constructibly closed (by
+  -- `IsCompact.isClosed_constructibleTopology_of_isOpen`) and specialization-stable
+  -- because `X` is T1.
+  have clopen (U : Set X) (hUo : IsOpen U) (hUc : IsCompact U) : IsClopen U :=
+    ⟨(hUc.isClosed_constructibleTopology_of_isOpen hUo).of_isClosed_constructibleTopology
+      (.of_t1Space U), hUo⟩
   -- Compact opens form a basis, so any two distinct points are separated by a clopen.
   rw [totallySeparatedSpace_iff_exists_isClopen]
   intro x y hxy
-  have hopen : IsOpen ({y} : Set X)ᶜ := (h y).isOpen_compl
   obtain ⟨W, ⟨hWo, hWc⟩, hxW, hWy⟩ :=
     PrespectralSpace.isTopologicalBasis.exists_subset_of_mem_open
-      (show x ∈ ({y} : Set X)ᶜ by simp [hxy]) hopen
-  refine ⟨W, clopen W hWo hWc, hxW, fun hyW => ?_⟩
-  exact hWy hyW (Set.mem_singleton y)
-
-@[stacks 0905 "(6) → (1)"]
-theorem SpectralSpace.t2Space_of_isClosed_singleton [SpectralSpace X]
-    (h : ∀ x : X, IsClosed ({x} : Set X)) : T2Space X :=
-  letI := SpectralSpace.totallySeparatedSpace_of_isClosed_singleton h
-  inferInstance
-
-@[stacks 0905 "(6) → (1)"]
-theorem SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton [SpectralSpace X]
-    (h : ∀ x : X, IsClosed ({x} : Set X)) : TotallyDisconnectedSpace X :=
-  letI := SpectralSpace.totallySeparatedSpace_of_isClosed_singleton h
-  inferInstance
+      (show x ∈ ({y} : Set X)ᶜ by simp [hxy]) isClosed_singleton.isOpen_compl
+  exact ⟨W, clopen W hWo hWc, hxW, fun hyW ↦ hWy hyW rfl⟩
