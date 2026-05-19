@@ -44,8 +44,6 @@ namespace ObjectProperty
 lemma ind_of_univLE (P : ObjectProperty C) [UnivLE.{w', w}] :
     ind.{w'} P ≤ ind.{w} P := by
   intro X ⟨J, _, _, pres, H⟩
-  haveI : EssentiallySmall.{w} J :=
-    @essentiallySmall_of_small_of_locallySmall J _ (UnivLE.small J) inferInstance
   exact of_essentiallySmall_index pres H
 
 @[gcongr]
