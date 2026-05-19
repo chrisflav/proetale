@@ -5,8 +5,8 @@ universe u
 
 open CategoryTheory Limits
 
--- use the following lemma: `t2Space_iff_diagonal_closed`
--- after `TopCat.isEmbedding_pullback_to_prod`
+/-- The canonical map from a pullback in `TopCat` to the product is a closed embedding whenever
+the base is Hausdorff. -/
 @[stacks 08ZH]
 theorem TopCat.isClosedEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} [T2Space Z]
     (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -28,6 +28,6 @@ theorem TopCat.isClosedEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} [T2Space 
   have hdiag : IsClosed (Set.diagonal Z) := by
     simpa [Set.range_diag] using t2Space_iff_diagonal_closed.1 inferInstance
   have hcont :
-      Continuous (fun x : ↑(X ⨯ Y) => ((Limits.prod.fst ≫ f) x, (Limits.prod.snd ≫ g) x)) :=
+      Continuous (fun x : ↑(X ⨯ Y) ↦ ((Limits.prod.fst ≫ f) x, (Limits.prod.snd ≫ g) x)) :=
     (Limits.prod.fst ≫ f).hom.continuous.prodMk (Limits.prod.snd ≫ g).hom.continuous
   simpa [hrange] using (by simpa [Set.diagonal] using hdiag.preimage hcont)

@@ -1,10 +1,25 @@
+/-
+Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jiedong Jiang, Christian Merten
+-/
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+
+/-!
+# The diagonal of a locally of finite presentation morphism
+
+The diagonal of a morphism that is locally of finite presentation is itself locally of
+finite presentation. The proof goes through the cancellation property
+`LocallyOfFinitePresentation.of_comp_locallyOfFiniteType` for compositions whose second
+factor is locally of finite type.
+-/
 
 open CategoryTheory Limits MorphismProperty
 
 namespace AlgebraicGeometry
 
-/-- The cancellation theorem for morphisms locally of finite presentation. -/
+/-- Cancellation: if `f ≫ g` is locally of finite presentation and `g` is locally of finite type,
+then `f` is locally of finite presentation. -/
 theorem LocallyOfFinitePresentation.of_comp_locallyOfFiniteType {X Y Z : Scheme} (f : X ⟶ Y)
     (g : Y ⟶ Z) [hfg : LocallyOfFinitePresentation (f ≫ g)] [hg : LocallyOfFiniteType g] :
     LocallyOfFinitePresentation f :=
@@ -42,6 +57,7 @@ theorem LocallyOfFinitePresentation.of_comp_locallyOfFiniteType {X Y Z : Scheme}
         HasRingHomProperty.iff_of_isAffine.1 hg
   aux f g hfg hg
 
+/-- The diagonal of a morphism locally of finite presentation is locally of finite presentation. -/
 theorem diagonal_locallyOfFinitePresentation {X Y : Scheme} (f : X ⟶ Y)
     [LocallyOfFinitePresentation f] : LocallyOfFinitePresentation (pullback.diagonal f) :=
   have : LocallyOfFinitePresentation (pullback.diagonal f ≫ pullback.fst f f) := by
