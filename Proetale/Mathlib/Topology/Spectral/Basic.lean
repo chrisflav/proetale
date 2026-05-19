@@ -44,5 +44,30 @@ instance SpectralSpace.prod [SpectralSpace X] [SpectralSpace Y] : SpectralSpace 
 
 variable {X} in
 theorem generalizationHull.eq_sInter_of_isCompact [SpectralSpace X] {s : Set X} (hs : IsCompact s) :
-    ∃ S ⊆ {U : Set X | IsOpen U ∧ IsCompact U}, (generalizationHull s) = ⋂₀ S :=
-  sorry
+    ∃ S ⊆ {U : Set X | IsOpen U ∧ IsCompact U}, (generalizationHull s) = ⋂₀ S := by
+  refine ⟨{U : Set X | IsOpen U ∧ IsCompact U ∧ generalizationHull s ⊆ U},
+    fun _ h ↦ ⟨h.1, h.2.1⟩, subset_antisymm (fun _ hx _ hU ↦ hU.2.2 hx) ?_⟩
+  intro x hx
+  by_contra hxW
+  have hbasis := PrespectralSpace.isTopologicalBasis (X := X)
+  have hcov : ∀ y ∈ s, ∃ U, (IsOpen U ∧ IsCompact U) ∧ y ∈ U ∧ x ∉ U := by
+    intro y hy
+    have hxy : ¬ x ⤳ y := fun h ↦ hxW (mem_generalizationHull_iff.mpr ⟨y, hy, h⟩)
+    rw [specializes_iff_mem_closure] at hxy
+    obtain ⟨U, hU, hyU, hUsub⟩ :=
+      hbasis.exists_subset_of_mem_open hxy (isOpen_compl_iff.mpr isClosed_closure)
+    exact ⟨U, hU, hyU, fun hxU ↦ hUsub hxU (subset_closure rfl)⟩
+  choose U hU hyU hxnU using hcov
+  obtain ⟨t, ht⟩ := hs.elim_finite_subcover (fun y : s ↦ U y y.2)
+    (fun y ↦ (hU y y.2).1) (fun y hy ↦ Set.mem_iUnion.mpr ⟨⟨y, hy⟩, hyU y hy⟩)
+  set V := ⋃ y ∈ t, U y.1 y.2 with hV_def
+  have hVopen : IsOpen V := isOpen_biUnion fun y _ ↦ (hU y.1 y.2).1
+  have hVcompact : IsCompact V :=
+    t.finite_toSet.isCompact_biUnion fun y _ ↦ (hU y.1 y.2).2
+  have hWsub : generalizationHull s ⊆ V := fun z hz ↦ by
+    obtain ⟨y, hy, hzy⟩ := mem_generalizationHull_iff.mp hz
+    exact hzy.mem_open hVopen (ht hy)
+  have hxV : x ∈ V := hx V ⟨hVopen, hVcompact, hWsub⟩
+  obtain ⟨y, hyt, hxUy⟩ : ∃ y ∈ t, x ∈ U y.1 y.2 := by
+    simpa [hV_def] using hxV
+  exact hxnU y.1 y.2 hxUy
