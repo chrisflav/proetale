@@ -5,11 +5,18 @@ universe u
 
 open CategoryTheory Limits
 
+lemma TopCat.prodFst_apply {X Y : TopCat.{u}} (x : X × Y) : TopCat.prodFst x = x.1 := by
+  rfl
+
+lemma TopCat.prodSnd_apply {X Y : TopCat.{u}} (x : X × Y) : TopCat.prodSnd x = x.2 := by
+  rfl
+
 -- use the following lemma: `t2Space_iff_diagonal_closed`
 -- after `TopCat.isEmbedding_pullback_to_prod`
 @[stacks 08ZH]
 theorem TopCat.isClosedEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} [T2Space Z]
     (f : X ⟶ Z) (g : Y ⟶ Z) :
+    Topology.IsClosedEmbedding ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) := by
   refine ⟨isEmbedding_pullback_to_prod f g, ?_⟩
   suffices s1 : Set.range (prod.lift (pullback.fst f g) (pullback.snd f g)) =
       (homeoOfIso (prodIsoProd X Y)) ⁻¹' (Prod.map f.hom g.hom ⁻¹' Set.range fun x ↦ (x, x)) by
