@@ -38,7 +38,8 @@ theorem TopCat.closure_eq_iInter_preimage_closure_image {I : Type v} [Category.{
           {U : Set C.pt |
             ∃ (j : I) (V : Set (F.obj j)), IsOpen V ∧ U = (C.π.app j) ⁻¹' V} := by
       simpa using
-        (@TopCat.isTopologicalBasis_cofiltered_limit.{u, v, w} I (by infer_instance) (by infer_instance) F C hC
+        (@TopCat.isTopologicalBasis_cofiltered_limit.{u, v, w}
+          I (by infer_instance) (by infer_instance) F C hC
           (T := fun j => {V : Set (F.obj j) | IsOpen V})
           (hT := fun _ => TopologicalSpace.isTopologicalBasis_opens)
           (univ := fun _ => by simp)
