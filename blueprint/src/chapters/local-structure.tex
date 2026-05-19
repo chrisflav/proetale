@@ -121,6 +121,7 @@ In general, $\pi_0(X) \times \pi_0(Y)$ is continuous and bijective, but not nece
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -133,6 +134,7 @@ In general, $\pi_0(X) \times \pi_0(Y)$ is continuous and bijective, but not nece
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -287,6 +289,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:closure-product}
   Let $X$, $Y$ be spectral spaces. Denote $p : X \times Y \to X$ and $q : X \times Y \to Y$ the projections. We first show that \(X \times Y\) is sober. Let $Z \subset X \times Y$ be a closed irreducible subset. Then $p(Z) \subset X$ is irreducible and $q(Z) \subset Y$ is irreducible. Let $x \in X$ be the generic point of the closure of $p(Z)$ and let $y \in Y$ be the generic point of the closure of $q(Z)$. If $(x, y) \notin Z$, then there exist opens $x \in U \subset X$, $y \in V \subset Y$ such that $Z \cap (U \times V) = \emptyset$. Hence $Z$ is contained in $(X - U) \times Y \cup X \times (Y - V)$. Since $Z$ is irreducible, we see that either $Z \subset (X - U) \times Y$ or $Z \subset X \times (Y - V)$. In the first case $p(Z) \subset (X - U)$ and in the second case $q(Z) \subset (Y - V)$. Both cases are absurd as $x$ is in the closure of $p(Z)$ and $y$ is in the closure of $q(Z)$. Thus we conclude that $(x, y) \in Z$, which means that $(x, y)$ is the generic point for $Z$ (\Cref{thm:closure-product}).
 
@@ -315,6 +318,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:Hausdorff-diagonal-closed}
   \(X \times_S Y\) is the inverse image of the image \(\Delta(S)\) of the diagonal map 
   \(\Delta : S \to S \times S\). It follows from \Cref{thm:Hausdorff-diagonal-closed} that 
@@ -363,6 +367,7 @@ The following pure topological lemmas will be used in \Cref{thm:colim-open-close
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Since R1 implies Sober, Hausdorff implies quasi-separated, it only remains to show that \(X\) is prespectral. Write \(X\) as an inverse limit of finite discrete topological spaces. The preimage of singletons in every finite discrete space are open and closed subsets and forms a topological basis for the topology on \(X\). Thus \(X\) is prespectral.
 \end{proof}
 
@@ -382,6 +387,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:profinite-spectral,thm:pullback-spectral,thm:pi0-profinite,def:pi0-to-totally-disconnected,thm:pi0-to-totally-disconnected-injective}
   By \Cref{thm:profinite-spectral}, \(T\) is spectral. By \Cref{thm:pi0-profinite} \(\pi_0(X)\) is Hausdorff.
   By \Cref{thm:pullback-spectral}, \(Y\) is spectral.
@@ -439,6 +445,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -744,6 +751,7 @@ The following example shows that our definition agrees with the one in
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -758,6 +766,7 @@ The following example shows that our definition agrees with the one in
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This follows from general theory, because étale maps are of finite presentation.
 \end{proof}
 
@@ -770,6 +779,7 @@ The following example shows that our definition agrees with the one in
 \end{lemma}
 
 \begin{proof}
+  \leanok
   An ind-Zariski ring map is a filtered colimit of local isomorphisms. A local isomorphism is étale.
 \end{proof}
 
@@ -826,6 +836,7 @@ Obviously, every w-purely-local morphism is w-local.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $x \rightsquigarrow y$ in $X$ with $x \in Z^g$. Then $x$ specializes to some $z \in Z$, which
     in turn specializes to a unique closed point $c$ in $X$ because $X$ is w-local.
     Because $Z$ is stable under specialization, $c \in Z$. Also $y$ specializes to a unique closed
@@ -842,6 +853,7 @@ Obviously, every w-purely-local morphism is w-local.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:embedding-specializations}
     Since $Z$ is closed under specializations, we have $Z^c = X^c \cap Z$. In particular
     $Z^c$ is closed in $Z$ and $Z \to X$ preserves closed points.
@@ -861,6 +873,7 @@ Obviously, every w-purely-local morphism is w-local.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:w-local-specialization-closed}
     This follows from \ref{lemma:w-local-specialization-closed}, because
     closed subsets are stable under specialization. The inclusion $Y \to X$ is
@@ -1020,6 +1033,7 @@ a quasi-compact open $U$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:spectral-generalization-intersection-open, lemma:generalization-specialization-closed, lemma:spectral-constructible-closed-closed}
     Since $Z$ is closed, it is quasi-compact. Hence by \Cref{lemma:spectral-generalization-intersection-open},
     we see that $Z^g$ is closed in the constructible topology as an intersection of quasi-compact opens.
@@ -1038,6 +1052,7 @@ a quasi-compact open $U$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{thm:pi0-profinite, lemma:w-local-closed-points-profinite, lemma:profinite-disj-clopen-separation, def:generalization, lemma:w-local-generalization-closed-closed}
     Since $X^c$ is quasi-compact and $\pi_0(X)$ is Hausdorff by \Cref{thm:pi0-profinite}, it suffices
     to show the map is bijective.
@@ -1135,6 +1150,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{thm:localization-isom-of-going-down}
     Since $A \to B$ is flat (can be checked on stalks of \(B\)), it has going down. % Algebra.HasGoingDown.of_flat
     Thus \Cref{thm:localization-isom-of-going-down} shows for any prime $\q \subset B$ lying over $\p \subset A$ we have $B_{\q} = B_{\p B}$. Since $B_{\q} = A_{\p}$ by assumption, we see that $A_{\p} = B_{\p B}$ for all primes $\p$ of $A$. Thus $A = B$ since isomorphism can be checked locally on $A$.
@@ -1274,6 +1290,7 @@ $V( \tildeideal{I}{f})$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This is immediate from the definitions of $D$ and $V$.
 \end{proof}
 
@@ -1286,6 +1303,7 @@ $V( \tildeideal{I}{f})$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This is immediate from the definition of $Z(-, -)$.
 \end{proof}
 
@@ -1539,6 +1557,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:generalization-specialization-closed, lemma:locally-closed-specializations,
       lemma:w-local-specialization-closed}
     By \ref{lemma:locally-closed-specializations}, $\spec{A_{\widetilde{V(I)}}}$ is homeomorphic
@@ -1628,6 +1647,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{lemma:w-local-tilde-w-local, cor:w-localization-w-local}
   Follows immediately from \Cref{lemma:w-local-tilde-w-local} and \Cref{cor:w-localization-w-local}.
 \end{proof}
@@ -1641,6 +1661,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{lemma:w-localization-ind-Zariski, lemma:tilde-locclosed-ind-zariski,thm:ind-Zariski-composition}
   The map $A \to A_w$ is ind-Zariski by \Cref{lemma:w-localization-ind-Zariski} and
   the map $A_w \to A_{w, I}$ is ind-Zariski by \Cref{lemma:tilde-locclosed-ind-zariski}.
@@ -1662,6 +1683,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:w-localization-ind-Zariski,thm:ind-Zariski-identifies-local-rings,lemma:w-local-tilde-w-local,thm:isom-of-identifies-local-rings-bijective,lemma:preimage-closed-points-algebraic,lemma:tilde-locclosed-ind-zariski,lemma:locally-closed-specializations}
     $A \to A_w$ is ind-Zariski by \ref{lemma:w-localization-ind-Zariski} and therefore induces
     algebraic extensions of residue fields by \ref{thm:ind-Zariski-identifies-local-rings}.
@@ -1696,6 +1718,7 @@ Let $A \to B$ be a ring map inducing algebraic extensions on residue fields at p
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:w-localization-closed-points,lemma:closed-closed-points-tilde-w-local,
       lemma:tilde-locclosed-ind-zariski,def:w-localization-ideal,lemma:w-localization-ideal-w-local}
     Every point of $V(IB)$ is a closed point of $\spec{B}$ by 
@@ -2073,6 +2096,7 @@ In the following series of constructions, we will modify the connected component
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:ind-Zariski-identifies-local-rings,thm:colim-open-closed-localizations-surj-ind-zariski,thm:ind-Zariski-composition,thm:ind-Zariski-identifies-local-rings}
   The map $A \to A^S$ is ind-Zariski by \Cref{lemma:ind-Zariski-products} and $A^S \to A^f_{q}$ is also ind-Zariski by \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}.  The composition $A \to A^f_{q}$ is therefore ind-Zariski as well by \Cref{thm:ind-Zariski-composition}. By \Cref{thm:ind-Zariski-identifies-local-rings}, $A \to A^f_{q}$ identifies local rings. The last sentence is a direct consequence of \Cref{thm:colim-open-closed-localizations-surj-ind-zariski}.
 \end{proof}
