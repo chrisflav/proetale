@@ -71,39 +71,36 @@ lemma localRingHom_of_eq {f : R →+* S} (hf : f.BijectiveOnStalks)
 /-- `BijectiveOnStalks` is preserved under taking quotients by an ideal and its extension. -/
 lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
     (Ideal.quotientMap (I.map f) f I.le_comap_map).BijectiveOnStalks := by
-  set J := I.map f with hJ_def
-  set mkI : R →+* R ⧸ I := Ideal.Quotient.mk I with hmkI_def
-  set mkJ : S →+* S ⧸ J := Ideal.Quotient.mk J with hmkJ_def
-  set φ : R ⧸ I →+* S ⧸ J := Ideal.quotientMap J f I.le_comap_map with hφ_def
+  set J := I.map f
+  set mkI : R →+* R ⧸ I := Ideal.Quotient.mk I
+  set mkJ : S →+* S ⧸ J := Ideal.Quotient.mk J
+  set φ : R ⧸ I →+* S ⧸ J := Ideal.quotientMap J f I.le_comap_map
   have hmkI_surj : Function.Surjective mkI := Ideal.Quotient.mk_surjective
   have hmkJ_surj : Function.Surjective mkJ := Ideal.Quotient.mk_surjective
   have hφ_mkI : φ.comp mkI = mkJ.comp f := Ideal.quotientMap_comp_mk I.le_comap_map
   intro P' hP'
-  set P : Ideal S := P'.comap mkJ with hP_def
-  haveI hP : P.IsPrime := Ideal.IsPrime.comap mkJ
-  set q' : Ideal (R ⧸ I) := P'.comap φ with hq'_def
-  haveI hq' : q'.IsPrime := Ideal.IsPrime.comap φ
-  set q : Ideal R := q'.comap mkI with hq_def
-  haveI hq : q.IsPrime := Ideal.IsPrime.comap mkI
+  set P : Ideal S := P'.comap mkJ
+  have hP : P.IsPrime := Ideal.IsPrime.comap mkJ
+  set q' : Ideal (R ⧸ I) := P'.comap φ
+  have hq' : q'.IsPrime := Ideal.IsPrime.comap φ
+  set q : Ideal R := q'.comap mkI
+  have hq : q.IsPrime := Ideal.IsPrime.comap mkI
   have hq_eq : q = P.comap f := by
     change Ideal.comap mkI (Ideal.comap φ P') = Ideal.comap f (Ideal.comap mkJ P')
     rw [Ideal.comap_comap, Ideal.comap_comap, hφ_mkI]
-  -- The four ring homs in the commutative square
   set α : Localization.AtPrime q →+* Localization.AtPrime q' :=
-    Localization.localRingHom q q' mkI rfl with hα_def
+    Localization.localRingHom q q' mkI rfl
   set β : Localization.AtPrime P →+* Localization.AtPrime P' :=
-    Localization.localRingHom P P' mkJ rfl with hβ_def
+    Localization.localRingHom P P' mkJ rfl
   set ftil : Localization.AtPrime q →+* Localization.AtPrime P :=
-    Localization.localRingHom q P f hq_eq with hftil_def
+    Localization.localRingHom q P f hq_eq
   set L : Localization.AtPrime q' →+* Localization.AtPrime P' :=
-    Localization.localRingHom q' P' φ rfl with hL_def
+    Localization.localRingHom q' P' φ rfl
   have hα_surj : Function.Surjective α :=
     RingHom.surjective_localRingHom_of_surjective mkI hmkI_surj q'
   have hβ_surj : Function.Surjective β :=
     RingHom.surjective_localRingHom_of_surjective mkJ hmkJ_surj P'
   have hftil_bij : Function.Bijective ftil := hf.localRingHom_of_eq hq_eq
-  -- Commutativity: L.comp α = β.comp ftil. We prove it pointwise via uniqueness on
-  -- elements of the form `algebraMap R _ r`.
   have hcomm : L.comp α = β.comp ftil := by
     refine IsLocalization.ringHom_ext q.primeCompl (S := Localization.AtPrime q) ?_
     ext r
@@ -112,17 +109,16 @@ lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
     have : (φ.comp mkI) r = (mkJ.comp f) r := by rw [hφ_mkI]
     simpa [RingHom.coe_comp, Function.comp_apply] using
       congrArg (algebraMap (S ⧸ J) (Localization.AtPrime P')) this
-  -- The kernels of α and β coincide with the maps of I and J respectively.
   have hsubmonoid_q : Submonoid.map mkI q.primeCompl = q'.primeCompl :=
     Submonoid.map_comap_eq_of_surjective hmkI_surj q'.primeCompl
   have hsubmonoid_P : Submonoid.map mkJ P.primeCompl = P'.primeCompl :=
     Submonoid.map_comap_eq_of_surjective hmkJ_surj P'.primeCompl
-  haveI : IsLocalization (Submonoid.map mkI q.primeCompl)
-      (Localization.AtPrime q') := by
-    rw [hsubmonoid_q]; infer_instance
-  haveI : IsLocalization (Submonoid.map mkJ P.primeCompl)
-      (Localization.AtPrime P') := by
-    rw [hsubmonoid_P]; infer_instance
+  have : IsLocalization (Submonoid.map mkI q.primeCompl) (Localization.AtPrime q') := by
+    rw [hsubmonoid_q]
+    infer_instance
+  have : IsLocalization (Submonoid.map mkJ P.primeCompl) (Localization.AtPrime P') := by
+    rw [hsubmonoid_P]
+    infer_instance
   have hker_α : RingHom.ker α = I.map (algebraMap R (Localization.AtPrime q)) := by
     have heq : α = IsLocalization.map (Localization.AtPrime q') mkI
         (hsubmonoid_q.symm ▸ q.primeCompl.le_comap_map) := rfl
@@ -131,7 +127,6 @@ lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
     have heq : β = IsLocalization.map (Localization.AtPrime P') mkJ
         (hsubmonoid_P.symm ▸ P.primeCompl.le_comap_map) := rfl
     rw [heq, IsLocalization.ker_map _ _ hsubmonoid_P, Ideal.mk_ker]
-  -- ftil ∘ algMap = algMap ∘ f, so (ker α).map ftil = ker β
   have hftil_alg : ftil.comp (algebraMap R (Localization.AtPrime q)) =
       (algebraMap S (Localization.AtPrime P)).comp f := by
     ext r
@@ -139,25 +134,23 @@ lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
   have hker_α_map : (RingHom.ker α).map ftil = RingHom.ker β := by
     rw [hker_α, hker_β, Ideal.map_map, hftil_alg, ← Ideal.map_map]
   refine ⟨?_, ?_⟩
-  · -- Injectivity of L
-    rw [injective_iff_map_eq_zero]
+  · rw [injective_iff_map_eq_zero]
     intro x hx
     obtain ⟨x', rfl⟩ := hα_surj x
     have hβftil : β (ftil x') = 0 := by
-      have hap := congrArg (fun g => g x') hcomm
+      have hap := congrArg (fun g ↦ g x') hcomm
       simp only [RingHom.coe_comp, Function.comp_apply] at hap
-      rw [← hap]; exact hx
+      rw [← hap]
+      exact hx
     have hker : ftil x' ∈ RingHom.ker β := hβftil
     rw [← hker_α_map] at hker
     have hcomap : x' ∈ Ideal.comap ftil ((RingHom.ker α).map ftil) := hker
-    rw [Ideal.comap_map_of_bijective ftil hftil_bij] at hcomap
-    exact hcomap
-  · -- Surjectivity of L
-    intro y
+    rwa [Ideal.comap_map_of_bijective ftil hftil_bij] at hcomap
+  · intro y
     obtain ⟨z, rfl⟩ := hβ_surj y
     obtain ⟨w, rfl⟩ := hftil_bij.2 z
     refine ⟨α w, ?_⟩
-    have hap := congrArg (fun g => g w) hcomm
+    have hap := congrArg (fun g ↦ g w) hcomm
     simp only [RingHom.coe_comp, Function.comp_apply] at hap
     exact hap
 

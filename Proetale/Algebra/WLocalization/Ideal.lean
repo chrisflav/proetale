@@ -33,7 +33,7 @@ open WLocalization PrimeSpectrum
 variable {A B : Type u} [CommRing A] [CommRing B] (I : Ideal A)
 
 instance isWLocalRing_generalization_one [IsWLocalRing A] : IsWLocalRing (Generalization 1 I) := by
-  haveI : WLocalSpace (PrimeSpectrum A) := IsWLocalRing.wLocalSpace_primeSepectrum
+  have : WLocalSpace (PrimeSpectrum A) := IsWLocalRing.wLocalSpace_primeSepectrum
   rw [isWLocalRing_iff]
   apply Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range
       (f := PrimeSpectrum.comap (algebraMap A (Generalization 1 I)))
@@ -52,14 +52,15 @@ theorem IsWLocalRing.zeroLocus_map_algebraMap_generalization_one_eq [IsWLocalRin
     (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     zeroLocus (I.map (algebraMap A (Generalization 1 I))) =
     closedPoints (PrimeSpectrum (Generalization 1 I)) := by
-  haveI : WLocalSpace (PrimeSpectrum A) := IsWLocalRing.wLocalSpace_primeSepectrum
+  have : WLocalSpace (PrimeSpectrum A) := IsWLocalRing.wLocalSpace_primeSepectrum
   have hEmb : Topology.IsEmbedding (PrimeSpectrum.comap (algebraMap A (Generalization 1 I))) :=
     PrimeSpectrum.localization_comap_isEmbedding _ (Generalization.submonoid 1 I)
   have hlocClosed : Generalization.locClosedSubset 1 I = zeroLocus I := by
     simp [Generalization.locClosedSubset, PrimeSpectrum.basicOpen_one]
   have hRange : Set.range (PrimeSpectrum.comap (algebraMap A (Generalization 1 I))) =
-                generalizationHull (zeroLocus I) := by
-    rw [← hlocClosed]; exact Generalization.range_algebraMap_generalization 1 I
+      generalizationHull (zeroLocus I) := by
+    rw [← hlocClosed]
+    exact Generalization.range_algebraMap_generalization 1 I
   have hStable : StableUnderSpecialization (Set.range
       (PrimeSpectrum.comap (algebraMap A (Generalization 1 I)))) := by
     rw [hRange]
@@ -86,17 +87,18 @@ theorem IsWLocalRing.zeroLocus_map_algebraMap_generalization_one_eq [IsWLocalRin
 
 theorem zeroLocus_map_algebraMap_subset_closedPoints [Algebra A B]
     (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime],
-    Algebra.IsAlgebraic m.ResidueField q.ResidueField)
+      Algebra.IsAlgebraic m.ResidueField q.ResidueField)
     (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     zeroLocus (I.map (algebraMap A B)) ⊆ closedPoints (PrimeSpectrum B) := by
   intro q hq
   simp only [mem_zeroLocus, SetLike.coe_subset_coe, mem_closedPoints_iff,
-    isClosed_singleton_iff_isMaximal] at ⊢ hq
+    isClosed_singleton_iff_isMaximal] at hq ⊢
   set m := comap (algebraMap A B) q with hm_def
   have hm : m.asIdeal.IsMaximal := by
     simpa [isClosed_singleton_iff_isMaximal] using hI (Ideal.le_comap_of_map_le hq)
   have : q.asIdeal.LiesOver m.asIdeal := ⟨PrimeSpectrum.ext_iff.mp hm_def⟩
-  have := h m.asIdeal q.asIdeal
+  have : Algebra.IsAlgebraic m.asIdeal.ResidueField q.asIdeal.ResidueField :=
+    h m.asIdeal q.asIdeal
   exact Ideal.IsMaximal.of_isAlgebraic m.asIdeal q.asIdeal
 
 variable (I) in
@@ -143,12 +145,13 @@ theorem zeroLocus_map_algebraMap_eq_closedPoints
   have hJ : zeroLocus (I.map (algebraMap A (WLocalization A))) ⊆
       closedPoints (PrimeSpectrum (WLocalization A)) :=
     zeroLocus_map_algebraMap_subset_closedPoints (fun m q _ _ _ ↦ by
-      haveI : Algebra.IsSeparable m.ResidueField q.ResidueField :=
+      have : Algebra.IsSeparable m.ResidueField q.ResidueField :=
         Algebra.IndEtale.isSeparable_residueField (R := A) (S := WLocalization A) m q
       infer_instance) hI
-  rw [show I.map (algebraMap A I.WLocalization) = (I.map (algebraMap A (WLocalization A))).map
-      (algebraMap (WLocalization A) I.WLocalization) by
-    rw [IsScalarTower.algebraMap_eq A (WLocalization A) I.WLocalization, Ideal.map_map]]
+  have hmap : I.map (algebraMap A I.WLocalization) = (I.map (algebraMap A (WLocalization A))).map
+      (algebraMap (WLocalization A) I.WLocalization) := by
+    rw [IsScalarTower.algebraMap_eq A (WLocalization A) I.WLocalization, Ideal.map_map]
+  rw [hmap]
   exact IsWLocalRing.zeroLocus_map_algebraMap_generalization_one_eq hJ
 
 variable (I) in
@@ -162,7 +165,7 @@ theorem quotientMap_algebraMap_bijective
     rw [hJ_def, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
   have hα := WLocalization.quotientMap_algebraMap_bijective_of_ideal (A := A) I hI
   -- Since `Ideal.Quotient.mk J 1 = 1`, `WLocalization A ⧸ J → Localization.Away (mk J 1)` is an
-  -- isomorphism by `IsLocalization.atUnits`, so elements of `Generalization.submonoid 1 J`,
+  -- isomorphism via `IsLocalization.atUnits`, so elements of `Generalization.submonoid 1 J`,
   -- which are units in the target, are already units in `WLocalization A ⧸ J`.
   have h1 : Ideal.Quotient.mk J (1 : WLocalization A) = (1 : WLocalization A ⧸ J) := map_one _
   have hpow : Submonoid.powers (Ideal.Quotient.mk J (1 : WLocalization A)) ≤
@@ -174,8 +177,7 @@ theorem quotientMap_algebraMap_bijective
     (IsLocalization.atUnits (WLocalization A ⧸ J)
       (Submonoid.powers (Ideal.Quotient.mk J (1 : WLocalization A)))
       (S := Localization.Away (Ideal.Quotient.mk J (1 : WLocalization A))) hpow).toRingEquiv
-  have hsub_unit : ∀ m ∈ Generalization.submonoid 1 J,
-      IsUnit (Ideal.Quotient.mk J m) := by
+  have hsub_unit : ∀ m ∈ Generalization.submonoid 1 J, IsUnit (Ideal.Quotient.mk J m) := by
     intro m hm
     have hu : IsUnit (algebraMap (WLocalization A) (Localization.Away
         (Ideal.Quotient.mk J (1 : WLocalization A))) m) := Submonoid.mem_comap.mp hm
@@ -202,14 +204,10 @@ theorem quotientMap_algebraMap_bijective
         exact hmem
       rw [← hu] at hprod
       have hsub : Ideal.Quotient.mk J (x - y) = 0 := (Units.mul_right_eq_zero u).mp hprod
-      rw [map_sub, sub_eq_zero] at hsub
-      exact hsub
+      rwa [map_sub, sub_eq_zero] at hsub
     · intro y
       obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
-      obtain ⟨x, hrs⟩ := IsLocalization.surj (Generalization.submonoid 1 J) y
-      set r := x.1
-      set s := x.2.1
-      have hs : s ∈ Generalization.submonoid 1 J := x.2.2
+      obtain ⟨⟨r, s, hs⟩, hrs⟩ := IsLocalization.surj (Generalization.submonoid 1 J) y
       obtain ⟨u, hueq⟩ := hsub_unit s hs
       obtain ⟨t, ht⟩ : ∃ t : WLocalization A, s * t - 1 ∈ J := by
         obtain ⟨t, ht⟩ := Ideal.Quotient.mk_surjective (↑u⁻¹ : WLocalization A ⧸ J)
@@ -286,20 +284,21 @@ theorem algebraMap_specComap_preimage_closedPoints_eq [IsWLocalRing A] [Algebra 
     closedPoints (PrimeSpectrum (I.map (algebraMap A B)).WLocalization) := by
   set J := I.map (algebraMap A B)
   have hJ_sub : zeroLocus J ⊆ closedPoints (PrimeSpectrum B) :=
-    zeroLocus_map_algebraMap_subset_closedPoints h (hI ▸ le_refl _)
-  rw [show I.map (algebraMap A J.WLocalization) = J.map (algebraMap B J.WLocalization) by
-    rw [IsScalarTower.algebraMap_eq A B J.WLocalization, Ideal.map_map]]
+    zeroLocus_map_algebraMap_subset_closedPoints h hI.le
+  have hmap : I.map (algebraMap A J.WLocalization) = J.map (algebraMap B J.WLocalization) := by
+    rw [IsScalarTower.algebraMap_eq A B J.WLocalization, Ideal.map_map]
+  rw [hmap]
   exact zeroLocus_map_algebraMap_eq_closedPoints hJ_sub
 
 theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.FaithfullyFlat A B]
-  (hI : zeroLocus I = closedPoints (PrimeSpectrum A))
-  (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime],
-    Algebra.IsAlgebraic m.ResidueField q.ResidueField) :
-  Module.FaithfullyFlat A (I.map (algebraMap A B)).WLocalization := by
+    (hI : zeroLocus I = closedPoints (PrimeSpectrum A))
+    (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime],
+      Algebra.IsAlgebraic m.ResidueField q.ResidueField) :
+    Module.FaithfullyFlat A (I.map (algebraMap A B)).WLocalization := by
   have : Module.Flat A (I.map (algebraMap A B)).WLocalization :=
     Module.Flat.trans A B (I.map (algebraMap A B)).WLocalization
   have hJ_sub : zeroLocus (I.map (algebraMap A B)) ⊆ closedPoints (PrimeSpectrum B) :=
-    zeroLocus_map_algebraMap_subset_closedPoints h (hI ▸ le_refl _)
+    zeroLocus_map_algebraMap_subset_closedPoints h hI.le
   apply Module.FaithfullyFlat.of_comap_surjective
   apply Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage
   rw [← hI]
