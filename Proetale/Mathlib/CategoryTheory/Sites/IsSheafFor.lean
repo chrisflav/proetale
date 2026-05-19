@@ -89,8 +89,10 @@ lemma Presieve.IsSheafFor.of_isSheafFor_pullback' (F : Cᵒᵖ ⥤ Type*) {X : C
       haveI := HasPairwisePullbacks.has_pullbacks hf hg
       ∃ (R : Presieve (pullback f g)), Presieve.IsSeparatedFor F R ∧
         ∀ {W : C} (w : W ⟶ pullback f g),
-          R w → Presieve.IsSeparatedFor F ((Sieve.generate T).pullback (w ≫ pullback.fst f g ≫ f)).arrows)
-    (H : ∀ {Y : C} (f : Y ⟶ X), S f → Presieve.IsSheafFor F ((Sieve.generate T).pullback f).arrows) :
+          R w → Presieve.IsSeparatedFor F
+            ((Sieve.generate T).pullback (w ≫ pullback.fst f g ≫ f)).arrows)
+    (H : ∀ {Y : C} (f : Y ⟶ X),
+      S f → Presieve.IsSheafFor F ((Sieve.generate T).pullback f).arrows) :
     Presieve.IsSheafFor F T := by
   rw [isSheafFor_iff_generate]
   apply Presieve.IsSheafFor.of_isSheafFor_pullback F S _ _ hF'

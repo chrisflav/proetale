@@ -24,7 +24,7 @@ theorem Topology.IsClosedEmbedding.spectralSpace {f : X → Y} (hf : IsClosedEmb
     intro V1 V2 open1 cpt1 open2 cpt2
     obtain ⟨U1, open1, cpt1, h1⟩ := hf.isOpen_and_isCompact_and_preimage_eq open1 cpt1
     obtain ⟨U2, open2, cpt2, h2⟩ := hf.isOpen_and_isCompact_and_preimage_eq open2 cpt2
-    simp [← h1, ← h2, ← Set.preimage_inter]
+    simp only [← h1, ← h2, ← Set.preimage_inter]
     apply IsCompact.preimage_of_isOpen hf.isProperMap.isSpectralMap
     · exact QuasiSeparatedSpace.inter_isCompact U1 U2 open1 cpt1 open2 cpt2
     · exact open1.inter open2

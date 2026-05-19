@@ -143,9 +143,11 @@ theorem _root_.Module.Flat.of_flat_lmul'_of_flat [Module.Flat R M] : Module.Flat
   simp only [AlgHom.toRingHom_eq_coe, map_sum, RingHom.coe_coe,
     Algebra.TensorProduct.lmul'_apply_tmul] at ht
   simp only [Finset.sum_mul, mul_sub, Algebra.TensorProduct.tmul_mul_tmul, sub_eq_zero] at ht'
-  let φ (i : Fin l) : S ⊗[R] S →ₗ[R] S ⊗[R] M := LinearMap.lTensor S (LinearMap.toSpanSingleton S M (x i))
+  let φ (i : Fin l) : S ⊗[R] S →ₗ[R] S ⊗[R] M :=
+    LinearMap.lTensor S (LinearMap.toSpanSingleton S M (x i))
   have hg : ∑ y : s ×ˢ Finset.univ, (y.1.1.1 * f y.1.2) ⊗ₜ[R] (y.1.1.2 • x y.1.2) = 0 := by
-    simp only [Finset.sum_coe_sort _ (fun y : (S × S) × Fin l ↦ (y.1.1 * f y.2) ⊗ₜ[R] (y.1.2 • x y.2)),
+    simp only [Finset.sum_coe_sort _
+        (fun y : (S × S) × Fin l ↦ (y.1.1 * f y.2) ⊗ₜ[R] (y.1.2 • x y.2)),
       Finset.sum_product, Finset.sum_comm (s := s)]
     replace ht' := by simpa [φ] using congr(fun i ↦ (φ i) $(ht' i))
     simp only [← ht', Finset.sum_comm (t := s), ← tmul_sum, mul_smul, ← Finset.smul_sum, hx,
@@ -160,7 +162,8 @@ theorem _root_.Module.Flat.of_flat_lmul'_of_flat [Module.Flat R M] : Module.Flat
   · simp only [Finset.mul_sum, ← ha' j, ← Finset.sum_product_right']
     exact Finset.sum_bij' (fun a _ ↦ ⟨⟨a.1, a.2⟩, by simp⟩) (fun a _ ↦ ⟨⟨a.1.1, by grind⟩, a.1.2⟩)
       (by simp) (by simp) (by simp) (by simp)
-      (by simp_rw [← mul_assoc, mul_comm (f _), mul_comm (_ * _), Algebra.smul_def, forall_true_iff])
+      (by simp_rw [← mul_assoc, mul_comm (f _), mul_comm (_ * _), Algebra.smul_def,
+        forall_true_iff])
 
 include h in
 @[stacks 092I "(1)"]

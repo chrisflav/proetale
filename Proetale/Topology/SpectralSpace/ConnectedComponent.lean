@@ -125,15 +125,15 @@ theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
   · refine hVSn.elim fun y hy ↦ ?_
     have hS : S ⊆ U ∩ WW := by
       fapply Set.iInter_subset_of_subset
-      exact ⟨_, hUWW, ⟨hxU, ⟨hxW, hxW'⟩⟩⟩
-      rfl
+      · exact ⟨_, hUWW, ⟨hxU, ⟨hxW, hxW'⟩⟩⟩
+      · rfl
     have : y ∈ U ∩ V ∩ S := by grind
     grind
   · refine hUSn.elim fun y hy ↦ ?_
     have hS : S ⊆ V ∩ WW := by
       fapply Set.iInter_subset_of_subset
-      exact ⟨_, hVWW, ⟨hxV, ⟨hxW, hxW'⟩⟩⟩
-      rfl
+      · exact ⟨_, hVWW, ⟨hxV, ⟨hxW, hxW'⟩⟩⟩
+      · rfl
     have : y ∈ U ∩ V ∩ S := by grind
     grind
 
@@ -183,7 +183,7 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
         rintro ⟨U, hUs, hxU⟩
         exact hxU U.2.2)
     · intro x hx
-      simp
+      simp only [Set.coe_setOf, Set.mem_setOf_eq, Set.mem_iInter, Subtype.forall]
       intro U hU hTU
       exact hTU hx
   · rintro ⟨J, hJ⟩
@@ -211,7 +211,7 @@ instance compactSpace_connectedComponent {X : Type u} [TopologicalSpace X] [Comp
 
 
 @[stacks 0906]
-instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactSpace X]
+instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X] [CompactSpace X]
     [QuasiSeparatedSpace X] [PrespectralSpace X] : T2Space (ConnectedComponents X) := by
   rw [t2Space_iff]
   intro a b hab
@@ -225,13 +225,16 @@ instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactS
     rw [← sInter_isClopen_and_mem_eq_connectedComponent]
     exact Set.mem_iInter.mpr fun ⟨U, hU1, hU2⟩ => habs U hU1 hU2
   obtain ⟨U, hU, hxU, hyU⟩ := hy'
-  have hU' : IsClopen ((↑) '' U : Set (ConnectedComponents X)) := hU.connectedComponents_image_isClopen
-  refine ⟨(↑) '' U, ((↑) '' U)ᶜ, hU'.2, hU'.1.isOpen_compl, Set.mem_image_of_mem _ hxU, ?_, disjoint_compl_right⟩
+  have hU' : IsClopen ((↑) '' U : Set (ConnectedComponents X)) :=
+    hU.connectedComponents_image_isClopen
+  refine ⟨(↑) '' U, ((↑) '' U)ᶜ, hU'.2, hU'.1.isOpen_compl, Set.mem_image_of_mem _ hxU, ?_,
+    disjoint_compl_right⟩
   simp only [Set.mem_compl_iff, Set.mem_image, not_exists, not_and]
   intro z hzU hzy
   apply hyU
   rw [ConnectedComponents.coe_eq_coe'] at hzy
-  exact hU.connectedComponent_subset hzU (connectedComponent_eq_iff_mem.mp (connectedComponent_eq hzy))
+  exact hU.connectedComponent_subset hzU
+    (connectedComponent_eq_iff_mem.mp (connectedComponent_eq hzy))
 
 end
 
@@ -369,6 +372,7 @@ theorem ConnectedComponents.isHomeomorph_lift_of_isPullback {Y T : Type u} [Topo
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     IsHomeomorph (connectedComponentsLift g.2) :=
   let _ := IsPullback.compactSpace pb
-  (isHomeomorph_iff_continuous_bijective (X := ConnectedComponents Y) (Y := T)).mpr ⟨connectedComponentsLift_continuous g.2, lift_bijective_of_isPullback pb⟩
+  (isHomeomorph_iff_continuous_bijective (X := ConnectedComponents Y) (Y := T)).mpr
+    ⟨connectedComponentsLift_continuous g.2, lift_bijective_of_isPullback pb⟩
 
 end Spectral

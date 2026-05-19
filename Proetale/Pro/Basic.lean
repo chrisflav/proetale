@@ -236,7 +236,8 @@ def Pro (C : Type*) [Category C] := (Ind Cᵒᵖ)ᵒᵖ
 noncomputable instance : Category (Pro C) :=
   inferInstanceAs <| Category (Ind Cᵒᵖ)ᵒᵖ
 
-def PreOneHypercover.functor (F : C ⥤ D) (X : C) : PreOneHypercover.{w} X ⥤ PreOneHypercover.{w} (F.obj X) where
+def PreOneHypercover.functor (F : C ⥤ D) (X : C) :
+    PreOneHypercover.{w} X ⥤ PreOneHypercover.{w} (F.obj X) where
   obj E := E.map F
   map {E G} f :=
     { s₀ := f.s₀

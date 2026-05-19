@@ -11,8 +11,8 @@ open CategoryTheory Limits Opposite
 namespace CategoryTheory
 
 @[simp]
-lemma GrothendieckTopology.pullback_hom_mem_iff {C : Type*} [Category C] {J : GrothendieckTopology C}
-    {X Y : C} {e : X ≅ Y} {S : Sieve Y} :
+lemma GrothendieckTopology.pullback_hom_mem_iff {C : Type*} [Category C]
+    {J : GrothendieckTopology C} {X Y : C} {e : X ≅ Y} {S : Sieve Y} :
     S.pullback e.hom ∈ J X ↔ S ∈ J Y := by
   refine ⟨fun h ↦ ?_, fun h ↦ J.pullback_stable e.hom h⟩
   simpa using J.pullback_stable e.inv h
