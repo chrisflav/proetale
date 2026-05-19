@@ -126,7 +126,7 @@ noncomputable def ConnectedComponents.prodMap :
 def ConnectedComponents.mkHomeomorph [TotallyDisconnectedSpace S] : S ≃ₜ ConnectedComponents S where
   toFun := mk
   invFun := continuous_id.connectedComponentsLift
-  left_inv := sorry
-  right_inv := sorry
+  left_inv := fun _ => rfl
+  right_inv := ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
   continuous_toFun := continuous_coe
   continuous_invFun := continuous_id.connectedComponentsLift_continuous
