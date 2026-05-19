@@ -133,7 +133,7 @@ lemma Functor.coinducedTopology_comp (J : GrothendieckTopology C) (F : C ⥤ D) 
     (F ⋙ G).coinducedTopology J = G.coinducedTopology (F.coinducedTopology J) := by
   refine le_antisymm ?_ ?_
   · intro X S hS
-    simp [Functor.mem_coinducedTopology_iff] at hS ⊢
+    simp only [Functor.mem_coinducedTopology_iff] at hS ⊢
     intro V f U g
     rw [← Sieve.functorPullback_pullback, ← Sieve.functorPullback_comp, ← Sieve.pullback_comp]
     apply hS
@@ -359,9 +359,9 @@ lemma foobarasdfasdf (J : GrothendieckTopology C) :
     (F.coinducedTopology J) F :=
     CoverPreserving.of_isContinuous _ _ _
   have := this.cover_preserve hS
-  simp [Functor.mem_coinducedTopology_iff] at this
+  simp only [Functor.mem_coinducedTopology_iff] at this
   have := this U (𝟙 _)
-  simp at this
+  simp only [Sieve.pullback_id] at this
   refine J.superset_covering ?_ this
   sorry
 
