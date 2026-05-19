@@ -7,7 +7,7 @@ import Mathlib
 import Proetale.FromPi1.Etale
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
-import Proetale.Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Proetale.Mathlib.CategoryTheory.Limits.Comma
 import Proetale.Topology.Flat.Sheaf
 import Proetale.Topology.Coherent.Etale
