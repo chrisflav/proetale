@@ -93,7 +93,8 @@ lemma isPullback_restrictPreimage {X Y : TopCat} (f : X ⟶ Y) (U : Set Y) :
       (ofHom <| ⟨Subtype.val, by fun_prop⟩) := by
   refine ⟨⟨by ext; simp⟩, ⟨Limits.PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
   · intro s
-    refine ⟨fun x ↦ ⟨s.fst x, by simp [show _ = _ by simpa using congr($(s.condition) x)]⟩, by fun_prop⟩
+    refine ⟨fun x ↦ ⟨s.fst x, by simp [show _ = _ by simpa using congr($(s.condition) x)]⟩,
+      by fun_prop⟩
   · intro; rfl
   · intro s
     ext

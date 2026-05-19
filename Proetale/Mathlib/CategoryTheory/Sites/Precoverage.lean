@@ -10,7 +10,7 @@ lemma Precoverage.mem_coverings_singleton_of_isPullback [K.IsStableUnderBaseChan
     Presieve.singleton fst ∈ K X := by
   rw [← Presieve.ofArrows_pUnit.{_, _, 0}] at hg ⊢
   apply K.mem_coverings_of_isPullback _ hg
-  intro _
-  apply h
+  · intro _
+    apply h
 
 end CategoryTheory

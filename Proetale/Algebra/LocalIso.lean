@@ -17,8 +17,9 @@ A ring homomorphism is a local isomorphism if source locally (in the geometric s
 it is a standard open immersion.
 -/
 
-instance isScalarTower_localizationAlgebra {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
-    [CommSemiring S] [Algebra R S] {Rₘ : Type*} {Sₘ : Type*} [CommSemiring Rₘ] [CommSemiring Sₘ]
+instance isScalarTower_localizationAlgebra {R : Type*} [CommSemiring R] (M : Submonoid R)
+    (S : Type*) [CommSemiring S] [Algebra R S]
+    {Rₘ : Type*} {Sₘ : Type*} [CommSemiring Rₘ] [CommSemiring Sₘ]
     [Algebra R Rₘ] [IsLocalization M Rₘ] [Algebra S Sₘ]
     [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
     [Algebra R Sₘ] [IsScalarTower R S Sₘ] :
@@ -55,7 +56,7 @@ lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.rang
   intro q hq
   rw [← PrimeSpectrum.iSup_basicOpen_eq_top_iff] at h
   have : ⟨q, hq⟩ ∈ ⨆ i, PrimeSpectrum.basicOpen (f i)  := by simp [h]
-  simp at this
+  simp only [TopologicalSpace.Opens.mem_iSup] at this
   obtain ⟨i, hi⟩ := this
   have : ⟨q, hq⟩ ∈ PrimeSpectrum.basicOpen (f i) := hi
   rw [← SetLike.mem_coe, ← PrimeSpectrum.localization_away_comap_range (T i)] at this
@@ -65,26 +66,28 @@ lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.rang
   use g * (f i)
   constructor
   · apply Ideal.IsPrime.mul_notMem hq _ hi
-    simp [PrimeSpectrum.ext_iff] at hq'
+    simp only [PrimeSpectrum.ext_iff, PrimeSpectrum.comap_asIdeal] at hq'
     rw [← hq']
-    simp
+    simp only [Ideal.mem_comap]
     rw [← hg]
     rwa [Ideal.mul_unit_mem_iff_mem]
     apply IsUnit.pow
     apply IsLocalization.Away.algebraMap_isUnit
-  · have : IsLocalization.Away (g * (f i)) (Localization.Away (algebraMap S (T i) g)) := .mul (T i) _ _ _
+  · have : IsLocalization.Away (g * (f i)) (Localization.Away (algebraMap S (T i) g)) :=
+      .mul (T i) _ _ _
     let e : Localization.Away (g * (f i)) ≃ₐ[S] (Localization.Away (algebraMap S (T i) g)) :=
       Localization.algEquiv _ _
     let : Algebra (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) :=
       RingHom.toAlgebra e.symm.toAlgHom
-    have : IsScalarTower R (Localization.Away (algebraMap S (T i) g)) (Localization.Away (g * (f i))) := by
+    have : IsScalarTower R (Localization.Away (algebraMap S (T i) g))
+        (Localization.Away (g * (f i))) := by
       refine .of_algebraMap_eq' ?_
       rw [RingHom.algebraMap_toAlgebra, ← RingHom.cancel_left (g := e.toRingHom) e.injective]
       ext
       simp only [RingEquiv.toRingHom_eq_coe,
         AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
         AlgEquiv.toAlgHom_eq_coe, AlgHomClass.toRingHom_toAlgHom, AlgEquiv.apply_symm_apply]
-      simp [e]
+      simp only [Localization.algEquiv_apply, e]
       rw [IsScalarTower.algebraMap_apply R S, IsLocalization.map_eq, RingHomCompTriple.comp_apply,
         ← IsScalarTower.algebraMap_apply R S]
     have : IsStandardOpenImmersion
@@ -97,7 +100,8 @@ lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.rang
         apply IsLocalization.away_of_isUnit_of_bijective
         · exact IsUnit.map _ (IsUnit.pow _ (IsLocalization.Away.algebraMap_isUnit _))
         · exact Function.bijective_id
-      let e' : Localization.Away (g' * (algebraMap S (T i) (f i))^n) ≃ₐ[T i] Localization.Away g' := by
+      let e' : Localization.Away (g' * (algebraMap S (T i) (f i))^n) ≃ₐ[T i]
+          Localization.Away g' := by
         exact Localization.algEquiv _ _
       apply IsStandardOpenImmersion.of_algEquiv _ _ _ (e'.symm.restrictScalars R)
     apply IsStandardOpenImmersion.trans _ (Localization.Away (algebraMap S (T i) g)) _
@@ -228,7 +232,7 @@ namespace RingHom.IsLocalIso
 lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
   algebraize [f]
   haveI := Algebra.IsStandardOpenImmersion.of_bijective R S hf
-  show Algebra.IsLocalIso R S
+  change Algebra.IsLocalIso R S
   infer_instance
 
 /-- The composition of local isomorphisms is a local isomorphism. -/

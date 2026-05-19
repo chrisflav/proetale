@@ -28,7 +28,7 @@ universe u
 
 open WLocalization PrimeSpectrum
 
-variable {A B : Type u} [CommRing A] [CommRing B] (I :Ideal A)
+variable {A B : Type u} [CommRing A] [CommRing B] (I : Ideal A)
 
 instance isWLocalRing_generalization_one [IsWLocalRing A] : IsWLocalRing (Generalization 1 I) :=
   sorry
@@ -71,7 +71,7 @@ noncomputable instance commRing : CommRing I.WLocalization := fast_instance%
 instance isWLocalRing : IsWLocalRing I.WLocalization :=
   inferInstanceAs <| IsWLocalRing <| Generalization 1 (I.map (algebraMap A (WLocalization A)))
 
-noncomputable instance algebraWLocalization: Algebra (WLocalization A) I.WLocalization :=
+noncomputable instance algebraWLocalization : Algebra (WLocalization A) I.WLocalization :=
   fast_instance% inferInstanceAs <| Algebra (WLocalization A) <|
     Generalization 1 (I.map (algebraMap A (WLocalization A)))
 
@@ -105,18 +105,20 @@ theorem bijOn_zeroLocus_map : Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLo
       ← range_comap_of_surjective _ _ Quotient.mk_surjective,
       ← Set.image_univ, ← Set.image_univ]
     apply Set.bijOn_image_image
-        (f := PrimeSpectrum.comap (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map))
+        (f := PrimeSpectrum.comap
+          (Ideal.quotientMap _ (algebraMap A I.WLocalization) I.le_comap_map))
     · intro
       ext1
       simp only [comap_asIdeal, comap_comap, Quotient.mk_comp_algebraMap]
       congr 1
     · rw [Set.bijOn_univ]
-      exact (PrimeSpectrum.comapEquiv (RingEquiv.ofBijective _ (quotientMap_algebraMap_bijective I))).symm.bijective
+      exact (PrimeSpectrum.comapEquiv
+        (RingEquiv.ofBijective _ (quotientMap_algebraMap_bijective I))).symm.bijective
     · apply Set.InjOn.image_of_comp
       rw [Set.injOn_univ, ← PrimeSpectrum.comap_comp]
       apply PrimeSpectrum.comap_injective_of_surjective
       rw [← Ideal.quotientMap_comp_mk I.le_comap_map]
-      simp
+      simp only [RingHom.coe_comp]
       apply Function.Surjective.comp
       · exact (quotientMap_algebraMap_bijective I).surjective
       · exact Ideal.Quotient.mk_surjective
