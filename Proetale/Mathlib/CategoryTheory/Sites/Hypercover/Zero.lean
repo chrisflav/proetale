@@ -21,7 +21,7 @@ lemma PreZeroHypercover.mem_of_iso {C : Type*} [Category* C] {K : Precoverage C}
   have : F.presieve₀ =
       Presieve.ofArrows (fun (i : Σ (_ : F.I₀), Unit) ↦ _)
         (fun i ↦ e.inv.h₀ i.1 ≫ E.f _) := by
-    simp [PreZeroHypercover.presieve₀]
+    simp only [Hom.w₀]
     refine le_antisymm ?_ ?_
     · rw [Presieve.ofArrows_le_iff]
       intro i

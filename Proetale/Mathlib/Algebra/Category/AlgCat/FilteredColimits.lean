@@ -68,7 +68,7 @@ private lemma algMapToColimit_commutes (r : R) (x : (algColimitRingCocone F).pt)
   rw [algMapToColimit_eq F j r]
   let f : F.obj j →+* (algColimitRingCocone F).pt :=
     ((algColimitRingCocone F).ι.app j).hom
-  show f (algebraMap R (F.obj j) r) * f y = f y * f (algebraMap R (F.obj j) r)
+  change f (algebraMap R (F.obj j) r) * f y = f y * f (algebraMap R (F.obj j) r)
   rw [← map_mul, ← map_mul, Algebra.commutes]
 
 /-- The `R`-algebra structure on the colimit ring. -/
