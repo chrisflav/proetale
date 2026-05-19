@@ -183,7 +183,7 @@ theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
         rintro ⟨U, hUs, hxU⟩
         exact hxU U.2.2)
     · intro x hx
-      simp
+      simp only [Set.coe_setOf, Set.mem_setOf_eq, Set.mem_iInter, Subtype.forall]
       intro U hU hTU
       exact hTU hx
   · rintro ⟨J, hJ⟩
