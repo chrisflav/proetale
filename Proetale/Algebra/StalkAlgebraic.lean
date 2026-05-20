@@ -14,7 +14,10 @@ is maximal. -/
 @[stacks 00GA]
 lemma Ideal.IsMaximal.of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
     (m : Ideal A) [m.IsMaximal] (q : Ideal B) [Ideal.IsPrime q]
-    [q.LiesOver m] [Algebra.IsAlgebraic m.ResidueField q.ResidueField] : q.IsMaximal := by
+    [q.LiesOver m]
+    [Algebra (Localization.AtPrime m) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra m q]
+    [Algebra.IsAlgebraic m.ResidueField q.ResidueField] : q.IsMaximal := by
   rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
   letI := Ideal.Quotient.field m
   let lf : m.ResidueField →+* B ⧸ q :=
@@ -39,8 +42,11 @@ lemma Ideal.IsMaximal.of_isAlgebraic {A B : Type*} [CommRing A] [CommRing B] [Al
 /-- Let `B` be an `A`-algebra inducing algebraic extensions on residue fields.
 If `V(I) ⊆ Spec A` only contains closed points, also `V(IB)` only contains closed points. -/
 lemma PrimeSpectrum.zeroLocus_subset_closedPoints_of_isAlgebraic {A B : Type*} [CommRing A]
-    [CommRing B] [Algebra A B] (I : Ideal A) (ha : ∀ (q : Ideal B) [q.IsPrime], Algebra.IsAlgebraic
-      (q.comap (algebraMap A B)).ResidueField q.ResidueField)
+    [CommRing B] [Algebra A B] (I : Ideal A)
+    (ha : ∀ (q : Ideal B) [q.IsPrime]
+      [Algebra (Localization.AtPrime (q.comap (algebraMap A B))) (Localization.AtPrime q)]
+      [Localization.AtPrime.IsLiesOverAlgebra (q.comap (algebraMap A B)) q],
+      Algebra.IsAlgebraic (q.comap (algebraMap A B)).ResidueField q.ResidueField)
     (hc : PrimeSpectrum.zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     PrimeSpectrum.zeroLocus (I.map (algebraMap A B)) ⊆ closedPoints (PrimeSpectrum B) := by
   intro q hq
@@ -51,6 +57,7 @@ lemma PrimeSpectrum.zeroLocus_subset_closedPoints_of_isAlgebraic {A B : Type*} [
     rw [← PrimeSpectrum.isClosed_singleton_iff_isMaximal]
     exact hc hi
   have hhh : q.asIdeal.LiesOver p.asIdeal := ⟨rfl⟩
+  letI := Localization.AtPrime.algebraOfLiesOver p.asIdeal q.asIdeal
   have haa : Algebra.IsAlgebraic (p.asIdeal.ResidueField) (q.asIdeal.ResidueField) := ha _
   simpa [PrimeSpectrum.isClosed_singleton_iff_isMaximal] using .of_isAlgebraic p.asIdeal q.asIdeal
 

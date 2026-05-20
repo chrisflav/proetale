@@ -86,7 +86,9 @@ theorem IsWLocalRing.zeroLocus_map_algebraMap_generalization_one_eq [IsWLocalRin
     rwa [heq, comap_asIdeal, SetLike.coe_subset_coe] at hy'
 
 theorem zeroLocus_map_algebraMap_subset_closedPoints [Algebra A B]
-    (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime],
+    (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime]
+      [Algebra (Localization.AtPrime m) (Localization.AtPrime q)]
+      [Localization.AtPrime.IsLiesOverAlgebra m q],
       Algebra.IsAlgebraic m.ResidueField q.ResidueField)
     (hI : zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     zeroLocus (I.map (algebraMap A B)) ⊆ closedPoints (PrimeSpectrum B) := by
@@ -97,6 +99,7 @@ theorem zeroLocus_map_algebraMap_subset_closedPoints [Algebra A B]
   have hm : m.asIdeal.IsMaximal := by
     simpa [isClosed_singleton_iff_isMaximal] using hI (Ideal.le_comap_of_map_le hq)
   have : q.asIdeal.LiesOver m.asIdeal := ⟨PrimeSpectrum.ext_iff.mp hm_def⟩
+  letI := Localization.AtPrime.algebraOfLiesOver m.asIdeal q.asIdeal
   have : Algebra.IsAlgebraic m.asIdeal.ResidueField q.asIdeal.ResidueField :=
     h m.asIdeal q.asIdeal
   exact Ideal.IsMaximal.of_isAlgebraic m.asIdeal q.asIdeal
@@ -144,7 +147,7 @@ theorem zeroLocus_map_algebraMap_eq_closedPoints
     closedPoints (PrimeSpectrum I.WLocalization) := by
   have hJ : zeroLocus (I.map (algebraMap A (WLocalization A))) ⊆
       closedPoints (PrimeSpectrum (WLocalization A)) :=
-    zeroLocus_map_algebraMap_subset_closedPoints (fun m q _ _ _ ↦ by
+    zeroLocus_map_algebraMap_subset_closedPoints (fun m q _ _ _ _ _ ↦ by
       have : Algebra.IsSeparable m.ResidueField q.ResidueField :=
         Algebra.IndEtale.isSeparable_residueField (R := A) (S := WLocalization A) m q
       infer_instance) hI
