@@ -78,7 +78,7 @@ lemma of_isLocalization [AbsolutelyFlat R] (s : Submonoid R)
   obtain ⟨I', hI'⟩ : ∃ I' : Ideal R, I' = I.comap (algebraMap R S) := ⟨_, rfl⟩
   have := AbsolutelyFlat.flat I'
   have : I = Submodule.localized' S s (Algebra.linearMap R S) I' := by
-    simp only [Ideal.localized'_eq_map, hI', IsLocalization.map_comap s S I]
+    simp only [Ideal.localized'_eq_map, hI', IsLocalization.map_under s S I]
   subst this
   let f := Submodule.toLocalizedQuotient' S s (Algebra.linearMap R S) I'
   exact Module.Flat.of_isLocalizedModule (R := R) (M := R ⧸ I') S s f

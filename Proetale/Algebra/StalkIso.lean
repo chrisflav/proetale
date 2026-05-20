@@ -174,7 +174,7 @@ lemma of_span_unit_ideal {f : R →+* S} (s : Set S)
   haveI : p_g.IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g) Sg p hp hpM
   have hcomap_pg : p_g.comap (algebraMap S Sg) = p :=
-    IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
+    IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
   have h_alg_bij : Function.Bijective
       (Localization.localRingHom p p_g (algebraMap S Sg) hcomap_pg.symm) := by
     letI : IsLocalization.AtPrime (Localization.AtPrime p_g) p := by
