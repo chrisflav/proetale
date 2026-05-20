@@ -262,8 +262,53 @@ lemma zeroLocus_ideal_eq : zeroLocus (ideal A) = closedPoints (PrimeSpectrum (WL
 instance isWLocalRing : IsWLocalRing (WLocalization A) :=
   sorry
 
-instance indZariski : Algebra.IndZariski A (WLocalization A) :=
-  sorry
+/-- `Stratification.Index E` is finite: each index is determined by its `left` ⊆ E,
+since `right = E \ left`. -/
+private instance finite_stratification_index (E : Finset A) :
+    Finite (Stratification.Index E) := by
+  classical
+  have left_mem : ∀ i : Stratification.Index E, i.left ∈ E.powerset := fun i =>
+    Finset.mem_powerset.mpr fun a ha =>
+      Finset.mem_coe.mp (i.union_eq ▸ Set.mem_union_left _ (Finset.mem_coe.mpr ha))
+  apply Finite.of_injective
+    (fun i => (⟨i.left, left_mem i⟩ : {s // s ∈ E.powerset}))
+  intro i j hij
+  simp only [Subtype.mk.injEq] at hij
+  have hri : ∀ k : Stratification.Index E, k.right = E \ k.left := by
+    intro k
+    ext a
+    simp only [Finset.mem_sdiff]
+    refine ⟨fun ha => ⟨?_, ?_⟩, fun ⟨haE, hal⟩ => ?_⟩
+    · exact Finset.mem_coe.mp
+        (k.union_eq ▸ Set.mem_union_right _ (Finset.mem_coe.mpr ha))
+    · exact fun h => Finset.disjoint_left.mp k.disjoint h ha
+    · have hmem : (a : A) ∈ (k.left : Set A) ∪ (k.right : Set A) :=
+        k.union_eq ▸ Finset.mem_coe.mpr haE
+      exact hmem.resolve_left (Finset.mem_coe.mp · |> hal)
+  have hr : i.right = j.right := by rw [hri i, hri j, hij]
+  cases i; cases j; simp only [Stratification.Index.mk.injEq]; exact ⟨hij, hr⟩
+
+set_option maxHeartbeats 1200000 in
+-- Typeclass synthesis here unfolds the (definitionally large) `ProdStrata` and
+-- `Generalization` definitions, so the higher heartbeat limit is needed.
+private lemma prodStrata_indZariski (E : Finset A) :
+    Algebra.IndZariski A (ProdStrata E) := by
+  change Algebra.IndZariski A
+    (∀ i : Stratification.Index E, Generalization i.function i.ideal)
+  obtain ⟨n, ⟨e_fin⟩⟩ := Finite.exists_equiv_fin (Stratification.Index E)
+  let e : ULift.{u} (Fin n) ≃ Stratification.Index E :=
+    Equiv.ulift.trans e_fin.symm
+  let S : Stratification.Index E → Type u := fun i => Generalization i.function i.ideal
+  have h1 : Algebra.IndZariski A (∀ k : ULift.{u} (Fin n), S (e k)) :=
+    Algebra.IndZariski.pi A (fun k => S (e k))
+  exact Algebra.IndZariski.of_equiv
+    (R := A) (S := ∀ k : ULift.{u} (Fin n), S (e k)) (T := ∀ i, S i)
+    (AlgEquiv.piCongrLeft A S e)
+
+instance indZariski : Algebra.IndZariski A (WLocalization A) := by
+  have h := fun E => prodStrata_indZariski (A := A) E
+  exact @Algebra.IndZariski.of_colimitPresentation A (WLocalization A) _ _ _
+    (Finset A) _ _ colimitPresentation h
 
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
   sorry
