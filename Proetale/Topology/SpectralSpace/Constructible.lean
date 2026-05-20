@@ -82,3 +82,17 @@ instance SpectralSpace.totallySeparatedSpace [SpectralSpace X] [T1Space X] :
     PrespectralSpace.isTopologicalBasis.exists_subset_of_mem_open
       (show x ∈ ({y} : Set X)ᶜ by simp [hxy]) isClosed_singleton.isOpen_compl
   exact ⟨W, clopen W hWo hWc, hxW, fun hyW ↦ hWy hyW rfl⟩
+
+/-- A spectral space in which every singleton is closed is Hausdorff. -/
+@[stacks 0905 "(6) → (1)"]
+theorem SpectralSpace.t2Space_of_isClosed_singleton [SpectralSpace X]
+    (h : ∀ x : X, IsClosed ({x} : Set X)) : T2Space X :=
+  haveI : T1Space X := ⟨h⟩
+  inferInstance
+
+/-- A spectral space in which every singleton is closed is totally disconnected. -/
+@[stacks 0905 "(6) → (1)"]
+theorem SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton [SpectralSpace X]
+    (h : ∀ x : X, IsClosed ({x} : Set X)) : TotallyDisconnectedSpace X :=
+  haveI : T1Space X := ⟨h⟩
+  inferInstance
