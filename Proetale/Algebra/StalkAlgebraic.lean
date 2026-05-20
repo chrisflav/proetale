@@ -50,16 +50,23 @@ lemma PrimeSpectrum.zeroLocus_subset_closedPoints_of_isAlgebraic {A B : Type*} [
     (hc : PrimeSpectrum.zeroLocus I ⊆ closedPoints (PrimeSpectrum A)) :
     PrimeSpectrum.zeroLocus (I.map (algebraMap A B)) ⊆ closedPoints (PrimeSpectrum B) := by
   intro q hq
-  let p := q.comap (algebraMap A B)
+  let p : PrimeSpectrum A := PrimeSpectrum.comap (algebraMap A B) q
+  have hp_eq : p.asIdeal = q.asIdeal.comap (algebraMap A B) := rfl
   have hi : p ∈ PrimeSpectrum.zeroLocus I := by
     simpa [Ideal.map, ← PrimeSpectrum.preimage_comap_zeroLocus] using hq
   have hm : Ideal.IsMaximal p.asIdeal := by
     rw [← PrimeSpectrum.isClosed_singleton_iff_isMaximal]
     exact hc hi
   have hhh : q.asIdeal.LiesOver p.asIdeal := ⟨rfl⟩
-  letI := Localization.AtPrime.algebraOfLiesOver p.asIdeal q.asIdeal
-  have haa : Algebra.IsAlgebraic (p.asIdeal.ResidueField) (q.asIdeal.ResidueField) := ha _
-  simpa [PrimeSpectrum.isClosed_singleton_iff_isMaximal] using .of_isAlgebraic p.asIdeal q.asIdeal
+  haveI : Ideal.IsMaximal (q.asIdeal.comap (algebraMap A B)) := hp_eq ▸ hm
+  haveI : q.asIdeal.LiesOver (q.asIdeal.comap (algebraMap A B)) := ⟨rfl⟩
+  letI : Algebra (Localization.AtPrime (q.asIdeal.comap (algebraMap A B)))
+      (Localization.AtPrime q.asIdeal) :=
+    Localization.AtPrime.algebraOfLiesOver _ q.asIdeal
+  haveI : Algebra.IsAlgebraic
+      (q.asIdeal.comap (algebraMap A B)).ResidueField q.asIdeal.ResidueField := ha _
+  simpa [PrimeSpectrum.isClosed_singleton_iff_isMaximal] using
+    Ideal.IsMaximal.of_isAlgebraic (m := q.asIdeal.comap (algebraMap A B)) (q := q.asIdeal)
 
 /-- If `B` satisfies going-down over `A` and every closed point is in the image
 of `Spec B → Spec A`, the map is surjective. -/

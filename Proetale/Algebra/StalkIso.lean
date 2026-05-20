@@ -234,7 +234,7 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       haveI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
       haveI := IsLocalization.algEquiv (Submonoid.powers g) (Localization.Away g) Sg
       haveI : Algebra.IsStandardOpenImmersion R Sg :=
-        .of_algEquiv R (Localization.Away g) Sg (this.restrictScalars R)
+        .of_algEquiv (this.restrictScalars R)
       exact RingHom.BijectiveOnStalks.of_isStandardOpenImmersion R Sg)
 
 namespace RingHom.BijectiveOnStalks
