@@ -117,13 +117,6 @@ lemma Topology.IsClosedEmbedding.wLocalSpace {f : X → Y} (hf : IsClosedEmbeddi
   hf.isEmbedding.wLocalSpace_of_stableUnderSpecialization_range
     hf.isClosedMap.isClosed_range.stableUnderSpecialization
 
--- In process of being PRed to mathlib #39332
-lemma IsCompact.isClosed_constructibleTopology_of_isOpen {s : Set X}
-    (hs : IsCompact s) (ho : IsOpen s) : IsClosed[constructibleTopology X] s := by
-  rw [← @isOpen_compl_iff]
-  apply TopologicalSpace.isOpen_generateFrom_of_mem
-  simp [constructibleTopologySubbasis, ho, hs]
-
 lemma isClosed_generalizationHull_of_wLocalSpace [WLocalSpace X] {s : Set X} (hs : IsClosed s) :
     IsClosed (generalizationHull s) := by
   have ⟨u, hu1, hu2⟩ := generalizationHull.eq_sInter_of_isCompact

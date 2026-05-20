@@ -84,6 +84,7 @@ import Proetale.Mathlib.Topology.Separation.Basic
 import Proetale.Mathlib.Topology.Separation.Hausdorff
 import Proetale.Mathlib.Topology.Sober
 import Proetale.Mathlib.Topology.Spectral.Basic
+import Proetale.Mathlib.Topology.Spectral.ConstructibleTopology
 import Proetale.Mathlib.Topology.Spectral.Prespectral
 import Proetale.Morphisms.ProAffineEtale
 import Proetale.Morphisms.WeaklyEtale
