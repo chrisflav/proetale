@@ -48,8 +48,9 @@ lemma RingHom.RespectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty
     MorphismProperty.ind.{w} (RingHom.toMorphismProperty P) (CommRingCat.ofHom <| algebraMap R S) ↔
       ObjectProperty.ind.{w} (RingHom.toObjectProperty P R) (CommAlgCat.of R S) := by
   have := hP.isClosedUnderIsomorphisms_toObjectProperty R
-  rw [MorphismProperty.ind_iff_ind_underMk, ObjectProperty.ind_iff_of_equivalence
-    (commAlgCatEquivUnder (.of R)).symm]
+  rw [MorphismProperty.ind_iff_ind_underMk,
+    ← ObjectProperty.ind_iff_of_equivalence (RingHom.toObjectProperty P R)
+      (commAlgCatEquivUnder (.of R)).symm]
   rfl
 
 end

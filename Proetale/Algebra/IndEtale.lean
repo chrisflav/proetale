@@ -109,7 +109,10 @@ instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLoca
   sorry
 
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
-    [q.LiesOver p] [p.IsPrime] [q.IsPrime] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
+    [q.LiesOver p] [p.IsPrime] [q.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    Algebra.IsSeparable p.ResidueField q.ResidueField :=
   sorry
 
 end Algebra.IndEtale

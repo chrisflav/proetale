@@ -312,6 +312,7 @@ lemma bijOn_specComap_zeroLocus_map (I : Ideal A)
     have hm : m.asIdeal.IsMaximal := by
       simpa [isClosed_singleton_iff_isMaximal] using hI (Ideal.le_comap_of_map_le hq)
     have : q.asIdeal.LiesOver m.asIdeal := ⟨PrimeSpectrum.ext_iff.mp hm_def⟩
+    letI := Localization.AtPrime.algebraOfLiesOver m.asIdeal q.asIdeal
     have : Algebra.IsSeparable m.asIdeal.ResidueField q.asIdeal.ResidueField :=
       Algebra.IndEtale.isSeparable_residueField (R := A) (S := WLocalization A) m.asIdeal
         q.asIdeal

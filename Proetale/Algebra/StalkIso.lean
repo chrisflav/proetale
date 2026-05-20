@@ -174,7 +174,7 @@ lemma of_span_unit_ideal {f : R →+* S} (s : Set S)
   haveI : p_g.IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers g) Sg p hp hpM
   have hcomap_pg : p_g.comap (algebraMap S Sg) = p :=
-    IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
+    IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers g) Sg hp hpM
   have h_alg_bij : Function.Bijective
       (Localization.localRingHom p p_g (algebraMap S Sg) hcomap_pg.symm) := by
     letI : IsLocalization.AtPrime (Localization.AtPrime p_g) p := by
@@ -234,7 +234,7 @@ lemma RingHom.IsLocalIso.bijectiveOnStalks {f : R →+* S} (hf : f.IsLocalIso) :
       haveI : IsScalarTower R S Sg := .of_algebraMap_eq fun _ ↦ rfl
       haveI := IsLocalization.algEquiv (Submonoid.powers g) (Localization.Away g) Sg
       haveI : Algebra.IsStandardOpenImmersion R Sg :=
-        .of_algEquiv R (Localization.Away g) Sg (this.restrictScalars R)
+        .of_algEquiv (this.restrictScalars R)
       exact RingHom.BijectiveOnStalks.of_isStandardOpenImmersion R Sg)
 
 namespace RingHom.BijectiveOnStalks
