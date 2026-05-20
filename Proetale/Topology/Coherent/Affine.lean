@@ -127,6 +127,15 @@ def Cover.etaleAffineRefinement (𝒰 : S.Cover (precoverage @Etale)) :
 
 namespace AffineEtale
 
+instance : (AffineEtale.Spec S).ReflectsEffectiveEpis :=
+  inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).ReflectsEffectiveEpis
+
+instance effectiveEpi_of_surjective {S : Scheme} {X Y : S.AffineEtale} (f : X ⟶ Y)
+    [Surjective (Spec.map f.left.unop)] : EffectiveEpi f := by
+  apply (AffineEtale.Spec S).effectiveEpi_of_map
+  have : Surjective ((AffineEtale.Spec S).map f).left := ‹_›
+  infer_instance
+
 instance : HasPullbacks S.AffineEtale :=
   inferInstanceAs <| HasPullbacks (MorphismProperty.CostructuredArrow _ _ _ _)
 
