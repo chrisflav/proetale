@@ -32,10 +32,10 @@ lemma exists_specializes_of_isClosed_constructibleTopology_of_mem_closure [Spect
   -- closed sets in the constructible topology and has the finite intersection property in `X`
   -- (since `x ∈ closure s` and any finite intersection of compact opens containing `x` is open).
   let ι := { U : Set X // IsOpen U ∧ IsCompact U ∧ x ∈ U }
-  have hF_closed (i : ι) : @IsClosed (WithConstructibleTopology X) _ ((i : Set X) ∩ s) :=
-    have : @IsClosed (WithConstructibleTopology X) _ (i : Set X) :=
+  have hF_closed (i : ι) : IsClosed[constructibleTopology X] ((i : Set X) ∩ s) :=
+    have hi : IsClosed[constructibleTopology X] (i : Set X) :=
       i.2.2.1.isClosed_constructibleTopology_of_isOpen i.2.1
-    this.inter hs
+    @IsClosed.inter X _ _ (constructibleTopology X) hi hs
   have h_inter : (⋂ i : ι, ((i : Set X) ∩ s)).Nonempty := by
     refine CompactSpace.iInter_nonempty (X := WithConstructibleTopology X) hF_closed fun T => ?_
     have hopen : IsOpen (⋂ j ∈ T, (j : Set X)) :=

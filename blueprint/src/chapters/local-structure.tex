@@ -900,7 +900,7 @@ Obviously, every w-purely-local morphism is w-local.
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/0905}{Tag 0905}, (6) $\implies$ (1)]{stacks-project}}]
   Let $X$ be a spectral space such that every point is closed. Then $X$ is profinite.
   \label{lemma:spectral-closed-points-profinite}
-  \lean{SpectralSpace.t2Space_of_isClosed_singleton,SpectralSpace.totallyDisconnectedSpace_of_isClosed_singleton}
+  \lean{SpectralSpace.totallySeparatedSpace}
   \leanok
 \end{lemma}
 
@@ -913,7 +913,7 @@ Obviously, every w-purely-local morphism is w-local.
     Let $X$ be a w-local space. Then the set of closed points $X^c$ of $X$ is profinite.
     \uses{def:w-local-space}
     \label{lemma:w-local-closed-points-profinite}
-    \lean{WLocalSpace.t2Space_closedPoints,WLocalSpace.CompactSpace_closedPoints,WLocalSpace.totallyDisconnected_closedPoints}
+    \lean{WLocalSpace.CompactSpace_closedPoints}
     \leanok
 \end{lemma}
 
