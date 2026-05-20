@@ -282,7 +282,10 @@ instance [Algebra A B] : IsScalarTower A B (I.map (algebraMap A B)).WLocalizatio
 @[stacks 097A "(2)(d)"]
 theorem algebraMap_specComap_preimage_closedPoints_eq [IsWLocalRing A] [Algebra A B]
     (hI : zeroLocus I = closedPoints (PrimeSpectrum A)) (h : ∀ (m : Ideal A) (q : Ideal B)
-    [q.LiesOver m] [m.IsMaximal] [q.IsPrime], Algebra.IsAlgebraic m.ResidueField q.ResidueField) :
+    [q.LiesOver m] [m.IsMaximal] [q.IsPrime]
+    [Algebra (Localization.AtPrime m) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra m q],
+    Algebra.IsAlgebraic m.ResidueField q.ResidueField) :
     zeroLocus (I.map (algebraMap A (I.map (algebraMap A B)).WLocalization)) =
     closedPoints (PrimeSpectrum (I.map (algebraMap A B)).WLocalization) := by
   set J := I.map (algebraMap A B)
@@ -295,7 +298,9 @@ theorem algebraMap_specComap_preimage_closedPoints_eq [IsWLocalRing A] [Algebra 
 
 theorem faithfullyFlat_map_algebraMap [IsWLocalRing A] [Algebra A B] [Module.FaithfullyFlat A B]
     (hI : zeroLocus I = closedPoints (PrimeSpectrum A))
-    (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime],
+    (h : ∀ (m : Ideal A) (q : Ideal B) [q.LiesOver m] [m.IsMaximal] [q.IsPrime]
+      [Algebra (Localization.AtPrime m) (Localization.AtPrime q)]
+      [Localization.AtPrime.IsLiesOverAlgebra m q],
       Algebra.IsAlgebraic m.ResidueField q.ResidueField) :
     Module.FaithfullyFlat A (I.map (algebraMap A B)).WLocalization := by
   have : Module.Flat A (I.map (algebraMap A B)).WLocalization :=
