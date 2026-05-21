@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.Category.Ring.FinitePresentation
+import Mathlib.RingTheory.RingHom.Etale
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.Flat
 import Proetale.Algebra.FaithfullyFlat
@@ -32,6 +33,10 @@ variable [Algebra R S] [Algebra R T]
 def CommAlgCat.isLocalIso : ObjectProperty (CommAlgCat.{u} R) :=
   fun S ↦ Algebra.IsLocalIso R S
 
+/-- The object property on commutative `R`-algebras of being finitely presented. -/
+def CommAlgCat.finitePresentation : ObjectProperty (CommAlgCat.{u} R) :=
+  fun S ↦ RingHom.FinitePresentation (algebraMap R S)
+
 lemma CommAlgCat.isLocalIso_eq : isLocalIso R = RingHom.toObjectProperty RingHom.IsLocalIso R := by
   ext S
   exact RingHom.isLocalIso_algebraMap.symm
@@ -55,33 +60,48 @@ instance : (CommAlgCat.isLocalIso R).IsClosedUnderFiniteProducts :=
     have inst (i : ι) : Algebra.IsLocalIso R (S i) := hF ⟨i⟩
     exact Algebra.IsLocalIso.pi_of_finite R (fun i ↦ S i)
 
+/-- Étaleness is local on the target: if `s` spans the unit ideal of `S` and every
+`Localization.Away g` for `g ∈ s` is étale over `R`, then `S` is étale over `R`. -/
+lemma Algebra.Etale.of_span_eq_top_target (s : Set S) (hs : Ideal.span s = ⊤)
+    (h : ∀ g ∈ s, Algebra.Etale R (Localization.Away g)) : Algebra.Etale R S := by
+  rw [← RingHom.etale_algebraMap]
+  refine RingHom.Etale.ofLocalizationSpanTarget (algebraMap R S) s hs fun ⟨g, hg⟩ ↦ ?_
+  have : Algebra.Etale R (Localization.Away g) := h g hg
+  rw [← IsScalarTower.algebraMap_eq R S (Localization.Away g)]
+  exact RingHom.etale_algebraMap.mpr inferInstance
+
+/-- Local isomorphisms of `R`-algebras are étale. -/
+lemma Algebra.IsLocalIso.etale [Algebra.IsLocalIso R S] : Algebra.Etale R S :=
+  Algebra.Etale.of_span_eq_top_target R S _
+    (Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top R S) fun g hg ↦ by
+      obtain ⟨r, _⟩ := hg.exists_away
+      exact Algebra.Etale.of_isLocalizationAway r
+
 /-- A local isomorphism of `R`-algebras is finitely presented. -/
 lemma Algebra.IsLocalIso.finitePresentation [Algebra.IsLocalIso R S] :
     (algebraMap R S).FinitePresentation := by
-  apply RingHom.finitePresentation_ofLocalizationSpanTarget
-    (algebraMap R S) _ (Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top R S)
-  rintro ⟨g, hg⟩
-  rw [show (algebraMap S (Localization.Away g)).comp (algebraMap R S) =
-        algebraMap R (Localization.Away g) from
-      (IsScalarTower.algebraMap_eq R S (Localization.Away g)).symm,
-    RingHom.finitePresentation_algebraMap]
-  obtain ⟨r, hr⟩ := hg.exists_away
-  exact IsLocalization.Away.finitePresentation r
+  have := Algebra.IsLocalIso.etale R S
+  rw [RingHom.finitePresentation_algebraMap]
+  infer_instance
+
+/-- Finitely presented `R`-algebras are finitely presentable objects in `CommAlgCat R`. -/
+lemma CommAlgCat.finitePresentation_le_isFinitelyPresentable :
+    CommAlgCat.finitePresentation R ≤
+      ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := by
+  intro S hS
+  have hunder : IsFinitelyPresentable.{u} ((commAlgCatEquivUnder (.of R)).functor.obj S) :=
+    CommRingCat.isFinitelyPresentable_under _ _ (by convert hS using 1)
+  have : Fact (Cardinal.aleph0 : Cardinal.{u}).IsRegular := Cardinal.fact_isRegular_aleph0
+  exact (isCardinalPresentable_iff_of_isEquivalence (X := S) (κ := .aleph0)
+    (commAlgCatEquivUnder (.of R)).functor).mp hunder
 
 /-- Local isomorphisms are finitely presentable in `CommAlgCat R`. -/
 lemma CommAlgCat.isLocalIso_le_isFinitelyPresentable :
     CommAlgCat.isLocalIso R ≤
-      ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := by
-  intro S hS
+      ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := fun S hS ↦
   have : Algebra.IsLocalIso R S := hS
-  have hfp : (algebraMap R S).FinitePresentation :=
-    Algebra.IsLocalIso.finitePresentation R S
-  have hunder : IsFinitelyPresentable.{u}
-      ((commAlgCatEquivUnder (.of R)).functor.obj S) :=
-    CommRingCat.isFinitelyPresentable_under _ _ (by convert hfp using 1)
-  have : Fact (Cardinal.aleph0 : Cardinal.{u}).IsRegular := Cardinal.fact_isRegular_aleph0
-  exact (isCardinalPresentable_iff_of_isEquivalence (X := S) (κ := .aleph0)
-    (commAlgCatEquivUnder (.of R)).functor).mp hunder
+  CommAlgCat.finitePresentation_le_isFinitelyPresentable R S
+    (Algebra.IsLocalIso.finitePresentation R S)
 
 /-- An algebra is ind-Zariski if it can be written as the filtered colimit of locally isomorphic
 algebras. -/
