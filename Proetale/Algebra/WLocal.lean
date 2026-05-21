@@ -24,9 +24,12 @@ class IsWLocalRing (R : Type*) [CommSemiring R] : Prop where
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
+instance (R : Type*) [CommSemiring R] [IsWLocalRing R] : WLocalSpace (PrimeSpectrum R) :=
+  IsWLocalRing.wLocalSpace_primeSepectrum
+
 lemma IsWLocalRing.of_surjective {f : R →+* S} (hf : Function.Surjective f) [IsWLocalRing R] :
     IsWLocalRing S :=
-  sorry
+  ⟨(PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _ hf).wLocalSpace⟩
 
 /-- A ring homomorphism is w-local if the induced map on spectra is w-local. -/
 def RingHom.IsWLocal {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) : Prop :=
@@ -35,9 +38,21 @@ def RingHom.IsWLocal {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+
 lemma RingHom.isWLocal_iff_isMaximal_of_isMaximal (f : R →+* S) :
     IsWLocal f ↔ ∀ (m : Ideal S) [m.IsMaximal], (m.comap f).IsMaximal := by
   rw [IsWLocal, isWLocalMap_iff]
-  refine ⟨fun ⟨_, h⟩ m hm ↦ ?_, ?_⟩
-  · sorry
-  · sorry
+  refine ⟨fun ⟨_, h⟩ m hm ↦ ?_, fun hmax ↦ ?_⟩
+  · have hm_cp : (⟨m, hm.isPrime⟩ : PrimeSpectrum S) ∈ closedPoints (PrimeSpectrum S) := by
+      rw [mem_closedPoints_iff, PrimeSpectrum.isClosed_singleton_iff_isMaximal]
+      exact hm
+    have hcl : PrimeSpectrum.comap f ⟨m, hm.isPrime⟩ ∈ closedPoints (PrimeSpectrum R) := h hm_cp
+    rwa [mem_closedPoints_iff, PrimeSpectrum.isClosed_singleton_iff_isMaximal] at hcl
+  · refine ⟨⟨PrimeSpectrum.continuous_comap f, fun s hs hc ↦ ?_⟩, fun x hx ↦ ?_⟩
+    · obtain ⟨I, hI_fg, rfl⟩ := PrimeSpectrum.isCompact_isOpen_iff_ideal.mp ⟨hc, hs⟩
+      rw [Set.preimage_compl, PrimeSpectrum.preimage_comap_zeroLocus]
+      refine (PrimeSpectrum.isCompact_isOpen_iff_ideal.mpr ⟨_, hI_fg.map f, ?_⟩).1
+      rw [← PrimeSpectrum.zeroLocus_span, Ideal.span_eq, ← Ideal.span_eq I, Ideal.map_span,
+        PrimeSpectrum.zeroLocus_span, Ideal.span_eq]
+    · rw [mem_closedPoints_iff, PrimeSpectrum.isClosed_singleton_iff_isMaximal] at hx
+      rw [Set.mem_preimage, mem_closedPoints_iff, PrimeSpectrum.isClosed_singleton_iff_isMaximal]
+      exact hmax x.asIdeal
 
 namespace RingHom.IsWLocal
 
