@@ -7,5 +7,8 @@ fi
 # Verify all .lean files are imported.
 lake exe mk_all --git --check || exit 1
 
+# Fetch build cache
+lake exe cache get
+
 # Verify everything builds.
 lake build
