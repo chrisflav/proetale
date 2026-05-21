@@ -3,6 +3,8 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.Algebra.Category.Ring.FinitePresentation
+import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.Flat
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.Ind
@@ -52,6 +54,34 @@ instance : (CommAlgCat.isLocalIso R).IsClosedUnderFiniteProducts :=
     apply (CommAlgCat.isLocalIso R).prop_of_iso (isoPi ≪≫ isoLim)
     have inst (i : ι) : Algebra.IsLocalIso R (S i) := hF ⟨i⟩
     exact Algebra.IsLocalIso.pi_of_finite R (fun i ↦ S i)
+
+/-- A local isomorphism of `R`-algebras is finitely presented. -/
+lemma Algebra.IsLocalIso.finitePresentation [Algebra.IsLocalIso R S] :
+    (algebraMap R S).FinitePresentation := by
+  apply RingHom.finitePresentation_ofLocalizationSpanTarget
+    (algebraMap R S) _ (Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top R S)
+  rintro ⟨g, hg⟩
+  rw [show (algebraMap S (Localization.Away g)).comp (algebraMap R S) =
+        algebraMap R (Localization.Away g) from
+      (IsScalarTower.algebraMap_eq R S (Localization.Away g)).symm,
+    RingHom.finitePresentation_algebraMap]
+  obtain ⟨r, hr⟩ := hg.exists_away
+  exact IsLocalization.Away.finitePresentation r
+
+/-- Local isomorphisms are finitely presentable in `CommAlgCat R`. -/
+lemma CommAlgCat.isLocalIso_le_isFinitelyPresentable :
+    CommAlgCat.isLocalIso R ≤
+      ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := by
+  intro S hS
+  have : Algebra.IsLocalIso R S := hS
+  have hfp : (algebraMap R S).FinitePresentation :=
+    Algebra.IsLocalIso.finitePresentation R S
+  have hunder : IsFinitelyPresentable.{u}
+      ((commAlgCatEquivUnder (.of R)).functor.obj S) :=
+    CommRingCat.isFinitelyPresentable_under _ _ (by convert hfp using 1)
+  have : Fact (Cardinal.aleph0 : Cardinal.{u}).IsRegular := Cardinal.fact_isRegular_aleph0
+  exact (isCardinalPresentable_iff_of_isEquivalence (X := S) (κ := .aleph0)
+    (commAlgCatEquivUnder (.of R)).functor).mp hunder
 
 /-- An algebra is ind-Zariski if it can be written as the filtered colimit of locally isomorphic
 algebras. -/
