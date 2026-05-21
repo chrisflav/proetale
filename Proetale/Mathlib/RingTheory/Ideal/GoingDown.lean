@@ -19,10 +19,9 @@ theorem Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimag
 `S` above every prime of `R`, then for every prime `q` of `S` lying over `p`, the natural map
 `S_{pS} → S_q` is an isomorphism, i.e. `Localization.AtPrime q` is the localization of `S` at
 the image of `R \ p`. -/
-theorem Algebra.HasGoingDown.localization_bijective_of_subsingleton {R S : Type*}
-    [CommRing R] [CommRing S] [Algebra R S]
-    [Algebra.HasGoingDown R S] (p : Ideal R) (q : Ideal S) [p.IsPrime] [q.IsPrime]
-    [q.LiesOver p]
+theorem Algebra.HasGoingDown.isLocalization_atPrime_of_subsingleton {R S : Type*}
+    [CommRing R] [CommRing S] [Algebra R S] [Algebra.HasGoingDown R S]
+    (p : Ideal R) (q : Ideal S) [p.IsPrime] [q.IsPrime] [q.LiesOver p]
     (h : ∀ (p : Ideal R) [p.IsPrime], Subsingleton {q : Ideal S // q.IsPrime ∧ q.LiesOver p}) :
     IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) (Localization.AtPrime q) := by
   set T : Submonoid S := Algebra.algebraMapSubmonoid S p.primeCompl
@@ -34,36 +33,29 @@ theorem Algebra.HasGoingDown.localization_bijective_of_subsingleton {R S : Type*
     intro t ht
     rw [IsLocalization.algebraMap_isUnit_iff T]
     by_contra hno
-    have hno' : ∀ m, m ∈ T → ¬ t ∣ m := fun m hm hdvd => hno ⟨m, hm, hdvd⟩
-    have hdisj : Disjoint ((Ideal.span {t} : Ideal S) : Set S) ((T : Set S)) := by
+    have hdisj : Disjoint ((Ideal.span {t} : Ideal S) : Set S) (T : Set S) := by
       rw [Set.disjoint_left]
       intro m hm hmT
       rw [SetLike.mem_coe, Ideal.mem_span_singleton] at hm
-      exact hno' m hmT hm
-    obtain ⟨q', hq'_prime, htq', hq'_disj⟩ :=
+      exact hno ⟨m, hmT, hm⟩
+    obtain ⟨q', hq', htq', hdisj'⟩ :=
       Ideal.exists_le_prime_disjoint (Ideal.span {t}) T hdisj
-    haveI : q'.IsPrime := hq'_prime
-    haveI : q'.LiesOver (Ideal.under R q') := ⟨rfl⟩
-    have ht_q' : t ∈ q' := htq' (Ideal.mem_span_singleton_self t)
-    have under_le : Ideal.under R q' ≤ p := by
+    have : q'.IsPrime := hq'
+    have : q'.LiesOver (Ideal.under R q') := ⟨rfl⟩
+    have hle : Ideal.under R q' ≤ p := by
       intro r hr
       by_contra hrp
       rw [Ideal.under_def, Ideal.mem_comap] at hr
-      have hT_mem : algebraMap R S r ∈ (T : Set S) :=
-        SetLike.mem_coe.mpr ⟨r, hrp, rfl⟩
-      exact Set.disjoint_left.mp hq'_disj hr hT_mem
+      exact Set.disjoint_left.mp hdisj' hr ⟨r, hrp, rfl⟩
     obtain ⟨P, hPq, hPprime, hPover⟩ :=
-      Ideal.exists_ideal_le_liesOver_of_le (p := Ideal.under R q') (q := p) q under_le
-    haveI := hPprime
-    have hPq'_eq : P = q' := by
-      have heq :
-          (⟨P, hPprime, hPover⟩ :
-              {q'' : Ideal S // q''.IsPrime ∧ q''.LiesOver (Ideal.under R q')}) =
-          ⟨q', hq'_prime, ⟨rfl⟩⟩ := Subsingleton.elim _ _
-      exact congrArg Subtype.val heq
-    exact ht ((hPq'_eq ▸ hPq) ht_q')
-  haveI : IsLocalization q.primeCompl (Localization T) :=
+      Ideal.exists_ideal_le_liesOver_of_le (p := Ideal.under R q') (q := p) q hle
+    have hPq' : P = q' := congrArg Subtype.val <| Subsingleton.elim
+      (⟨P, hPprime, hPover⟩ : {q'' : Ideal S // q''.IsPrime ∧ q''.LiesOver (Ideal.under R q')})
+      ⟨q', hq', ⟨rfl⟩⟩
+    subst hPq'
+    exact ht (hPq (htq' (Ideal.mem_span_singleton_self t)))
+  have : IsLocalization q.primeCompl (Localization T) :=
     IsLocalization.of_le T q.primeCompl hTle key
-  let e : Localization T ≃ₐ[S] Localization.AtPrime q :=
-    IsLocalization.algEquiv q.primeCompl _ _
-  exact (IsLocalization.isLocalization_iff_of_algEquiv T e).mp inferInstance
+  exact (IsLocalization.isLocalization_iff_of_algEquiv T
+    (IsLocalization.algEquiv q.primeCompl (Localization T) (Localization.AtPrime q))).mp
+    inferInstance
