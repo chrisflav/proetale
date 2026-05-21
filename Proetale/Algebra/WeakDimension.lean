@@ -20,10 +20,20 @@ class Ring.AbsolutelyFlat (R : Type*) [CommRing R] where
 class Ring.WeakDimensionLEOne (R : Type*) [CommRing R] where
   flat_of_fg (I : Ideal R) : I.FG → Module.Flat R I
 
--- Follows from `Ideal.exists_eq_mul_of_pure` in mathlib
+/-- If `f : R →+* S` is a surjective flat ring map and `f x = 0`, then there exists `y : R`
+such that `f y = 1` and `y * x = 0`. This expresses that the kernel of a surjective flat
+map is pure. -/
 lemma exists_eq_mul_of_surjective_flat {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
-    (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := sorry
+    (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := by
+  algebraize [f]
+  have e : (R ⧸ RingHom.ker f) ≃ₐ[R] S :=
+    AlgEquiv.ofRingEquiv (f := f.quotientKerEquivOfSurjective hsurj) fun _ ↦ rfl
+  have : (RingHom.ker f).Pure := Module.Flat.of_linearEquiv e.toLinearEquiv
+  obtain ⟨z, hzker, hxz⟩ := Ideal.exists_eq_mul_of_pure (show x ∈ RingHom.ker f from hx)
+  refine ⟨1 - z, ?_, ?_⟩
+  · rw [map_sub, map_one, RingHom.mem_ker.mp hzker, sub_zero]
+  · rw [sub_mul, one_mul, mul_comm, ← hxz, sub_self]
 
 lemma exists_eq_mul_of_surjective_flat' {R S ι : Type*} [CommRing R] [CommRing S] [Finite ι]
     (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
@@ -42,11 +52,21 @@ namespace Ring.WeakDimensionLEOne
 
 variable (R : Type*) [CommRing R]
 
-/-- If `R` is of weak dimension `≤ 1` if any submodule of a flat module is flat. -/
+/-- If `R` is of weak dimension `≤ 1`, then any submodule of a flat module is flat. -/
 lemma flat_submodule [Ring.WeakDimensionLEOne R] {M : Type*} [AddCommGroup M] [Module R M]
     (N : Submodule R M) [Module.Flat R M] :
-    Module.Flat R N :=
-  sorry
+    Module.Flat R N := by
+  rw [Module.Flat.iff_lTensor_injective]
+  intro I hI
+  have : Module.Flat R I := Ring.WeakDimensionLEOne.flat_of_fg I hI
+  have h : Function.Injective (⇑(I.subtype.lTensor M) ∘ ⇑(N.subtype.rTensor I)) :=
+    (Module.Flat.lTensor_preserves_injective_linearMap _ I.injective_subtype).comp
+      (Module.Flat.rTensor_preserves_injective_linearMap _ N.injective_subtype)
+  have hnat : ⇑(I.subtype.lTensor M) ∘ ⇑(N.subtype.rTensor I) =
+      ⇑(N.subtype.rTensor R) ∘ ⇑(I.subtype.lTensor N) := by
+    rw [← LinearMap.coe_comp, LinearMap.lTensor_comp_rTensor,
+      ← LinearMap.rTensor_comp_lTensor, LinearMap.coe_comp]
+  exact (hnat ▸ h).of_comp
 
 end Ring.WeakDimensionLEOne
 
