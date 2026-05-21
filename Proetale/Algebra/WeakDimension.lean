@@ -37,7 +37,7 @@ lemma exists_eq_mul_of_surjective_flat {R S : Type*} [CommRing R] [CommRing S]
       map_smul' r a := by
         induction a using Quotient.inductionOn' with
         | h a =>
-          show Ideal.Quotient.lift _ f _ (Ideal.Quotient.mk _ (r * a)) =
+          change Ideal.Quotient.lift _ f _ (Ideal.Quotient.mk _ (r * a)) =
             f r * Ideal.Quotient.lift _ f _ (Ideal.Quotient.mk _ a)
           rw [Ideal.Quotient.lift_mk, Ideal.Quotient.lift_mk, map_mul] }
   have hg_inj : Function.Injective g := by
