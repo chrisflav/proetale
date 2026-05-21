@@ -20,10 +20,42 @@ class Ring.AbsolutelyFlat (R : Type*) [CommRing R] where
 class Ring.WeakDimensionLEOne (R : Type*) [CommRing R] where
   flat_of_fg (I : Ideal R) : I.FG → Module.Flat R I
 
--- Follows from `Ideal.exists_eq_mul_of_pure` in mathlib
+/-- If `f : R →+* S` is a surjective flat ring map and `f x = 0`, then there exists `y : R`
+such that `f y = 1` and `y * x = 0`. This expresses that the kernel of a surjective flat
+map is pure. -/
 lemma exists_eq_mul_of_surjective_flat {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
-    (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := sorry
+    (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := by
+  letI : Algebra R S := f.toAlgebra
+  haveI : Module.Flat R S := hf
+  let g : R ⧸ RingHom.ker f →ₗ[R] S :=
+    { toFun := Ideal.Quotient.lift (RingHom.ker f) f fun _ h => h
+      map_add' a b := by
+        induction a using Quotient.inductionOn' with
+        | h a => induction b using Quotient.inductionOn' with
+          | h b => simp [Submodule.Quotient.mk''_eq_mk]
+      map_smul' r a := by
+        induction a using Quotient.inductionOn' with
+        | h a =>
+          show Ideal.Quotient.lift _ f _ (Ideal.Quotient.mk _ (r * a)) =
+            f r * Ideal.Quotient.lift _ f _ (Ideal.Quotient.mk _ a)
+          rw [Ideal.Quotient.lift_mk, Ideal.Quotient.lift_mk, map_mul] }
+  have hg_inj : Function.Injective g := by
+    rw [injective_iff_map_eq_zero]
+    intro a ha
+    induction a using Quotient.inductionOn' with
+    | h a => exact (Submodule.Quotient.mk_eq_zero _).mpr ha
+  have hg_surj : Function.Surjective g := by
+    intro s
+    obtain ⟨r, rfl⟩ := hsurj s
+    exact ⟨Ideal.Quotient.mk _ r, rfl⟩
+  haveI : (RingHom.ker f).Pure :=
+    Module.Flat.of_linearEquiv (LinearEquiv.ofBijective g ⟨hg_inj, hg_surj⟩)
+  have hxker : x ∈ RingHom.ker f := hx
+  obtain ⟨z, hzker, hxz⟩ := Ideal.exists_eq_mul_of_pure hxker
+  refine ⟨1 - z, ?_, ?_⟩
+  · rw [map_sub, map_one, RingHom.mem_ker.mp hzker, sub_zero]
+  · rw [sub_mul, one_mul, mul_comm, ← hxz, sub_self]
 
 lemma exists_eq_mul_of_surjective_flat' {R S ι : Type*} [CommRing R] [CommRing S] [Finite ι]
     (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
@@ -42,11 +74,25 @@ namespace Ring.WeakDimensionLEOne
 
 variable (R : Type*) [CommRing R]
 
-/-- If `R` is of weak dimension `≤ 1` if any submodule of a flat module is flat. -/
+/-- If `R` is of weak dimension `≤ 1`, then any submodule of a flat module is flat. -/
 lemma flat_submodule [Ring.WeakDimensionLEOne R] {M : Type*} [AddCommGroup M] [Module R M]
     (N : Submodule R M) [Module.Flat R M] :
-    Module.Flat R N :=
-  sorry
+    Module.Flat R N := by
+  rw [Module.Flat.iff_lTensor_injective]
+  intro I hI
+  haveI : Module.Flat R I := Ring.WeakDimensionLEOne.flat_of_fg I hI
+  have h1 : Function.Injective
+      ((LinearMap.lTensor M I.subtype) ∘ (LinearMap.rTensor I N.subtype)) :=
+    ((Module.Flat.iff_lTensor_injective.mp inferInstance) hI).comp
+      (Module.Flat.rTensor_preserves_injective_linearMap N.subtype N.injective_subtype)
+  have hnat : ⇑((LinearMap.lTensor M I.subtype) ∘ₗ (LinearMap.rTensor I N.subtype)) =
+              ⇑((LinearMap.rTensor R N.subtype) ∘ₗ (LinearMap.lTensor N I.subtype)) := by
+    congr 1
+    ext n i
+    simp
+  simp only [LinearMap.coe_comp] at hnat
+  exact (hnat ▸ h1 : Function.Injective
+      (⇑(LinearMap.rTensor R N.subtype) ∘ ⇑(LinearMap.lTensor N I.subtype))).of_comp
 
 end Ring.WeakDimensionLEOne
 
