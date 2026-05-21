@@ -3,10 +3,12 @@ Copyright (c) 2025 Jiedong Jiang, Christian Merten, Andrew Yang. All rights rese
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten, Andrew Yang
 -/
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.MorphismProperty.Comma
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 
 /-!
@@ -162,8 +164,19 @@ lemma ι_fromIndContraction (S : Under X)
   (isColimitIndContractionCocone P S).fac _ _
 
 /-- The `P`-ind contraction of `X ⟶ S` is ind-`P` over `X`. -/
-lemma property_indContraction_hom (S : Under X) : P.ind ((indContraction P X).obj S).hom :=
-  sorry
+lemma property_indContraction_hom [HasPushouts C] [P.IsMultiplicative]
+    [P.IsStableUnderCobaseChange] [HasCoequalizers (P.Under ⊤ X)]
+    [PreservesColimitsOfShape WalkingParallelPair (Under.forget P ⊤ X)]
+    [EssentiallySmall.{max u v} (P.Under ⊤ X)] [LocallySmall.{max u v} (Under X)]
+    (S : Under X) :
+    MorphismProperty.ind.{max u v} P ((indContraction P X).obj S).hom := by
+  rw [MorphismProperty.ind_iff_ind_underMk]
+  haveI : IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S) :=
+    isFiltered_costructuredArrow_forget' P X
+  refine ObjectProperty.of_essentiallySmall_index (J := CostructuredArrow (Under.forget P ⊤ X) S)
+    { diag := CostructuredArrow.proj (Under.forget P ⊤ X) S ⋙ Under.forget P ⊤ X
+      ι := (indContractionCocone P S).ι
+      isColimit := isColimitIndContractionCocone P S } (fun j ↦ j.left.2)
 
 lemma exists_costructuredArrow_aux [HasPushouts C] [IndSpreads P]
     {S : Under X} (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
