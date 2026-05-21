@@ -228,4 +228,11 @@ lemma weaklyEtale_algebraMap_iff [Algebra R S] :
     (algebraMap R S).WeaklyEtale ↔ Algebra.WeaklyEtale R S := by
   rw [WeaklyEtale, toAlgebra_algebraMap]
 
+/-- A weakly étale ring map is formally unramified. -/
+lemma WeaklyEtale.formallyUnramified {f : R →+* S} (hf : f.WeaklyEtale) :
+    f.FormallyUnramified := by
+  algebraize [f]
+  have : Algebra.WeaklyEtale R S := hf
+  exact (inferInstance : Algebra.FormallyUnramified R S)
+
 end RingHom
