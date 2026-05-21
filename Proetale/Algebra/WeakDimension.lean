@@ -26,8 +26,7 @@ map is pure. -/
 lemma exists_eq_mul_of_surjective_flat {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
     (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := by
-  letI : Algebra R S := f.toAlgebra
-  have : Module.Flat R S := hf
+  algebraize [f]
   have e : (R ⧸ RingHom.ker f) ≃ₐ[R] S :=
     AlgEquiv.ofRingEquiv (f := f.quotientKerEquivOfSurjective hsurj) fun _ ↦ rfl
   have : (RingHom.ker f).Pure := Module.Flat.of_linearEquiv e.toLinearEquiv
