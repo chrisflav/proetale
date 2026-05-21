@@ -118,8 +118,123 @@ instance (priority := 100) of_isLocalIso [Algebra.IsLocalIso R S] : Algebra.IndZ
 instance refl : Algebra.IndZariski R R :=
   Algebra.IndZariski.of_isLocalIso _
 
-lemma of_isLocalization (M : Submonoid R) [IsLocalization M S] : Algebra.IndZariski R S :=
-  sorry
+/-- The index category for the colimit presentation `M⁻¹R = colim_{m ∈ M} R[1/m]`:
+a wrapper around the submonoid `M`, equipped with the divisibility preorder. -/
+@[ext]
+structure AwayIndex {R : Type u} [CommRing R] (M : Submonoid R) where
+  /-- The underlying element of the submonoid. -/
+  val : R
+  /-- The element belongs to `M`. -/
+  property : val ∈ M
+
+namespace AwayIndex
+
+variable {R : Type u} [CommRing R] {M : Submonoid R}
+
+instance : Preorder (AwayIndex M) where
+  le m m' := m.val ∣ m'.val
+  le_refl _ := dvd_refl _
+  le_trans _ _ _ h₁ h₂ := h₁.trans h₂
+
+instance : IsDirected (AwayIndex M) (· ≤ ·) :=
+  ⟨fun m m' ↦ ⟨⟨m.val * m'.val, M.mul_mem m.2 m'.2⟩,
+    ⟨m'.val, rfl⟩, ⟨m.val, mul_comm _ _⟩⟩⟩
+
+instance : Nonempty (AwayIndex M) := ⟨⟨1, M.one_mem⟩⟩
+
+lemma le_def {m m' : AwayIndex M} : m ≤ m' ↔ m.val ∣ m'.val := Iff.rfl
+
+end AwayIndex
+
+/-- The transition map `Localization.Away m → Localization.Away m'` when `m ∣ m'`,
+viewed as an `R`-algebra homomorphism. -/
+noncomputable def awayDvdHom (R : Type u) [CommRing R] {m m' : R} (h : m ∣ m')
+    {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+    [IsLocalization.Away m A] [IsLocalization.Away m' B] : A →ₐ[R] B where
+  __ := IsLocalization.Away.lift (S := A) m
+    (g := algebraMap R B) (IsLocalization.Away.isUnit_of_dvd m' h)
+  commutes' _ := IsLocalization.Away.lift_eq _ _ _
+
+/-- The diagram `m ↦ Localization.Away m` indexed by elements of a submonoid `M ⊆ R`. -/
+noncomputable def awayDiag (R : Type u) [CommRing R] (M : Submonoid R) :
+    AwayIndex M ⥤ CommAlgCat.{u} R where
+  obj m := .of R (Localization.Away m.val)
+  map {m m'} h := CommAlgCat.ofHom (awayDvdHom R (m := m.val) (m' := m'.val) h.le)
+  map_id m := by
+    refine CommAlgCat.hom_ext (AlgHom.coe_ringHom_injective ?_)
+    refine IsLocalization.ringHom_ext (.powers m.val) ?_
+    ext _
+    simp [awayDvdHom, IsLocalization.Away.lift]
+  map_comp {m₁ _ _} _ _ := by
+    refine CommAlgCat.hom_ext (AlgHom.coe_ringHom_injective ?_)
+    refine IsLocalization.ringHom_ext (.powers m₁.val) ?_
+    ext _
+    simp [awayDvdHom, IsLocalization.Away.lift]
+
+instance awayDiag_obj_isLocalization (R : Type u) [CommRing R] (M : Submonoid R)
+    (m : AwayIndex M) :
+    IsLocalization (Submonoid.powers m.val) ((awayDiag R M).obj m : Type u) :=
+  inferInstanceAs (IsLocalization (.powers m.val) (Localization.Away m.val))
+
+instance awayDiag_obj_isLocalizationAway (R : Type u) [CommRing R] (M : Submonoid R)
+    (m : AwayIndex M) :
+    IsLocalization.Away m.val ((awayDiag R M).obj m : Type u) :=
+  inferInstanceAs (IsLocalization.Away m.val (Localization.Away m.val))
+
+/-- The `R`-algebra homomorphism `Localization.Away m → S` induced by the universal property,
+where `S` is a localization of `R` at a submonoid `M` containing `m`. -/
+noncomputable def awayToLocalization (R : Type u) [CommRing R] (M : Submonoid R)
+    (S : Type u) [CommRing S] [Algebra R S] [IsLocalization M S] (m : AwayIndex M) :
+    Localization.Away m.val →ₐ[R] S where
+  __ := IsLocalization.Away.lift (S := Localization.Away m.val) m.val
+    (g := algebraMap R S) (IsLocalization.map_units S ⟨m.val, m.property⟩)
+  commutes' _ := IsLocalization.Away.lift_eq _ _ _
+
+/-- The cocone over `awayDiag R M` with apex `S` given by the maps `awayToLocalization`. -/
+noncomputable def awayCocone (R : Type u) [CommRing R] (M : Submonoid R)
+    (S : Type u) [CommRing S] [Algebra R S] [IsLocalization M S] :
+    awayDiag R M ⟶ (Functor.const (AwayIndex M)).obj (CommAlgCat.of R S) where
+  app m := CommAlgCat.ofHom (awayToLocalization R M S m)
+  naturality {m m'} _ := by
+    refine CommAlgCat.hom_ext ?_
+    have : Subsingleton (((awayDiag R M).obj m : Type u) →ₐ[R]
+        (((Functor.const (AwayIndex M)).obj (CommAlgCat.of R S)).obj m' : Type u)) :=
+      IsLocalization.algHom_subsingleton (Submonoid.powers m.val)
+    exact Subsingleton.elim _ _
+
+/-- A localization of `R` at a submonoid `M` is the filtered colimit of `R[1/m]`
+over `m ∈ M`, in the category of `R`-algebras. -/
+noncomputable def awayColimitPresentation (R : Type u) [CommRing R] (M : Submonoid R)
+    (S : Type u) [CommRing S] [Algebra R S] [IsLocalization M S] :
+    ColimitPresentation (AwayIndex M) (CommAlgCat.of R S) where
+  diag := awayDiag R M
+  ι := awayCocone R M S
+  isColimit :=
+    { desc c := CommAlgCat.ofHom <| IsLocalization.liftAlgHom (M := M)
+        (f := Algebra.ofId R c.pt) fun y ↦ by
+          have key : (c.ι.app ⟨y.val, y.2⟩).hom
+              (algebraMap R (Localization.Away y.val) y.val) = algebraMap R c.pt y.val :=
+            (c.ι.app ⟨y.val, y.2⟩).hom.commutes y.val
+          rw [Algebra.ofId_apply, ← key]
+          exact (IsLocalization.Away.algebraMap_isUnit (S := Localization.Away y.val) y.val).map
+            (c.ι.app ⟨y.val, y.2⟩).hom
+      fac c m := by
+        refine CommAlgCat.hom_ext ?_
+        have : Subsingleton (((awayDiag R M).obj m : Type u) →ₐ[R] (c.pt : Type u)) :=
+          IsLocalization.algHom_subsingleton (Submonoid.powers m.val)
+        exact Subsingleton.elim _ _
+      uniq c _ _ := by
+        refine CommAlgCat.hom_ext ?_
+        have : Subsingleton (S →ₐ[R] (c.pt : Type u)) :=
+          IsLocalization.algHom_subsingleton M
+        exact Subsingleton.elim _ _ }
+
+lemma of_isLocalization (M : Submonoid R) [IsLocalization M S] : Algebra.IndZariski R S := by
+  rw [iff_ind_isLocalIso]
+  refine ⟨AwayIndex M, inferInstance, inferInstance,
+    awayColimitPresentation R M S, fun m ↦ ?_⟩
+  show Algebra.IsLocalIso R (Localization.Away m.val)
+  infer_instance
 
 instance localization (M : Submonoid R) : Algebra.IndZariski R (Localization M) :=
   of_isLocalization _ M
