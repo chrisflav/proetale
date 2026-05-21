@@ -27,32 +27,11 @@ lemma exists_eq_mul_of_surjective_flat {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.Flat) (hsurj : Function.Surjective f)
     (x : R) (hx : f x = 0) : ∃ y : R, f y = 1 ∧ y * x = 0 := by
   letI : Algebra R S := f.toAlgebra
-  haveI : Module.Flat R S := hf
-  let g : R ⧸ RingHom.ker f →ₗ[R] S :=
-    { toFun := Ideal.Quotient.lift (RingHom.ker f) f fun _ h => h
-      map_add' a b := by
-        induction a using Quotient.inductionOn' with
-        | h a => induction b using Quotient.inductionOn' with
-          | h b => simp [Submodule.Quotient.mk''_eq_mk]
-      map_smul' r a := by
-        induction a using Quotient.inductionOn' with
-        | h a =>
-          change Ideal.Quotient.lift _ f _ (Ideal.Quotient.mk _ (r * a)) =
-            f r * Ideal.Quotient.lift _ f _ (Ideal.Quotient.mk _ a)
-          rw [Ideal.Quotient.lift_mk, Ideal.Quotient.lift_mk, map_mul] }
-  have hg_inj : Function.Injective g := by
-    rw [injective_iff_map_eq_zero]
-    intro a ha
-    induction a using Quotient.inductionOn' with
-    | h a => exact (Submodule.Quotient.mk_eq_zero _).mpr ha
-  have hg_surj : Function.Surjective g := by
-    intro s
-    obtain ⟨r, rfl⟩ := hsurj s
-    exact ⟨Ideal.Quotient.mk _ r, rfl⟩
-  haveI : (RingHom.ker f).Pure :=
-    Module.Flat.of_linearEquiv (LinearEquiv.ofBijective g ⟨hg_inj, hg_surj⟩)
-  have hxker : x ∈ RingHom.ker f := hx
-  obtain ⟨z, hzker, hxz⟩ := Ideal.exists_eq_mul_of_pure hxker
+  have : Module.Flat R S := hf
+  have e : (R ⧸ RingHom.ker f) ≃ₐ[R] S :=
+    AlgEquiv.ofRingEquiv (f := f.quotientKerEquivOfSurjective hsurj) fun _ ↦ rfl
+  have : (RingHom.ker f).Pure := Module.Flat.of_linearEquiv e.toLinearEquiv
+  obtain ⟨z, hzker, hxz⟩ := Ideal.exists_eq_mul_of_pure (show x ∈ RingHom.ker f from hx)
   refine ⟨1 - z, ?_, ?_⟩
   · rw [map_sub, map_one, RingHom.mem_ker.mp hzker, sub_zero]
   · rw [sub_mul, one_mul, mul_comm, ← hxz, sub_self]
@@ -80,19 +59,15 @@ lemma flat_submodule [Ring.WeakDimensionLEOne R] {M : Type*} [AddCommGroup M] [M
     Module.Flat R N := by
   rw [Module.Flat.iff_lTensor_injective]
   intro I hI
-  haveI : Module.Flat R I := Ring.WeakDimensionLEOne.flat_of_fg I hI
-  have h1 : Function.Injective
-      ((LinearMap.lTensor M I.subtype) ∘ (LinearMap.rTensor I N.subtype)) :=
-    ((Module.Flat.iff_lTensor_injective.mp inferInstance) hI).comp
-      (Module.Flat.rTensor_preserves_injective_linearMap N.subtype N.injective_subtype)
-  have hnat : ⇑((LinearMap.lTensor M I.subtype) ∘ₗ (LinearMap.rTensor I N.subtype)) =
-              ⇑((LinearMap.rTensor R N.subtype) ∘ₗ (LinearMap.lTensor N I.subtype)) := by
-    congr 1
-    ext n i
-    simp
-  simp only [LinearMap.coe_comp] at hnat
-  exact (hnat ▸ h1 : Function.Injective
-      (⇑(LinearMap.rTensor R N.subtype) ∘ ⇑(LinearMap.lTensor N I.subtype))).of_comp
+  have : Module.Flat R I := Ring.WeakDimensionLEOne.flat_of_fg I hI
+  have h : Function.Injective (⇑(I.subtype.lTensor M) ∘ ⇑(N.subtype.rTensor I)) :=
+    (Module.Flat.lTensor_preserves_injective_linearMap _ I.injective_subtype).comp
+      (Module.Flat.rTensor_preserves_injective_linearMap _ N.injective_subtype)
+  have hnat : ⇑(I.subtype.lTensor M) ∘ ⇑(N.subtype.rTensor I) =
+      ⇑(N.subtype.rTensor R) ∘ ⇑(I.subtype.lTensor N) := by
+    rw [← LinearMap.coe_comp, LinearMap.lTensor_comp_rTensor,
+      ← LinearMap.rTensor_comp_lTensor, LinearMap.coe_comp]
+  exact (hnat ▸ h).of_comp
 
 end Ring.WeakDimensionLEOne
 
