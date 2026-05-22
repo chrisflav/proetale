@@ -79,9 +79,8 @@ lemma Algebra.IsLocalIso.etale [Algebra.IsLocalIso R S] : Algebra.Etale R S :=
 
 /-- A local isomorphism of `R`-algebras is finitely presented. -/
 lemma Algebra.IsLocalIso.finitePresentation [Algebra.IsLocalIso R S] :
-    (algebraMap R S).FinitePresentation := by
+    Algebra.FinitePresentation R S := by
   have := Algebra.IsLocalIso.etale R S
-  rw [RingHom.finitePresentation_algebraMap]
   infer_instance
 
 /-- Finitely presented `R`-algebras are finitely presentable objects in `CommAlgCat R`. -/
@@ -100,8 +99,9 @@ lemma CommAlgCat.isLocalIso_le_isFinitelyPresentable :
     CommAlgCat.isLocalIso R ≤
       ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := fun S hS ↦
   have : Algebra.IsLocalIso R S := hS
+  have := Algebra.IsLocalIso.finitePresentation R S
   CommAlgCat.finitePresentation_le_isFinitelyPresentable R S
-    (Algebra.IsLocalIso.finitePresentation R S)
+    (RingHom.finitePresentation_algebraMap.mpr ‹_›)
 
 /-- An algebra is ind-Zariski if it can be written as the filtered colimit of locally isomorphic
 algebras. -/
