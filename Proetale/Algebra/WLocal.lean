@@ -47,26 +47,6 @@ lemma RingHom.isWLocal_iff_isMaximal_of_isMaximal (f : R →+* S) :
 
 namespace RingHom.IsWLocal
 
-/-- In any topological space, a specialization induces equality of connected components. -/
-private lemma specializes_connectedComponents_mk_eq {X : Type*} [TopologicalSpace X] {a b : X}
-    (hab : a ⤳ b) : ConnectedComponents.mk a = ConnectedComponents.mk b := by
-  refine ConnectedComponents.coe_eq_coe'.mpr ?_
-  have hb : b ∈ connectedComponent a :=
-    isClosed_connectedComponent.closure_subset_iff.mpr
-      (Set.singleton_subset_iff.mpr mem_connectedComponent) hab.mem_closure
-  rw [← connectedComponent_eq hb]
-  exact mem_connectedComponent
-
-/-- Two closed points in a w-local prime spectrum lying in the same connected component
-are equal. -/
-private lemma closedPoints_eq_of_mk_eq [IsWLocalRing R] {c₁ c₂ : PrimeSpectrum R}
-    (hc₁ : c₁ ∈ closedPoints (PrimeSpectrum R))
-    (hc₂ : c₂ ∈ closedPoints (PrimeSpectrum R))
-    (hmk : ConnectedComponents.mk c₁ = ConnectedComponents.mk c₂) : c₁ = c₂ :=
-  congrArg Subtype.val <|
-    (WLocalSpace.isHomeomorph_connectedComponents_closedPoints _).bijective.1
-      (a₁ := ⟨c₁, hc₁⟩) (a₂ := ⟨c₂, hc₂⟩) hmk
-
 /-- A w-local ring map between w-local rings that is bijective on stalks and
 bijective on connected components is bijective. -/
 lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (hw : f.IsWLocal)
@@ -98,7 +78,7 @@ lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (
     -- Hence `n₁` and `n₂` lie in the same connected component of `Spec S`, and as
     -- closed points in a w-local space they coincide.
     obtain rfl : n₁ = n₂ :=
-      closedPoints_eq_of_mk_eq hn₁_cp hn₂_cp <| hb.1 <| by
+      WLocalSpace.closedPoints_eq_of_mk_eq hn₁_cp hn₂_cp <| hb.1 <| by
         simp [Continuous.connectedComponentsMap_mk, hcomap_n_eq]
     -- Now `q₁, q₂ ≤ n₁` correspond to primes of `S` localised at `n₁`, and the stalk
     -- map at `n₁` is bijective; transport injectivity from `Spec R` to the stalk side.
@@ -155,9 +135,9 @@ lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (
     have hn₀_cp : n₀ ∈ closedPoints (PrimeSpectrum S) := mem_closedPoints_iff.mpr hn₀_cl
     have hmk_eq : ConnectedComponents.mk (PrimeSpectrum.comap f n₀) =
         ConnectedComponents.mk pm := by
-      rwa [← specializes_connectedComponents_mk_eq
+      rwa [← Specializes.connectedComponents_mk_eq
         (hq₀n₀.map (PrimeSpectrum.continuous_comap f))]
-    exact ⟨n₀, closedPoints_eq_of_mk_eq
+    exact ⟨n₀, WLocalSpace.closedPoints_eq_of_mk_eq
       (hw.closedPoints_subset_preimage_closedPoints hn₀_cp) hpm hmk_eq⟩
 
 end RingHom.IsWLocal

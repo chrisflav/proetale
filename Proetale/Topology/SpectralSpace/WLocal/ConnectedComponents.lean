@@ -81,3 +81,11 @@ lemma WLocalSpace.isHomeomorph_connectedComponents_closedPoints (X : Type*) [Top
 noncomputable def WLocalSpace.closedPointsHomeomorph {X : Type*} [TopologicalSpace X]
     [WLocalSpace X] : closedPoints X ≃ₜ ConnectedComponents X :=
   (WLocalSpace.isHomeomorph_connectedComponents_closedPoints X).homeomorph
+
+/-- Two closed points in a w-local space lying in the same connected component are equal. -/
+lemma WLocalSpace.closedPoints_eq_of_mk_eq {X : Type*} [TopologicalSpace X] [WLocalSpace X]
+    {c₁ c₂ : X} (hc₁ : c₁ ∈ closedPoints X) (hc₂ : c₂ ∈ closedPoints X)
+    (hmk : ConnectedComponents.mk c₁ = ConnectedComponents.mk c₂) : c₁ = c₂ :=
+  congrArg Subtype.val <|
+    (WLocalSpace.isHomeomorph_connectedComponents_closedPoints X).bijective.1
+      (a₁ := ⟨c₁, hc₁⟩) (a₂ := ⟨c₂, hc₂⟩) hmk
