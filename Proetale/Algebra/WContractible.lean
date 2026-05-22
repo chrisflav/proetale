@@ -113,11 +113,11 @@ instance commRing : CommRing (Restriction T) :=
 instance algebra : Algebra A (Restriction T) :=
   inferInstanceAs <| Algebra A <| colimit (C := CommAlgCat A) (Restriction.diag T)
 
-private instance nonempty_index :
+instance nonempty_index :
     Nonempty {W : Clopens (PrimeSpectrum A) // ConnectedComponents.mk ⁻¹' T ≤ W} :=
   ⟨⟨⊤, le_top⟩⟩
 
-private instance isCofiltered_index : CategoryTheory.IsCofiltered
+instance isCofiltered_index : CategoryTheory.IsCofiltered
     {W : Clopens (PrimeSpectrum A) // ConnectedComponents.mk ⁻¹' T ≤ W} where
   cone_objs := fun ⟨W₁, h₁⟩ ⟨W₂, h₂⟩ =>
     ⟨⟨W₁ ⊓ W₂, le_inf h₁ h₂⟩, CategoryTheory.homOfLE (Subtype.mk_le_mk.mpr inf_le_left),
@@ -143,11 +143,9 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap A (Restriction T))
       (isIdempotentElemEquivClopens.symm j.val).prop
   obtain ⟨a, ha⟩ := hpiece y
   refine ⟨a, ?_⟩
-  change (CategoryTheory.forget (CommAlgCat A)).map
-    (colimit.ι (Restriction.diag T) (Opposite.op j)) y = x at hy
-  rw [← ha] at hy
-  change algebraMap A (colimit (C := CommAlgCat A) (Restriction.diag T)) a = x
-  rw [← hy]
+  simp only [CategoryTheory.Functor.mapCocone_ι_app, colimit.cocone_ι,
+    CategoryTheory.ConcreteCategory.hom_ofHom] at hy
+  rw [← hy, ← ha]
   exact ((colimit.ι (Restriction.diag T) (Opposite.op j)).hom.commutes a).symm
 
 variable {T}
