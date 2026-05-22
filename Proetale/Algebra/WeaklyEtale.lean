@@ -207,6 +207,15 @@ lemma _root_.RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [Com
   exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
     (f := Algebra.ofId A B) hsurj).toLinearEquiv
 
+/-- The kernel of a flat surjective ring map is an idempotent ideal. This is a direct
+consequence of `RingHom.ker_pure_of_flat_surjective` and `Ideal.isIdempotentElem_of_pure`,
+but it is sometimes more convenient to invoke this form. -/
+lemma _root_.RingHom.isIdempotentElem_ker_of_flat_surjective {A B : Type*} [CommRing A]
+    [CommRing B] (f : A →+* B) (hf : f.Flat) (hsurj : Function.Surjective f) :
+    IsIdempotentElem (RingHom.ker f) :=
+  have : (RingHom.ker f).Pure := RingHom.ker_pure_of_flat_surjective f hf hsurj
+  Ideal.isIdempotentElem_of_pure _
+
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
     FormallyUnramified R S := by
   have hp : (KaehlerDifferential.ideal R S).Pure :=
