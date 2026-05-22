@@ -1,7 +1,15 @@
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Inseparable
 
 variable {X : Type*} [TopologicalSpace X]
+
+/-- A specialization induces equality of connected components. -/
+lemma Specializes.connectedComponents_mk_eq {a b : X} (hab : a ⤳ b) :
+    ConnectedComponents.mk a = ConnectedComponents.mk b :=
+  ConnectedComponents.coe_eq_coe.mpr <| connectedComponent_eq <|
+    isConnected_singleton.closure.subset_connectedComponent
+      (subset_closure rfl) hab.mem_closure
 
 -- add `@[stacks 0906]` to `ConnectedComponents.totallyDisconnectedSpace`
 
