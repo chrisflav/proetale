@@ -68,6 +68,12 @@ theorem HenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
     have h1 : a - a₀' = e.symm (e a - a₀) := by simp [a₀']
     rw [h1]; exact e.symm.toRingHom.isUnit_map hu
 
+/-- `IsStrictlyHenselianLocalRing` transfers along a ring isomorphism. -/
+theorem IsStrictlyHenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
+    [IsStrictlyHenselianLocalRing R] (e : R ≃+* S) : IsStrictlyHenselianLocalRing S :=
+  haveI : HenselianLocalRing S := .of_ringEquiv e
+  ⟨IsSepClosed.of_ringEquiv (IsLocalRing.ResidueField.mapEquiv e)⟩
+
 universe u v
 
 noncomputable section
