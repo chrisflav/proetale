@@ -49,11 +49,13 @@ namespace RingHom.IsWLocal
 
 /-- In any topological space, a specialization induces equality of connected components. -/
 private lemma specializes_connectedComponents_mk_eq {X : Type*} [TopologicalSpace X] {a b : X}
-    (hab : a ⤳ b) : ConnectedComponents.mk a = ConnectedComponents.mk b :=
-  ConnectedComponents.coe_eq_coe'.mpr <| connectedComponent_eq
-    (isClosed_connectedComponent.closure_subset_iff.mpr
-      (Set.singleton_subset_iff.mpr mem_connectedComponent) hab.mem_closure) ▸
-    mem_connectedComponent
+    (hab : a ⤳ b) : ConnectedComponents.mk a = ConnectedComponents.mk b := by
+  refine ConnectedComponents.coe_eq_coe'.mpr ?_
+  have hb : b ∈ connectedComponent a :=
+    isClosed_connectedComponent.closure_subset_iff.mpr
+      (Set.singleton_subset_iff.mpr mem_connectedComponent) hab.mem_closure
+  rw [← connectedComponent_eq hb]
+  exact mem_connectedComponent
 
 /-- Two closed points in a w-local prime spectrum lying in the same connected component
 are equal. -/
@@ -97,7 +99,7 @@ lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (
     -- closed points in a w-local space they coincide.
     obtain rfl : n₁ = n₂ :=
       closedPoints_eq_of_mk_eq hn₁_cp hn₂_cp <| hb.1 <| by
-        simp only [Continuous.connectedComponentsMap_mk, hcomap_n_eq]
+        simp [Continuous.connectedComponentsMap_mk, hcomap_n_eq]
     -- Now `q₁, q₂ ≤ n₁` correspond to primes of `S` localised at `n₁`, and the stalk
     -- map at `n₁` is bijective; transport injectivity from `Spec R` to the stalk side.
     have hq₁_le : q₁.asIdeal ≤ n₁.asIdeal :=
@@ -134,15 +136,12 @@ lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (
         PrimeSpectrum.comap (Localization.localRingHom m n₁.asIdeal f rfl) (oS.symm ⟨q₁, hq₁_le⟩) =
         PrimeSpectrum.comap (Localization.localRingHom m n₁.asIdeal f rfl)
           (oS.symm ⟨q₂, hq₂_le⟩) := by
-      have h_comap_inj : Function.Injective
+      have hcomap_inj : Function.Injective
           (PrimeSpectrum.comap (algebraMap R (Localization.AtPrime m))) :=
         Subtype.val_injective.comp
           (IsLocalization.AtPrime.primeSpectrumOrderIso (Localization.AtPrime m) m).injective
-      apply h_comap_inj
-      rw [hcomm, hcomm, hq₁'_val, hq₂'_val, heq]
-    calc q₁ = _ := hq₁'_val.symm
-      _   = _ := congr_arg _ (hφ_inj hφ_eq)
-      _   = q₂ := hq₂'_val
+      exact hcomap_inj <| by rw [hcomm, hcomm, hq₁'_val, hq₂'_val, heq]
+    rw [← hq₁'_val, hφ_inj hφ_eq, hq₂'_val]
   -- Surjectivity: via going-down, it suffices to hit every closed point of `Spec R`.
   · letI : Algebra R S := f.toAlgebra
     have : Module.Flat R S :=
@@ -156,9 +155,8 @@ lemma bijective_of_bijective [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (
     have hn₀_cp : n₀ ∈ closedPoints (PrimeSpectrum S) := mem_closedPoints_iff.mpr hn₀_cl
     have hmk_eq : ConnectedComponents.mk (PrimeSpectrum.comap f n₀) =
         ConnectedComponents.mk pm := by
-      rw [← specializes_connectedComponents_mk_eq
+      rwa [← specializes_connectedComponents_mk_eq
         (hq₀n₀.map (PrimeSpectrum.continuous_comap f))]
-      exact hd
     exact ⟨n₀, closedPoints_eq_of_mk_eq
       (hw.closedPoints_subset_preimage_closedPoints hn₀_cp) hpm hmk_eq⟩
 
