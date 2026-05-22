@@ -203,14 +203,13 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 lemma _root_.RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [CommRing B]
     (f : A →+* B) (hf : f.Flat) (hsurj : Function.Surjective f) :
     (RingHom.ker f).Pure := by
-  letI := f.toAlgebra
-  haveI : Module.Flat A B := by rwa [← RingHom.flat_algebraMap_iff, RingHom.algebraMap_toAlgebra]
+  algebraize [f]
   exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
     (f := Algebra.ofId A B) hsurj).toLinearEquiv
 
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
     FormallyUnramified R S := by
-  haveI : (KaehlerDifferential.ideal R S).Pure :=
+  have hp : (KaehlerDifferential.ideal R S).Pure :=
     RingHom.ker_pure_of_flat_surjective (TensorProduct.lmul' (S := S) R).toRingHom h
       (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
   rw [formallyUnramified_iff]
