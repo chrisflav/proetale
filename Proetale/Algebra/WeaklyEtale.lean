@@ -199,9 +199,21 @@ end
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
+/-- The kernel of a flat surjective ring map is a pure ideal. -/
+lemma _root_.RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [CommRing B]
+    (f : A →+* B) (hf : f.Flat) (hsurj : Function.Surjective f) :
+    (RingHom.ker f).Pure := by
+  algebraize [f]
+  exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
+    (f := Algebra.ofId A B) hsurj).toLinearEquiv
+
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
-    FormallyUnramified R S :=
-  sorry
+    FormallyUnramified R S := by
+  have hp : (KaehlerDifferential.ideal R S).Pure :=
+    RingHom.ker_pure_of_flat_surjective (TensorProduct.lmul' (S := S) R).toRingHom h
+      (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
+  rw [formallyUnramified_iff]
+  exact (Ideal.cotangent_subsingleton_iff _).mpr (Ideal.isIdempotentElem_of_pure _)
 
 namespace WeaklyEtale
 
