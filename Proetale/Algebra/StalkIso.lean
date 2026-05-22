@@ -33,11 +33,11 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 
 /-- A ring homomorphism `R →+* S` is bijective on stalks if `R_q →+* S_p` is bijective
 for every pair of primes `q = f⁻¹(p)`. -/
+@[algebraize Algebra.BijectiveOnStalks.mk]
 def RingHom.BijectiveOnStalks (f : R →+* S) : Prop :=
   ∀ (p : Ideal S) [p.IsPrime],
     Function.Bijective (Localization.localRingHom (p.comap f) p f rfl)
 
-@[algebraize Algebra.BijectiveOnStalks.mk]
 lemma RingHom.BijectiveOnStalks.toAlgebra {f : R →+* S} (hf : f.BijectiveOnStalks) :
     letI := f.toAlgebra
     Algebra.BijectiveOnStalks R S :=
