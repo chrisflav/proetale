@@ -235,4 +235,11 @@ lemma WeaklyEtale.formallyUnramified {f : R →+* S} (hf : f.WeaklyEtale) :
   have : Algebra.WeaklyEtale R S := hf
   exact (inferInstance : Algebra.FormallyUnramified R S)
 
+variable {f} in
+lemma WeaklyEtale.comp {T : Type*} [CommRing T] {g : S →+* T} (hf : f.WeaklyEtale)
+    (hg : g.WeaklyEtale) :
+    (g.comp f).WeaklyEtale := by
+  algebraize [f, g, g.comp f]
+  exact .trans _ S _
+
 end RingHom
