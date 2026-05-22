@@ -169,14 +169,14 @@ lemma property_indContraction_hom [HasPushouts C] [P.IsMultiplicative]
     [PreservesColimitsOfShape WalkingParallelPair (Under.forget P ⊤ X)]
     [EssentiallySmall.{max u v} (P.Under ⊤ X)] [LocallySmall.{max u v} (Under X)]
     (S : Under X) :
-    MorphismProperty.ind.{max u v} P ((indContraction P X).obj S).hom := by
-  rw [MorphismProperty.ind_iff_ind_underMk]
-  haveI : IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S) :=
+    ind.{max u v} P ((indContraction P X).obj S).hom := by
+  rw [ind_iff_ind_underMk]
+  have : IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S) :=
     isFiltered_costructuredArrow_forget' P X
   refine ObjectProperty.of_essentiallySmall_index (J := CostructuredArrow (Under.forget P ⊤ X) S)
     { diag := CostructuredArrow.proj (Under.forget P ⊤ X) S ⋙ Under.forget P ⊤ X
       ι := (indContractionCocone P S).ι
-      isColimit := isColimitIndContractionCocone P S } (fun j ↦ j.left.2)
+      isColimit := isColimitIndContractionCocone P S } fun j ↦ j.left.2
 
 lemma exists_costructuredArrow_aux [HasPushouts C] [IndSpreads P]
     {S : Under X} (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
