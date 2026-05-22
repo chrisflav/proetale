@@ -142,8 +142,6 @@ instance : IsDirected (AwayIndex M) (· ≤ ·) :=
 
 instance : Nonempty (AwayIndex M) := ⟨⟨1, M.one_mem⟩⟩
 
-lemma le_def {m m' : AwayIndex M} : m ≤ m' ↔ m.val ∣ m'.val := Iff.rfl
-
 end AwayIndex
 
 /-- The transition map `Localization.Away m → Localization.Away m'` when `m ∣ m'`,
@@ -165,21 +163,19 @@ noncomputable def awayDiag (R : Type u) [CommRing R] (M : Submonoid R) :
     refine IsLocalization.ringHom_ext (.powers m.val) ?_
     ext _
     simp [awayDvdHom, IsLocalization.Away.lift]
-  map_comp {m₁ _ _} _ _ := by
+  map_comp {m _ _} _ _ := by
     refine CommAlgCat.hom_ext (AlgHom.coe_ringHom_injective ?_)
-    refine IsLocalization.ringHom_ext (.powers m₁.val) ?_
+    refine IsLocalization.ringHom_ext (.powers m.val) ?_
     ext _
     simp [awayDvdHom, IsLocalization.Away.lift]
 
-instance awayDiag_obj_isLocalization (R : Type u) [CommRing R] (M : Submonoid R)
-    (m : AwayIndex M) :
-    IsLocalization (Submonoid.powers m.val) ((awayDiag R M).obj m : Type u) :=
-  inferInstanceAs (IsLocalization (.powers m.val) (Localization.Away m.val))
-
-instance awayDiag_obj_isLocalizationAway (R : Type u) [CommRing R] (M : Submonoid R)
-    (m : AwayIndex M) :
+instance (R : Type u) [CommRing R] (M : Submonoid R) (m : AwayIndex M) :
     IsLocalization.Away m.val ((awayDiag R M).obj m : Type u) :=
   inferInstanceAs (IsLocalization.Away m.val (Localization.Away m.val))
+
+instance (R : Type u) [CommRing R] (M : Submonoid R) (m : AwayIndex M) :
+    Algebra.IsLocalIso R ((awayDiag R M).obj m : Type u) :=
+  inferInstanceAs (Algebra.IsLocalIso R (Localization.Away m.val))
 
 /-- The `R`-algebra homomorphism `Localization.Away m → S` induced by the universal property,
 where `S` is a localization of `R` at a submonoid `M` containing `m`. -/
@@ -199,7 +195,7 @@ noncomputable def awayCocone (R : Type u) [CommRing R] (M : Submonoid R)
     refine CommAlgCat.hom_ext ?_
     have : Subsingleton (((awayDiag R M).obj m : Type u) →ₐ[R]
         (((Functor.const (AwayIndex M)).obj (CommAlgCat.of R S)).obj m' : Type u)) :=
-      IsLocalization.algHom_subsingleton (Submonoid.powers m.val)
+      IsLocalization.algHom_subsingleton (.powers m.val)
     exact Subsingleton.elim _ _
 
 /-- A localization of `R` at a submonoid `M` is the filtered colimit of `R[1/m]`
@@ -221,7 +217,7 @@ noncomputable def awayColimitPresentation (R : Type u) [CommRing R] (M : Submono
       fac c m := by
         refine CommAlgCat.hom_ext ?_
         have : Subsingleton (((awayDiag R M).obj m : Type u) →ₐ[R] (c.pt : Type u)) :=
-          IsLocalization.algHom_subsingleton (Submonoid.powers m.val)
+          IsLocalization.algHom_subsingleton (.powers m.val)
         exact Subsingleton.elim _ _
       uniq c _ _ := by
         refine CommAlgCat.hom_ext ?_
@@ -231,10 +227,8 @@ noncomputable def awayColimitPresentation (R : Type u) [CommRing R] (M : Submono
 
 lemma of_isLocalization (M : Submonoid R) [IsLocalization M S] : Algebra.IndZariski R S := by
   rw [iff_ind_isLocalIso]
-  refine ⟨AwayIndex M, inferInstance, inferInstance,
-    awayColimitPresentation R M S, fun m ↦ ?_⟩
-  show Algebra.IsLocalIso R (Localization.Away m.val)
-  infer_instance
+  exact ⟨AwayIndex M, inferInstance, inferInstance, awayColimitPresentation R M S,
+    fun m ↦ inferInstanceAs (Algebra.IsLocalIso R (Localization.Away m.val))⟩
 
 instance localization (M : Submonoid R) : Algebra.IndZariski R (Localization M) :=
   of_isLocalization _ M
