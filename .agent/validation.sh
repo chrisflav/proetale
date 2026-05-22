@@ -11,4 +11,4 @@ lake exe mk_all --git --check || exit 1
 lake exe cache get
 
 # Verify everything builds.
-lake build
+lake build --wfail
