@@ -1,9 +1,12 @@
+import Proetale.Algebra.Bijective
 import Proetale.Algebra.Contraction.Covers
 import Proetale.Algebra.Contraction.IndContraction
 import Proetale.Algebra.Etale
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.FilteredLocalColimit
+import Proetale.Algebra.HenselianLocalRing
 import Proetale.Algebra.Ind
+import Proetale.Algebra.IndBijectiveOnStalks
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Algebra.IndZariski
@@ -19,6 +22,7 @@ import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.WeakDimension
 import Proetale.Algebra.WeaklyEtale
+import Proetale.Algebra.WeaklyEtaleField
 import Proetale.Basic
 import Proetale.FromPi1.Etale
 import Proetale.Mathlib.Algebra.Algebra.Pi
@@ -29,13 +33,14 @@ import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
+import Proetale.Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+import Proetale.Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Proetale.Mathlib.CategoryTheory.Limits.Comma
-import Proetale.Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Proetale.Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -83,6 +88,7 @@ import Proetale.Mathlib.Topology.Separation.Basic
 import Proetale.Mathlib.Topology.Separation.Hausdorff
 import Proetale.Mathlib.Topology.Sober
 import Proetale.Mathlib.Topology.Spectral.Basic
+import Proetale.Mathlib.Topology.Spectral.ConstructibleTopology
 import Proetale.Mathlib.Topology.Spectral.Prespectral
 import Proetale.Morphisms.ProAffineEtale
 import Proetale.Morphisms.WeaklyEtale
@@ -108,4 +114,5 @@ import Proetale.Topology.SpectralSpace.ConnectedComponent
 import Proetale.Topology.SpectralSpace.Constructible
 import Proetale.Topology.SpectralSpace.WLocal.Basic
 import Proetale.Topology.SpectralSpace.WLocal.ClosedPoints
+import Proetale.Topology.SpectralSpace.WLocal.ConnectedComponents
 import Proetale.Topology.SpectralSpace.WLocal.Pullback

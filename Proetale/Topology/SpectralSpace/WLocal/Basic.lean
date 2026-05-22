@@ -117,13 +117,6 @@ lemma Topology.IsClosedEmbedding.wLocalSpace {f : X → Y} (hf : IsClosedEmbeddi
   hf.isEmbedding.wLocalSpace_of_stableUnderSpecialization_range
     hf.isClosedMap.isClosed_range.stableUnderSpecialization
 
--- In process of being PRed to mathlib #39332
-lemma IsCompact.isClosed_constructibleTopology_of_isOpen {s : Set X}
-    (hs : IsCompact s) (ho : IsOpen s) : IsClosed[constructibleTopology X] s := by
-  rw [← @isOpen_compl_iff]
-  apply TopologicalSpace.isOpen_generateFrom_of_mem
-  simp [constructibleTopologySubbasis, ho, hs]
-
 lemma isClosed_generalizationHull_of_wLocalSpace [WLocalSpace X] {s : Set X} (hs : IsClosed s) :
     IsClosed (generalizationHull s) := by
   have ⟨u, hu1, hu2⟩ := generalizationHull.eq_sInter_of_isCompact
@@ -134,16 +127,3 @@ lemma isClosed_generalizationHull_of_wLocalSpace [WLocalSpace X] {s : Set X} (hs
     exact ht2.isClosed_constructibleTopology_of_isOpen ht1
   exact hsg.of_isClosed_constructibleTopology
     hs.stableUnderSpecialization.generalizationHull_of_wLocalSpace
-
-/-- If `X` is w-local, the composition `closedPoints X → X → ConnectedComponents X` is
-a homeomorphism. -/
-lemma WLocalSpace.isHomeomorph_connectedComponents_closedPoints (X : Type*) [TopologicalSpace X]
-    [WLocalSpace X] :
-    IsHomeomorph (ConnectedComponents.mk ∘ ((↑) : closedPoints X → X)) :=
-  sorry
-
-/-- The closed points of a w-local space are homeomorphic to the connected components. -/
-noncomputable
-def WLocalSpace.closedPointsHomeomorph {X : Type*} [TopologicalSpace X] [WLocalSpace X] :
-    closedPoints X ≃ₜ ConnectedComponents X :=
-  (WLocalSpace.isHomeomorph_connectedComponents_closedPoints X).homeomorph

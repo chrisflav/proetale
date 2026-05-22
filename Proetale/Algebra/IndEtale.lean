@@ -21,10 +21,6 @@ open CategoryTheory Limits
 
 variable (R : Type u) {S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
-/-- The object property on commutative `R`-algebras of being finitely presented. -/
-def CommAlgCat.finitePresentation : ObjectProperty (CommAlgCat.{u} R) :=
-  fun S ↦ RingHom.FinitePresentation (algebraMap R S)
-
 /-- The object property on commutative `R`-algebras of being étale. -/
 def CommAlgCat.etale : ObjectProperty (CommAlgCat.{u} R) :=
   fun S ↦ Algebra.Etale R S
@@ -54,19 +50,6 @@ lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower
     Algebra.IndEtale R T :=
   sorry
 
-/-- Finitely presented `R`-algebras are finitely presentable objects in `CommAlgCat R`. -/
-lemma finitePresentation_le_isFinitelyPresentable :
-    CommAlgCat.finitePresentation R ≤
-      ObjectProperty.isFinitelyPresentable.{u} (CommAlgCat.{u} R) := by
-  intro S hS
-  have hunder : IsFinitelyPresentable.{u} ((commAlgCatEquivUnder (.of R)).functor.obj S) :=
-    CommRingCat.isFinitelyPresentable_under _ _ (by convert hS using 1)
-  have : Fact (Cardinal.aleph0 : Cardinal.{u}).IsRegular := Cardinal.fact_isRegular_aleph0
-  exact (@isCardinalPresentable_iff_of_isEquivalence
-    (CommAlgCat.{u} R) _ S (Cardinal.aleph0 : Cardinal.{u}) this
-    (Under (CommRingCat.of.{u} R)) _
-    (commAlgCatEquivUnder (.of R)).functor inferInstance).mp hunder
-
 /-- Étale `R`-algebras are finitely presented. -/
 lemma etale_le_finitePresentation :
     CommAlgCat.etale R ≤ CommAlgCat.finitePresentation R := by
@@ -78,25 +61,14 @@ then `S` is ind-étale over `R`. -/
 theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))
     (h : ∀ (i : ι), Algebra.IndEtale R (P.diag.obj i)) : Algebra.IndEtale R S := by
-  rw [iff_ind_etale, ← ObjectProperty.ind_ind
-    (etale_le_finitePresentation R |>.trans (finitePresentation_le_isFinitelyPresentable R))]
+  rw [iff_ind_etale, ← ObjectProperty.ind_ind (etale_le_finitePresentation R |>.trans
+    (CommAlgCat.finitePresentation_le_isFinitelyPresentable R))]
   exact ⟨ι, ‹_›, ‹_›, P, fun i => (iff_ind_etale R _).mp (h i)⟩
 
-/-- Local isomorphisms of `R`-algebras are étale. -/
-lemma Algebra.IsLocalIso.etale [Algebra.IsLocalIso R S] : Algebra.Etale R S := by
-  rw [← RingHom.etale_algebraMap]
-  let s : Set S := {g | Algebra.IsStandardOpenImmersion R (Localization.Away g)}
-  have hs : Ideal.span s = ⊤ := Algebra.IsLocalIso.span_isStandardOpenImmersion_eq_top R S
-  refine RingHom.Etale.ofLocalizationSpanTarget (algebraMap R S) s hs fun ⟨g, hg⟩ => ?_
-  obtain ⟨r, hr⟩ := hg.exists_away
-  have : Algebra.Etale R (Localization.Away g) := Algebra.Etale.of_isLocalizationAway r
-  rw [← IsScalarTower.algebraMap_eq R S (Localization.Away g)]
-  exact RingHom.etale_algebraMap.mpr inferInstance
-
 lemma isLocalIso_le_etale (R : Type u) [CommRing R] :
-    CommAlgCat.isLocalIso R ≤ CommAlgCat.etale R := by
-  intro X hX
-  exact @Algebra.IsLocalIso.etale R X _ _ _ hX
+    CommAlgCat.isLocalIso R ≤ CommAlgCat.etale R := fun X hX ↦
+  have : Algebra.IsLocalIso R X := hX
+  Algebra.IsLocalIso.etale R X
 
 /-- An ind-Zariski algebra is ind-étale, since localizations are étale. -/
 instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S := by
@@ -109,7 +81,10 @@ instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLoca
   sorry
 
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
-    [q.LiesOver p] [p.IsPrime] [q.IsPrime] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
+    [q.LiesOver p] [p.IsPrime] [q.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    Algebra.IsSeparable p.ResidueField q.ResidueField :=
   sorry
 
 end Algebra.IndEtale

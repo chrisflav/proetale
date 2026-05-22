@@ -9,3 +9,8 @@ lemma exists_isClosed_specializes {X : Type*} [TopologicalSpace X] [CompactSpace
     (Set.singleton_nonempty x |>.closure)
   use c, hc
   rwa [specializes_iff_mem_closure]
+
+/-- In a `T1Space`, every set is stable under specialization. -/
+lemma StableUnderSpecialization.of_t1Space {X : Type*} [TopologicalSpace X] [T1Space X]
+    (s : Set X) : StableUnderSpecialization s :=
+  fun _ _ hxy hx ↦ hxy.eq ▸ hx
