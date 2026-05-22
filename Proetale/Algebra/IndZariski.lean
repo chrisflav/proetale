@@ -295,28 +295,23 @@ instance (priority := 100) _root_.Module.Flat.of_indZariski [Algebra.IndZariski 
 
 /-- If `S` is a filtered colimit of `R`-algebras `Aᵢ` and each algebra map
 `R → Aᵢ` is bijective on stalks, then so is `R → S`. -/
-lemma bijectiveOnStalks_of_colimitPresentation
-    {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
-    {ι : Type u} [SmallCategory ι] [IsFiltered ι]
+lemma bijectiveOnStalks_of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))
     (h : ∀ i, (algebraMap R (P.diag.obj i)).BijectiveOnStalks) :
     (algebraMap R S).BijectiveOnStalks := by
   have hcolim : IsColimit ((forget (CommAlgCat.{u} R)).mapCocone P.cocone) :=
     isColimitOfPreserves (forget (CommAlgCat.{u} R)) P.isColimit
-  have hcomm : ∀ (i : ι) (r : R),
+  have hcomm (i : ι) (r : R) :
       (P.ι.app i).hom (algebraMap R (P.diag.obj i) r) = algebraMap R S r :=
-    fun i r ↦ (P.ι.app i).hom.commutes r
-  have hnat : ∀ {i j : ι} (f : i ⟶ j) (x : P.diag.obj i),
-      (P.ι.app j).hom ((P.diag.map f).hom x) = (P.ι.app i).hom x := fun {i j} f x ↦ by
-    change (P.diag.map f ≫ P.ι.app j).hom x = (P.ι.app i).hom x
-    rw [P.w f]
-    rfl
+    (P.ι.app i).hom.commutes r
+  have hnat {i j : ι} (f : i ⟶ j) (x : P.diag.obj i) :
+      (P.ι.app j).hom ((P.diag.map f).hom x) = (P.ι.app i).hom x :=
+    DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x
   intro p hp
-  have hp_i_prime : ∀ (i : ι), (p.comap (P.ι.app i).hom.toRingHom).IsPrime :=
-    fun i ↦ Ideal.IsPrime.comap _
-  have hq_eq : ∀ (i : ι),
+  have hp_i_prime (i : ι) : (p.comap (P.ι.app i).hom.toRingHom).IsPrime := Ideal.IsPrime.comap _
+  have hq_eq (i : ι) :
       p.comap (algebraMap R S) =
-        (p.comap (P.ι.app i).hom.toRingHom).comap (algebraMap R (P.diag.obj i)) := fun i ↦ by
+        (p.comap (P.ι.app i).hom.toRingHom).comap (algebraMap R (P.diag.obj i)) := by
     ext r
     simp only [Ideal.mem_comap, ← hcomm i r]
     rfl
@@ -355,8 +350,7 @@ lemma bijectiveOnStalks_of_colimitPresentation
         hjeq
       simp only [map_mul, AlgHom.commutes] at hjeq'
       exact hjeq'
-    have hq_eq_j : p.comap (algebraMap R S) =
-        pj.comap (algebraMap R (P.diag.obj j)) := hq_eq j
+    have hq_eq_j : p.comap (algebraMap R S) = pj.comap (algebraMap R (P.diag.obj j)) := hq_eq j
     have hs₁' : s₁ ∈ (pj.comap (algebraMap R (P.diag.obj j))).primeCompl :=
       fun hmem ↦ hs₁ (hq_eq_j.symm ▸ hmem)
     have hs₂' : s₂ ∈ (pj.comap (algebraMap R (P.diag.obj j))).primeCompl :=
@@ -384,8 +378,7 @@ lemma bijectiveOnStalks_of_colimitPresentation
     let pi : Ideal (P.diag.obj i) := p.comap (P.ι.app i).hom.toRingHom
     have hpi_prime : pi.IsPrime := hp_i_prime i
     have hu'_mem : u' ∈ pi.primeCompl := fun hmem ↦ hu (hu' ▸ hmem)
-    have hq_eq_i : p.comap (algebraMap R S) =
-        pi.comap (algebraMap R (P.diag.obj i)) := hq_eq i
+    have hq_eq_i : p.comap (algebraMap R S) = pi.comap (algebraMap R (P.diag.obj i)) := hq_eq i
     obtain ⟨w, hw⟩ :=
       (h i pi).2 (IsLocalization.mk' (Localization.AtPrime pi) s' ⟨u', hu'_mem⟩)
     obtain ⟨⟨a, b, hb⟩, rfl⟩ :=
@@ -405,14 +398,15 @@ lemma bijectiveOnStalks_of_colimitPresentation
 theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
     (algebraMap R S).BijectiveOnStalks := by
   obtain ⟨ι, _, _, P, h⟩ := IndZariski.exists_colimitPresentation (R := R) (S := S)
-  exact bijectiveOnStalks_of_colimitPresentation P fun i ↦
+  exact bijectiveOnStalks_of_colimitPresentation R S P fun i ↦
     RingHom.IsLocalIso.bijectiveOnStalks (RingHom.isLocalIso_algebraMap.mpr (h i))
 
+/-- If `S` is a filtered colimit of ind-Zariski `R`-algebras, then `S` is ind-Zariski. -/
 theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))
     (h : ∀ (i : ι), Algebra.IndZariski R (P.diag.obj i)) : Algebra.IndZariski R S := by
-  rw [iff_ind_isLocalIso, ← ObjectProperty.ind_ind
-    (CommAlgCat.isLocalIso_le_isFinitelyPresentable R)]
+  rw [iff_ind_isLocalIso,
+    ← ObjectProperty.ind_ind (CommAlgCat.isLocalIso_le_isFinitelyPresentable R)]
   exact ⟨ι, ‹_›, ‹_›, P, fun i ↦ (iff_ind_isLocalIso R _).mp (h i)⟩
 
 end Algebra.IndZariski
