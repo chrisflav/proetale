@@ -150,12 +150,16 @@ of this property.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092J}]
+    \uses{def:weakly-etale-algebra}
     \label{lem:weakly-etale-comp}
+    \lean{RingHom.WeaklyEtale.comp, Algebra.WeaklyEtale.trans}
+    \leanok
     If $A \to B$ and $B \to C$ are weakly étale, then $A \to C$ is weakly étale.
 \end{lemma}
 
 \begin{proof}
-    Ommited, see \stacksproject{092J}.
+    \leanok
+    Omitted, see \stacksproject{092J}.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092H}]
@@ -181,7 +185,7 @@ of this property.
 \end{lemma}
 
 \begin{proof}
-    \leanok 
+    \leanok
     First proof:
 
     If $N'$ is a second $B$-module, then
@@ -380,37 +384,6 @@ suffices for our purposes.
     \leanok
 \end{definition}
 
-\begin{theorem}[Lazard]
-    Let $M$ be a flat $R$-module. Then $M$ is the directed colimit of free, finite $R$-modules.
-    \label{theorem:lazard}
-\end{theorem}
-
-\begin{proof}
-    \stacksproject{058G}
-\end{proof}
-
-\begin{lemma}[\stacksproject{092S}, (1) => (2)]
-    If $A$ is of weak-dimension $\le 1$, then every ideal $I \subseteq A$ is flat.
-    \uses{def:weak-dim-le-one}
-    \label{lemma:weak-dim-ideal-flat}
-\end{lemma}
-
-\begin{proof}
-    Use the fact that a filtered colimit of flat modules is flat and that
-    any ideal is the filtered colimit of its finitely generated subideals.
-\end{proof}
-
-\begin{lemma}
-    Let $M$ be an $R$-module and $0 = M_0 \subseteq M_1 \subseteq M_n = M$ a
-    sequence of submodules. If $M_{j + 1} / M_j$ is flat for all $j$, then
-    $M$ is flat.
-    \label{lemma:flat-filtration}
-\end{lemma}
-
-\begin{proof}
-    Inductively apply that extensions of flat modules are flat.
-\end{proof}
-
 \begin{lemma}[\stacksproject{092S}, (2) => (4)]
     Let $A$ be a ring of weak dimension $\le 1$ and $M$ a flat $A$-module. Then
     any submodule of $M$ is flat.
@@ -423,15 +396,32 @@ suffices for our purposes.
 % There is a much better proof that avoids Lazard, but uses Tor instead.
 \begin{proof}
     \leanok
-    \uses{theorem:lazard, lemma:flat-filtration, lemma:weak-dim-ideal-flat}
-    By \Cref{theorem:lazard} we may write $M = \colim_i M_i$ for finite and free $A$-modules $M_i$.
-    Denote by $N_i$ the preimage of $M_i$ in $N$. Then $N = \colim_i N_i$ and
-    since the filtered colimit of flat modules is flat, we reduce to the case where $M = R^{\oplus n}$.
-    By applying \Cref{lemma:flat-filtration} to the sequence $N_j = N \cap R^{\oplus j}$, it remains
-    to show that $N_{j+1} / N_j$ is flat. For this consider
-    the projection on the $j + 1$-th factor $N_{j+1} \to R$. Its image is an ideal $I \subseteq R$
-    and its kernel is $N_j$. Hence $N_{j + 1} / N_j \cong I$ and $I$ is flat by
-    \Cref{lemma:weak-dim-ideal-flat}.
+    It suffices to show that for any finitely generated ideal $I$, the
+    linear map $I \otimes_{R} N \to N$ is injective. For this, consider the following commutative
+    diagram:
+    \[
+    \begin{tikzcd}
+        I \otimes_{R} N \arrow{r} \arrow{d} & N \arrow{d} \\
+        I \otimes_{R} M \arrow{r} & M
+    \end{tikzcd}
+    .\]
+    The left vertical map is injective, because $I$ is flat by assumption on $R$. The bottom horizontal
+    map is injective, because $M$ is flat. Hence $I \otimes_{R} N \to N \to M$ is injective,
+    from which the claim follows.
+\end{proof}
+
+\begin{corollary}[\stacksproject{092S}, (1) => (2)]
+    If $A$ is of weak-dimension $\le 1$, then every ideal $I \subseteq A$ is flat.
+    \uses{def:weak-dim-le-one}
+    \label{lemma:weak-dim-ideal-flat}
+    \lean{Ring.WeakDimensionLEOne.flat_ideal}
+    \leanok
+\end{corollary}
+
+\begin{proof}
+    \leanok
+    \uses{lemma:weak-dim-flat-submodule}
+    Immediate consequence of \Cref{lemma:weak-dim-flat-submodule}.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092E}]
@@ -439,6 +429,8 @@ suffices for our purposes.
     $B$ is of weak dimension $\le 1$.
     \label{lemma:weakly-etale-preserve-weak-dim}
     \uses{def:weak-dim-le-one}
+    \lean{Ring.WeakDimensionLEOne.of_weaklyEtale}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -465,6 +457,8 @@ suffices for our purposes.
     Let $(A_i)_{i \in I}$ be a family of valuation rings. Then
     $\prod_{i \in I} A_i$ is of weak dimension $\le 1$.
     \label{lemma:prod-valuation-ring-weak-dim-integrally-closed}
+    \lean{Ring.WeakDimensionLEOne.pi_of_isValuationRing}
+    \leanok
     \uses{def:weak-dim-le-one}
 \end{lemma}
 
@@ -498,6 +492,8 @@ suffices for our purposes.
     flat $A$-algebra such that $A \to B$ is injective and an epimorphism of rings. Then
     $A$ is integrally closed in $B$.
     \label{lemma:weak-dim-integrally-closed}
+    \lean{Ring.WeakDimensionLEOne.isIntegrallyClosedIn_of_isEpi}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -548,8 +544,10 @@ suffices for our purposes.
 
 \begin{lemma}[\stacksproject{092P}]
     \label{lem:flat-tensor-over-field-imples-algebraic}
-    Let $L/K$ be an extension of fields. If $L \otimes_K L \to L$is flat, then $L$ is an algebraic 
+    Let $L/K$ be an extension of fields. If $L \otimes_K L \to L$ is flat, then $L$ is an algebraic
     separable extension of $K$.
+    \lean{Algebra.WeaklyEtale.isAlgebraic}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -564,8 +562,9 @@ suffices for our purposes.
         \item $B$ is a filtered colimit of
     étale $K$-algebras, i.e. $B$ is ind-\'etale.
     \end{enumerate}
-    \uses{def:weakly-etale-algebra,
-    def:ind-etale}
+    \uses{def:weakly-etale-algebra, def:ind-etale}
+    \lean{Algebra.WeaklyEtale.indEtale_field, Algebra.WeaklyEtale.etale_of_fg}
+    \leanok
 \end{theorem}
 
 \begin{proof}

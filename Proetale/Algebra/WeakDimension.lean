@@ -50,7 +50,7 @@ lemma exists_eq_mul_of_surjective_flat' {R S ι : Type*} [CommRing R] [CommRing 
 
 namespace Ring.WeakDimensionLEOne
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
 
 /-- If `R` is of weak dimension `≤ 1`, then any submodule of a flat module is flat. -/
 lemma flat_submodule [Ring.WeakDimensionLEOne R] {M : Type*} [AddCommGroup M] [Module R M]
@@ -67,6 +67,29 @@ lemma flat_submodule [Ring.WeakDimensionLEOne R] {M : Type*} [AddCommGroup M] [M
     rw [← LinearMap.coe_comp, LinearMap.lTensor_comp_rTensor,
       ← LinearMap.rTensor_comp_lTensor, LinearMap.coe_comp]
   exact (hnat ▸ h).of_comp
+
+lemma flat_ideal [Ring.WeakDimensionLEOne R] (I : Ideal R) :
+    Module.Flat R I :=
+  flat_submodule _ _
+
+/-- If `R` is of weak dimension `≤ 1` and `S` is weakly étale over `R`, then the same holds for
+`S`. -/
+lemma of_weaklyEtale [Ring.WeakDimensionLEOne R] [Algebra.WeaklyEtale R S] :
+    Ring.WeakDimensionLEOne S :=
+  sorry
+
+/-- The product of valuation rings is of weak dimension `≤ 1`. -/
+lemma pi_of_isValuationRing {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)]
+    [∀ i, IsDomain (R i)] [∀ i, ValuationRing (R i)] :
+    WeakDimensionLEOne (Π i, R i) :=
+  sorry
+
+/-- If `R` is of weak dimension `≤ 1`, it is integrally closed in any flat extension `S` such
+that `R → S` is an epi. -/
+lemma isIntegrallyClosedIn_of_isEpi [WeakDimensionLEOne R] [Module.Flat R S] [FaithfulSMul R S]
+    [Algebra.IsEpi R S] :
+    IsIntegrallyClosedIn R S :=
+  sorry
 
 end Ring.WeakDimensionLEOne
 
