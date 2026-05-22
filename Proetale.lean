@@ -67,7 +67,6 @@ import Proetale.Mathlib.CategoryTheory.Sites.InducedTopology
 import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
-import Proetale.Mathlib.CategoryTheory.Sites.PrecoverageGenerating
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
