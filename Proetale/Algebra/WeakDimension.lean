@@ -148,6 +148,12 @@ lemma _root_.Module.flat_of_localization_atPrime_isField
 instance [AbsolutelyFlat R] : Module.Flat R M :=
   Module.flat_of_localization_atPrime_isField _ _ (fun _ _ ↦ isField_of_isLocalRing _)
 
+instance (priority := low) [AbsolutelyFlat R] : IsReduced R := by
+  refine isReduced_ofLocalizationMaximal _ fun P hP ↦ ?_
+  have : P.IsPrime := hP.isPrime
+  let _ := (isField_of_isLocalization_prime (R := R) P (Localization.AtPrime P)).toField
+  infer_instance
+
 theorem tfae : [AbsolutelyFlat R,
     IsReduced R ∧ ∀ P : Ideal R, P.IsPrime → P.IsMaximal,
     IsReduced R ∧ Ring.KrullDimLE 0 R,

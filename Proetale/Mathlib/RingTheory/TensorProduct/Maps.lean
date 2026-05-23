@@ -4,6 +4,11 @@ open TensorProduct
 
 namespace Algebra
 
+lemma TensorProduct.lmul'_surjective {R S : Type*} [CommSemiring R] [CommSemiring S]
+    [Algebra R S] :
+    Function.Surjective (Algebra.TensorProduct.lmul' (R := R) (S := S)) :=
+  fun x ↦ ⟨1 ⊗ₜ x, by simp⟩
+
 section
 
 variable (R S T A C D : Type*) [CommRing R] [CommRing S] [CommRing T]

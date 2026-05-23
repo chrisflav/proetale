@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Algebra.WeakDimension
+import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
@@ -18,13 +19,10 @@ of fields is separable algebraic).
 
 ## Main results
 
-* `Algebra.WeaklyEtale.surjective_lmul'_of_field` —
-  the multiplication map `L ⊗[K] L → L` is surjective.
 * `Algebra.WeaklyEtale.absolutelyFlat_tensor_self` —
-  `L ⊗[K] L` is absolutely flat (Stacks [092I] applied to the weakly étale
-  base change `L → L ⊗[K] L`, with `L` absolutely flat as a field).
-* `Algebra.WeaklyEtale.isReduced_tensor_self` —
-  `L ⊗[K] L` is reduced.
+  if `K → L` is weakly étale and `L` is absolutely flat (in particular,
+  a field), then `L ⊗[K] L` is absolutely flat. Reducedness follows
+  automatically from the general `Ring.AbsolutelyFlat ⇒ IsReduced` instance.
 
 We also introduce the `L`-algebra evaluation map
 `tensorEvalRight : L[X] →ₐ[L] L ⊗[K] L`, `X ↦ 1 ⊗ a`, and check its basic
@@ -38,39 +36,18 @@ open scoped TensorProduct
 
 namespace Algebra.WeaklyEtale
 
-variable (K L : Type u) [Field K] [Field L] [Algebra K L]
+/-- If `K → L` is weakly étale and `L` is absolutely flat (e.g. a field), then `L ⊗[K] L`
+is absolutely flat.
 
-/-- The multiplication map `L ⊗[K] L → L` is surjective: `1 ⊗ x ↦ x`. -/
-lemma surjective_lmul'_of_field :
-    Function.Surjective (Algebra.TensorProduct.lmul' (R := K) (S := L)) := fun x ↦
-  ⟨1 ⊗ₜ x, by simp⟩
-
-/-- If `L / K` is weakly étale between fields, then `L ⊗[K] L` is absolutely flat.
-
-This is the special case of Stacks [092I] (weakly étale algebras over absolutely
-flat rings are absolutely flat) applied to the base change `L → L ⊗[K] L`: `L` is
-absolutely flat as a field, and `L ⊗[K] L` is weakly étale over `L`. -/
-instance absolutelyFlat_tensor_self [Algebra.WeaklyEtale K L] :
+Special case of Stacks [092I] (weakly étale algebras over absolutely flat rings are absolutely
+flat) applied to the base change `L → L ⊗[K] L`. -/
+instance absolutelyFlat_tensor_self (K L : Type u) [CommRing K] [CommRing L] [Algebra K L]
+    [Ring.AbsolutelyFlat L] [Algebra.WeaklyEtale K L] :
     Ring.AbsolutelyFlat (L ⊗[K] L) :=
-  have : Ring.AbsolutelyFlat L := .of_field L
   Ring.AbsolutelyFlat.of_flat_lmul' L (L ⊗[K] L)
     (Algebra.WeaklyEtale.flat_lmul' L (L ⊗[K] L))
 
-/-- If `L / K` is weakly étale between fields, then `L ⊗[K] L` is reduced.
-
-Derived from `Ring.AbsolutelyFlat (L ⊗[K] L)` via
-`Ring.AbsolutelyFlat.isField_of_isLocalization_prime`: it suffices to check that
-the localization at every maximal ideal is reduced, and each such localization is
-a field. -/
-instance isReduced_tensor_self [Algebra.WeaklyEtale K L] :
-    IsReduced (L ⊗[K] L) := by
-  refine isReduced_ofLocalizationMaximal _ fun P hP ↦ ?_
-  have : P.IsPrime := hP.isPrime
-  have hfld : IsField (Localization.AtPrime P) :=
-    Ring.AbsolutelyFlat.isField_of_isLocalization_prime
-      (R := L ⊗[K] L) P (Localization.AtPrime P)
-  let _ := hfld.toField
-  infer_instance
+variable (K L : Type u) [CommRing K] [CommRing L] [Algebra K L]
 
 /-- The `L`-algebra evaluation `L[X] →ₐ[L] L ⊗[K] L` sending `X` to `1 ⊗ a`.
 The `L`-algebra structure on `L ⊗[K] L` is the standard `Algebra.TensorProduct`
