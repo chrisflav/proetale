@@ -8,6 +8,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.RingHom.Etale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.Etale
+import Proetale.Mathlib.Algebra.Category.Ring.Accessible
 
 /-!
 # Ind-étale algebras
@@ -56,22 +57,15 @@ lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower
     [Algebra.IndEtale R S] [Algebra.IndEtale S T] :
     Algebra.IndEtale R T := by
   rw [iff_ind_etale_algebraMap]
-  obtain ⟨J, hJ, hFilt, D, s₂, t₂, ht₂, hst₂⟩ := (iff_ind_etale_algebraMap S T).mp ‹_›
-  have hRS : MorphismProperty.ind.{u} CommRingCat.etale
-      (CommRingCat.ofHom (algebraMap R S)) :=
-    (iff_ind_etale_algebraMap R S).mp ‹_›
-  rw [← MorphismProperty.ind_ind CommRingCat.etale_le_isFinitelyPresentable.{u}]
-  refine ⟨J, hJ, hFilt, D,
-    (Functor.const J).map (CommRingCat.ofHom (algebraMap R S)) ≫ s₂,
-    t₂, ht₂, fun j ↦ ⟨?_, ?_⟩⟩
-  · simpa using MorphismProperty.ind_comp_mem hRS (hst₂ j).1
-  · simp only [NatTrans.comp_app, Functor.const_obj_obj, Functor.const_map_app, Category.assoc]
-    ext x
-    change (t₂.app j).hom ((s₂.app j).hom ((algebraMap R S) x)) = (algebraMap R T) x
-    have h := RingHom.congr_fun (CommRingCat.hom_ext_iff.mp (hst₂ j).2) ((algebraMap R S) x)
-    simp only [CommRingCat.comp_apply] at h
-    rw [h]
-    exact (IsScalarTower.algebraMap_apply R S T x).symm
+  have hRS := (iff_ind_etale_algebraMap R S).mp ‹_›
+  have hST := (iff_ind_etale_algebraMap S T).mp ‹_›
+  have inst : (MorphismProperty.ind.{u} CommRingCat.etale).IsStableUnderComposition :=
+    .ind_of_preIndSpreads CommRingCat.etale_le_isFinitelyPresentable.{u}
+  have heq : CommRingCat.ofHom (algebraMap R S) ≫ CommRingCat.ofHom (algebraMap S T) =
+      CommRingCat.ofHom (algebraMap R T) :=
+    CommRingCat.hom_ext (IsScalarTower.algebraMap_eq R S T).symm
+  have h := inst.comp_mem _ _ hRS hST
+  rwa [heq] at h
 
 /-- Étale `R`-algebras are finitely presented. -/
 lemma etale_le_finitePresentation :

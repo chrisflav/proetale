@@ -29,6 +29,7 @@ import Proetale.Mathlib.Algebra.Algebra.Pi
 import Proetale.Mathlib.Algebra.Category.AlgCat.FilteredColimits
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Basic
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
+import Proetale.Mathlib.Algebra.Category.Ring.Accessible
 import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
