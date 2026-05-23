@@ -17,6 +17,7 @@ We show that being a weakly étale algebra can be checked on a standard cover of
 
 - `Algebra.WeaklyEtale.of_span_eq_top_target_of_isLocalizationAway`: weak étaleness can be
   checked on a standard cover of the target.
+- `Algebra.WeaklyEtale.of_span_eq_top_target`: `Localization.Away` variant of the above.
 -/
 
 universe u v
@@ -37,17 +38,17 @@ lemma of_span_eq_top_target_of_isLocalizationAway
   classical
   let idx : Set.range s → ι := fun r ↦ r.2.choose
   have hidx (r : Set.range s) : s (idx r) = r.1 := r.2.choose_spec
-  haveI hloc : ∀ r : Set.range s, IsLocalization.Away r.1 (T (idx r)) := fun r =>
+  have hloc : ∀ r : Set.range s, IsLocalization.Away r.1 (T (idx r)) := fun r =>
     hidx r ▸ (inferInstance : IsLocalization.Away (s (idx r)) (T (idx r)))
   refine ⟨?_, ?_⟩
   · exact Module.flat_of_isLocalized_span S S (Set.range s) hs
       (fun r ↦ T (idx r)) (fun r ↦ Algebra.linearMap S (T (idx r)))
       (fun _ ↦ inferInstance)
   · algebraize [(Algebra.TensorProduct.lmul' R (S := S)).toRingHom]
-    haveI : IsScalarTower (S ⊗[R] S) S S := .right
-    letI alg (r : Set.range s) : Algebra (S ⊗[R] S) (T (idx r)) :=
+    have : IsScalarTower (S ⊗[R] S) S S := .right
+    let alg (r : Set.range s) : Algebra (S ⊗[R] S) (T (idx r)) :=
       ((algebraMap S (T (idx r))).comp (algebraMap (S ⊗[R] S) S)).toAlgebra
-    haveI tower (r : Set.range s) : IsScalarTower (S ⊗[R] S) S (T (idx r)) :=
+    have tower (r : Set.range s) : IsScalarTower (S ⊗[R] S) S (T (idx r)) :=
       IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
     have flat_T (r : Set.range s) : Module.Flat (S ⊗[R] S) (T (idx r)) := by
       let i := idx r
@@ -75,5 +76,14 @@ lemma of_span_eq_top_target_of_isLocalizationAway
       exact hcomp
     exact Module.flat_of_isLocalized_span (R := S ⊗[R] S) S S (Set.range s) hs
       (fun r ↦ T (idx r)) (fun r ↦ Algebra.linearMap S (T (idx r))) flat_T
+
+/-- Being a weakly étale algebra can be checked on a standard cover of the target,
+applied to the canonical `Localization.Away`. -/
+lemma of_span_eq_top_target
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    {ι : Type*} (s : ι → S) (hs : Ideal.span (Set.range s) = ⊤)
+    [∀ i, Algebra.WeaklyEtale R (Localization.Away (s i))] :
+    Algebra.WeaklyEtale R S :=
+  of_span_eq_top_target_of_isLocalizationAway s hs (fun i ↦ Localization.Away (s i))
 
 end Algebra.WeaklyEtale

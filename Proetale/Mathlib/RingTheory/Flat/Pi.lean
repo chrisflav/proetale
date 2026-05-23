@@ -17,7 +17,7 @@ from a finite product of commutative rings is flat as a ring map.
 ## Main results
 
 - `Module.Flat.pi`: a finite product of flat modules is flat.
-- `Pi.evalRingHom_flat`: a projection from a finite product of commutative rings is flat.
+- `Pi.flat_evalRingHom`: a projection from a finite product of commutative rings is flat.
 -/
 
 universe u v
@@ -34,7 +34,7 @@ instance Module.Flat.pi {R : Type*} [CommSemiring R] {ι : Type*} [Finite ι]
 
 The projection identifies `B i` with the localization of `∀ j, B j` away from the
 idempotent `Pi.single i 1`. -/
-lemma Pi.evalRingHom_flat {ι : Type*} (B : ι → Type*) [∀ i, CommRing (B i)] (i : ι) :
+lemma Pi.flat_evalRingHom {ι : Type*} (B : ι → Type*) [∀ i, CommRing (B i)] (i : ι) :
     (Pi.evalRingHom B i).Flat := by
   classical
   algebraize [Pi.evalRingHom B i]
