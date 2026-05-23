@@ -53,21 +53,21 @@ private instance fin2Fam_algebra :
 
 instance FormallyUnramified.prod [FormallyUnramified R A] [FormallyUnramified R B] :
     FormallyUnramified R (A × B) :=
-  haveI : ∀ i : Fin 2, FormallyUnramified R (fin2Fam A B i)
+  letI : ∀ i : Fin 2, FormallyUnramified R (fin2Fam A B i)
     | ⟨0, _⟩ => ‹FormallyUnramified R A›
     | ⟨1, _⟩ => ‹FormallyUnramified R B›
   FormallyUnramified.of_equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
 
 instance FormallySmooth.prod [FormallySmooth R A] [FormallySmooth R B] :
     FormallySmooth R (A × B) :=
-  haveI : ∀ i : Fin 2, FormallySmooth R (fin2Fam A B i)
+  letI : ∀ i : Fin 2, FormallySmooth R (fin2Fam A B i)
     | ⟨0, _⟩ => ‹FormallySmooth R A›
     | ⟨1, _⟩ => ‹FormallySmooth R B›
   FormallySmooth.of_equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
 
 instance FormallyEtale.prod [FormallyEtale R A] [FormallyEtale R B] :
     FormallyEtale R (A × B) :=
-  haveI : ∀ i : Fin 2, FormallyEtale R (fin2Fam A B i)
+  letI : ∀ i : Fin 2, FormallyEtale R (fin2Fam A B i)
     | ⟨0, _⟩ => ‹FormallyEtale R A›
     | ⟨1, _⟩ => ‹FormallyEtale R B›
   FormallyEtale.of_equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
@@ -75,10 +75,10 @@ instance FormallyEtale.prod [FormallyEtale R A] [FormallyEtale R B] :
 /-- `A × B` is finitely presented as an `R`-algebra when both factors are. -/
 instance FinitePresentation.prod [FinitePresentation R A] [FinitePresentation R B] :
     FinitePresentation R (A × B) :=
-  haveI : ∀ i : Fin 2, FinitePresentation R (fin2Fam A B i)
+  letI : ∀ i : Fin 2, FinitePresentation R (fin2Fam A B i)
     | ⟨0, _⟩ => ‹FinitePresentation R A›
     | ⟨1, _⟩ => ‹FinitePresentation R B›
-  haveI : FinitePresentation R ((i : Fin 2) → fin2Fam A B i) :=
+  letI : FinitePresentation R ((i : Fin 2) → fin2Fam A B i) :=
     Algebra.FinitePresentation.pi (fin2Fam A B)
   Algebra.FinitePresentation.equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
 
