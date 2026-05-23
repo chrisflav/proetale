@@ -52,81 +52,26 @@ private lemma iff_ind_etale_algebraMap :
   rw [iff_ind_etale, CommAlgCat.etale_eq, CommRingCat.etale,
     RingHom.Etale.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty]
 
-/-- If `R → S` is ind-étale and `S → A` is étale, then `R → A` is ind-étale.
-
-The proof descends the étale map `S → A` to a finite level via `PreIndSpreads`, then forms
-pushouts along the filtered colimit diagram for `S` to recover `A` as a filtered colimit of
-étale `R`-algebras. -/
-private lemma of_indEtale_etale (A : Type u) [CommRing A] [Algebra R A] [Algebra S A]
-    [IsScalarTower R S A] [Algebra.IndEtale R S] [Algebra.Etale S A] :
-    Algebra.IndEtale R A := by
-  rw [iff_ind_etale_algebraMap]
-  obtain ⟨J, _, _, D, sR, tS, htS, hRS_data⟩ := (iff_ind_etale_algebraMap R S).mp ‹_›
-  have hSA : CommRingCat.etale (CommRingCat.ofHom (algebraMap S A)) :=
-    RingHom.etale_algebraMap.mpr ‹_›
-  obtain ⟨j₀, T', f', g, hpush, hf'⟩ :=
-    CommRingCat.etale.exists_isPushout_of_isFiltered htS
-      (CommRingCat.ofHom (algebraMap S A)) hSA
-  let D' : Under j₀ ⥤ CommRingCat.{u} :=
-    (Under.post D ⋙ Under.pushout f') ⋙ Under.forget _
-  let c'₀ : Cocone D' :=
-    (Under.pushout f' ⋙ Under.forget _).mapCocone ((Cocone.mk _ tS).underPost j₀)
-  let c' : Cocone D' := c'₀.extend hpush.isoPushout.inv
-  let hc' : IsColimit c' :=
-    IsColimit.extendIso _ (isColimitOfPreserves _ (htS.underPost j₀))
-  let s' : (Functor.const (Under j₀)).obj (CommRingCat.of R) ⟶ D' :=
-    { app k := sR.app k.right ≫ pushout.inl (D.map k.hom) f'
-      naturality k l a := by
-        have hnat := sR.naturality a.right
-        simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp] at hnat
-        change 𝟙 _ ≫ sR.app l.right ≫ pushout.inl (D.map l.hom) f' =
-          (sR.app k.right ≫ pushout.inl (D.map k.hom) f') ≫ _
-        rw [Category.id_comp, Category.assoc]
-        dsimp [D', Under.post, Under.pushout]
-        rw [pushout.inl_desc, ← Category.assoc, ← hnat] }
-  refine ⟨Under j₀, inferInstance, inferInstance, D', s', c'.ι, hc', fun k ↦ ⟨?_, ?_⟩⟩
-  · exact CommRingCat.etale.comp_mem _ _ (hRS_data k.right).1
-      (CommRingCat.etale.pushout_inl _ _ hf')
-  · have hkey : pushout.inl (D.map k.hom) f' ≫ c'₀.ι.app k =
-        tS.app k.right ≫ pushout.inl ((Cocone.mk (CommRingCat.of S) tS).ι.app j₀) f' := by
-      dsimp only [c'₀, Functor.mapCocone_ι_app, Cocone.underPost_ι_app, Functor.comp_map,
-        Under.forget_map, Under.pushout_map, Under.post_obj, Under.mk_hom, Under.homMk_right,
-        Cocone.underPost_pt]
-      exact pushout.inl_desc _ _ _
-    have hcomp : pushout.inl (D.map k.hom) f' ≫ c'.ι.app k =
-        tS.app k.right ≫ CommRingCat.ofHom (algebraMap S A) := by
-      change pushout.inl (D.map k.hom) f' ≫ c'₀.ι.app k ≫ hpush.isoPushout.inv = _
-      rw [← Category.assoc, hkey, Category.assoc, hpush.inl_isoPushout_inv]
-    change (sR.app k.right ≫ pushout.inl (D.map k.hom) f') ≫ c'.ι.app k =
-      CommRingCat.ofHom (algebraMap R A)
-    rw [Category.assoc, hcomp, ← Category.assoc, (hRS_data k.right).2]
-    ext x
-    exact (IsScalarTower.algebraMap_apply R S A x).symm
-
 lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [Algebra.IndEtale R S] [Algebra.IndEtale S T] :
     Algebra.IndEtale R T := by
   rw [iff_ind_etale_algebraMap]
   obtain ⟨J, hJ, hFilt, D, s₂, t₂, ht₂, hst₂⟩ := (iff_ind_etale_algebraMap S T).mp ‹_›
-  have hIndEtale_j : ∀ j, MorphismProperty.ind.{u} CommRingCat.etale
-      (CommRingCat.ofHom (algebraMap R S) ≫ s₂.app j) := fun j ↦ by
-    letI : Algebra S (D.obj j) := (s₂.app j).hom.toAlgebra
-    letI : Algebra R (D.obj j) :=
-      ((CommRingCat.ofHom (algebraMap R S) ≫ s₂.app j).hom).toAlgebra
-    haveI : IsScalarTower R S (D.obj j) := .of_algebraMap_eq' rfl
-    haveI : Algebra.Etale S (D.obj j) := RingHom.etale_algebraMap.mp (hst₂ j).1
-    exact (iff_ind_etale_algebraMap R (D.obj j)).mp (of_indEtale_etale R S (D.obj j))
+  have hRS : MorphismProperty.ind.{u} CommRingCat.etale
+      (CommRingCat.ofHom (algebraMap R S)) :=
+    (iff_ind_etale_algebraMap R S).mp ‹_›
   rw [← MorphismProperty.ind_ind CommRingCat.etale_le_isFinitelyPresentable.{u}]
   refine ⟨J, hJ, hFilt, D,
     (Functor.const J).map (CommRingCat.ofHom (algebraMap R S)) ≫ s₂,
-    t₂, ht₂, fun j ↦ ⟨hIndEtale_j j, ?_⟩⟩
-  simp only [NatTrans.comp_app, Functor.const_obj_obj, Functor.const_map_app, Category.assoc]
-  ext x
-  change (t₂.app j).hom ((s₂.app j).hom ((algebraMap R S) x)) = (algebraMap R T) x
-  have h := RingHom.congr_fun (CommRingCat.hom_ext_iff.mp (hst₂ j).2) ((algebraMap R S) x)
-  simp only [CommRingCat.comp_apply] at h
-  rw [h]
-  exact (IsScalarTower.algebraMap_apply R S T x).symm
+    t₂, ht₂, fun j ↦ ⟨?_, ?_⟩⟩
+  · simpa using MorphismProperty.ind_comp_mem hRS (hst₂ j).1
+  · simp only [NatTrans.comp_app, Functor.const_obj_obj, Functor.const_map_app, Category.assoc]
+    ext x
+    change (t₂.app j).hom ((s₂.app j).hom ((algebraMap R S) x)) = (algebraMap R T) x
+    have h := RingHom.congr_fun (CommRingCat.hom_ext_iff.mp (hst₂ j).2) ((algebraMap R S) x)
+    simp only [CommRingCat.comp_apply] at h
+    rw [h]
+    exact (IsScalarTower.algebraMap_apply R S T x).symm
 
 /-- Étale `R`-algebras are finitely presented. -/
 lemma etale_le_finitePresentation :
