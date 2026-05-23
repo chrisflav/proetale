@@ -64,6 +64,9 @@ instance away : IsLocalization.Away (isIdempotentElemEquivClopens.symm W).val
     (RestrictClopen W) :=
   inferInstanceAs <| IsLocalization.Away _ <| Localization.Away _
 
+instance isStandardOpenImmersion : Algebra.IsStandardOpenImmersion A (RestrictClopen W) :=
+  ⟨(isIdempotentElemEquivClopens.symm W).val, RestrictClopen.away⟩
+
 lemma val_dvd {W₁ W₂ : Clopens (PrimeSpectrum A)} (h : W₁ ≤ W₂) :
     (isIdempotentElemEquivClopens.symm W₂).val ∣
     (isIdempotentElemEquivClopens.symm W₁).val := by
@@ -74,7 +77,7 @@ open IsLocalization Away in
 def map {W₁ W₂ : Clopens (PrimeSpectrum A)} (h : W₁ ≤ W₂) :
     RestrictClopen W₂ →ₐ[A] RestrictClopen W₁ where
   toRingHom := lift (isIdempotentElemEquivClopens.symm W₂).val (isUnit_of_dvd _ (val_dvd h))
-  commutes' := sorry
+  commutes' r := by simp
 
 end RestrictClopen
 
@@ -88,8 +91,16 @@ def Restriction.diag :
     {W : Clopens (PrimeSpectrum A) // ConnectedComponents.mk ⁻¹' T ≤ W}ᵒᵖ ⥤ CommAlgCat A where
   obj W := .of A (RestrictClopen W.unop.val)
   map {X Y} f := CommAlgCat.ofHom (RestrictClopen.map f.unop.le)
-  map_id := sorry
-  map_comp := sorry
+  map_id X := by
+    apply CommAlgCat.hom_ext
+    exact Subsingleton.elim
+      (h := IsLocalization.algHom_subsingleton
+        (Submonoid.powers (isIdempotentElemEquivClopens.symm X.unop.val).val)) _ _
+  map_comp {X _ _} _ _ := by
+    apply CommAlgCat.hom_ext
+    exact Subsingleton.elim
+      (h := IsLocalization.algHom_subsingleton
+        (Submonoid.powers (isIdempotentElemEquivClopens.symm X.unop.val).val)) _ _
 
 def Restriction : Type u :=
   colimit (C := CommAlgCat A) (Restriction.diag T)
@@ -102,9 +113,40 @@ instance commRing : CommRing (Restriction T) :=
 instance algebra : Algebra A (Restriction T) :=
   inferInstanceAs <| Algebra A <| colimit (C := CommAlgCat A) (Restriction.diag T)
 
-instance indZariski : Algebra.IndZariski A (Restriction T) := sorry
+instance nonempty_index :
+    Nonempty {W : Clopens (PrimeSpectrum A) // ConnectedComponents.mk ⁻¹' T ≤ W} :=
+  ⟨⟨⊤, le_top⟩⟩
 
-lemma algebraMap_surjective : Function.Surjective (algebraMap A (Restriction T)) := sorry
+instance isCofiltered_index : CategoryTheory.IsCofiltered
+    {W : Clopens (PrimeSpectrum A) // ConnectedComponents.mk ⁻¹' T ≤ W} where
+  cone_objs := fun ⟨W₁, h₁⟩ ⟨W₂, h₂⟩ =>
+    ⟨⟨W₁ ⊓ W₂, le_inf h₁ h₂⟩, CategoryTheory.homOfLE (Subtype.mk_le_mk.mpr inf_le_left),
+      CategoryTheory.homOfLE (Subtype.mk_le_mk.mpr inf_le_right), trivial⟩
+  cone_maps := fun X _ _ _ => ⟨X, CategoryTheory.CategoryStruct.id X, Subsingleton.elim _ _⟩
+
+instance indZariski : Algebra.IndZariski A (Restriction T) := by
+  rw [Algebra.IndZariski.iff_ind_isLocalIso]
+  exact ⟨_, inferInstance, inferInstance, .colimit (Restriction.diag T),
+    fun W => show Algebra.IsLocalIso A (RestrictClopen W.unop.val) from inferInstance⟩
+
+lemma algebraMap_surjective : Function.Surjective (algebraMap A (Restriction T)) := by
+  intro x
+  -- The forgetful functor preserves filtered colimits, giving joint surjectivity.
+  have hc := CategoryTheory.Limits.colimit.isColimit (Restriction.diag T)
+  have hc' := CategoryTheory.Limits.isColimitOfPreserves
+    (CategoryTheory.forget (CommAlgCat A)) hc
+  obtain ⟨⟨j⟩, y, hy⟩ := CategoryTheory.Limits.Types.jointly_surjective_of_isColimit hc' x
+  -- `algebraMap A (RestrictClopen j.val)` is surjective (localization at an idempotent).
+  have hpiece : Function.Surjective (algebraMap A (RestrictClopen j.val)) :=
+    IsLocalization.Away.algebraMap_surjective_of_isIdempotentElem
+      (isIdempotentElemEquivClopens.symm j.val).val
+      (isIdempotentElemEquivClopens.symm j.val).prop
+  obtain ⟨a, ha⟩ := hpiece y
+  refine ⟨a, ?_⟩
+  simp only [CategoryTheory.Functor.mapCocone_ι_app, colimit.cocone_ι,
+    CategoryTheory.ConcreteCategory.hom_ofHom] at hy
+  rw [← hy, ← ha]
+  exact ((colimit.ι (Restriction.diag T) (Opposite.op j)).hom.commutes a).symm
 
 variable {T}
 
