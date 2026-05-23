@@ -16,12 +16,6 @@ universe u u₁ u₂ u₃ u₄ u₅
 
 open TensorProduct
 
-instance {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : Algebra (ULift.{u} R) A where
-  __ := ULift.module
-  algebraMap := (algebraMap R A).comp ULift.ringEquiv.toRingHom
-  commutes' _ _ := Algebra.commutes ..
-  smul_def' _ _ := Algebra.smul_def' ..
-
 lemma RingHom.Flat.iff_ringEquiv_comp {R S T : Type*} [CommRing R] [CommRing S]
     [CommRing T] {f : R →+* S}
     {e : S ≃+* T} :
@@ -39,15 +33,6 @@ lemma RingHom.Flat.iff_comp_ringEquiv {R S T : Type*} [CommRing R] [CommRing S]
   have : f = (f.comp e.toRingHom).comp e.symm.toRingHom := by ext; simp
   rw [this]
   exact .comp (.of_bijective e.symm.bijective) hf
-
-@[simp]
-lemma RingHom.Flat.ulift_iff {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} :
-    (ulift.{u₁, u₂} f).Flat ↔ f.Flat := by
-  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · rwa [← RingHom.comp_ulift_eq.{u₁, u₂} f,
-      RingHom.Flat.iff_ringEquiv_comp, RingHom.Flat.iff_comp_ringEquiv]
-  · exact .comp (.comp (.of_bijective <| Equiv.bijective _) hf)
-      (.of_bijective <| Equiv.bijective _)
 
 def TensorProduct.congrRing
     {R S : Type*} (M N : Type*) [CommSemiring R] [CommSemiring S]
@@ -138,42 +123,6 @@ lemma TensorProduct.uliftEquiv_tmul
     TensorProduct.uliftEquiv R M N ⟨m ⊗ₜ n⟩ = ⟨m⟩ ⊗ₜ ⟨n⟩ :=
   rfl
 
-def Algebra.TensorProduct.uliftEquiv
-    (R S A B : Type*) [CommSemiring R]
-    [CommSemiring S] [Algebra R S]
-    [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    [Semiring B] [Algebra R B] :
-    ULift.{u₁} (A ⊗[R] B) ≃ₐ[ULift S] ULift.{u₂} A ⊗[ULift.{u₃} R] ULift.{u₄} B :=
-  AlgEquiv.trans ULift.algEquiv
-    (.trans (congr ULift.algEquiv.symm ULift.algEquiv.symm) <|
-      (congrRing _ _ _ (by exact ULift.up_surjective)))
-
-@[simp]
-lemma Algebra.TensorProduct.uliftEquiv_tmul
-    (R S A B : Type*) [CommSemiring R]
-    [CommSemiring S] [Algebra R S]
-    [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    [Semiring B] [Algebra R B] (a : A) (b : B) :
-    uliftEquiv R S A B ⟨a ⊗ₜ b⟩ = ⟨a⟩ ⊗ₜ ⟨b⟩ :=
-  rfl
-
-@[simp]
-lemma Algebra.TensorProduct.down_uliftEquiv_symm_tmul
-    (R S A B : Type*) [CommSemiring R]
-    [CommSemiring S] [Algebra R S]
-    [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    [Semiring B] [Algebra R B] (a : ULift A) (b : ULift B) :
-    ((uliftEquiv R S A B).symm (a ⊗ₜ b)).down = a.down ⊗ₜ b.down :=
-  rfl
-
-lemma Algebra.TensorProduct.uliftEquiv_symm_tmul
-    (R S A B : Type*) [CommSemiring R]
-    [CommSemiring S] [Algebra R S]
-    [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    [Semiring B] [Algebra R B] (a : ULift A) (b : ULift B) :
-    (uliftEquiv R S A B).symm (a ⊗ₜ b) = ⟨a.down ⊗ₜ b.down⟩ :=
-  rfl
-
 open CategoryTheory Limits
 
 -- `(S ⊗[R] S) (T ⊗[R] A) S (T ⊗[S] A)`
@@ -248,109 +197,25 @@ lemma TensorProduct.flat_map {R S A B C D : Type*} [CommRing R] [CommRing S]
 
 end
 
-section
-
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-instance [Etale R S] : Smooth R S where
-
-lemma Etale.of_restrictScalars (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [Etale R S] [Etale R T] :
-    Etale S T where
-  finitePresentation := .of_restrict_scalars_finitePresentation R S T
-  formallyEtale := .of_restrictScalars (R := R)
-
-end
-
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+/-- The kernel of a flat surjective ring map is a pure ideal. -/
+lemma _root_.RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [CommRing B]
+    (f : A →+* B) (hf : f.Flat) (hsurj : Function.Surjective f) :
+    (RingHom.ker f).Pure := by
+  algebraize [f]
+  exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
+    (f := Algebra.ofId A B) hsurj).toLinearEquiv
 
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
-    FormallyUnramified R S :=
-  sorry
-
-/-- `S` is a weakly-étale `R`-algebra if both `R → S` and `S ⊗[R] S → R` are flat. -/
-@[stacks 092B, mk_iff]
-class WeaklyEtale (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] where
-  flat : Module.Flat R S := by infer_instance
-  flat_lmul' (R S) : (Algebra.TensorProduct.lmul' R (S := S)).Flat
-
-attribute [instance] WeaklyEtale.flat
-
-lemma Module.Flat.ulift_iff {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] :
-    Module.Flat (ULift.{u₁} R) (ULift.{u₂} M) ↔ Module.Flat R M := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : Module.Flat R (ULift.{u₂} M) := .trans _ (ULift.{u₁} R) _
-    exact .of_ulift
-  · have : Module.Flat (ULift.{u₁} R) R := by
-      rw [← RingHom.flat_algebraMap_iff]
-      exact .of_bijective ULift.down_bijective
-    have : Module.Flat (ULift.{u₁} R) M := .trans _ R _
-    exact .ulift
-
-lemma TensorProduct.lmul'_ulift (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] :
-    TensorProduct.lmul' (S := ULift.{u₂} S) (ULift.{u₁} R) =
-      AlgHom.comp (TensorProduct.lmul' (S := S) R).ulift
-        (uliftEquiv R R S S).symm.toAlgHom := by
-  ext <;> simp
+    FormallyUnramified R S := by
+  have hp : (KaehlerDifferential.ideal R S).Pure :=
+    RingHom.ker_pure_of_flat_surjective (TensorProduct.lmul' (S := S) R).toRingHom h
+      (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
+  rw [formallyUnramified_iff]
+  exact (Ideal.cotangent_subsingleton_iff _).mpr (Ideal.isIdempotentElem_of_pure _)
 
 namespace WeaklyEtale
-
-lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale R S := by
-  rw [weaklyEtale_iff, weaklyEtale_iff, Module.Flat.ulift_iff]
-  congr!
-  conv_rhs => rw [← RingHom.Flat.ulift_iff.{u₁, u₂}]
-  rw [TensorProduct.lmul'_ulift, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
-  exact RingHom.Flat.iff_comp_ringEquiv
-
-@[stacks 092N "(2)"]
-instance (priority := low) of_etale [Etale R S] : WeaklyEtale R S where
-  flat_lmul' := by
-    algebraize [Algebra.TensorProduct.lmul' R (S := S) |>.toRingHom]
-    have : IsScalarTower R (S ⊗[R] S) S := .of_algHom (Algebra.TensorProduct.lmul' R (S := S))
-    have : Etale R (S ⊗[R] S) := .comp _ S _
-    have : Etale (S ⊗[R] S) S := .of_restrictScalars R _ _
-    exact Smooth.flat (S ⊗[R] S) S
-
-@[stacks 092H]
-instance tensorProduct {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
-    WeaklyEtale T (T ⊗[R] S) where
-  flat_lmul' := by
-    let f : (T ⊗[R] S) ⊗[T] (T ⊗[R] S) →ₐ[T] T ⊗[R] S :=
-      TensorProduct.lmul' T (S := T ⊗[R] S)
-    change RingHom.Flat (R := (T ⊗[R] S) ⊗[T] (T ⊗[R] S)) (S := T ⊗[R] S) f.toRingHom
-    let e : T ⊗[R] S ⊗[T] (T ⊗[R] S) ≃ₐ[T] T ⊗[R] (S ⊗[R] S) :=
-      ((Algebra.TensorProduct.cancelBaseChange _ _ T _ _)).trans
-        (TensorProduct.assoc' _ _ _ _ _ _)
-    have : f = (TensorProduct.map (.id T T) (TensorProduct.lmul' R)).comp e.toAlgHom := by
-      ext <;> simp [e, f, TensorProduct.one_def]
-    rw [this]
-    refine RingHom.Flat.comp ?_ ?_
-    · exact .of_bijective e.bijective
-    · refine TensorProduct.flat_map ?_ ?_
-      · exact .of_bijective Function.bijective_id
-      · exact WeaklyEtale.flat_lmul' R S
-
-attribute [local instance] TensorProduct.rightAlgebra in
-@[stacks 092J]
-lemma trans (R : Type u₁) (S : Type u₂) [CommRing R] [CommRing S] [Algebra R S]
-    (T : Type u₃) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [WeaklyEtale R S] [WeaklyEtale S T] : WeaklyEtale R T := by
-  rw [← ulift_iff.{max u₁ u₂ u₃, max u₁ u₂ u₃}] at *
-  refine ⟨.trans _ (ULift.{max u₁ u₂ u₃} S) _, ?_⟩
-  · have heq : TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T) (ULift R) =
-        AlgHom.comp ((TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T)
-          (ULift.{max u₁ u₂ u₃} S)).restrictScalars (ULift.{max u₁ u₂ u₃} R))
-          (TensorProduct.lift
-            (TensorProduct.includeLeft)
-            (TensorProduct.includeRight.restrictScalars (ULift.{max u₁ u₂ u₃} R))
-            fun _ _ ↦ .all _ _) := by
-      ext <;> simp
-    rw [heq]
-    refine .comp ?_ ?_
-    · exact (flat_lmul' (ULift R) (ULift S)).lift_includeLeft_includeRight
-        (ULift.{max u₁ u₂ u₃} T) (ULift.{max u₁ u₂ u₃} T)
-    · exact WeaklyEtale.flat_lmul' (ULift S) (ULift T)
 
 instance (priority := low) [WeaklyEtale R S] : FormallyUnramified R S :=
   .of_flat_lmul' (flat_lmul' R S)
@@ -374,5 +239,19 @@ variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 lemma weaklyEtale_algebraMap_iff [Algebra R S] :
     (algebraMap R S).WeaklyEtale ↔ Algebra.WeaklyEtale R S := by
   rw [WeaklyEtale, toAlgebra_algebraMap]
+
+/-- A weakly étale ring map is formally unramified. -/
+lemma WeaklyEtale.formallyUnramified {f : R →+* S} (hf : f.WeaklyEtale) :
+    f.FormallyUnramified := by
+  algebraize [f]
+  have : Algebra.WeaklyEtale R S := hf
+  exact (inferInstance : Algebra.FormallyUnramified R S)
+
+variable {f} in
+lemma WeaklyEtale.comp {T : Type*} [CommRing T] {g : S →+* T} (hf : f.WeaklyEtale)
+    (hg : g.WeaklyEtale) :
+    (g.comp f).WeaklyEtale := by
+  algebraize [f, g, g.comp f]
+  exact .trans _ S _
 
 end RingHom

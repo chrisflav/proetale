@@ -144,7 +144,11 @@ lemma Functor.IsCocontinuous.of_iso {J : GrothendieckTopology C} {K : Grothendie
     {F G : C ⥤ D} (e : F ≅ G) [F.IsCocontinuous J K] :
     G.IsCocontinuous J K where
   cover_lift {U} S hS := by
-    sorry
+    refine J.superset_covering ?_
+      (F.cover_lift J K (K.pullback_stable (e.hom.app U) hS))
+    intro Y f (hf : S.arrows (F.map f ≫ e.hom.app U))
+    have := S.downward_closed hf (e.inv.app Y)
+    rwa [e.hom.naturality f, ← Category.assoc, Iso.inv_hom_id_app, Category.id_comp] at this
 
 lemma Functor.IsCocontinuous.iff_of_iso {J : GrothendieckTopology C} {K : GrothendieckTopology D}
     {F G : C ⥤ D} (e : F ≅ G) :
