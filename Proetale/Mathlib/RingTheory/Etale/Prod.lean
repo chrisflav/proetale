@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.RingTheory.Etale.Pi
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.RingTheory.RingHom.FinitePresentation
+import Proetale.Mathlib.Algebra.Algebra.Pi
 
 /-!
 # Formal-étaleness of binary products of rings
@@ -50,70 +51,36 @@ private instance fin2Fam_algebra :
   | ⟨0, _⟩ => ‹Algebra R A›
   | ⟨1, _⟩ => ‹Algebra R B›
 
-private instance fin2Fam_formallyUnramified [FormallyUnramified R A] [FormallyUnramified R B] :
-    ∀ i : Fin 2, FormallyUnramified R (fin2Fam A B i)
-  | ⟨0, _⟩ => ‹FormallyUnramified R A›
-  | ⟨1, _⟩ => ‹FormallyUnramified R B›
-
-private instance fin2Fam_formallySmooth [FormallySmooth R A] [FormallySmooth R B] :
-    ∀ i : Fin 2, FormallySmooth R (fin2Fam A B i)
-  | ⟨0, _⟩ => ‹FormallySmooth R A›
-  | ⟨1, _⟩ => ‹FormallySmooth R B›
-
-private instance fin2Fam_formallyEtale [FormallyEtale R A] [FormallyEtale R B] :
-    ∀ i : Fin 2, FormallyEtale R (fin2Fam A B i)
-  | ⟨0, _⟩ => ‹FormallyEtale R A›
-  | ⟨1, _⟩ => ‹FormallyEtale R B›
-
-private instance fin2Fam_finitePresentation
-    [FinitePresentation R A] [FinitePresentation R B] :
-    ∀ i : Fin 2, FinitePresentation R (fin2Fam A B i)
-  | ⟨0, _⟩ => ‹FinitePresentation R A›
-  | ⟨1, _⟩ => ‹FinitePresentation R B›
-
-/-- The natural ring equivalence `((i : Fin 2) → fin2Fam A B i) ≃+* A × B`,
-defined by `(f ↦ (f 0, f 1))`. -/
-@[simps!]
-private def ringEquivProdFin2 (A B : Type u) [CommRing A] [CommRing B] :
-    ((i : Fin 2) → fin2Fam A B i) ≃+* A × B where
-  toFun f := (f 0, f 1)
-  invFun p := fun i => match i with
-    | ⟨0, _⟩ => p.1
-    | ⟨1, _⟩ => p.2
-  left_inv f := by
-    funext i
-    match i with
-    | ⟨0, _⟩ => rfl
-    | ⟨1, _⟩ => rfl
-  right_inv p := rfl
-  map_mul' _ _ := rfl
-  map_add' _ _ := rfl
-
-/-- The natural algebra equivalence between the `Fin 2`-indexed Pi of `fin2Fam A B` and the
-binary product `A × B`. -/
-private noncomputable def algEquivProdFin2 (A B : Type u) [CommRing A] [CommRing B]
-    [Algebra R A] [Algebra R B] :
-    ((i : Fin 2) → fin2Fam A B i) ≃ₐ[R] A × B :=
-  AlgEquiv.ofRingEquiv (f := ringEquivProdFin2 A B) fun _ => rfl
-
 instance FormallyUnramified.prod [FormallyUnramified R A] [FormallyUnramified R B] :
     FormallyUnramified R (A × B) :=
-  FormallyUnramified.of_equiv (algEquivProdFin2 A B)
+  haveI : ∀ i : Fin 2, FormallyUnramified R (fin2Fam A B i)
+    | ⟨0, _⟩ => ‹FormallyUnramified R A›
+    | ⟨1, _⟩ => ‹FormallyUnramified R B›
+  FormallyUnramified.of_equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
 
 instance FormallySmooth.prod [FormallySmooth R A] [FormallySmooth R B] :
     FormallySmooth R (A × B) :=
-  FormallySmooth.of_equiv (algEquivProdFin2 A B)
+  haveI : ∀ i : Fin 2, FormallySmooth R (fin2Fam A B i)
+    | ⟨0, _⟩ => ‹FormallySmooth R A›
+    | ⟨1, _⟩ => ‹FormallySmooth R B›
+  FormallySmooth.of_equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
 
 instance FormallyEtale.prod [FormallyEtale R A] [FormallyEtale R B] :
     FormallyEtale R (A × B) :=
-  FormallyEtale.of_equiv (algEquivProdFin2 A B)
+  haveI : ∀ i : Fin 2, FormallyEtale R (fin2Fam A B i)
+    | ⟨0, _⟩ => ‹FormallyEtale R A›
+    | ⟨1, _⟩ => ‹FormallyEtale R B›
+  FormallyEtale.of_equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
 
 /-- `A × B` is finitely presented as an `R`-algebra when both factors are. -/
 instance FinitePresentation.prod [FinitePresentation R A] [FinitePresentation R B] :
     FinitePresentation R (A × B) :=
+  haveI : ∀ i : Fin 2, FinitePresentation R (fin2Fam A B i)
+    | ⟨0, _⟩ => ‹FinitePresentation R A›
+    | ⟨1, _⟩ => ‹FinitePresentation R B›
   haveI : FinitePresentation R ((i : Fin 2) → fin2Fam A B i) :=
     Algebra.FinitePresentation.pi (fin2Fam A B)
-  Algebra.FinitePresentation.equiv (algEquivProdFin2 A B)
+  Algebra.FinitePresentation.equiv (AlgEquiv.piFinTwo R (fin2Fam A B))
 
 instance Etale.prod [Etale R A] [Etale R B] : Etale R (A × B) where
 
