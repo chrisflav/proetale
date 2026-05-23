@@ -8,6 +8,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.RingHom.Etale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.Etale
+import Proetale.Mathlib.RingTheory.Etale.Field
 
 /-!
 # Ind-étale algebras
@@ -78,7 +79,16 @@ instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S := by
 
 instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLocalRing R] :
     Algebra.IsSeparable k R := by
-  sorry
+  obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := k) (S := R)
+  letI := hcat
+  letI := hfilt
+  refine ⟨fun x ↦ ?_⟩
+  have hcolim : IsColimit ((forget (CommAlgCat.{u} k)).mapCocone P.cocone) :=
+    isColimitOfPreserves (forget (CommAlgCat.{u} k)) P.isColimit
+  obtain ⟨i, a, ha⟩ := Types.jointly_surjective_of_isColimit hcolim x
+  rw [← ha]
+  have : Algebra.Etale k (P.diag.obj i) := hP i
+  exact IsSeparable.of_algHom_etale_to_isLocalRing k (P.diag.obj i) R (P.ι.app i).hom a
 
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
     [q.LiesOver p] [p.IsPrime] [q.IsPrime]
