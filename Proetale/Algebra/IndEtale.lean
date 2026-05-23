@@ -79,7 +79,7 @@ instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S := by
   rwa [← Algebra.IndZariski.iff_ind_isLocalIso]
 
 /-- In a local ring, every idempotent element is `0` or `1`. -/
-private lemma _root_.IsIdempotentElem.eq_zero_or_one_of_isLocalRing {R : Type*} [CommRing R]
+lemma _root_.IsIdempotentElem.eq_zero_or_one_of_isLocalRing {R : Type*} [CommRing R]
     [IsLocalRing R] {e : R} (he : IsIdempotentElem e) : e = 0 ∨ e = 1 := by
   have hsum : e + (1 - e) = 1 := by ring
   have hmul : e * (1 - e) = 0 := by
@@ -87,26 +87,28 @@ private lemma _root_.IsIdempotentElem.eq_zero_or_one_of_isLocalRing {R : Type*} 
     rw [this, he.eq, sub_self]
   rcases IsLocalRing.isUnit_or_isUnit_of_add_one hsum with hu | hu
   · exact .inr (sub_eq_zero.mp (hu.mul_right_eq_zero.mp hmul)).symm
-  · exact .inl (hu.mul_right_eq_zero.mp (by rw [mul_comm]; exact hmul))
+  · refine .inl (hu.mul_right_eq_zero.mp ?_)
+    rwa [mul_comm]
 
 /-- An algebra homomorphism from a finite product of fields to a nontrivial local ring
 factors through one of the factors. -/
-private lemma exists_unique_index_of_algHom_pi_to_local
+lemma exists_unique_index_of_algHom_pi_to_local
     {k : Type u} [Field k] {I : Type*} [Finite I] [DecidableEq I]
     {Ai : I → Type u} [∀ i, Field (Ai i)] [∀ i, Algebra k (Ai i)]
     {B : Type u} [CommRing B] [Algebra k B] [IsLocalRing B] [Nontrivial B]
     (ψ : (∀ i, Ai i) →ₐ[k] B) :
     ∃ j : I, ψ (Pi.single j 1) = 1 ∧ ∀ i, i ≠ j → ψ (Pi.single i 1) = 0 := by
-  haveI : Fintype I := Fintype.ofFinite I
+  have : Fintype I := Fintype.ofFinite I
   have hcoi : CompleteOrthogonalIdempotents
-      (fun i : I => Pi.single (M := fun i => Ai i) i (1 : Ai i)) :=
+      (fun i : I ↦ Pi.single (M := fun i ↦ Ai i) i (1 : Ai i)) :=
     CompleteOrthogonalIdempotents.single _
   have hidem (i : I) : IsIdempotentElem (ψ (Pi.single i 1)) :=
     (hcoi.map ψ.toRingHom).toOrthogonalIdempotents.idem i
   have h01 (i : I) : ψ (Pi.single i 1) = 0 ∨ ψ (Pi.single i 1) = 1 :=
     (hidem i).eq_zero_or_one_of_isLocalRing
   have hsum : ∑ i : I, ψ (Pi.single i 1) = 1 := by
-    rw [← map_sum]; simp [hcoi.complete]
+    rw [← map_sum]
+    simp [hcoi.complete]
   have hortho (i j : I) (hij : i ≠ j) :
       ψ (Pi.single i 1) * ψ (Pi.single j 1) = 0 := by
     simpa [Function.comp_def] using
@@ -114,15 +116,16 @@ private lemma exists_unique_index_of_algHom_pi_to_local
   have hex : ∃ j, ψ (Pi.single j 1) = 1 := by
     by_contra hall
     push Not at hall
-    have hzero : ∀ i, ψ (Pi.single i 1) = 0 := fun i => (h01 i).resolve_right (hall i)
+    have hzero : ∀ i, ψ (Pi.single i 1) = 0 := fun i ↦ (h01 i).resolve_right (hall i)
     simp [hzero] at hsum
   obtain ⟨j, hj⟩ := hex
-  refine ⟨j, hj, fun i hi => ?_⟩
+  refine ⟨j, hj, fun i hi ↦ ?_⟩
   have := hortho i j hi
   rwa [hj, mul_one] at this
 
-/-- The algebra homomorphism from the `j`-th factor obtained by composing with `Pi.single j`. -/
-private noncomputable def algHomSingleComponent
+/-- The algebra homomorphism `Aⱼ →ₐ[k] B` factoring `ψ : (∀ i, Aᵢ) →ₐ[k] B` through the `j`-th
+factor, given that `ψ (Pi.single j 1) = 1` and `ψ` kills all other unit idempotents. -/
+noncomputable def algHomSingleComponent
     {k : Type u} [Field k] {I : Type*} [Fintype I] [DecidableEq I]
     {Ai : I → Type u} [∀ i, Field (Ai i)] [∀ i, Algebra k (Ai i)]
     {B : Type u} [CommRing B] [Algebra k B] [IsLocalRing B]
@@ -131,7 +134,9 @@ private noncomputable def algHomSingleComponent
     (hothers : ∀ i, i ≠ j → ψ (Pi.single i 1) = 0) : Ai j →ₐ[k] B where
   toFun y := ψ (Pi.single j y)
   map_one' := hj
-  map_mul' y₁ y₂ := show ψ _ = ψ _ * ψ _ by rw [Pi.single_mul, map_mul]
+  map_mul' y₁ y₂ := by
+    change ψ _ = ψ _ * ψ _
+    rw [Pi.single_mul, map_mul]
   map_zero' := by simp
   map_add' y₁ y₂ := by
     change ψ (Pi.single j (y₁ + y₂)) = ψ (Pi.single j y₁) + ψ (Pi.single j y₂)
@@ -139,27 +144,29 @@ private noncomputable def algHomSingleComponent
     congr 1
     ext i
     by_cases hij : i = j
-    · subst hij; simp
+    · subst hij
+      simp
     · simp [Pi.single_eq_of_ne hij]
   commutes' c := by
     have heq : Pi.single j (algebraMap k (Ai j) c) =
         (algebraMap k (∀ i, Ai i) c) * Pi.single j 1 := by
       ext i
       by_cases hij : i = j
-      · subst hij; simp
+      · subst hij
+        simp
       · simp [Pi.single_eq_of_ne hij]
     rw [heq, map_mul, AlgHom.commutes, hj, mul_one]
 
 /-- If `A` is an étale algebra over a field `k` and `φ : A →ₐ[k] B` is an algebra homomorphism
 to a local ring `B`, then every element of the image of `φ` is separable over `k`. -/
-private lemma isSeparable_of_etale_to_local (k : Type u) [Field k] (A : Type u) [CommRing A]
+lemma isSeparable_of_etale_to_local (k : Type u) [Field k] (A : Type u) [CommRing A]
     [Algebra k A] [Algebra.Etale k A] (B : Type u) [CommRing B] [Algebra k B] [IsLocalRing B]
     (φ : A →ₐ[k] B) (a : A) : IsSeparable k (φ a) := by
   by_cases hB : Nontrivial B
-  · haveI : Module.Finite k A := FormallyUnramified.finite_of_free k A
+  · have : Module.Finite k A := FormallyUnramified.finite_of_free k A
     obtain ⟨I, _, Ai, hfield, halg, e, hprop⟩ :=
       (Algebra.Etale.iff_exists_algEquiv_prod (K := k) (A := A)).mp inferInstance
-    haveI : Fintype I := Fintype.ofFinite I
+    have : Fintype I := Fintype.ofFinite I
     letI (i : I) : Field (Ai i) := hfield i
     letI (i : I) : Algebra k (Ai i) := halg i
     classical
@@ -170,19 +177,21 @@ private lemma isSeparable_of_etale_to_local (k : Type u) [Field k] (A : Type u) 
       change ψ x = ψ (Pi.single j (x j))
       conv_lhs => rw [← Finset.univ_sum_single x]
       rw [map_sum]
-      refine Finset.sum_eq_single_of_mem j (Finset.mem_univ _) fun i _ hi => ?_
-      have : Pi.single (M := fun i => Ai i) i (x i) = Pi.single i 1 * x := by
-        rw [← Pi.single_mul_left]; simp
+      refine Finset.sum_eq_single_of_mem j (Finset.mem_univ _) fun i _ hi ↦ ?_
+      have : Pi.single (M := fun i ↦ Ai i) i (x i) = Pi.single i 1 * x := by
+        rw [← Pi.single_mul_left]
+        simp
       rw [this, map_mul, hothers i hi, zero_mul]
     have hφa : φ a = τ ((e a) j) := by
       rw [← hfactor (e a)]
       simp [ψ]
     rw [hφa]
-    have hsep_j : Algebra.IsSeparable k (Ai j) := (hprop j).2
+    have : Algebra.IsSeparable k (Ai j) := (hprop j).2
     have hb_sep : IsSeparable k ((e a) j) := Algebra.IsSeparable.isSeparable k _
-    exact hb_sep.of_dvd <| minpoly.dvd k _ <| by
-      rw [Polynomial.aeval_algHom_apply]; simp [minpoly.aeval]
-  · haveI : Subsingleton B := not_nontrivial_iff_subsingleton.mp hB
+    refine hb_sep.of_dvd <| minpoly.dvd k _ ?_
+    rw [Polynomial.aeval_algHom_apply]
+    simp [minpoly.aeval]
+  · have : Subsingleton B := not_nontrivial_iff_subsingleton.mp hB
     have hint : IsIntegral k (φ a) :=
       ⟨Polynomial.X, Polynomial.monic_X, by simp [Subsingleton.elim (φ a) 0]⟩
     have hdvd1 : minpoly k (φ a) ∣ 1 :=
@@ -195,13 +204,14 @@ private lemma isSeparable_of_etale_to_local (k : Type u) [Field k] (A : Type u) 
 instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLocalRing R] :
     Algebra.IsSeparable k R := by
   obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := k) (S := R)
-  letI := hcat; letI := hfilt
-  refine ⟨fun x => ?_⟩
+  letI := hcat
+  letI := hfilt
+  refine ⟨fun x ↦ ?_⟩
   have hcolim : IsColimit ((forget (CommAlgCat.{u} k)).mapCocone P.cocone) :=
     isColimitOfPreserves (forget (CommAlgCat.{u} k)) P.isColimit
   obtain ⟨i, a, ha⟩ := Types.jointly_surjective_of_isColimit hcolim x
   rw [← ha]
-  haveI : Algebra.Etale k (P.diag.obj i) := hP i
+  have : Algebra.Etale k (P.diag.obj i) := hP i
   exact isSeparable_of_etale_to_local k (P.diag.obj i) R (P.ι.app i).hom a
 
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
