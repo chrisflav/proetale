@@ -40,8 +40,6 @@ theorem Algebra.HasGoingDown.isLocalization_atPrime_of_subsingleton {R S : Type*
       exact hno ⟨m, hmT, hm⟩
     obtain ⟨q', hq', htq', hdisj'⟩ :=
       Ideal.exists_le_prime_disjoint (Ideal.span {t}) T hdisj
-    have : q'.IsPrime := hq'
-    have : q'.LiesOver (Ideal.under R q') := ⟨rfl⟩
     have hle : Ideal.under R q' ≤ p := by
       intro r hr
       by_contra hrp
