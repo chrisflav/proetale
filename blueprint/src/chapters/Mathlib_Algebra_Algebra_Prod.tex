@@ -1,0 +1,71 @@
+\chapter{Algebra homomorphisms out of binary products}
+\label{ch:mathlib-algebra-prod}
+
+\section{Idempotents from product algebra homomorphisms}
+
+Let $R$ be a commutative semiring and let $\sigma : C \times E \to A$ be an
+$R$-algebra homomorphism (so $A$, $C$, $E$ are unital $R$-algebras). The
+elements $(1, 0)$ and $(0, 1)$ of $C \times E$ are orthogonal idempotents
+summing to $1$, so the same is true of their images $\sigma(1, 0)$ and
+$\sigma(0, 1)$ in $A$.
+
+\begin{lemma}
+  \label{lem:apply-inl-idempotent}
+  \lean{AlgHom.isIdempotentElem_apply_inl}
+  \leanok
+  For any $R$-algebra homomorphism $\sigma : C \times E \to A$,
+  the element $\sigma(1, 0) \in A$ is idempotent.
+\end{lemma}
+
+\begin{lemma}
+  \label{lem:apply-inl-add-apply-inr}
+  \lean{AlgHom.apply_inl_add_apply_inr}
+  \leanok
+  $\sigma(1, 0) + \sigma(0, 1) = 1$ in $A$.
+\end{lemma}
+
+\section{Sections}
+
+When $\sigma(1, 0) = 1$, the orthogonality forces $\sigma(0, 1) = 0$ and the
+map $c \mapsto \sigma(c, 0)$ is then a unital $R$-algebra homomorphism
+$C \to A$. There is no unital \(\textsf{AlgHom.inl} : C \to C \times E\) in
+general: the inclusion $c \mapsto (c, 0)$ does not preserve $1$.
+
+\begin{definition}
+  \label{def:compFstSection}
+  \lean{AlgHom.compFstSection}
+  \leanok
+  Given $\sigma : C \times E \to A$ with $\sigma(1, 0) = 1$, write
+  $\sigma_C$ for the $R$-algebra homomorphism $C \to A$, $c \mapsto \sigma(c, 0)$.
+\end{definition}
+
+\begin{definition}
+  \label{def:compSndSection}
+  \lean{AlgHom.compSndSection}
+  \leanok
+  Given $\sigma : C \times E \to A$ with $\sigma(0, 1) = 1$, write
+  $\sigma_E$ for the $R$-algebra homomorphism $E \to A$, $e \mapsto \sigma(0, e)$.
+\end{definition}
+
+\section{Factorisation over a local target}
+
+In a local ring $A$, every idempotent is $0$ or $1$, so either
+$\sigma(1, 0) = 1$ or $\sigma(0, 1) = 1$. Consequently, every $R$-algebra
+homomorphism $C \times E \to A$ into a local ring $A$ factors through one of
+the two projections.
+
+\begin{lemma}
+  \label{lem:apply-inl-zero-or-one}
+  \lean{AlgHom.apply_inl_eq_zero_or_one}
+  \leanok
+  If $A$ is a local ring, then $\sigma(1, 0) = 0$ or $\sigma(1, 0) = 1$.
+\end{lemma}
+
+\begin{lemma}
+  \label{lem:section-of-isLocalRing}
+  \lean{AlgHom.exists_section_of_isLocalRing}
+  \leanok
+  If $A$ is a local ring, every $R$-algebra homomorphism $\sigma : C \times E
+  \to A$ equals either $\sigma_C \circ \mathrm{pr}_1$ (when $\sigma(1, 0) = 1$)
+  or $\sigma_E \circ \mathrm{pr}_2$ (when $\sigma(0, 1) = 1$).
+\end{lemma}
