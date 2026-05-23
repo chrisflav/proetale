@@ -294,9 +294,13 @@ instance (priority := 100) _root_.Module.Flat.of_indZariski [Algebra.IndZariski 
   rw [CommAlgCat.flat_iff]
   exact @Algebra.IsLocalIso.flat _ _ _ _ _ (h i)
 
+end Algebra.IndZariski
+
+namespace Algebra.BijectiveOnStalks
+
 /-- If `S` is a filtered colimit of `R`-algebras `Aᵢ` and each `R → Aᵢ` is bijective on
 stalks, then so is `R → S`. -/
-lemma bijectiveOnStalks_of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
+lemma of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))
     (h : ∀ i, Algebra.BijectiveOnStalks R (P.diag.obj i)) :
     Algebra.BijectiveOnStalks R S := by
@@ -398,11 +402,15 @@ lemma bijectiveOnStalks_of_colimitPresentation {ι : Type u} [SmallCategory ι] 
     simp only [map_mul, hcomm, hs', hu'] at heq
     exact heq
 
+end Algebra.BijectiveOnStalks
+
+namespace Algebra.IndZariski
+
 @[stacks 096T]
 theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
     Algebra.BijectiveOnStalks R S := by
   obtain ⟨ι, _, _, P, h⟩ := IndZariski.exists_colimitPresentation (R := R) (S := S)
-  exact bijectiveOnStalks_of_colimitPresentation R S P fun i ↦
+  exact Algebra.BijectiveOnStalks.of_colimitPresentation R S P fun i ↦
     RingHom.bijectiveOnStalks_algebraMap.mp
       (RingHom.IsLocalIso.bijectiveOnStalks (RingHom.isLocalIso_algebraMap.mpr (h i)))
 
