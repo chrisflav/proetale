@@ -128,9 +128,9 @@ lemma ind_comp_mem {P : MorphismProperty C} [P.IsStableUnderComposition]
       dsimp [c'₀]
       exact pushout.inl_desc _ _ _
     have hcomp : pushout.inl (D.map k.hom) g' ≫ c'.ι.app k = tY.app k.right ≫ g := by
-      change pushout.inl (D.map k.hom) g' ≫ c'₀.ι.app k ≫ hpush.isoPushout.inv = _
+      simp only [c', Cocone.extend_ι, NatTrans.comp_app, Functor.const_map_app]
       rw [← Category.assoc, hkey, Category.assoc, hpush.inl_isoPushout_inv]
-    change (sX.app k.right ≫ pushout.inl (D.map k.hom) g') ≫ c'.ι.app k = f ≫ g
+    dsimp only [s']
     rw [Category.assoc, hcomp, ← Category.assoc, (hData k.right).2]
 
 /--
