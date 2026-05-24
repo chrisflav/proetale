@@ -68,6 +68,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
+import Proetale.Mathlib.FieldTheory.IsSepClosed
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Etale.Prod
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
