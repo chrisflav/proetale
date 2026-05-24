@@ -117,20 +117,15 @@ lemma ind_comp_mem {P : MorphismProperty C} [P.IsStableUnderComposition]
       naturality k l a := by
         have hnat := sX.naturality a.right
         simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp] at hnat
-        change 𝟙 _ ≫ sX.app l.right ≫ pushout.inl (D.map l.hom) g' =
-          (sX.app k.right ≫ pushout.inl (D.map k.hom) g') ≫ _
-        rw [Category.id_comp, Category.assoc]
+        simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
         dsimp [D', CategoryTheory.Under.post, CategoryTheory.Under.pushout]
-        rw [pushout.inl_desc, ← Category.assoc, ← hnat] }
+        rw [Category.assoc, pushout.inl_desc, ← Category.assoc, ← hnat] }
   refine ⟨CategoryTheory.Under j₀, inferInstance, inferInstance,
       D', s', c'.ι, hc', fun k ↦ ⟨?_, ?_⟩⟩
   · exact P.comp_mem _ _ (hData k.right).1 (P.pushout_inl _ _ hg')
   · have hkey : pushout.inl (D.map k.hom) g' ≫ c'₀.ι.app k =
         tY.app k.right ≫ pushout.inl ((Cocone.mk _ tY).ι.app j₀) g' := by
-      dsimp only [c'₀, Functor.mapCocone_ι_app, Cocone.underPost_ι_app, Functor.comp_map,
-        CategoryTheory.Under.forget_map, CategoryTheory.Under.pushout_map,
-        CategoryTheory.Under.post_obj,
-        CategoryTheory.Under.mk_hom, CategoryTheory.Under.homMk_right, Cocone.underPost_pt]
+      dsimp [c'₀]
       exact pushout.inl_desc _ _ _
     have hcomp : pushout.inl (D.map k.hom) g' ≫ c'.ι.app k = tY.app k.right ≫ g := by
       change pushout.inl (D.map k.hom) g' ≫ c'₀.ι.app k ≫ hpush.isoPushout.inv = _

@@ -30,6 +30,9 @@ lemma CommAlgCat.etale_eq : etale R = RingHom.toObjectProperty RingHom.Etale R :
   ext S
   exact RingHom.etale_algebraMap.symm
 
+instance : (MorphismProperty.ind.{u} CommRingCat.etale.{u}).IsStableUnderComposition :=
+  .ind_of_preIndSpreads CommRingCat.etale_le_isFinitelyPresentable.{u}
+
 /-- An algebra is ind-étale if it can be written as the filtered colimit of étale
 algebras. -/
 @[mk_iff]
@@ -45,27 +48,6 @@ variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
 lemma iff_ind_etale (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
     Algebra.IndEtale R S ↔ ObjectProperty.ind.{u} (CommAlgCat.etale R) (.of R S) :=
   Algebra.indEtale_iff R S
-
-/-- `Algebra.IndEtale` in terms of `MorphismProperty.ind` on the underlying ring map. -/
-private lemma iff_ind_etale_algebraMap :
-    Algebra.IndEtale R S ↔
-      MorphismProperty.ind.{u} CommRingCat.etale (CommRingCat.ofHom (algebraMap R S)) := by
-  rw [iff_ind_etale, CommAlgCat.etale_eq, CommRingCat.etale,
-    RingHom.Etale.respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty]
-
-lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [Algebra.IndEtale R S] [Algebra.IndEtale S T] :
-    Algebra.IndEtale R T := by
-  rw [iff_ind_etale_algebraMap]
-  have hRS := (iff_ind_etale_algebraMap R S).mp ‹_›
-  have hST := (iff_ind_etale_algebraMap S T).mp ‹_›
-  have inst : (MorphismProperty.ind.{u} CommRingCat.etale).IsStableUnderComposition :=
-    .ind_of_preIndSpreads CommRingCat.etale_le_isFinitelyPresentable.{u}
-  have heq : CommRingCat.ofHom (algebraMap R S) ≫ CommRingCat.ofHom (algebraMap S T) =
-      CommRingCat.ofHom (algebraMap R T) :=
-    CommRingCat.hom_ext (IsScalarTower.algebraMap_eq R S T).symm
-  have h := inst.comp_mem _ _ hRS hST
-  rwa [heq] at h
 
 /-- Étale `R`-algebras are finitely presented. -/
 lemma etale_le_finitePresentation :
@@ -137,8 +119,9 @@ variable {R S : Type u} [CommRing R] [CommRing S]
 
 lemma comp {T : Type u} [CommRing T] {g : S →+* T} {f : R →+* S} (hg : g.IndEtale)
     (hf : f.IndEtale) : (g.comp f).IndEtale := by
-  algebraize [f, g, (g.comp f)]
-  exact Algebra.IndEtale.trans R S T
+  rw [iff_ind_etale] at hf hg ⊢
+  rw [CommRingCat.ofHom_comp]
+  exact (MorphismProperty.ind.{u} CommRingCat.etale).comp_mem _ _ hf hg
 
 /-- Ind-étale ring homomorphisms are stable under base change. -/
 lemma isStableUnderBaseChange : IsStableUnderBaseChange IndEtale := by
@@ -181,3 +164,17 @@ lemma _root_.RingHom.IndZariski.indEtale {f : R →+* S}
   exact .of_indZariski R S
 
 end RingHom.IndEtale
+
+namespace Algebra.IndEtale
+
+variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+
+lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [Algebra.IndEtale R S] [Algebra.IndEtale S T] :
+    Algebra.IndEtale R T := by
+  rw [← RingHom.IndEtale.algebraMap_iff R T, IsScalarTower.algebraMap_eq R S T]
+  exact RingHom.IndEtale.comp
+    ((RingHom.IndEtale.algebraMap_iff S T).mpr ‹_›)
+    ((RingHom.IndEtale.algebraMap_iff R S).mpr ‹_›)
+
+end Algebra.IndEtale
