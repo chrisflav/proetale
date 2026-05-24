@@ -14,7 +14,7 @@ being a pure ideal in `A`.
 -/
 
 /-- The kernel of a flat surjective ring map is a pure ideal. -/
-lemma RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [CommRing B]
+lemma RingHom.pure_ker_of_flat_of_surjective {A B : Type*} [CommRing A] [CommRing B]
     (f : A →+* B) (hf : f.Flat) (hsurj : Function.Surjective f) :
     (RingHom.ker f).Pure := by
   algebraize [f]
@@ -22,8 +22,8 @@ lemma RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [CommRing B
     (f := Algebra.ofId A B) hsurj).toLinearEquiv
 
 /-- A surjective ring map whose kernel is a pure ideal is flat. This is the converse of
-`RingHom.ker_pure_of_flat_surjective`. -/
-lemma RingHom.Flat.of_ker_pure_of_surjective {A B : Type*} [CommRing A] [CommRing B]
+`RingHom.pure_ker_of_flat_of_surjective`. -/
+lemma RingHom.Flat.of_pure_ker_of_surjective {A B : Type*} [CommRing A] [CommRing B]
     {f : A →+* B} (hsurj : Function.Surjective f) (h : (RingHom.ker f).Pure) :
     f.Flat := by
   algebraize [f]
@@ -32,8 +32,8 @@ lemma RingHom.Flat.of_ker_pure_of_surjective {A B : Type*} [CommRing A] [CommRin
     (f := Algebra.ofId A B) hsurj).symm.toLinearEquiv
 
 /-- For a surjective ring map, flatness is equivalent to the kernel being a pure ideal. -/
-lemma RingHom.flat_iff_ker_pure_of_surjective {A B : Type*} [CommRing A] [CommRing B]
+lemma RingHom.flat_iff_pure_ker_of_surjective {A B : Type*} [CommRing A] [CommRing B]
     {f : A →+* B} (hsurj : Function.Surjective f) :
     f.Flat ↔ (RingHom.ker f).Pure :=
-  ⟨fun hf ↦ RingHom.ker_pure_of_flat_surjective f hf hsurj,
-    RingHom.Flat.of_ker_pure_of_surjective hsurj⟩
+  ⟨fun hf ↦ RingHom.pure_ker_of_flat_of_surjective f hf hsurj,
+    RingHom.Flat.of_pure_ker_of_surjective hsurj⟩

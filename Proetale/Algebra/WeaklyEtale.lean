@@ -204,7 +204,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 (i.e. `KaehlerDifferential.ideal R S`) is a pure ideal in `S ⊗[R] S`. -/
 lemma flat_lmul'_iff_kaehlerDifferential_ideal_pure :
     (TensorProduct.lmul' (S := S) R).toRingHom.Flat ↔ (KaehlerDifferential.ideal R S).Pure :=
-  RingHom.flat_iff_ker_pure_of_surjective (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
+  RingHom.flat_iff_pure_ker_of_surjective (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
 
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
     FormallyUnramified R S := by
