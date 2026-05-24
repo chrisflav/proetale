@@ -14,17 +14,14 @@ instance (R : Type*) [CommRing R] [IsStrictlyHenselianLocalRing R] :
 /-- `HenselianLocalRing` transfers along a ring isomorphism. -/
 theorem HenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
     [HenselianLocalRing R] (e : R ≃+* S) : HenselianLocalRing S := by
-  haveI : IsLocalRing S := e.isLocalRing
+  have : IsLocalRing S := e.isLocalRing
   refine HenselianLocalRing.mk fun f hf a₀ hmem hunit => ?_
   let f' : Polynomial R := f.map e.symm.toRingHom
-  have heval : f'.eval (e.symm a₀) = e.symm (f.eval a₀) := by
-    change (f.map e.symm.toRingHom).eval (e.symm.toRingHom a₀) = e.symm.toRingHom (f.eval a₀)
-    exact Polynomial.eval_map_apply _ _
+  have heval : f'.eval (e.symm a₀) = e.symm (f.eval a₀) :=
+    Polynomial.eval_map_apply (p := f) e.symm.toRingHom a₀
   have hderiv : f'.derivative.eval (e.symm a₀) = e.symm (f.derivative.eval a₀) := by
-    change ((f.map e.symm.toRingHom).derivative).eval (e.symm.toRingHom a₀)
-      = e.symm.toRingHom (f.derivative.eval a₀)
-    rw [Polynomial.derivative_map]
-    exact Polynomial.eval_map_apply _ _
+    rw [Polynomial.derivative_map (f := e.symm.toRingHom)]
+    exact Polynomial.eval_map_apply (p := f.derivative) e.symm.toRingHom a₀
   have hmem' : f'.eval (e.symm a₀) ∈ IsLocalRing.maximalIdeal R := by
     rw [IsLocalRing.mem_maximalIdeal] at hmem
     rw [heval, IsLocalRing.mem_maximalIdeal]
@@ -37,12 +34,9 @@ theorem HenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
   refine ⟨e a, ?_, ?_⟩
   · have hf_eq : f'.map e.toRingHom = f := by
       simp [f', Polynomial.map_map]
-    change Polynomial.eval (e a) f = 0
     have key : f.eval (e a) = e (f'.eval a) := by
-      change f.eval (e.toRingHom a) = e.toRingHom (f'.eval a)
-      conv_lhs => rw [← hf_eq]
-      exact Polynomial.eval_map_apply _ _
-    rw [key, ha_root, map_zero]
+      rw [← hf_eq]; exact Polynomial.eval_map_apply (p := f') e.toRingHom a
+    rw [Polynomial.IsRoot.def, key, Polynomial.IsRoot.def.mp ha_root, map_zero]
   · rw [IsLocalRing.mem_maximalIdeal] at ha_diff ⊢
     intro hu
     apply ha_diff
@@ -53,7 +47,7 @@ theorem HenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
 /-- `IsStrictlyHenselianLocalRing` transfers along a ring isomorphism. -/
 theorem IsStrictlyHenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
     [IsStrictlyHenselianLocalRing R] (e : R ≃+* S) : IsStrictlyHenselianLocalRing S :=
-  haveI : HenselianLocalRing S := .of_ringEquiv e
+  have : HenselianLocalRing S := .of_ringEquiv e
   ⟨IsSepClosed.of_ringEquiv (IsLocalRing.ResidueField.mapEquiv e)⟩
 
 universe u v
