@@ -8,7 +8,6 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.RingHom.Etale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.Etale
-import Proetale.Mathlib.Algebra.Category.Ring.Accessible
 
 /-!
 # Ind-étale algebras
@@ -31,7 +30,7 @@ lemma CommAlgCat.etale_eq : etale R = RingHom.toObjectProperty RingHom.Etale R :
   exact RingHom.etale_algebraMap.symm
 
 instance : (MorphismProperty.ind.{u} CommRingCat.etale.{u}).IsStableUnderComposition :=
-  .ind_of_preIndSpreads CommRingCat.etale_le_isFinitelyPresentable.{u}
+  .ind_of_le_isFinitelyPresentable CommRingCat.etale_le_isFinitelyPresentable.{u}
 
 /-- An algebra is ind-étale if it can be written as the filtered colimit of étale
 algebras. -/
