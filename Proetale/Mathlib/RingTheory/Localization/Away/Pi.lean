@@ -63,7 +63,7 @@ noncomputable def awayPiSingleEquiv (i₀ : I) (s : k i₀) :
     -- `r ^ (m + 1) * x = 0` componentwise, so `mk' x t = 0`.
     rw [IsLocalization.mk'_eq_zero_iff]
     refine ⟨⟨r ^ (m + 1), m + 1, rfl⟩, ?_⟩
-    show r ^ (m + 1) * x = 0
+    change r ^ (m + 1) * x = 0
     funext j
     simp only [Pi.mul_apply, Pi.pow_apply, Pi.zero_apply]
     by_cases hj : j = i₀
@@ -75,12 +75,14 @@ noncomputable def awayPiSingleEquiv (i₀ : I) (s : k i₀) :
     obtain ⟨⟨x, ⟨_, n, rfl⟩⟩, rfl⟩ :=
       IsLocalization.mk'_surjective (M := Submonoid.powers s) (S := Localization.Away s) y
     let t : Submonoid.powers r := ⟨r ^ n, n, rfl⟩
+    let u : Submonoid.powers s := ⟨s ^ n, n, rfl⟩
     refine ⟨IsLocalization.mk' (Localization.Away r) (Pi.single i₀ x : ∀ i, k i) t, ?_⟩
     change IsLocalization.lift hf_powers
-        (IsLocalization.mk' (Localization.Away r) (Pi.single i₀ x) t) = _
+        (IsLocalization.mk' (Localization.Away r) (Pi.single i₀ x) t) =
+      IsLocalization.mk' (Localization.Away s) x u
     rw [IsLocalization.lift_mk'_spec]
-    show f (Pi.single i₀ x) = f (r ^ n) * _
-    rw [hf_apply, Pi.evalAlgHom_apply, Pi.single_eq_same, map_pow, hf_r, ← map_pow]
-    exact (IsLocalization.mk'_spec _ x ⟨s ^ n, n, rfl⟩).symm
+    change f (Pi.single i₀ x) = f (r ^ n) * _
+    rw [hf_apply, Pi.single_eq_same, map_pow, hf_r, ← map_pow]
+    exact (IsLocalization.mk'_spec' (Localization.Away s) x u).symm
 
 end Localization
