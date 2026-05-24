@@ -70,7 +70,7 @@ def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
 
 /-- Characterization of `submonoid f I`: an element `a : A` lies in `submonoid f I` if and only
 if `a` lies outside every prime in `locClosedSubset f I = D(f) ∩ V(I)`. -/
-private lemma mem_submonoid_iff (f : A) (I : Ideal A) (a : A) :
+lemma mem_submonoid_iff (f : A) (I : Ideal A) (a : A) :
     a ∈ submonoid f I ↔ ∀ p ∈ locClosedSubset f I, a ∉ p.asIdeal := by
   rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff,
     IsScalarTower.algebraMap_apply A (A ⧸ I),
@@ -91,8 +91,8 @@ private lemma mem_submonoid_iff (f : A) (I : Ideal A) (a : A) :
     · simpa [PrimeSpectrum.mem_basicOpen] using hp_bar
     · rw [PrimeSpectrum.mem_zeroLocus]
       intro b hb
-      change Ideal.Quotient.mk I b ∈ p_bar.asIdeal
-      rw [Ideal.Quotient.eq_zero_iff_mem.mpr hb]
+      rw [comap_asIdeal, SetLike.mem_coe, Ideal.mem_comap,
+        Ideal.Quotient.eq_zero_iff_mem.mpr hb]
       exact p_bar.asIdeal.zero_mem
 
 theorem submonoid_le {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
