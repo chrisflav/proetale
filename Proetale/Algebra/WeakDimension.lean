@@ -148,12 +148,6 @@ lemma _root_.Module.flat_of_localization_atPrime_isField
 instance [AbsolutelyFlat R] : Module.Flat R M :=
   Module.flat_of_localization_atPrime_isField _ _ (fun _ _ ↦ isField_of_isLocalRing _)
 
-instance (priority := low) [AbsolutelyFlat R] : IsReduced R := by
-  refine isReduced_ofLocalizationMaximal _ fun P hP ↦ ?_
-  have : P.IsPrime := hP.isPrime
-  let _ := (isField_of_isLocalization_prime (R := R) P (Localization.AtPrime P)).toField
-  infer_instance
-
 theorem tfae : [AbsolutelyFlat R,
     IsReduced R ∧ ∀ P : Ideal R, P.IsPrime → P.IsMaximal,
     IsReduced R ∧ Ring.KrullDimLE 0 R,
@@ -175,6 +169,11 @@ theorem tfae : [AbsolutelyFlat R,
     · exact Ring.krullDimLE_of_isLocalization_maximal (fun P hP ↦ Localization.AtPrime P)
         fun P hP ↦ inferInstance
   tfae_finish
+
+instance (priority := low) [AbsolutelyFlat R] : IsReduced R := by
+  have h : AbsolutelyFlat R ↔ IsReduced R ∧ ∀ P : Ideal R, P.IsPrime → P.IsMaximal :=
+    (tfae R).out 0 1
+  exact (h.mp ‹_›).1
 
 variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
