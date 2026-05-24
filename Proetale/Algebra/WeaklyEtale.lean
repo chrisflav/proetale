@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib
+import Proetale.Mathlib.RingTheory.Ideal.Pure
 import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 
@@ -199,31 +200,6 @@ end
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-/-- The kernel of a flat surjective ring map is a pure ideal. -/
-lemma _root_.RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [CommRing B]
-    (f : A →+* B) (hf : f.Flat) (hsurj : Function.Surjective f) :
-    (RingHom.ker f).Pure := by
-  algebraize [f]
-  exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
-    (f := Algebra.ofId A B) hsurj).toLinearEquiv
-
-/-- A surjective ring map whose kernel is a pure ideal is flat. This is the converse of
-`RingHom.ker_pure_of_flat_surjective`. -/
-lemma _root_.RingHom.Flat.of_ker_pure_of_surjective {A B : Type*} [CommRing A] [CommRing B]
-    {f : A →+* B} (hsurj : Function.Surjective f) (h : (RingHom.ker f).Pure) :
-    f.Flat := by
-  algebraize [f]
-  haveI : Module.Flat A (A ⧸ RingHom.ker (Algebra.ofId A B)) := h
-  exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
-    (f := Algebra.ofId A B) hsurj).symm.toLinearEquiv
-
-/-- For a surjective ring map, flatness is equivalent to the kernel being a pure ideal. -/
-lemma _root_.RingHom.flat_iff_ker_pure_of_surjective {A B : Type*} [CommRing A] [CommRing B]
-    {f : A →+* B} (hsurj : Function.Surjective f) :
-    f.Flat ↔ (RingHom.ker f).Pure :=
-  ⟨fun hf ↦ RingHom.ker_pure_of_flat_surjective f hf hsurj,
-    RingHom.Flat.of_ker_pure_of_surjective hsurj⟩
-
 /-- The multiplication map `S ⊗[R] S → S` is flat iff the kernel of the multiplication map
 (i.e. `KaehlerDifferential.ideal R S`) is a pure ideal in `S ⊗[R] S`. -/
 lemma flat_lmul'_iff_kaehlerDifferential_ideal_pure :
@@ -233,8 +209,7 @@ lemma flat_lmul'_iff_kaehlerDifferential_ideal_pure :
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
     FormallyUnramified R S := by
   have hp : (KaehlerDifferential.ideal R S).Pure :=
-    RingHom.ker_pure_of_flat_surjective (TensorProduct.lmul' (S := S) R).toRingHom h
-      (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
+    flat_lmul'_iff_kaehlerDifferential_ideal_pure.mp h
   rw [formallyUnramified_iff]
   exact (Ideal.cotangent_subsingleton_iff _).mpr (Ideal.isIdempotentElem_of_pure _)
 
