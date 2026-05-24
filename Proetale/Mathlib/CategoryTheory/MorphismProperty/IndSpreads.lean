@@ -133,6 +133,20 @@ lemma ind_comp_mem {P : MorphismProperty C} [P.IsStableUnderComposition]
     dsimp only [s']
     rw [Category.assoc, hcomp, ← Category.assoc, (hData k.right).2]
 
+/-- If `P` ind-spreads, then `ind P` is stable under composition, provided the assumptions of
+`MorphismProperty.ind_ind` are satisfied: `LocallySmall.{w} C` and
+`P ≤ isFinitelyPresentable.{w} C`. -/
+lemma IsStableUnderComposition.ind_of_le_isFinitelyPresentable {P : MorphismProperty C}
+    [P.IsStableUnderComposition] [P.IsStableUnderCobaseChange] [HasPushouts C]
+    [PreIndSpreads.{w} P] [LocallySmall.{w} C] (H : P ≤ isFinitelyPresentable.{w} C) :
+    (ind.{w} P).IsStableUnderComposition where
+  comp_mem f g hf hg := by
+    rw [← ind_ind H]
+    obtain ⟨J, _, _, D, sY, tZ, htZ, hData⟩ := hg
+    refine ⟨J, ‹_›, ‹_›, D, (Functor.const J).map f ≫ sY, tZ, htZ, fun k ↦ ⟨?_, ?_⟩⟩
+    · simpa using ind_comp_mem hf (hData k).1
+    · simpa using f ≫= (hData k).2
+
 /--
 A property of morphisms `P` is said to pro-spread if `P`-morphisms into cofiltered limits
 descend to a finite level. More precisely, let `Dᵢ` be a cofiltered family of objects.
