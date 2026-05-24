@@ -207,6 +207,29 @@ lemma _root_.RingHom.ker_pure_of_flat_surjective {A B : Type*} [CommRing A] [Com
   exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
     (f := Algebra.ofId A B) hsurj).toLinearEquiv
 
+/-- A surjective ring map whose kernel is a pure ideal is flat. This is the converse of
+`RingHom.ker_pure_of_flat_surjective`. -/
+lemma _root_.RingHom.Flat.of_ker_pure_of_surjective {A B : Type*} [CommRing A] [CommRing B]
+    {f : A →+* B} (hsurj : Function.Surjective f) (h : (RingHom.ker f).Pure) :
+    f.Flat := by
+  algebraize [f]
+  haveI : Module.Flat A (A ⧸ RingHom.ker (Algebra.ofId A B)) := h
+  exact .of_linearEquiv (Ideal.quotientKerAlgEquivOfSurjective
+    (f := Algebra.ofId A B) hsurj).symm.toLinearEquiv
+
+/-- For a surjective ring map, flatness is equivalent to the kernel being a pure ideal. -/
+lemma _root_.RingHom.flat_iff_ker_pure_of_surjective {A B : Type*} [CommRing A] [CommRing B]
+    {f : A →+* B} (hsurj : Function.Surjective f) :
+    f.Flat ↔ (RingHom.ker f).Pure :=
+  ⟨fun hf ↦ RingHom.ker_pure_of_flat_surjective f hf hsurj,
+    RingHom.Flat.of_ker_pure_of_surjective hsurj⟩
+
+/-- The multiplication map `S ⊗[R] S → S` is flat iff the kernel of the multiplication map
+(i.e. `KaehlerDifferential.ideal R S`) is a pure ideal in `S ⊗[R] S`. -/
+lemma flat_lmul'_iff_kaehlerDifferential_ideal_pure :
+    (TensorProduct.lmul' (S := S) R).toRingHom.Flat ↔ (KaehlerDifferential.ideal R S).Pure :=
+  RingHom.flat_iff_ker_pure_of_surjective (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
+
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
     FormallyUnramified R S := by
   have hp : (KaehlerDifferential.ideal R S).Pure :=
