@@ -78,7 +78,7 @@ import Proetale.Mathlib.RingTheory.Flat.Pi
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 import Proetale.Mathlib.RingTheory.Ideal.Pure
-import Proetale.Mathlib.RingTheory.LocalRing.Finite
+import Proetale.Mathlib.RingTheory.LocalRing.Integral
 import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
