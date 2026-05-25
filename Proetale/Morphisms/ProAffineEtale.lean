@@ -71,18 +71,19 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffineHom f] :
     exact isAffine_of_isAffineHom f'
   infer_instance
 
-/-- A morphism `Spec.map f` between affine schemes is pro-affine étale if and only
-if `f` is ind-étale.
+/-- For any `MorphismProperty Scheme` `P` coming from a ring-hom property `Q` via
+`HasRingHomProperty`, a morphism `Spec.map f` between affine schemes lies in
+`pro (P ⊓ isAffine)` if and only if `f` lies in `ind (RingHom.toMorphismProperty Q)`.
 
-TODO: generalise to a `pro_HasRingHomProperty_Spec_iff` for any
-`MorphismProperty Scheme` coming from a `HasRingHomProperty` instance. That
-statement would simultaneously cover analogues such as pro-affine-flat ↔ ind-flat,
-pro-affine-smooth ↔ ind-smooth, etc. The forward direction below could also be
-shortened by going through `AffineScheme.equivCommRingCat` instead of unfolding
-the `Γ ⊣ Spec` adjunction by hand. -/
-lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
-    proAffineEtale (Spec.map f) ↔ f.hom.IndEtale := by
-  rw [RingHom.IndEtale.iff_ind_etale]
+The forward direction reflects a pro-affine cone of `Spec.map f` along the `Γ ⊣ Spec`
+adjunction (an equivalence on affine objects) to a colimit cocone of ring maps; the
+backward direction applies `Scheme.Spec` to such a colimit and packages the result
+as a pro-cone. -/
+lemma pro_inf_isAffine_Spec_iff (P : MorphismProperty Scheme.{u})
+    {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    [HasRingHomProperty P Q] {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    (MorphismProperty.pro.{u} (P ⊓ ofObjectProperty (IsAffine ·) ⊤)) (Spec.map f) ↔
+      MorphismProperty.ind.{u} (RingHom.toMorphismProperty @Q) f := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · obtain ⟨J, _, _, D, t, s, hs, hts⟩ := h
     haveI hAff : ∀ j, IsAffine (D.obj j) := fun j =>
@@ -173,9 +174,9 @@ lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
         rw [show (mkScheme c').π.app i =
             Spec.map (c'.ι.app (Opposite.op i)) ≫ (D.obj i).isoSpec.inv from rfl, this,
           Category.assoc, Category.assoc, Iso.hom_inv_id, Category.comp_id]
-    · change (τNat.app j').hom.Etale
-      rw [← HasRingHomProperty.Spec_iff (P := @Etale), hSpec_τ]
-      exact MorphismProperty.comp_mem _ _ _ inferInstance (hts j'.unop).1.1
+    · change Q (τNat.app j').hom
+      rw [← HasRingHomProperty.Spec_iff (P := P), hSpec_τ]
+      exact MorphismProperty.RespectsIso.precomp _ _ _ (hts j'.unop).1.1
     · apply Spec.map_injective
       rw [Spec.map_comp, hSpec_σ, hSpec_τ, Category.assoc, ← Category.assoc _ _ (t.app _),
         Iso.hom_inv_id, Category.id_comp]
@@ -203,8 +204,8 @@ lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
       intro j'
       dsimp [c]
       simp
-    · change Etale (Spec.map (t.app j'.unop))
-      rw [HasRingHomProperty.Spec_iff (P := @Etale)]
+    · change P (Spec.map (t.app j'.unop))
+      rw [HasRingHomProperty.Spec_iff (P := P)]
       exact (hts j'.unop).1
     · change ofObjectProperty (IsAffine ·) ⊤ (Spec.map (t.app j'.unop))
       rw [ofObjectProperty_top_right_iff]
@@ -212,5 +213,12 @@ lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
     · change Spec.map (s.app j'.unop) ≫ Spec.map (t.app j'.unop) = Spec.map f
       rw [← Spec.map_comp]
       exact congrArg Spec.map (hts j'.unop).2
+
+/-- A morphism `Spec.map f` between affine schemes is pro-affine étale if and only
+if `f` is ind-étale. -/
+lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
+    proAffineEtale (Spec.map f) ↔ f.hom.IndEtale := by
+  rw [proAffineEtale, pro_inf_isAffine_Spec_iff (P := @Etale) f, RingHom.IndEtale.iff_ind_etale]
+  rfl
 
 end AlgebraicGeometry
