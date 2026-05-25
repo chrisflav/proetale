@@ -50,10 +50,7 @@ noncomputable def diagPushout : ι ⥤ C where
       (𝟙 X) (𝟙 X) (P.diag.map h)
       (by simp) (by simp)
   map_id i := by ext <;> simp
-  map_comp {i j k} f g := by
-    apply pushout.hom_ext
-    · simp [pushout.map_comp]
-    · simp [pushout.map_comp]
+  map_comp {i j k} f g := by ext <;> simp [pushout.map_comp]
 
 @[reassoc (attr := simp)]
 lemma diagPushout_inl_map {i j : ι} (h : i ⟶ j) :

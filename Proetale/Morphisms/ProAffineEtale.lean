@@ -84,24 +84,24 @@ lemma pro_inf_isAffine_Spec_iff (P : MorphismProperty Scheme.{u})
     [HasRingHomProperty P Q] {R S : CommRingCat.{u}} (f : R ⟶ S) :
     (MorphismProperty.pro.{u} (P ⊓ ofObjectProperty (IsAffine ·) ⊤)) (Spec.map f) ↔
       MorphismProperty.ind.{u} (RingHom.toMorphismProperty @Q) f := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨J, _, _, D, t, s, hs, hts⟩ := h
-    haveI hAff : ∀ j, IsAffine (D.obj j) := fun j =>
+    haveI hAff : ∀ j, IsAffine (D.obj j) := fun j ↦
       ofObjectProperty_top_right_iff.mp (hts j).1.2
     let Φ : Jᵒᵖ ⥤ CommRingCat.{u} := D.op ⋙ Scheme.Γ
-    let σ : ∀ j' : Jᵒᵖ, Φ.obj j' ⟶ S := fun j' =>
+    let σ : ∀ j' : Jᵒᵖ, Φ.obj j' ⟶ S := fun j' ↦
       Spec.preimage (s.app j'.unop ≫ (D.obj j'.unop).isoSpec.hom)
-    let τ : ∀ j' : Jᵒᵖ, R ⟶ Φ.obj j' := fun j' =>
+    let τ : ∀ j' : Jᵒᵖ, R ⟶ Φ.obj j' := fun j' ↦
       Spec.preimage ((D.obj j'.unop).isoSpec.inv ≫ t.app j'.unop)
     have hSpec_σ : ∀ j' : Jᵒᵖ,
         Spec.map (σ j') = s.app j'.unop ≫ (D.obj j'.unop).isoSpec.hom :=
-      fun j' => Spec.map_preimage _
+      fun j' ↦ Spec.map_preimage _
     have hSpec_τ : ∀ j' : Jᵒᵖ,
         Spec.map (τ j') = (D.obj j'.unop).isoSpec.inv ≫ t.app j'.unop :=
-      fun j' => Spec.map_preimage _
+      fun j' ↦ Spec.map_preimage _
     let τNat : (Functor.const Jᵒᵖ).obj R ⟶ Φ :=
       { app := τ
-        naturality := fun j' k' α => by
+        naturality := fun j' k' α ↦ by
           haveI : IsAffine (D.obj j'.unop) := hAff j'.unop
           haveI : IsAffine (D.obj k'.unop) := hAff k'.unop
           dsimp
@@ -116,7 +116,7 @@ lemma pro_inf_isAffine_Spec_iff (P : MorphismProperty Scheme.{u})
           exact (Scheme.isoSpec_inv_naturality_assoc (D.map α.unop) (t.app j'.unop)).symm }
     let σNat : Φ ⟶ (Functor.const Jᵒᵖ).obj S :=
       { app := σ
-        naturality := fun j' k' α => by
+        naturality := fun j' k' α ↦ by
           haveI : IsAffine (D.obj j'.unop) := hAff j'.unop
           haveI : IsAffine (D.obj k'.unop) := hAff k'.unop
           dsimp
@@ -130,12 +130,12 @@ lemma pro_inf_isAffine_Spec_iff (P : MorphismProperty Scheme.{u})
           rw [hsn, show Φ.map α = (D.map α.unop).appTop from Scheme.Γ_map_op (D.map α.unop),
             Category.assoc, Scheme.isoSpec_hom_naturality, ← Category.assoc] }
     let legSpec : (c' : Cocone Φ) → (i : J) → (Spec c'.pt ⟶ D.obj i) :=
-      fun c' i => Spec.map (c'.ι.app (Opposite.op i)) ≫ (D.obj i).isoSpec.inv
-    let mkScheme : Cocone Φ → Cone D := fun c' =>
+      fun c' i ↦ Spec.map (c'.ι.app (Opposite.op i)) ≫ (D.obj i).isoSpec.inv
+    let mkScheme : Cocone Φ → Cone D := fun c' ↦
       { pt := Spec c'.pt
         π :=
           { app := legSpec c'
-            naturality := fun i i' α => by
+            naturality := fun i i' α ↦ by
               haveI : IsAffine (D.obj i) := hAff i
               haveI : IsAffine (D.obj i') := hAff i'
               dsimp only [legSpec, Functor.const_obj_obj, Functor.const_obj_map]
@@ -149,11 +149,11 @@ lemma pro_inf_isAffine_Spec_iff (P : MorphismProperty Scheme.{u})
               rw [show Φ.map α.op = (D.map α).appTop from Scheme.Γ_map_op (D.map α)] at hcnat
               rw [← hcnat, Spec.map_comp, Category.assoc,
                 Scheme.isoSpec_inv_naturality, ← Category.assoc] } }
-    refine ⟨Jᵒᵖ, inferInstance, inferInstance, Φ, τNat, σNat, ?_, fun j' => ⟨?_, ?_⟩⟩
+    refine ⟨Jᵒᵖ, inferInstance, inferInstance, Φ, τNat, σNat, ?_, fun j' ↦ ⟨?_, ?_⟩⟩
     · refine
-        { desc := fun c' => Spec.preimage (hs.lift (mkScheme c'))
-          fac := fun c' j' => ?_
-          uniq := fun c' m hm => ?_ }
+        { desc := fun c' ↦ Spec.preimage (hs.lift (mkScheme c'))
+          fac := fun c' j' ↦ ?_
+          uniq := fun c' m hm ↦ ?_ }
       · apply Spec.map_injective
         haveI : IsAffine (D.obj j'.unop) := hAff j'.unop
         have hliftFac : hs.lift (mkScheme c') ≫ s.app j'.unop =
@@ -168,11 +168,11 @@ lemma pro_inf_isAffine_Spec_iff (P : MorphismProperty Scheme.{u})
         haveI : IsAffine (D.obj i) := hAff i
         have hmi : σNat.app (Opposite.op i) ≫ m = c'.ι.app (Opposite.op i) :=
           hm (Opposite.op i)
-        have : Spec.map (c'.ι.app (Opposite.op i)) =
+        have hcπ : Spec.map (c'.ι.app (Opposite.op i)) =
             Spec.map m ≫ s.app i ≫ (D.obj i).isoSpec.hom := by
           rw [← hSpec_σ (Opposite.op i), ← Spec.map_comp, hmi]
         rw [show (mkScheme c').π.app i =
-            Spec.map (c'.ι.app (Opposite.op i)) ≫ (D.obj i).isoSpec.inv from rfl, this,
+            Spec.map (c'.ι.app (Opposite.op i)) ≫ (D.obj i).isoSpec.inv from rfl, hcπ,
           Category.assoc, Category.assoc, Iso.hom_inv_id, Category.comp_id]
     · change Q (τNat.app j').hom
       rw [← HasRingHomProperty.Spec_iff (P := P), hSpec_τ]
@@ -184,22 +184,21 @@ lemma pro_inf_isAffine_Spec_iff (P : MorphismProperty Scheme.{u})
   · obtain ⟨J, _, _, D, t, s, hs, hts⟩ := h
     refine ⟨Jᵒᵖ, inferInstance, inferInstance, D.op ⋙ Scheme.Spec,
       { app j' := Spec.map (t.app j'.unop)
-        naturality := fun j' k' α => by
+        naturality := fun j' k' α ↦ by
           dsimp
           have := t.naturality α.unop
           simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp] at this
           rw [Category.comp_id, ← Spec.map_comp, ← this] },
       { app j' := Spec.map (s.app j'.unop)
-        naturality := fun j' k' α => by
+        naturality := fun j' k' α ↦ by
           dsimp
           have := s.naturality α.unop
           simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] at this
           rw [Category.id_comp, ← Spec.map_comp, this] },
-      ?_, fun j' => ⟨⟨?_, ?_⟩, ?_⟩⟩
+      ?_, fun j' ↦ ⟨⟨?_, ?_⟩, ?_⟩⟩
     · let c : Cocone D := Cocone.mk _ s
-      have hcop : IsLimit c.op := IsColimit.op hs
       have hSpecLimit : IsLimit (Scheme.Spec.mapCone c.op) :=
-        isLimitOfPreserves Scheme.Spec hcop
+        isLimitOfPreserves Scheme.Spec hs.op
       refine IsLimit.ofIsoLimit hSpecLimit (Cone.ext (Iso.refl _) ?_)
       intro j'
       dsimp [c]
