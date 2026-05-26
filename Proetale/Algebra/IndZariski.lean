@@ -407,7 +407,7 @@ end Algebra.BijectiveOnStalks
 namespace Algebra.IndZariski
 
 @[stacks 096T]
-theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
+theorem bijectiveOnStalks [Algebra.IndZariski R S] :
     Algebra.BijectiveOnStalks R S := by
   obtain ⟨ι, _, _, P, h⟩ := IndZariski.exists_colimitPresentation (R := R) (S := S)
   exact Algebra.BijectiveOnStalks.of_colimitPresentation R S P fun i ↦
@@ -486,7 +486,7 @@ lemma flat (h : f.IndZariski) : f.Flat := by
 theorem bijectiveOnStalks (h : f.IndZariski) : f.BijectiveOnStalks := by
   algebraize [f]
   exact RingHom.bijectiveOnStalks_algebraMap.mpr
-    (Algebra.IndZariski.bijectiveOnStalks_algebraMap R S)
+    (Algebra.IndZariski.bijectiveOnStalks R S)
 
 /-- Ind-Zariski is equivalent to ind-ind-Zariski. -/
 lemma iff_ind_indZariski (f : R →+* S) :

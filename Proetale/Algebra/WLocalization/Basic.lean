@@ -344,7 +344,7 @@ lemma quotientMap_algebraMap_bijective_of_ideal (I : Ideal A)
   set φ := Ideal.quotientMap J f I.le_comap_map
   refine RingHom.BijectiveOnStalks.bijective_of_bijective ?_ ?_
   · exact (RingHom.bijectiveOnStalks_algebraMap.mpr
-      (Algebra.IndZariski.bijectiveOnStalks_algebraMap A (WLocalization A))).quotientMap I
+      (Algebra.IndZariski.bijectiveOnStalks A (WLocalization A))).quotientMap I
   · have hbij : Set.BijOn (PrimeSpectrum.comap f) (zeroLocus J) (zeroLocus I) :=
       bijOn_specComap_zeroLocus_map A I hI
     have hI_inj : Function.Injective (PrimeSpectrum.comap (Ideal.Quotient.mk I)) :=
