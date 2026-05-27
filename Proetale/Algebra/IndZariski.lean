@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.Category.Ring.FinitePresentation
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 import Mathlib.RingTheory.RingHom.Etale
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.Flat
@@ -293,14 +294,133 @@ instance (priority := 100) _root_.Module.Flat.of_indZariski [Algebra.IndZariski 
   rw [CommAlgCat.flat_iff]
   exact @Algebra.IsLocalIso.flat _ _ _ _ _ (h i)
 
-@[stacks 096T]
-theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
-    (algebraMap R S).BijectiveOnStalks :=
-  sorry
+end Algebra.IndZariski
 
+namespace Algebra.BijectiveOnStalks
+
+/-- If `S` is a filtered colimit of `R`-algebras `Aᵢ` and each `R → Aᵢ` is bijective on
+stalks, then so is `R → S`. -/
+lemma of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
+    (P : ColimitPresentation ι (CommAlgCat.of R S))
+    (h : ∀ i, Algebra.BijectiveOnStalks R (P.diag.obj i)) :
+    Algebra.BijectiveOnStalks R S := by
+  refine ⟨fun p hp ↦ ?_⟩
+  have hcomm (i : ι) (r : R) :
+      (P.ι.app i).hom (algebraMap R (P.diag.obj i) r) = algebraMap R S r :=
+    (P.ι.app i).hom.commutes r
+  have hnat {i j : ι} (f : i ⟶ j) (x : P.diag.obj i) :
+      (P.ι.app j).hom ((P.diag.map f).hom x) = (P.ι.app i).hom x :=
+    DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x
+  have hp_i_prime (i : ι) : (p.comap (P.ι.app i).hom.toRingHom).IsPrime := Ideal.IsPrime.comap _
+  have hq_eq (i : ι) :
+      p.comap (algebraMap R S) =
+        (p.comap (P.ι.app i).hom.toRingHom).comap (algebraMap R (P.diag.obj i)) := by
+    ext r
+    simp only [Ideal.mem_comap, ← hcomm i r]
+    rfl
+  refine ⟨?_, ?_⟩
+  · intro x y hxy
+    obtain ⟨⟨r₁, s₁, hs₁⟩, rfl⟩ :=
+      IsLocalization.mk'_surjective (p.comap (algebraMap R S)).primeCompl x
+    obtain ⟨⟨r₂, s₂, hs₂⟩, rfl⟩ :=
+      IsLocalization.mk'_surjective (p.comap (algebraMap R S)).primeCompl y
+    rw [Localization.localRingHom_mk', Localization.localRingHom_mk'] at hxy
+    obtain ⟨⟨c, hcp⟩, hc⟩ := (IsLocalization.eq (S := Localization.AtPrime p)).mp hxy
+    obtain ⟨i₀, c', hc'⟩ : ∃ (i₀ : ι) (c' : ↑(P.diag.obj i₀)), (P.ι.app i₀).hom c' = c :=
+      Concrete.isColimit_exists_rep _ P.isColimit c
+    have hkey :
+        (P.ι.app i₀).hom (c' * (algebraMap R (P.diag.obj i₀) s₂ *
+            algebraMap R (P.diag.obj i₀) r₁)) =
+        (P.ι.app i₀).hom (c' * (algebraMap R (P.diag.obj i₀) s₁ *
+            algebraMap R (P.diag.obj i₀) r₂)) := by
+      simp only [map_mul, hcomm i₀, hc']
+      exact hc
+    obtain ⟨j, fij, hjeq⟩ := (IsColimit.eq_iff' P.isColimit _ _).mp hkey
+    let cj : ↑(P.diag.obj j) := (P.diag.map fij).hom c'
+    let pj : Ideal (P.diag.obj j) := p.comap (P.ι.app j).hom.toRingHom
+    have hpj_prime : pj.IsPrime := hp_i_prime j
+    have hcj_to_c : (P.ι.app j).hom cj = c := (hnat fij c').trans hc'
+    have hcj_mem : cj ∈ pj.primeCompl := fun hmem ↦ hcp (hcj_to_c ▸ hmem)
+    have hkey_j :
+        cj * (algebraMap R (P.diag.obj j) s₂ * algebraMap R (P.diag.obj j) r₁) =
+        cj * (algebraMap R (P.diag.obj j) s₁ * algebraMap R (P.diag.obj j) r₂) := by
+      have hjeq' :
+          (P.diag.map fij).hom
+              (c' * (algebraMap R (P.diag.obj i₀) s₂ * algebraMap R (P.diag.obj i₀) r₁)) =
+          (P.diag.map fij).hom
+              (c' * (algebraMap R (P.diag.obj i₀) s₁ * algebraMap R (P.diag.obj i₀) r₂)) :=
+        hjeq
+      simp only [map_mul, AlgHom.commutes] at hjeq'
+      exact hjeq'
+    have hq_eq_j : p.comap (algebraMap R S) = pj.comap (algebraMap R (P.diag.obj j)) := hq_eq j
+    have hs₁' : s₁ ∈ (pj.comap (algebraMap R (P.diag.obj j))).primeCompl :=
+      fun hmem ↦ hs₁ (hq_eq_j.symm ▸ hmem)
+    have hs₂' : s₂ ∈ (pj.comap (algebraMap R (P.diag.obj j))).primeCompl :=
+      fun hmem ↦ hs₂ (hq_eq_j.symm ▸ hmem)
+    have himg :
+        Localization.localRingHom (pj.comap (algebraMap R (P.diag.obj j))) pj
+            (algebraMap R (P.diag.obj j)) rfl
+            (IsLocalization.mk'
+              (Localization.AtPrime (pj.comap (algebraMap R (P.diag.obj j))))
+              r₁ ⟨s₁, hs₁'⟩) =
+        Localization.localRingHom (pj.comap (algebraMap R (P.diag.obj j))) pj
+            (algebraMap R (P.diag.obj j)) rfl
+            (IsLocalization.mk' _ r₂ ⟨s₂, hs₂'⟩) := by
+      rw [Localization.localRingHom_mk', Localization.localRingHom_mk', IsLocalization.eq]
+      exact ⟨⟨cj, hcj_mem⟩, hkey_j⟩
+    have hloc := ((h j).bijective_localRingHom pj).1 himg
+    rw [IsLocalization.eq] at hloc ⊢
+    obtain ⟨⟨c0, hc0⟩, hc0_eq⟩ := hloc
+    exact ⟨⟨c0, fun hmem ↦ hc0 (hq_eq_j.symm ▸ hmem)⟩, hc0_eq⟩
+  · intro z
+    obtain ⟨⟨s, u, hu⟩, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl z
+    obtain ⟨i₁, s₀, hs₀⟩ : ∃ (i : ι) (s₀ : ↑(P.diag.obj i)), (P.ι.app i).hom s₀ = s :=
+      Concrete.isColimit_exists_rep _ P.isColimit s
+    obtain ⟨i₂, u₀, hu₀⟩ : ∃ (i : ι) (u₀ : ↑(P.diag.obj i)), (P.ι.app i).hom u₀ = u :=
+      Concrete.isColimit_exists_rep _ P.isColimit u
+    let i : ι := IsFiltered.max i₁ i₂
+    let s' : P.diag.obj i := (P.diag.map (IsFiltered.leftToMax i₁ i₂)).hom s₀
+    let u' : P.diag.obj i := (P.diag.map (IsFiltered.rightToMax i₁ i₂)).hom u₀
+    have hs' : (P.ι.app i).hom s' = s := (hnat (IsFiltered.leftToMax i₁ i₂) s₀).trans hs₀
+    have hu' : (P.ι.app i).hom u' = u := (hnat (IsFiltered.rightToMax i₁ i₂) u₀).trans hu₀
+    let pi : Ideal (P.diag.obj i) := p.comap (P.ι.app i).hom.toRingHom
+    have hpi_prime : pi.IsPrime := hp_i_prime i
+    have hu'_mem : u' ∈ pi.primeCompl := fun hmem ↦ hu (hu' ▸ hmem)
+    have hq_eq_i : p.comap (algebraMap R S) = pi.comap (algebraMap R (P.diag.obj i)) := hq_eq i
+    obtain ⟨w, hw⟩ := ((h i).bijective_localRingHom pi).2
+      (IsLocalization.mk' (Localization.AtPrime pi) s' ⟨u', hu'_mem⟩)
+    obtain ⟨⟨a, b, hb⟩, rfl⟩ :=
+      IsLocalization.mk'_surjective (pi.comap (algebraMap R (P.diag.obj i))).primeCompl w
+    rw [Localization.localRingHom_mk', IsLocalization.eq] at hw
+    obtain ⟨⟨e, he⟩, he_eq⟩ := hw
+    have hb_R : b ∈ (p.comap (algebraMap R S)).primeCompl :=
+      fun hmem ↦ hb (hq_eq_i ▸ hmem)
+    refine ⟨IsLocalization.mk' _ a ⟨b, hb_R⟩, ?_⟩
+    rw [Localization.localRingHom_mk', IsLocalization.eq]
+    refine ⟨⟨(P.ι.app i).hom e, fun hmem ↦ he (Ideal.mem_comap.mpr hmem)⟩, ?_⟩
+    have heq := congrArg (P.ι.app i).hom he_eq
+    simp only [map_mul, hcomm, hs', hu'] at heq
+    exact heq
+
+end Algebra.BijectiveOnStalks
+
+namespace Algebra.IndZariski
+
+@[stacks 096T]
+theorem bijectiveOnStalks [Algebra.IndZariski R S] :
+    Algebra.BijectiveOnStalks R S := by
+  obtain ⟨ι, _, _, P, h⟩ := IndZariski.exists_colimitPresentation (R := R) (S := S)
+  exact Algebra.BijectiveOnStalks.of_colimitPresentation R S P fun i ↦
+    RingHom.bijectiveOnStalks_algebraMap.mp
+      (RingHom.IsLocalIso.bijectiveOnStalks (RingHom.isLocalIso_algebraMap.mpr (h i)))
+
+/-- If `S` is a filtered colimit of ind-Zariski `R`-algebras, then `S` is ind-Zariski. -/
 theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))
-    (h : ∀ (i : ι), Algebra.IndZariski R (P.diag.obj i)) : Algebra.IndZariski R S := sorry
+    (h : ∀ (i : ι), Algebra.IndZariski R (P.diag.obj i)) : Algebra.IndZariski R S := by
+  rw [iff_ind_isLocalIso,
+    ← ObjectProperty.ind_ind (CommAlgCat.isLocalIso_le_isFinitelyPresentable R)]
+  exact ⟨ι, ‹_›, ‹_›, P, fun i ↦ (iff_ind_isLocalIso R _).mp (h i)⟩
 
 end Algebra.IndZariski
 
@@ -365,7 +485,8 @@ lemma flat (h : f.IndZariski) : f.Flat := by
 @[stacks 096T]
 theorem bijectiveOnStalks (h : f.IndZariski) : f.BijectiveOnStalks := by
   algebraize [f]
-  exact Algebra.IndZariski.bijectiveOnStalks_algebraMap R S
+  exact RingHom.bijectiveOnStalks_algebraMap.mpr
+    (Algebra.IndZariski.bijectiveOnStalks R S)
 
 /-- Ind-Zariski is equivalent to ind-ind-Zariski. -/
 lemma iff_ind_indZariski (f : R →+* S) :
