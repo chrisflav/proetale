@@ -107,7 +107,7 @@ lemma toLocQuotient_algebraMap_eq_zero_iff (a : A) :
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul, map_pow,
       ← Ideal.Quotient.algebraMap_eq]
     exact hc
-  · show Ideal.Quotient.mk I f ^ n * algebraMap A (A ⧸ I) a = 0
+  · change Ideal.Quotient.mk I f ^ n * algebraMap A (A ⧸ I) a = 0
     rw [Ideal.Quotient.algebraMap_eq, ← map_pow, ← map_mul]
     exact Ideal.Quotient.eq_zero_iff_mem.mpr hn
 
@@ -286,7 +286,7 @@ lemma ProdStrata.map_ideal_le {E F : Finset A} (h : E ⊆ F) :
   rw [Ideal.map_le_iff_le_comap]
   intro x hx
   refine (Ideal.mem_pi _ _).mpr fun i ↦ ?_
-  show map h x i ∈ Generalization.ideal i.function i.ideal
+  change map h x i ∈ Generalization.ideal i.function i.ideal
   rw [map_apply]
   refine Generalization.map_ideal_le _ (i.ideal_restrict_le h) (i.function_restrict_dvd_function h)
     (Ideal.mem_map_of_mem _ ((Ideal.mem_pi _ _).mp hx _))
