@@ -147,6 +147,16 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
     exact Set.disjoint_left.mpr fun a ha_sub ha_p ↦
       (mem_submonoid_iff f I a).mp ha_sub q hq (hpq ha_p)
 
+/-- If `p` is a prime in `locClosedSubset f I = D(f) ∩ V(I)`, then `p` does not generate
+the unit ideal in `Generalization f I`. -/
+lemma map_algebraMap_ne_top {f : A} {I : Ideal A} {p : PrimeSpectrum A}
+    (hp : p ∈ locClosedSubset f I) :
+    Ideal.map (algebraMap A (Generalization f I)) p.asIdeal ≠ ⊤ :=
+  (IsLocalization.map_algebraMap_ne_top_iff_disjoint
+      (submonoid f I) (Generalization f I) p.asIdeal).mpr
+    (Set.disjoint_left.mpr fun a ha hap ↦
+      (mem_submonoid_iff f I a).mp ha p hp hap)
+
 /-- Given `q ∈ locClosedSubset f I`, the prime ideal `q · Generalization f I` of
 `Generalization f I` lies in `zeroLocus (ideal f I)` and contracts to `q`. -/
 private lemma exists_mem_zeroLocus_ideal_specComap_eq {f : A} {I : Ideal A}
@@ -369,6 +379,26 @@ instance (E : Finset A) : Algebra A (ProdStrata E) := fast_instance%
 noncomputable def ProdStrata.ideal (E : Finset A) : Ideal (ProdStrata E) :=
   Ideal.pi fun _ ↦ Generalization.ideal _ _
 
+/-- `Spec (ProdStrata E) → Spec A` is surjective. Each prime `p` of `A` lies in some
+stratum, hence lifts to `Spec (Generalization i.function i.ideal)`, and from there to
+`Spec (ProdStrata E)` via the canonical projection. -/
+lemma ProdStrata.specComap_surjective (E : Finset A) :
+    Function.Surjective (PrimeSpectrum.comap (algebraMap A (ProdStrata E))) := by
+  intro p
+  have hp_mem : p ∈ ⋃ (i : Stratification.Index E), stratum i.left i.right := by
+    rw [Stratification.Index.iUnion_stratum E]; trivial
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hp_mem
+  rw [← locClosedSubset_function_ideal] at hi
+  have h_in_range :
+      p ∈ Set.range (PrimeSpectrum.comap
+        (algebraMap A (Generalization i.function i.ideal))) := by
+    rw [Generalization.range_algebraMap_generalization, mem_generalizationHull_iff]
+    exact ⟨p, hi, specializes_rfl⟩
+  obtain ⟨q, hq⟩ := h_in_range
+  let eval_i : ProdStrata E →+* Generalization i.function i.ideal :=
+    Pi.evalRingHom (fun j : Stratification.Index E => Generalization j.function j.ideal) i
+  exact ⟨⟨q.asIdeal.comap eval_i, Ideal.comap_isPrime _ q.asIdeal⟩, hq⟩
+
 -- wrong
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (ProdStrata E))
@@ -506,78 +536,14 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   exact @Algebra.IndZariski.of_colimitPresentation A (WLocalization A) _ _ _
     (Finset A) _ _ colimitPresentation h
 
-/-- Each finite stage `ProdStrata E` lies in some open stratum of `Spec A` containing the
-maximal `m`. Consequently, `m` does not generate the unit ideal in `ProdStrata E`. -/
-private lemma map_algebraMap_prodStrata_ne_top (E : Finset A) (m : Ideal A)
-    (hm : m.IsMaximal) :
-    Ideal.map (algebraMap A (ProdStrata E)) m ≠ ⊤ := by
-  -- Find an index `i` such that `m` lies in the stratum `stratum i.left i.right`.
-  have hm_mem : (⟨m, hm.isPrime⟩ : PrimeSpectrum A) ∈
-      ⋃ (i : Stratification.Index E), stratum i.left i.right := by
-    rw [Stratification.Index.iUnion_stratum E]; trivial
-  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hm_mem
-  rw [← locClosedSubset_function_ideal] at hi
-  set I := i.ideal
-  set f := i.function
-  have hfm : f ∉ m := by simpa [PrimeSpectrum.mem_basicOpen] using hi.1
-  have hIm : I ≤ m := by
-    have := hi.2
-    rwa [PrimeSpectrum.mem_zeroLocus] at this
-  -- The submonoid `Generalization.submonoid f I` is disjoint from `m`.
-  have hdisj : Disjoint (Generalization.submonoid f I : Set A) (m : Set A) := by
-    refine Set.disjoint_left.mpr fun a ha ha_m ↦ ?_
-    have ha_unit : IsUnit (algebraMap A (Localization.Away (Ideal.Quotient.mk I f)) a) := ha
-    -- The image of `m` in `A/I` is a prime ideal (since `I ≤ m`).
-    set q : Ideal (A ⧸ I) := Ideal.map (Ideal.Quotient.mk I) m
-    have hq_prime : q.IsPrime :=
-      Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective
-        (by rw [Ideal.mk_ker]; exact hIm)
-    -- The image of `f` is not in `q`, because `f ∉ m`.
-    have hmkf : Ideal.Quotient.mk I f ∉ q := by
-      rwa [Ideal.mem_quotient_iff_mem hIm]
-    -- The localized ideal of `q` is prime.
-    have hq_loc :
-        (Ideal.map (algebraMap (A ⧸ I) (Localization.Away (Ideal.Quotient.mk I f))) q).IsPrime :=
-      IsLocalization.isPrime_of_isPrime_disjoint _ _ q hq_prime
-        (Set.disjoint_left.mpr fun y hy hyq ↦ by
-          obtain ⟨n, rfl⟩ := Submonoid.mem_powers_iff _ _ |>.mp hy
-          exact hmkf (hq_prime.mem_of_pow_mem n hyq))
-    apply hq_loc.ne_top
-    have hmka : Ideal.Quotient.mk I a ∈ q := Ideal.mem_map_of_mem _ ha_m
-    refine Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_map_of_mem _ hmka) ?_
-    rwa [IsScalarTower.algebraMap_apply A (A ⧸ I)] at ha_unit
-  -- `m` is proper in `Generalization f I`, hence proper in `ProdStrata E`.
-  have hne_top : Ideal.map (algebraMap A (Generalization f I)) m ≠ ⊤ :=
-    (IsLocalization.map_algebraMap_ne_top_iff_disjoint
-      (Generalization.submonoid f I) (Generalization f I) m).mpr hdisj
-  intro htop
-  apply hne_top
-  let eval_i := Pi.evalRingHom (fun j : Stratification.Index E =>
-    Generalization j.function j.ideal) i
-  have h1 := Ideal.map_map (algebraMap A (ProdStrata E)) eval_i (I := m)
-  rw [htop, Ideal.map_top] at h1
-  rw [show algebraMap A (Generalization f I) = eval_i.comp (algebraMap A (ProdStrata E)) from
-    rfl]
-  exact h1.symm
-
-/-- The w-localization `A_w` is faithfully flat over `A`. -/
+/-- The w-localization `A_w` is faithfully flat over `A`. The blueprint route via the
+closed-points lemma is replaced here by checking the equivalent surjectivity criterion at
+each finite stage `ProdStrata E` of the filtered colimit presentation. -/
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) := by
   refine CommAlgCat.faithfullyFlat_of_colimitPresentation colimitPresentation fun E ↦ ?_
   change Module.FaithfullyFlat A (ProdStrata E)
   have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata (A := A) E
-  have : Module.Flat A (ProdStrata E) := inferInstance
-  refine Module.FaithfullyFlat.of_nontrivial_tensor_quotient fun m hm ↦ ?_
-  rw [(TensorProduct.quotTensorEquivQuotSMul (ProdStrata E) m).nontrivial_congr,
-    Submodule.Quotient.nontrivial_iff,
-    show m • (⊤ : Submodule A (ProdStrata E)) =
-        (Ideal.map (algebraMap A (ProdStrata E)) m).restrictScalars A from
-      Ideal.smul_top_eq_map m]
-  intro h
-  apply map_algebraMap_prodStrata_ne_top (A := A) E m hm
-  have : (Ideal.map (algebraMap A (ProdStrata E)) m :
-      Submodule (ProdStrata E) (ProdStrata E)) = ⊤ := by
-    rw [← Submodule.restrictScalars_eq_top_iff (S := A)]; exact h
-  exact_mod_cast this
+  exact Module.FaithfullyFlat.of_comap_surjective (ProdStrata.specComap_surjective E)
 
 /-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
 This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/
