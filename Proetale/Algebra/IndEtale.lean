@@ -78,8 +78,8 @@ instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S := by
 instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLocalRing R] :
     Algebra.IsSeparable k R := by
   obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := k) (S := R)
-  letI := hcat
-  letI := hfilt
+  letI : SmallCategory ι := hcat
+  letI : IsFiltered ι := hfilt
   refine ⟨fun x ↦ ?_⟩
   have hcolim : IsColimit ((forget (CommAlgCat.{u} k)).mapCocone P.cocone) :=
     isColimitOfPreserves (forget (CommAlgCat.{u} k)) P.isColimit

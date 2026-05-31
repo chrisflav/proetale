@@ -60,25 +60,16 @@ lemma exists_pi_single_eq_one_of_isLocalRing [Finite I] [IsLocalRing B] [Nontriv
   rwa [hj, mul_one] at this
 
 /-- The algebra homomorphism `A j →ₐ[k] B` factoring `ψ : (∀ i, A i) →ₐ[k] B` through the
-`j`-th factor, given that `ψ (Pi.single j 1) = 1` and `ψ` kills all other unit idempotents. -/
-noncomputable def piFactor [Fintype I] (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
-    (hj : ψ (Pi.single j 1) = 1) (hothers : ∀ i, i ≠ j → ψ (Pi.single i 1) = 0) :
+`j`-th factor, given that `ψ (Pi.single j 1) = 1` and `ψ (Pi.single i 1) = 0` for every
+`i ≠ j`. Note that `B` is not required to be local; the hypotheses subsume that. -/
+def piFactor (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
+    (hj : ψ (Pi.single j 1) = 1) (_hothers : ∀ i, i ≠ j → ψ (Pi.single i 1) = 0) :
     A j →ₐ[k] B where
   toFun y := ψ (Pi.single j y)
   map_one' := hj
-  map_mul' y₁ y₂ := by
-    change ψ _ = ψ _ * ψ _
-    rw [Pi.single_mul, map_mul]
+  map_mul' y₁ y₂ := by simp [Pi.single_mul]
   map_zero' := by simp
-  map_add' y₁ y₂ := by
-    change ψ (Pi.single j (y₁ + y₂)) = ψ (Pi.single j y₁) + ψ (Pi.single j y₂)
-    rw [← map_add]
-    congr 1
-    ext i
-    by_cases hij : i = j
-    · subst hij
-      simp
-    · simp [Pi.single_eq_of_ne hij]
+  map_add' y₁ y₂ := by simp [Pi.single_add]
   commutes' c := by
     have heq : Pi.single j (algebraMap k (A j) c) =
         (algebraMap k (∀ i, A i) c) * Pi.single j 1 := by
@@ -89,16 +80,18 @@ noncomputable def piFactor [Fintype I] (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
       · simp [Pi.single_eq_of_ne hij]
     rw [heq, map_mul, AlgHom.commutes, hj, mul_one]
 
-lemma piFactor_apply [Fintype I] (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
+@[simp]
+lemma piFactor_apply (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
     (hj : ψ (Pi.single j 1) = 1) (hothers : ∀ i, i ≠ j → ψ (Pi.single i 1) = 0) (y : A j) :
     piFactor ψ j hj hothers y = ψ (Pi.single j y) := rfl
 
 /-- An algebra homomorphism `ψ : (∀ i, A i) →ₐ[k] B` to a local algebra is recovered from its
 factor through the unique component `A j` selected by the unit idempotents. -/
-lemma apply_eq_piFactor_apply [Fintype I] (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
+lemma eq_piFactor_apply [Finite I] (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
     (hj : ψ (Pi.single j 1) = 1) (hothers : ∀ i, i ≠ j → ψ (Pi.single i 1) = 0)
     (x : ∀ i, A i) : ψ x = piFactor ψ j hj hothers (x j) := by
-  change ψ x = ψ (Pi.single j (x j))
+  have : Fintype I := Fintype.ofFinite I
+  rw [piFactor_apply]
   conv_lhs => rw [← Finset.univ_sum_single x]
   rw [map_sum]
   refine Finset.sum_eq_single_of_mem j (Finset.mem_univ _) fun i _ hi ↦ ?_
