@@ -225,6 +225,43 @@ lemma exists_specializes_zeroLocus_ideal {f : A} (I : Ideal A)
     (submonoid f I)).specializes_iff, hy_eq]
   exact hpq
 
+/-- An element of the form `algebraMap A _ a` in `Generalization f I` is killed by
+`toLocQuotient f I` iff some power of `f` times `a` lies in `I`. -/
+lemma toLocQuotient_algebraMap_eq_zero_iff (a : A) :
+    toLocQuotient f I (algebraMap A _ a) = 0 ↔ ∃ n : ℕ, f ^ n * a ∈ I := by
+  rw [(toLocQuotient f I).commutes,
+    IsScalarTower.algebraMap_apply A (A ⧸ I) (Localization.Away (Ideal.Quotient.mk I f))]
+  simp only [IsLocalization.map_eq_zero_iff (Submonoid.powers (Ideal.Quotient.mk I f)),
+    Subtype.exists, Submonoid.mem_powers_iff, exists_prop, exists_exists_eq_and]
+  refine exists_congr fun n ↦ ?_
+  rw [Ideal.Quotient.algebraMap_eq, ← map_pow, ← map_mul, Ideal.Quotient.eq_zero_iff_mem]
+
+/-- If `I ≤ I'` and `f ∣ f'`, the canonical map `Generalization f I → Generalization f' I'`
+sends the kernel ideal `ideal f I` into the kernel ideal `ideal f' I'`. -/
+lemma map_ideal_le {f f' : A} {I I' : Ideal A}
+    (h_sub : locClosedSubset f' I' ⊆ locClosedSubset f I) (hI : I ≤ I') (hf : f ∣ f') :
+    (ideal f I).map (map h_sub).toRingHom ≤ ideal f' I' := by
+  rw [Ideal.map_le_iff_le_comap]
+  intro z hz
+  simp only [Ideal.mem_comap, ideal, RingHom.mem_ker] at hz ⊢
+  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq (submonoid f I) z
+  have h_alg_zero : toLocQuotient f I (algebraMap A _ a) = 0 := by
+    have := congr_arg (toLocQuotient f I) (IsLocalization.mk'_spec _ a s)
+    rw [map_mul, hz, zero_mul] at this
+    exact this.symm
+  obtain ⟨n, hfna⟩ := (toLocQuotient_algebraMap_eq_zero_iff f I a).mp h_alg_zero
+  obtain ⟨g, hfg⟩ := hf
+  have hf'na : f' ^ n * a ∈ I' := by
+    rw [hfg, mul_pow, show f ^ n * g ^ n * a = g ^ n * (f ^ n * a) by ring]
+    exact I'.mul_mem_left _ (hI hfna)
+  have h_alg_zero' : algebraMap A (Localization.Away (Ideal.Quotient.mk I' f')) a = 0 := by
+    rw [← (toLocQuotient f' I').commutes]
+    exact (toLocQuotient_algebraMap_eq_zero_iff f' I' a).mpr ⟨n, hf'na⟩
+  have hmk' := congr_arg (toLocQuotient f' I' ∘ map h_sub)
+    (IsLocalization.mk'_spec (Generalization f I) a s)
+  simp only [Function.comp_apply, map_mul, AlgHom.commutes, h_alg_zero'] at hmk'
+  exact (submonoid_le h_sub s.2).mul_left_eq_zero.mp hmk'
+
 end Generalization
 
 /-- The single stratum `Z(E, F)` in `Spec A`. -/
@@ -274,15 +311,39 @@ lemma locClosedSubset_function_ideal {E : Finset A} (i : Stratification.Index E)
 @[simps]
 noncomputable
 def Stratification.Index.restrict {E F : Finset A} (i : Stratification.Index F)
-    (h : E ⊆ F) : Stratification.Index E where
-  left := open Classical in E ∩ i.left
-  right := open Classical in E ∩ i.right
-  disjoint := sorry
-  union_eq := sorry
+    (h : E ⊆ F) : Stratification.Index E :=
+  open Classical in
+  { left := E ∩ i.left
+    right := E ∩ i.right
+    disjoint := i.disjoint.mono Finset.inter_subset_right Finset.inter_subset_right
+    union_eq := by
+      simp only [Finset.coe_inter]
+      rw [← Set.inter_union_distrib_left, i.union_eq,
+        Set.inter_eq_left.mpr (Finset.coe_subset.mpr h)] }
+
+lemma Stratification.Index.function_restrict_dvd_function {E F : Finset A}
+    (i : Stratification.Index F) (h : E ⊆ F) :
+    (i.restrict h).function ∣ i.function := by
+  classical
+  simpa only [function, restrict_left] using
+    Finset.prod_dvd_prod_of_subset _ _ id Finset.inter_subset_right
+
+lemma Stratification.Index.ideal_restrict_le {E F : Finset A}
+    (i : Stratification.Index F) (h : E ⊆ F) :
+    (i.restrict h).ideal ≤ i.ideal := by
+  classical
+  simpa only [ideal, restrict_right] using
+    Ideal.span_mono (Finset.coe_subset.mpr Finset.inter_subset_right)
 
 lemma Stratification.Index.iUnion_stratum (E : Finset A) :
-    ⋃ (i : Stratification.Index E), stratum i.left i.right = .univ :=
-  sorry
+    ⋃ (i : Stratification.Index E), stratum i.left i.right = .univ := by
+  classical
+  refine Set.eq_univ_of_forall fun p ↦ Set.mem_iUnion.mpr ?_
+  refine ⟨⟨E.filter (· ∉ p.asIdeal), E.filter (· ∈ p.asIdeal),
+    (Finset.disjoint_filter_filter_not E E _).symm, ?_⟩, ?_, ?_⟩
+  · rw [← Finset.coe_union, Finset.union_comm, Finset.filter_union_filter_not_eq]
+  · simp +contextual [Set.mem_iInter, Finset.mem_filter]
+  · simp +contextual [mem_zeroLocus, Set.subset_def]
 
 /-- The product of the generalizations of `Z(E', E'')` indexed by all disjoint union decompositions
 `E = E' ⨿ E''`. -/
@@ -325,20 +386,42 @@ lemma ProdStrata.mem_zeroLocus_ideal_of_isClosed {E : Finset A} {x : PrimeSpectr
   have := hy.mem_closed hx (by simp)
   grind only [= Set.mem_singleton_iff]
 
+lemma ProdStrata.locClosedSubset_subset_restrict {E F : Finset A} (h : E ⊆ F)
+    (i : Stratification.Index F) :
+    Generalization.locClosedSubset i.function i.ideal ⊆
+      Generalization.locClosedSubset (i.restrict h).function (i.restrict h).ideal := by
+  rw [locClosedSubset_function_ideal, locClosedSubset_function_ideal]
+  exact stratum_anti (by simp) (by simp)
+
 /-- If `E ⊆ F`, this is the canonical map `A_E → A_F`. -/
 noncomputable def ProdStrata.map {E F : Finset A} (h : E ⊆ F) :
     ProdStrata E →ₐ[A] ProdStrata F :=
   Pi.algHom _ _ fun i ↦
-    AlgHom.comp
-      (Generalization.map <| by
-        rw [locClosedSubset_function_ideal, locClosedSubset_function_ideal]
-        apply stratum_anti <;> simp)
+    AlgHom.comp (Generalization.map (locClosedSubset_subset_restrict h i))
       (Pi.evalAlgHom _ _ (i.restrict h))
+
+@[simp]
+lemma ProdStrata.map_apply {E F : Finset A} (h : E ⊆ F) (x : ProdStrata E)
+    (i : Stratification.Index F) :
+    ProdStrata.map h x i =
+      Generalization.map (locClosedSubset_subset_restrict h i) (x (i.restrict h)) := rfl
+
+lemma ProdStrata.map_ideal_le {E F : Finset A} (h : E ⊆ F) :
+    (ProdStrata.ideal E).map (map h).toRingHom ≤ ProdStrata.ideal F := by
+  rw [Ideal.map_le_iff_le_comap]
+  intro x hx
+  refine (Ideal.mem_pi _ _).mpr fun i ↦ ?_
+  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_apply]
+  exact Generalization.map_ideal_le _ (i.ideal_restrict_le h) (i.function_restrict_dvd_function h)
+    (Ideal.mem_map_of_mem _ ((Ideal.mem_pi _ _).mp hx _))
 
 lemma ProdStrata.mapsTo_map_specComap {E F : Finset A} (h : E ⊆ F) :
     Set.MapsTo (PrimeSpectrum.comap (map h).toRingHom)
       (zeroLocus (ideal F)) (zeroLocus (ideal E)) := by
-  sorry
+  intro p hp
+  simp only [mem_zeroLocus, SetLike.coe_subset_coe, comap_asIdeal,
+    ← Ideal.map_le_iff_le_comap] at hp ⊢
+  exact (map_ideal_le h).trans hp
 
 variable (A) in
 /-- The diagram whose colimit is the w-localization of `A`. -/
@@ -414,10 +497,9 @@ instance (E : Finset A) : Finite (Stratification.Index E) := by
   exact (Stratification.Index.mk.injEq ..).mpr ⟨aux hl₁ hl₂ hL, aux hr₁ hr₂ hR⟩
 
 lemma indZariski_prodStrata (E : Finset A) :
-    Algebra.IndZariski A (ProdStrata E) := by
-  change Algebra.IndZariski A
+    Algebra.IndZariski A (ProdStrata E) :=
+  inferInstanceAs <| Algebra.IndZariski A
     (∀ i : Stratification.Index E, Generalization i.function i.ideal)
-  exact Algebra.IndZariski.pi A _
 
 instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   have h := fun E => indZariski_prodStrata (A := A) E
