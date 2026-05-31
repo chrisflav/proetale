@@ -331,109 +331,200 @@ private lemma colimitPrime_comap_diag (p : Ideal S) {i j : ι} (f : i ⟶ j) :
   ext1 x
   exact (DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x).symm
 
-/-- **Existence**: every element of `Localization.AtPrime p` (where `p ⊆ S = colim Aᵢ`) is the
-image, under the `Localization.localRingHom` induced by the colimit injection, of an element of
-`Localization.AtPrime (p.comap (Aᵢ → S))` for some `i`. -/
-private lemma exists_localRingHom_eq (p : Ideal S) [p.IsPrime] (z : Localization.AtPrime p) :
+variable (p : Ideal S) [p.IsPrime]
+
+/-- The diagram of localizations `Localization.AtPrime (colimitPrime P p i)` for `i : ι`, with
+transition maps given by `Localization.localRingHom`. -/
+noncomputable def localizationDiag : ι ⥤ CommRingCat.{u} where
+  obj i := .of (Localization.AtPrime (colimitPrime P p i))
+  map {i j} f := CommRingCat.ofHom <| Localization.localRingHom _ _
+    (P.diag.map f).hom.toRingHom (colimitPrime_comap_diag P p f)
+  map_id i := by
+    apply CommRingCat.hom_ext
+    refine Eq.trans (Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_) rfl
+    show algebraMap _ _ r = algebraMap _ _ ((P.diag.map (𝟙 i)).hom.toRingHom r)
+    rw [P.diag.map_id]; rfl
+  map_comp {i j k} f g := by
+    apply CommRingCat.hom_ext
+    refine Eq.trans (Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_) rfl
+    show algebraMap _ _ ((Localization.localRingHom _ _ _ _) (algebraMap _ _ r)) =
+      algebraMap _ _ ((P.diag.map (f ≫ g)).hom.toRingHom r)
+    rw [Localization.localRingHom_to_map, P.diag.map_comp]; rfl
+
+/-- The cocone over `localizationDiag P p` with apex `Localization.AtPrime p`, with structure maps
+the canonical `Localization.localRingHom` induced by the colimit injections. -/
+noncomputable def localizationCocone : Cocone (localizationDiag P p) where
+  pt := .of (Localization.AtPrime p)
+  ι :=
+    { app i := CommRingCat.ofHom <|
+        Localization.localRingHom (colimitPrime P p i) p (P.ι.app i).hom.toRingHom rfl
+      naturality {i j} f := by
+        apply CommRingCat.hom_ext
+        rw [show ((CommRingCat.ofHom _ ≫ CommRingCat.ofHom _ : _ ⟶ _).hom) =
+          (Localization.localRingHom _ _ (P.ι.app j).hom.toRingHom rfl).comp
+            (Localization.localRingHom _ _ (P.diag.map f).hom.toRingHom _) from rfl,
+          ← Localization.localRingHom_comp]
+        show Localization.localRingHom _ _ _ _ = _
+        refine Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_
+        show algebraMap _ _ ((P.ι.app j).hom.toRingHom ((P.diag.map f).hom.toRingHom r)) =
+          algebraMap _ _ ((P.ι.app i).hom.toRingHom r)
+        congr 1
+        exact DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) r }
+
+/-- **Surjectivity** for the colimit recognition: every element of `Localization.AtPrime p` (where
+`p ⊆ S = colim Aᵢ`) is the image of an element of `Localization.AtPrime (colimitPrime P p i)`
+for some `i`. -/
+private lemma exists_localizationCocone_eq (z : Localization.AtPrime p) :
     ∃ (i : ι) (zᵢ : Localization.AtPrime (colimitPrime P p i)),
-      Localization.localRingHom (colimitPrime P p i) p
-        (P.ι.app i).hom.toRingHom rfl zᵢ = z := by
+      (localizationCocone P p).ι.app i zᵢ = z := by
   obtain ⟨⟨s, u, hu⟩, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl z
   obtain ⟨i₁, s₀, hs₀⟩ := Concrete.isColimit_exists_rep _ P.isColimit s
   obtain ⟨i₂, u₀, hu₀⟩ := Concrete.isColimit_exists_rep _ P.isColimit u
   let i : ι := IsFiltered.max i₁ i₂
   let s' : P.diag.obj i := (P.diag.map (IsFiltered.leftToMax i₁ i₂)).hom s₀
   let u' : P.diag.obj i := (P.diag.map (IsFiltered.rightToMax i₁ i₂)).hom u₀
-  have hnat {i j : ι} (f : i ⟶ j) (x : P.diag.obj i) :
-      (P.ι.app j).hom ((P.diag.map f).hom x) = (P.ι.app i).hom x :=
+  have hnat {a b : ι} (f : a ⟶ b) (x : P.diag.obj a) :
+      (P.ι.app b).hom ((P.diag.map f).hom x) = (P.ι.app a).hom x :=
     DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x
   have hs' : (P.ι.app i).hom s' = s := (hnat (IsFiltered.leftToMax i₁ i₂) s₀).trans hs₀
   have hu' : (P.ι.app i).hom u' = u := (hnat (IsFiltered.rightToMax i₁ i₂) u₀).trans hu₀
   have hu'_mem : u' ∈ (colimitPrime P p i).primeCompl := fun hmem ↦ hu (hu' ▸ hmem)
   refine ⟨i, IsLocalization.mk' _ s' ⟨u', hu'_mem⟩, ?_⟩
+  show Localization.localRingHom _ _ _ _ _ = _
   rw [Localization.localRingHom_mk']
   exact congrArg₂ (IsLocalization.mk' _) hs' (Subtype.ext hu')
 
-/-- **Equality**: if two elements of `Localization.AtPrime (p.comap (R → S))` have equal images
-in `Localization.AtPrime p` under `Localization.localRingHom`, then there exists `j` such that
-they have equal images in `Localization.AtPrime (colimitPrime P p j)` under the corresponding
-map. -/
-private lemma exists_localRingHom_eq_of_localRingHom_eq (p : Ideal S) [p.IsPrime]
-    (x y : Localization.AtPrime (p.comap (algebraMap R S)))
-    (hxy : Localization.localRingHom (p.comap (algebraMap R S)) p (algebraMap R S) rfl x =
-        Localization.localRingHom (p.comap (algebraMap R S)) p (algebraMap R S) rfl y) :
-    ∃ (j : ι),
-      Localization.localRingHom (p.comap (algebraMap R S)) (colimitPrime P p j)
-          (algebraMap R (P.diag.obj j)) (colimitPrime_comap_algebraMap P p j) x =
-        Localization.localRingHom (p.comap (algebraMap R S)) (colimitPrime P p j)
-          (algebraMap R (P.diag.obj j)) (colimitPrime_comap_algebraMap P p j) y := by
+/-- **Injectivity** for the colimit recognition: if two elements of
+`Localization.AtPrime (colimitPrime P p i)` have equal image in `Localization.AtPrime p`, then
+they become equal in `Localization.AtPrime (colimitPrime P p k)` for some morphism `i ⟶ k`. -/
+private lemma exists_eq_of_localizationCocone_eq (i : ι)
+    (x y : Localization.AtPrime (colimitPrime P p i))
+    (hxy : (localizationCocone P p).ι.app i x = (localizationCocone P p).ι.app i y) :
+    ∃ (k : ι) (f : i ⟶ k),
+      (localizationDiag P p).map f x = (localizationDiag P p).map f y := by
+  change Localization.localRingHom _ _ _ _ _ = Localization.localRingHom _ _ _ _ _ at hxy
   obtain ⟨⟨r₁, s₁, hs₁⟩, rfl⟩ :=
-    IsLocalization.mk'_surjective (p.comap (algebraMap R S)).primeCompl x
+    IsLocalization.mk'_surjective (colimitPrime P p i).primeCompl x
   obtain ⟨⟨r₂, s₂, hs₂⟩, rfl⟩ :=
-    IsLocalization.mk'_surjective (p.comap (algebraMap R S)).primeCompl y
+    IsLocalization.mk'_surjective (colimitPrime P p i).primeCompl y
   rw [Localization.localRingHom_mk', Localization.localRingHom_mk'] at hxy
   obtain ⟨⟨c, hcp⟩, hc⟩ := (IsLocalization.eq (S := Localization.AtPrime p)).mp hxy
-  obtain ⟨i₀, c', hc'⟩ := Concrete.isColimit_exists_rep _ P.isColimit c
-  have hnat {i j : ι} (f : i ⟶ j) (x : P.diag.obj i) :
-      (P.ι.app j).hom ((P.diag.map f).hom x) = (P.ι.app i).hom x :=
+  obtain ⟨k₀, c', hc'⟩ := Concrete.isColimit_exists_rep _ P.isColimit c
+  have hnat {a b : ι} (f : a ⟶ b) (x : P.diag.obj a) :
+      (P.ι.app b).hom ((P.diag.map f).hom x) = (P.ι.app a).hom x :=
     DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x
+  let i' : ι := IsFiltered.max i k₀
+  let li : i ⟶ i' := IsFiltered.leftToMax i k₀
+  let rk : k₀ ⟶ i' := IsFiltered.rightToMax i k₀
+  let c'' : P.diag.obj i' := (P.diag.map rk).hom c'
   have hkey :
-      (P.ι.app i₀).hom (c' * (algebraMap R (P.diag.obj i₀) s₂ *
-          algebraMap R (P.diag.obj i₀) r₁)) =
-      (P.ι.app i₀).hom (c' * (algebraMap R (P.diag.obj i₀) s₁ *
-          algebraMap R (P.diag.obj i₀) r₂)) := by
-    simp only [map_mul, (P.ι.app i₀).hom.commutes, hc']
+      (P.ι.app i').hom (c'' * ((P.diag.map li).hom s₂ * (P.diag.map li).hom r₁)) =
+        (P.ι.app i').hom (c'' * ((P.diag.map li).hom s₁ * (P.diag.map li).hom r₂)) := by
+    simp only [map_mul, hnat li, hnat rk, c'', hc']
     exact hc
-  obtain ⟨j, fij, hjeq⟩ := (IsColimit.eq_iff' P.isColimit _ _).mp hkey
-  refine ⟨j, ?_⟩
-  let cj : P.diag.obj j := (P.diag.map fij).hom c'
-  have hcj_to_c : (P.ι.app j).hom cj = c := (hnat fij c').trans hc'
-  have hcj_mem : cj ∈ (colimitPrime P p j).primeCompl := fun hmem ↦ hcp (hcj_to_c ▸ hmem)
-  have hq_eq_j : p.comap (algebraMap R S) =
-      (colimitPrime P p j).comap (algebraMap R (P.diag.obj j)) :=
-    colimitPrime_comap_algebraMap P p j
-  have hs₁' : s₁ ∈ ((colimitPrime P p j).comap (algebraMap R (P.diag.obj j))).primeCompl :=
-    fun hmem ↦ hs₁ (hq_eq_j.symm ▸ hmem)
-  have hs₂' : s₂ ∈ ((colimitPrime P p j).comap (algebraMap R (P.diag.obj j))).primeCompl :=
-    fun hmem ↦ hs₂ (hq_eq_j.symm ▸ hmem)
+  obtain ⟨k, fij, hjeq⟩ := (IsColimit.eq_iff' P.isColimit _ _).mp hkey
+  refine ⟨k, li ≫ fij, ?_⟩
+  let ck : P.diag.obj k := (P.diag.map fij).hom c''
+  have hck_to_c : (P.ι.app k).hom ck = c := by
+    show (P.ι.app k).hom ((P.diag.map fij).hom ((P.diag.map rk).hom c')) = c
+    rw [hnat fij, hnat rk, hc']
+  have hck_mem : ck ∈ (colimitPrime P p k).primeCompl := fun hmem ↦ hcp (hck_to_c ▸ hmem)
+  have hcomp (x : P.diag.obj i) :
+      (P.diag.map fij).hom ((P.diag.map li).hom x) = (P.diag.map (li ≫ fij)).hom x := by
+    show ((P.diag.map fij).hom ∘ (P.diag.map li).hom) x = _
+    rw [P.diag.map_comp]; rfl
+  have hs₁_pc : (P.diag.map (li ≫ fij)).hom s₁ ∈ (colimitPrime P p k).primeCompl := by
+    rw [colimitPrime_comap_diag P p (li ≫ fij)] at hs₁
+    exact fun hmem ↦ hs₁ hmem
+  have hs₂_pc : (P.diag.map (li ≫ fij)).hom s₂ ∈ (colimitPrime P p k).primeCompl := by
+    rw [colimitPrime_comap_diag P p (li ≫ fij)] at hs₂
+    exact fun hmem ↦ hs₂ hmem
+  show Localization.localRingHom _ _ _ _ _ = Localization.localRingHom _ _ _ _ _
   rw [Localization.localRingHom_mk', Localization.localRingHom_mk', IsLocalization.eq]
-  refine ⟨⟨cj, hcj_mem⟩, ?_⟩
+  refine ⟨⟨ck, hck_mem⟩, ?_⟩
   have hjeq' :
-      (P.diag.map fij).hom
-        (c' * (algebraMap R (P.diag.obj i₀) s₂ * algebraMap R (P.diag.obj i₀) r₁)) =
-      (P.diag.map fij).hom
-        (c' * (algebraMap R (P.diag.obj i₀) s₁ * algebraMap R (P.diag.obj i₀) r₂)) := hjeq
-  simp only [map_mul, AlgHom.commutes] at hjeq'
-  exact hjeq'
+      (P.diag.map fij).hom (c'' * ((P.diag.map li).hom s₂ * (P.diag.map li).hom r₁)) =
+        (P.diag.map fij).hom (c'' * ((P.diag.map li).hom s₁ * (P.diag.map li).hom r₂)) := hjeq
+  simp only [map_mul, hcomp] at hjeq'
+  show (((P.diag.map (li ≫ fij)).hom r₁) * (P.diag.map (li ≫ fij)).hom s₂) * ck =
+    (((P.diag.map (li ≫ fij)).hom r₂) * (P.diag.map (li ≫ fij)).hom s₁) * ck
+  show _ * _ * (P.diag.map fij).hom c'' = _ * _ * (P.diag.map fij).hom c''
+  linear_combination hjeq'
+
+/-- **Localization of a filtered colimit at a prime is the colimit of localizations**.
+
+If `S = colim Aᵢ` is a filtered colimit of `R`-algebras and `p ⊆ S` is a prime, then
+`Localization.AtPrime p` is the colimit of the diagram `localizationDiag P p`, i.e. of the
+localizations `(Aᵢ)_{p ∩ Aᵢ}` along the canonical `Localization.localRingHom` transition maps. -/
+noncomputable def isColimitLocalizationCocone : IsColimit (localizationCocone P p) := by
+  have : ReflectsFilteredColimits (forget CommRingCat.{u}) :=
+    ⟨fun _ ↦ reflectsColimitsOfShape_of_reflectsIsomorphisms⟩
+  exact ReflectsColimit.reflects (F := forget _)
+    (Types.FilteredColimit.isColimitOf' _
+      (fun z ↦ (exists_localizationCocone_eq P p z).imp fun _ ⟨zᵢ, hz⟩ ↦ ⟨zᵢ, hz.symm⟩)
+      (fun i x y hxy ↦ exists_eq_of_localizationCocone_eq P p i x y hxy))
 
 /-- If `S` is a filtered colimit of `R`-algebras `Aᵢ` and each `R → Aᵢ` is bijective on
 stalks, then so is `R → S`.
 
-The proof factors through the observation that the localization of a filtered colimit of rings
-at a prime is the filtered colimit of the localizations: `Localization.localRingHom` on `R → S`
-is induced by the localized maps on the components, and a filtered colimit of bijective ring
-homs is bijective. -/
+The proof factors through `isColimitLocalizationCocone`: the localization of `S` at `p` is the
+filtered colimit of the localizations of `Aᵢ` at the preimages of `p`. The natural map
+`R_{p ∩ R} → S_p` factors through each `R_{p ∩ R} → (Aᵢ)_{p ∩ Aᵢ}`, and bijectivity propagates
+through the colimit. -/
 lemma of_colimitPresentation
     (h : ∀ i, Algebra.BijectiveOnStalks R (P.diag.obj i)) :
     Algebra.BijectiveOnStalks R S := by
   refine ⟨fun p hp ↦ ⟨?_, ?_⟩⟩
   · intro x y hxy
-    obtain ⟨j, hxy_j⟩ := exists_localRingHom_eq_of_localRingHom_eq P p x y hxy
-    exact ((RingHom.bijectiveOnStalks_algebraMap.mpr (h j)).localRingHom_of_eq
-      (colimitPrime_comap_algebraMap P p j)).1 hxy_j
+    obtain ⟨i⟩ : Nonempty ι := IsFiltered.nonempty
+    let xi : Localization.AtPrime (colimitPrime P p i) :=
+      Localization.localRingHom _ _ (algebraMap R (P.diag.obj i))
+        (colimitPrime_comap_algebraMap P p i) x
+    let yi : Localization.AtPrime (colimitPrime P p i) :=
+      Localization.localRingHom _ _ (algebraMap R (P.diag.obj i))
+        (colimitPrime_comap_algebraMap P p i) y
+    have hxy_i : (localizationCocone P p).ι.app i xi = (localizationCocone P p).ι.app i yi := by
+      show (Localization.localRingHom _ _ _ _).comp
+          (Localization.localRingHom _ _ (algebraMap R (P.diag.obj i)) _) x =
+        (Localization.localRingHom _ _ _ _).comp
+          (Localization.localRingHom _ _ (algebraMap R (P.diag.obj i)) _) y
+      rw [← Localization.localRingHom_comp, ← Localization.localRingHom_comp]
+      convert hxy using 2 <;>
+      · ext r; exact ((P.ι.app i).hom.commutes r).symm
+    obtain ⟨k, f, hk⟩ :=
+      (IsColimit.eq_iff' (isColimitLocalizationCocone P p) xi yi).mp hxy_i
+    have hk' :
+        Localization.localRingHom _ _ (algebraMap R (P.diag.obj k))
+          (colimitPrime_comap_algebraMap P p k) x =
+        Localization.localRingHom _ _ (algebraMap R (P.diag.obj k))
+          (colimitPrime_comap_algebraMap P p k) y := by
+      change (Localization.localRingHom _ _ (P.diag.map f).hom.toRingHom _).comp
+          (Localization.localRingHom _ _ (algebraMap R (P.diag.obj i)) _) x =
+        (Localization.localRingHom _ _ (P.diag.map f).hom.toRingHom _).comp
+          (Localization.localRingHom _ _ (algebraMap R (P.diag.obj i)) _) y at hk
+      rw [← Localization.localRingHom_comp, ← Localization.localRingHom_comp] at hk
+      convert hk using 2 <;>
+      · ext r; show algebraMap R (P.diag.obj k) r = _
+        rw [← (P.diag.map f).hom.commutes r]; rfl
+    exact ((RingHom.bijectiveOnStalks_algebraMap.mpr (h k)).localRingHom_of_eq
+      (colimitPrime_comap_algebraMap P p k)).1 hk'
   · intro z
-    obtain ⟨i, zᵢ, rfl⟩ := exists_localRingHom_eq P p z
-    obtain ⟨w, rfl⟩ :=
+    obtain ⟨i, zᵢ, hzᵢ⟩ := exists_localizationCocone_eq P p z
+    obtain ⟨w, hw⟩ :=
       ((RingHom.bijectiveOnStalks_algebraMap.mpr (h i)).localRingHom_of_eq
         (colimitPrime_comap_algebraMap P p i)).2 zᵢ
     refine ⟨w, ?_⟩
-    have hcomm (r : R) :
-        (P.ι.app i).hom (algebraMap R (P.diag.obj i) r) = algebraMap R S r :=
-      (P.ι.app i).hom.commutes r
-    obtain ⟨⟨r, s, hs⟩, rfl⟩ :=
-      IsLocalization.mk'_surjective (p.comap (algebraMap R S)).primeCompl w
-    rw [Localization.localRingHom_mk', Localization.localRingHom_mk', Localization.localRingHom_mk']
-    exact congrArg₂ (IsLocalization.mk' _) (hcomm r).symm (Subtype.ext (hcomm s).symm)
+    rw [← hzᵢ, ← hw]
+    show ((localizationCocone P p).ι.app i).hom
+        ((Localization.localRingHom _ _ (algebraMap R (P.diag.obj i)) _) w) = _
+    show (Localization.localRingHom _ _ _ _).comp
+        (Localization.localRingHom _ _ (algebraMap R (P.diag.obj i)) _) w = _
+    rw [← Localization.localRingHom_comp]
+    refine congrFun (congrArg DFunLike.coe ?_) w
+    refine Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_
+    show algebraMap _ _ ((P.ι.app i).hom.toRingHom (algebraMap R (P.diag.obj i) r)) =
+      algebraMap _ _ (algebraMap R S r)
+    rw [(P.ι.app i).hom.commutes]
 
 end ColimitPresentation
 
