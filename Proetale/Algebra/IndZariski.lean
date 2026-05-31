@@ -527,12 +527,12 @@ private lemma exists_eq_of_localRingHomDiag_eq (i : ι)
   refine ⟨k, li ≫ fij, ?_⟩
   let ck : P.diag.obj k := (P.diag.map fij).hom c''
   have hck_to_c : (P.ι.app k).hom ck = c := by
-    show (P.ι.app k).hom ((P.diag.map fij).hom ((P.diag.map rk).hom c')) = c
+    change (P.ι.app k).hom ((P.diag.map fij).hom ((P.diag.map rk).hom c')) = c
     rw [hnat fij, hnat rk, hc']
   have hck_mem : ck ∈ (colimitPrime P p k).primeCompl := fun hmem ↦ hcp (hck_to_c ▸ hmem)
   have hcomp (z : P.diag.obj i) :
       (P.diag.map fij).hom ((P.diag.map li).hom z) = (P.diag.map (li ≫ fij)).hom z := by
-    show ((P.diag.map fij).hom ∘ (P.diag.map li).hom) z = _
+    change ((P.diag.map fij).hom ∘ (P.diag.map li).hom) z = _
     rw [P.diag.map_comp]; rfl
   have hsmem (s : P.diag.obj i) (hs : s ∈ (colimitPrime P p i).primeCompl) :
       (P.diag.map (li ≫ fij)).hom s ∈ (colimitPrime P p k).primeCompl := by
@@ -540,7 +540,7 @@ private lemma exists_eq_of_localRingHomDiag_eq (i : ι)
     apply hs
     have h : (P.ι.app k).hom ((P.diag.map (li ≫ fij)).hom s) = (P.ι.app i).hom s :=
       DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w (li ≫ fij))) s
-    show (P.ι.app i).hom s ∈ p
+    change (P.ι.app i).hom s ∈ p
     rw [← h]
     exact hmem
   change Localization.localRingHom (colimitPrime P p i) (colimitPrime P p k)
@@ -555,7 +555,7 @@ private lemma exists_eq_of_localRingHomDiag_eq (i : ι)
       (P.diag.map fij).hom (c'' * ((P.diag.map li).hom s₂ * (P.diag.map li).hom r₁)) =
         (P.diag.map fij).hom (c'' * ((P.diag.map li).hom s₁ * (P.diag.map li).hom r₂)) := hjeq
   simp only [map_mul, hcomp] at hjeq'
-  show (P.diag.map fij).hom c'' *
+  change (P.diag.map fij).hom c'' *
       ((P.diag.map (li ≫ fij)).hom s₂ * (P.diag.map (li ≫ fij)).hom r₁) =
     (P.diag.map fij).hom c'' *
       ((P.diag.map (li ≫ fij)).hom s₁ * (P.diag.map (li ≫ fij)).hom r₂)
