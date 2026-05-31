@@ -147,16 +147,6 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
     exact Set.disjoint_left.mpr fun a ha_sub ha_p ↦
       (mem_submonoid_iff f I a).mp ha_sub q hq (hpq ha_p)
 
-/-- If `p` is a prime in `locClosedSubset f I = D(f) ∩ V(I)`, then `p` does not generate
-the unit ideal in `Generalization f I`. -/
-lemma map_algebraMap_ne_top {f : A} {I : Ideal A} {p : PrimeSpectrum A}
-    (hp : p ∈ locClosedSubset f I) :
-    Ideal.map (algebraMap A (Generalization f I)) p.asIdeal ≠ ⊤ :=
-  (IsLocalization.map_algebraMap_ne_top_iff_disjoint
-      (submonoid f I) (Generalization f I) p.asIdeal).mpr
-    (Set.disjoint_left.mpr fun a ha hap ↦
-      (mem_submonoid_iff f I a).mp ha p hp hap)
-
 /-- Given `q ∈ locClosedSubset f I`, the prime ideal `q · Generalization f I` of
 `Generalization f I` lies in `zeroLocus (ideal f I)` and contracts to `q`. -/
 private lemma exists_mem_zeroLocus_ideal_specComap_eq {f : A} {I : Ideal A}
@@ -379,15 +369,12 @@ instance (E : Finset A) : Algebra A (ProdStrata E) := fast_instance%
 noncomputable def ProdStrata.ideal (E : Finset A) : Ideal (ProdStrata E) :=
   Ideal.pi fun _ ↦ Generalization.ideal _ _
 
-/-- `Spec (ProdStrata E) → Spec A` is surjective. Each prime `p` of `A` lies in some
-stratum, hence lifts to `Spec (Generalization i.function i.ideal)`, and from there to
-`Spec (ProdStrata E)` via the canonical projection. -/
+/-- `Spec (ProdStrata E) → Spec A` is surjective. -/
 lemma ProdStrata.specComap_surjective (E : Finset A) :
     Function.Surjective (PrimeSpectrum.comap (algebraMap A (ProdStrata E))) := by
   intro p
-  have hp_mem : p ∈ ⋃ (i : Stratification.Index E), stratum i.left i.right := by
-    rw [Stratification.Index.iUnion_stratum E]; trivial
-  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hp_mem
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
+    (Stratification.Index.iUnion_stratum (A := A) E ▸ Set.mem_univ p)
   rw [← locClosedSubset_function_ideal] at hi
   have h_in_range :
       p ∈ Set.range (PrimeSpectrum.comap
@@ -395,9 +382,7 @@ lemma ProdStrata.specComap_surjective (E : Finset A) :
     rw [Generalization.range_algebraMap_generalization, mem_generalizationHull_iff]
     exact ⟨p, hi, specializes_rfl⟩
   obtain ⟨q, hq⟩ := h_in_range
-  let eval_i : ProdStrata E →+* Generalization i.function i.ideal :=
-    Pi.evalRingHom (fun j : Stratification.Index E => Generalization j.function j.ideal) i
-  exact ⟨⟨q.asIdeal.comap eval_i, Ideal.comap_isPrime _ q.asIdeal⟩, hq⟩
+  exact ⟨PrimeSpectrum.comap (Pi.evalRingHom _ i) q, hq⟩
 
 -- wrong
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
@@ -526,7 +511,7 @@ instance (E : Finset A) : Finite (Stratification.Index E) := by
   obtain ⟨hl₂, hr₂⟩ := sub u₂
   exact (Stratification.Index.mk.injEq ..).mpr ⟨aux hl₁ hl₂ hL, aux hr₁ hr₂ hR⟩
 
-lemma indZariski_prodStrata (E : Finset A) :
+lemma indZariski_prodStrata {A : Type u} [CommRing A] (E : Finset A) :
     Algebra.IndZariski A (ProdStrata E) :=
   inferInstanceAs <| Algebra.IndZariski A
     (∀ i : Stratification.Index E, Generalization i.function i.ideal)
@@ -536,14 +521,11 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   exact @Algebra.IndZariski.of_colimitPresentation A (WLocalization A) _ _ _
     (Finset A) _ _ colimitPresentation h
 
-/-- The w-localization `A_w` is faithfully flat over `A`. The blueprint route via the
-closed-points lemma is replaced here by checking the equivalent surjectivity criterion at
-each finite stage `ProdStrata E` of the filtered colimit presentation. -/
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) := by
   refine CommAlgCat.faithfullyFlat_of_colimitPresentation colimitPresentation fun E ↦ ?_
-  change Module.FaithfullyFlat A (ProdStrata E)
-  have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata (A := A) E
-  exact Module.FaithfullyFlat.of_comap_surjective (ProdStrata.specComap_surjective E)
+  have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata E
+  exact Module.FaithfullyFlat.of_comap_surjective (A := A) (B := ProdStrata E)
+    (ProdStrata.specComap_surjective E)
 
 /-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
 This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/
