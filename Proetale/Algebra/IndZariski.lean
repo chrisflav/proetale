@@ -478,7 +478,7 @@ noncomputable def localizationCocone : Cocone (localizationDiag P p) where
         Localization.localRingHom (colimitPrime P p i) p (P.ι.app i).hom.toRingHom rfl
       naturality {i j} f := by
         apply CommRingCat.hom_ext
-        refine RingHom.ext fun x ↦ ?_
+        refine RingHom.ext fun (x : Localization.AtPrime (colimitPrime P p i)) ↦ ?_
         obtain ⟨⟨r, s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective
           (colimitPrime P p i).primeCompl x
         show (Localization.localRingHom (colimitPrime P p j) p (P.ι.app j).hom.toRingHom rfl)
@@ -538,8 +538,10 @@ private lemma exists_eq_of_localRingHomDiag_eq (i : ι)
       (P.diag.map (li ≫ fij)).hom s ∈ (colimitPrime P p k).primeCompl := by
     intro hmem
     apply hs
+    have h : (P.ι.app k).hom ((P.diag.map (li ≫ fij)).hom s) = (P.ι.app i).hom s :=
+      DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w (li ≫ fij))) s
     show (P.ι.app i).hom s ∈ p
-    rw [← DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w (li ≫ fij))) s]
+    rw [← h]
     exact hmem
   change Localization.localRingHom (colimitPrime P p i) (colimitPrime P p k)
       (P.diag.map (li ≫ fij)).hom.toRingHom (colimitPrime_comap_diag P p (li ≫ fij))
@@ -567,7 +569,7 @@ localizations `(Aᵢ)_{p ∩ Aᵢ}` along the canonical `Localization.localRingH
 noncomputable def isColimitLocalizationCocone : IsColimit (localizationCocone P p) := by
   have : ReflectsFilteredColimits (forget CommRingCat.{u}) :=
     ⟨fun _ ↦ reflectsColimitsOfShape_of_reflectsIsomorphisms⟩
-  refine ReflectsColimit.reflects (F := forget _)
+  refine isColimitOfReflects (forget _)
     (Types.FilteredColimit.isColimitOf' (localizationDiag P p ⋙ forget _)
       ((forget _).mapCocone (localizationCocone P p)) ?_ ?_)
   · intro z
