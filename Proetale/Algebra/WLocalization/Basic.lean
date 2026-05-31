@@ -127,10 +127,8 @@ lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
         rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff,
           IsScalarTower.algebraMap_apply A (A ⧸ I)]
         have h_eq : (algebraMap A (A ⧸ I)) a = (algebraMap A (A ⧸ I)) (f ^ n) := by
-          have hmem : a - f ^ n ∈ I := by
-            have : a - f ^ n = -b := by linear_combination hab
-            rw [this]; exact I.neg_mem hb
-          rwa [← Ideal.Quotient.eq] at hmem
+          simp only [Ideal.Quotient.algebraMap_eq, ← hab, map_add,
+            Ideal.Quotient.eq_zero_iff_mem.mpr hb, add_zero]
         rw [h_eq]
         have hmem : (Ideal.Quotient.mk I f) ^ n ∈ Submonoid.powers (Ideal.Quotient.mk I f) :=
           ⟨n, rfl⟩
@@ -183,9 +181,7 @@ private lemma exists_mem_zeroLocus_ideal_specComap_eq {f : A} {I : Ideal A}
         Ideal.Quotient.eq_zero_iff_mem.mp (by rw [map_mul, map_pow]; exact hc)
       exact (q.isPrime.mem_or_mem (hqI hfna)).resolve_left
         (mt (q.isPrime.mem_of_pow_mem n) hfq)
-    change IsLocalization.mk' (Generalization f I) a s ∈
-      Ideal.map (algebraMap A (Generalization f I)) q.asIdeal
-    rw [IsLocalization.mk'_mem_map_algebraMap_iff (submonoid f I)]
+    rw [SetLike.mem_coe, IsLocalization.mk'_mem_map_algebraMap_iff (submonoid f I)]
     exact ⟨1, (submonoid f I).one_mem, by simpa using ha_q⟩
   · exact PrimeSpectrum.ext (IsLocalization.under_map_of_isPrime_disjoint (submonoid f I)
       (Generalization f I) q.isPrime hq_disj)
@@ -193,9 +189,8 @@ private lemma exists_mem_zeroLocus_ideal_specComap_eq {f : A} {I : Ideal A}
 lemma bijOn_algebraMap_generalization_specComap_zeroLocus_ideal (f : A) (I : Ideal A) :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) (zeroLocus (ideal f I))
       (locClosedSubset f I) := by
-  refine ⟨?mapsTo, ?injOn, ?surjOn⟩
-  case mapsTo =>
-    intro y hy
+  refine ⟨?_, ?_, ?_⟩
+  · intro y hy
     rw [PrimeSpectrum.mem_zeroLocus] at hy
     have hdisj := ((IsLocalization.isPrime_iff_isPrime_disjoint (submonoid f I)
       (Generalization f I) y.asIdeal).mp y.isPrime).2
@@ -209,14 +204,12 @@ lemma bijOn_algebraMap_generalization_specComap_zeroLocus_ideal (f : A) (I : Ide
     rw [PrimeSpectrum.mem_zeroLocus]
     intro a ha
     refine hy ?_
-    change toLocQuotient f I (algebraMap A (Generalization f I) a) = 0
+    simp only [ideal, SetLike.mem_coe, RingHom.mem_ker]
     rw [(toLocQuotient f I).commutes, IsScalarTower.algebraMap_apply A (A ⧸ I)]
     simp [Ideal.Quotient.eq_zero_iff_mem.mpr ha]
-  case injOn =>
-    exact (PrimeSpectrum.localization_comap_isEmbedding (Generalization f I)
+  · exact (PrimeSpectrum.localization_comap_isEmbedding (Generalization f I)
       (submonoid f I)).injective.injOn
-  case surjOn =>
-    intro q hq
+  · intro q hq
     exact exists_mem_zeroLocus_ideal_specComap_eq hq
 
 lemma exists_specializes_zeroLocus_ideal {f : A} (I : Ideal A)
