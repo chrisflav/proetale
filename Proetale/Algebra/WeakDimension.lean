@@ -170,6 +170,11 @@ theorem tfae : [AbsolutelyFlat R,
         fun P hP ↦ inferInstance
   tfae_finish
 
+instance (priority := low) [AbsolutelyFlat R] : IsReduced R := by
+  have h : AbsolutelyFlat R ↔ IsReduced R ∧ ∀ P : Ideal R, P.IsPrime → P.IsMaximal :=
+    (tfae R).out 0 1
+  exact (h.mp ‹_›).1
+
 variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
     (h : (Algebra.TensorProduct.lmul' (S := S) R).Flat)

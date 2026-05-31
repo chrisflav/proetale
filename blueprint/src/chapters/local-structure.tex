@@ -399,7 +399,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/00EA}{Tag 00EA}, (1) + (2)(a)]{stacks-project}}]
   \label{thm:localization-isom-of-going-down}
-  \lean{Algebra.HasGoingDown.factor_bijective_of_subsingleton}
+  \lean{Algebra.HasGoingDown.isLocalization_atPrime_of_subsingleton}
   \leanok
   Let $A \to B$ be a ring map which has going down. Let $\p \subset A$ be a prime ideal and let 
   $\q \subset B$ be a prime ideal lying over $\p$. Assume that and there is at most one prime
@@ -407,6 +407,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 \end{lemma}
 
 \begin{proof}
+  \leanok
   It suffices to show that all the elements of $B - \q$ are all invertible in $B_{\p B}$. Suppose the contrary, let $x \in B - \q$ be an element not invertible in $B_{\p B}$. We can find a prime ideal $\q' \subseteq \p B$ of $B$ containing $x$. By going down there exists a prime $\q'' \subseteq \q$ lying over $\p' = A \cap \q'$. By the uniqueness of primes lying over $\p'$ we see that $\q' = \q''$, which contradicts the fact that $x \notin \q$.
 \end{proof}
 
@@ -675,6 +676,8 @@ The following example shows that our definition agrees with the one in
     \label{lem:sh-iff-henselian-and-sep-closed}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
     \uses{def:strictly-henselian-local-ring}
+    \lean{isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -735,11 +738,12 @@ The following example shows that our definition agrees with the one in
   \lean{Algebra.IndEtale.trans, RingHom.IndEtale.comp}
   \leanok
   \uses{def:ind-etale}
-  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale, 
+  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale,
   then $A \to C$ is ind-étale.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -1232,6 +1236,7 @@ on the choice of $f$ and $I$ \stacksproject{096V}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $S = S_{f, I}$, $Z = D(f) \cap V(I)$ and $J = \tildeideal{I}{f}$.
 
     Note that $Z$ is homeomorphic to $\spec{(A/I)_f}$.
@@ -1326,6 +1331,7 @@ $V( \tildeideal{I}{f})$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $x \in \spec{A}$ and $E = E' \coprod E''$ a disjoint union decomposition. Then
     $x \in Z(E', E'')$ if and only if $f(x) \neq 0$ for all $f \in E'$ and $f(x) = 0$
     for all $f \in E''$. Hence $x$ is contained in
@@ -1407,6 +1413,7 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This holds because for every decomposition $E_2 = E_2' \coprod E_2''$
     and $E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$, the induced map
     $\spec{A_{\widetilde{Z(E_2', E_2'')}}} \to \spec{A_{\widetilde{Z(E_1', E_1'')}}}$
