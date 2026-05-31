@@ -10,6 +10,7 @@ import Proetale.Algebra.IndBijectiveOnStalks
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Algebra.IndZariski
+import Proetale.Algebra.IntegralLocal
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
 import Proetale.Algebra.ProEtaleContraction
