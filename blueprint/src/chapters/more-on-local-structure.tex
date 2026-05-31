@@ -10,6 +10,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     Let $R$ be a Henselian local ring and $S$ a finite $R$-algebra. Then $S$ is
     a finite product of Henselian local rings, each finite over $R$.
     \label{lemma:finite-over-henselian-local}
+    \lean{HenselianLocalRing.exists_pi_of_finite}
 \end{lemma}
 
 \begin{proof}
@@ -46,6 +47,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     Let $R$ be a Henselian local ring and $S$ be an integral $R$-algebra and an integral domain.
     Then $S$ is a local ring.
     \label{lemma:henselian-local-integral-local}
+    \lean{IsLocalRing.of_henselianLocalRing_of_isIntegral_of_isDomain}
 \end{lemma}
 
 \begin{proof}
@@ -70,6 +72,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     Let $R \to S$ be a local ring homomorphism of local rings. If $R \to S$ is integral,
     the extension of residue fields $\kappa(S) / \kappa(R)$ is algebraic.
     \label{lemma:integral-local-algebraic-residue-field}
+    \lean{Algebra.IsAlgebraic.residueField_of_isIntegral}
 \end{lemma}
 
 \begin{proof}
@@ -83,6 +86,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     $R \to S$ is integral and $\kappa(S) / \kappa(R)$ or $\kappa(T) / \kappa(S)$
     is purely inseparable, then $T \otimes_{R} S$ is a local ring.
     \label{lemma:tensorprod-local-purely-inseparable}
+    \lean{Algebra.isLocalRing_tensorProduct_of_isPurelyInseparable_residueField}
 \end{lemma}
 
 \begin{proof}
@@ -700,9 +704,10 @@ suffices for our purposes.
 
 \begin{lemma}
     \label{lem:isom-of-unique-lying-over-and-residue-field-eq}
-    Let $A \to B$ be a local homomorphism of local rings. For all $\mathfrak{p} \subset A$,
+    Let $A \to B$ be a weakly étale local homomorphism of local rings. For all $\mathfrak{p} \subset A$,
     there is a unique prime $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and
     $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $A \to B$ is an isomorphism.
+    \lean{Algebra.WeaklyEtale.bijective_of_unique_primes_of_bijective_residueFieldMap}
 \end{lemma}
 
 \begin{proof}
@@ -724,6 +729,8 @@ suffices for our purposes.
     Let $I$ be a directed set. Let $T_i, \, i \in I$ be a series of totally disconnected
     topological spaces. Then
     $$T = \varprojlim_{i \in I} T_i $$ is also totally disconnected.
+    \lean{TopCat.limitCone_pt_totallyDisconnectedSpace}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -738,6 +745,7 @@ suffices for our purposes.
     Let $B$ be a ind-\'etale algebra over some field $K$. If there are
     two different prime ideals $q_1$ and $q_2$ in $B$, then $B$ has a nontrivial
     idempotent element $e$ (i.i. $e^2 = e$).
+    \lean{Algebra.IndEtale.exists_isIdempotentElem_of_two_primes}
 \end{lemma}
 
 \begin{proof}
@@ -754,8 +762,9 @@ suffices for our purposes.
     % It is unclear whether this lemma is in the most general form.
     Let $B$ be a ind-\'etale algebra over some field $K$. If there exists
     a prime ideal $q$ of $B$, such that the residue field of $q$ is not $K$, then
-    $\kappa(q) \otimes_A B$ has a nontrivial element.
+    $\kappa(q) \otimes_A B$ has a nontrivial idempotent element.
     \uses{def:ind-etale}
+    \lean{Algebra.IndEtale.exists_isIdempotentElem_tensorProduct_of_residueField_ne}
 \end{lemma}
 
 \begin{proof}
@@ -833,6 +842,7 @@ suffices for our purposes.
     and $A \to B$ is weakly étale, then $A = B$.
     \uses{def:weakly-etale-algebra,
     def:strictly-henselian-local-ring}
+    \lean{Algebra.WeaklyEtale.bijective_of_isStrictlyHenselianLocalRing}
 \end{theorem}
 
 \begin{proof}

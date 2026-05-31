@@ -17,7 +17,7 @@ In this file we define ind-étale algebras and ring homomorphisms.
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits TensorProduct
 
 variable (R : Type u) {S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -83,6 +83,24 @@ instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Idea
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra p q] :
     Algebra.IsSeparable p.ResidueField q.ResidueField :=
+  sorry
+
+/-- If `B` is an ind-étale algebra over a field `K` and `B` has at least two distinct prime
+ideals, then `B` has a nontrivial idempotent element. -/
+theorem exists_isIdempotentElem_of_two_primes {K B : Type u} [Field K] [CommRing B]
+    [Algebra K B] [Algebra.IndEtale K B] {q₁ q₂ : Ideal B} [q₁.IsPrime] [q₂.IsPrime]
+    (h : q₁ ≠ q₂) :
+    ∃ e : B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 :=
+  sorry
+
+/-- If `B` is an ind-étale algebra over a field `K` and `q` is a prime ideal of `B` whose
+residue field is strictly larger than `K`, then the tensor product
+`κ(q) ⊗[K] B` has a nontrivial idempotent element. -/
+theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
+    [Field K] [CommRing B] [Algebra K B] [Algebra.IndEtale K B]
+    (q : Ideal B) [q.IsPrime]
+    (h : ¬ Function.Bijective (algebraMap K q.ResidueField)) :
+    ∃ e : q.ResidueField ⊗[K] B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 :=
   sorry
 
 end Algebra.IndEtale
