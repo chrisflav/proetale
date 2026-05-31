@@ -99,17 +99,11 @@ lemma exists_specializes_zeroLocus_ideal {f : A} (I : Ideal A)
 lemma toLocQuotient_algebraMap_eq_zero_iff (a : A) :
     toLocQuotient f I (algebraMap A _ a) = 0 ↔ ∃ n : ℕ, f ^ n * a ∈ I := by
   rw [(toLocQuotient f I).commutes,
-    IsScalarTower.algebraMap_apply A (A ⧸ I) (Localization.Away (Ideal.Quotient.mk I f)),
-    IsLocalization.map_eq_zero_iff (Submonoid.powers (Ideal.Quotient.mk I f))]
-  refine ⟨?_, fun ⟨n, hn⟩ ↦ ⟨⟨_, n, rfl⟩, ?_⟩⟩
-  · rintro ⟨⟨_, n, rfl⟩, hc⟩
-    refine ⟨n, ?_⟩
-    rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul, map_pow,
-      ← Ideal.Quotient.algebraMap_eq]
-    exact hc
-  · change Ideal.Quotient.mk I f ^ n * algebraMap A (A ⧸ I) a = 0
-    rw [Ideal.Quotient.algebraMap_eq, ← map_pow, ← map_mul]
-    exact Ideal.Quotient.eq_zero_iff_mem.mpr hn
+    IsScalarTower.algebraMap_apply A (A ⧸ I) (Localization.Away (Ideal.Quotient.mk I f))]
+  simp only [IsLocalization.map_eq_zero_iff (Submonoid.powers (Ideal.Quotient.mk I f)),
+    Subtype.exists, Submonoid.mem_powers_iff, exists_prop, exists_exists_eq_and]
+  refine exists_congr fun n ↦ ?_
+  rw [Ideal.Quotient.algebraMap_eq, ← map_pow, ← map_mul, Ideal.Quotient.eq_zero_iff_mem]
 
 /-- If `I ≤ I'` and `f ∣ f'`, the canonical map `Generalization f I → Generalization f' I'`
 sends the kernel ideal `ideal f I` into the kernel ideal `ideal f' I'`. -/
@@ -261,7 +255,7 @@ lemma ProdStrata.mem_zeroLocus_ideal_of_isClosed {E : Finset A} {x : PrimeSpectr
   have := hy.mem_closed hx (by simp)
   grind only [= Set.mem_singleton_iff]
 
-private lemma ProdStrata.locClosedSubset_subset_restrict {E F : Finset A} (h : E ⊆ F)
+lemma ProdStrata.locClosedSubset_subset_restrict {E F : Finset A} (h : E ⊆ F)
     (i : Stratification.Index F) :
     Generalization.locClosedSubset i.function i.ideal ⊆
       Generalization.locClosedSubset (i.restrict h).function (i.restrict h).ideal := by
