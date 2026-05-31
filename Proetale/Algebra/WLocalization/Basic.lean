@@ -516,16 +516,19 @@ lemma indZariski_prodStrata {A : Type u} [CommRing A] (E : Finset A) :
   inferInstanceAs <| Algebra.IndZariski A
     (∀ i : Stratification.Index E, Generalization i.function i.ideal)
 
+instance ProdStrata.faithfullyFlat (E : Finset A) :
+    Module.FaithfullyFlat A (ProdStrata E) := by
+  have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata E
+  exact Module.FaithfullyFlat.of_comap_surjective (ProdStrata.specComap_surjective E)
+
 instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   have h := fun E => indZariski_prodStrata (A := A) E
   exact @Algebra.IndZariski.of_colimitPresentation A (WLocalization A) _ _ _
     (Finset A) _ _ colimitPresentation h
 
-instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) := by
-  refine CommAlgCat.faithfullyFlat_of_colimitPresentation colimitPresentation fun E ↦ ?_
-  have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata E
-  exact Module.FaithfullyFlat.of_comap_surjective (A := A) (B := ProdStrata E)
-    (ProdStrata.specComap_surjective E)
+instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
+  CommAlgCat.faithfullyFlat_of_colimitPresentation colimitPresentation fun E ↦
+    inferInstanceAs (Module.FaithfullyFlat A (ProdStrata E))
 
 /-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
 This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/
