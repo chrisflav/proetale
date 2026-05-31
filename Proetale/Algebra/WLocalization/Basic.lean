@@ -280,9 +280,8 @@ lemma ProdStrata.map_ideal_le {E F : Finset A} (h : E ⊆ F) :
   rw [Ideal.map_le_iff_le_comap]
   intro x hx
   refine (Ideal.mem_pi _ _).mpr fun i ↦ ?_
-  change map h x i ∈ Generalization.ideal i.function i.ideal
-  rw [map_apply]
-  refine Generalization.map_ideal_le _ (i.ideal_restrict_le h) (i.function_restrict_dvd_function h)
+  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_apply]
+  exact Generalization.map_ideal_le _ (i.ideal_restrict_le h) (i.function_restrict_dvd_function h)
     (Ideal.mem_map_of_mem _ ((Ideal.mem_pi _ _).mp hx _))
 
 lemma ProdStrata.mapsTo_map_specComap {E F : Finset A} (h : E ⊆ F) :
@@ -367,10 +366,9 @@ instance (E : Finset A) : Finite (Stratification.Index E) := by
   exact (Stratification.Index.mk.injEq ..).mpr ⟨aux hl₁ hl₂ hL, aux hr₁ hr₂ hR⟩
 
 lemma indZariski_prodStrata (E : Finset A) :
-    Algebra.IndZariski A (ProdStrata E) := by
-  change Algebra.IndZariski A
+    Algebra.IndZariski A (ProdStrata E) :=
+  inferInstanceAs <| Algebra.IndZariski A
     (∀ i : Stratification.Index E, Generalization i.function i.ideal)
-  exact Algebra.IndZariski.pi A _
 
 instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   have h := fun E => indZariski_prodStrata (A := A) E
