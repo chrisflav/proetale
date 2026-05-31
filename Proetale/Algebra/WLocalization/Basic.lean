@@ -506,8 +506,78 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   exact @Algebra.IndZariski.of_colimitPresentation A (WLocalization A) _ _ _
     (Finset A) _ _ colimitPresentation h
 
-instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
-  sorry
+/-- Each finite stage `ProdStrata E` lies in some open stratum of `Spec A` containing the
+maximal `m`. Consequently, `m` does not generate the unit ideal in `ProdStrata E`. -/
+private lemma map_algebraMap_prodStrata_ne_top (E : Finset A) (m : Ideal A)
+    (hm : m.IsMaximal) :
+    Ideal.map (algebraMap A (ProdStrata E)) m ≠ ⊤ := by
+  -- Find an index `i` such that `m` lies in the stratum `stratum i.left i.right`.
+  have hm_mem : (⟨m, hm.isPrime⟩ : PrimeSpectrum A) ∈
+      ⋃ (i : Stratification.Index E), stratum i.left i.right := by
+    rw [Stratification.Index.iUnion_stratum E]; trivial
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hm_mem
+  rw [← locClosedSubset_function_ideal] at hi
+  set I := i.ideal
+  set f := i.function
+  have hfm : f ∉ m := by simpa [PrimeSpectrum.mem_basicOpen] using hi.1
+  have hIm : I ≤ m := by
+    have := hi.2
+    rwa [PrimeSpectrum.mem_zeroLocus] at this
+  -- The submonoid `Generalization.submonoid f I` is disjoint from `m`.
+  have hdisj : Disjoint (Generalization.submonoid f I : Set A) (m : Set A) := by
+    refine Set.disjoint_left.mpr fun a ha ha_m ↦ ?_
+    have ha_unit : IsUnit (algebraMap A (Localization.Away (Ideal.Quotient.mk I f)) a) := ha
+    -- The image of `m` in `A/I` is a prime ideal (since `I ≤ m`).
+    set q : Ideal (A ⧸ I) := Ideal.map (Ideal.Quotient.mk I) m
+    have hq_prime : q.IsPrime :=
+      Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective
+        (by rw [Ideal.mk_ker]; exact hIm)
+    -- The image of `f` is not in `q`, because `f ∉ m`.
+    have hmkf : Ideal.Quotient.mk I f ∉ q := by
+      rwa [Ideal.mem_quotient_iff_mem hIm]
+    -- The localized ideal of `q` is prime.
+    have hq_loc :
+        (Ideal.map (algebraMap (A ⧸ I) (Localization.Away (Ideal.Quotient.mk I f))) q).IsPrime :=
+      IsLocalization.isPrime_of_isPrime_disjoint _ _ q hq_prime
+        (Set.disjoint_left.mpr fun y hy hyq ↦ by
+          obtain ⟨n, rfl⟩ := Submonoid.mem_powers_iff _ _ |>.mp hy
+          exact hmkf (hq_prime.mem_of_pow_mem n hyq))
+    apply hq_loc.ne_top
+    have hmka : Ideal.Quotient.mk I a ∈ q := Ideal.mem_map_of_mem _ ha_m
+    refine Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_map_of_mem _ hmka) ?_
+    rwa [IsScalarTower.algebraMap_apply A (A ⧸ I)] at ha_unit
+  -- `m` is proper in `Generalization f I`, hence proper in `ProdStrata E`.
+  have hne_top : Ideal.map (algebraMap A (Generalization f I)) m ≠ ⊤ :=
+    (IsLocalization.map_algebraMap_ne_top_iff_disjoint
+      (Generalization.submonoid f I) (Generalization f I) m).mpr hdisj
+  intro htop
+  apply hne_top
+  let eval_i := Pi.evalRingHom (fun j : Stratification.Index E =>
+    Generalization j.function j.ideal) i
+  have h1 := Ideal.map_map (algebraMap A (ProdStrata E)) eval_i (I := m)
+  rw [htop, Ideal.map_top] at h1
+  rw [show algebraMap A (Generalization f I) = eval_i.comp (algebraMap A (ProdStrata E)) from
+    rfl]
+  exact h1.symm
+
+/-- The w-localization `A_w` is faithfully flat over `A`. -/
+instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) := by
+  refine CommAlgCat.faithfullyFlat_of_colimitPresentation colimitPresentation fun E ↦ ?_
+  change Module.FaithfullyFlat A (ProdStrata E)
+  have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata (A := A) E
+  have : Module.Flat A (ProdStrata E) := inferInstance
+  refine Module.FaithfullyFlat.of_nontrivial_tensor_quotient fun m hm ↦ ?_
+  rw [(TensorProduct.quotTensorEquivQuotSMul (ProdStrata E) m).nontrivial_congr,
+    Submodule.Quotient.nontrivial_iff,
+    show m • (⊤ : Submodule A (ProdStrata E)) =
+        (Ideal.map (algebraMap A (ProdStrata E)) m).restrictScalars A from
+      Ideal.smul_top_eq_map m]
+  intro h
+  apply map_algebraMap_prodStrata_ne_top (A := A) E m hm
+  have : (Ideal.map (algebraMap A (ProdStrata E)) m :
+      Submodule (ProdStrata E) (ProdStrata E)) = ⊤ := by
+    rw [← Submodule.restrictScalars_eq_top_iff (S := A)]; exact h
+  exact_mod_cast this
 
 /-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
 This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/
