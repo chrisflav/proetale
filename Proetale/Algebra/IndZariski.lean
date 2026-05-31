@@ -325,11 +325,9 @@ private lemma colimitPrime_comap_algebraMap (p : Ideal S) (i : ι) :
 omit [IsFiltered ι] in
 private lemma colimitPrime_comap_diag (p : Ideal S) {i j : ι} (f : i ⟶ j) :
     colimitPrime P p i = (colimitPrime P p j).comap (P.diag.map f).hom.toRingHom := by
-  unfold colimitPrime
-  rw [Ideal.comap_comap]
-  congr 1
-  ext1 x
-  exact (DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x).symm
+  ext r
+  show (P.ι.app i).hom r ∈ p ↔ (P.ι.app j).hom ((P.diag.map f).hom r) ∈ p
+  rw [DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) r]
 
 variable (p : Ideal S) [p.IsPrime]
 
@@ -341,15 +339,18 @@ noncomputable def localizationDiag : ι ⥤ CommRingCat.{u} where
     (P.diag.map f).hom.toRingHom (colimitPrime_comap_diag P p f)
   map_id i := by
     apply CommRingCat.hom_ext
-    refine Eq.trans (Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_) rfl
-    show algebraMap _ _ r = algebraMap _ _ ((P.diag.map (𝟙 i)).hom.toRingHom r)
-    rw [P.diag.map_id]; rfl
+    rw [CommRingCat.hom_ofHom, CommRingCat.hom_id]
+    refine Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_
+    show RingHom.id _ _ = algebraMap _ _ ((P.diag.map (𝟙 i)).hom.toRingHom r)
+    rw [P.diag.map_id, RingHom.id_apply]; rfl
   map_comp {i j k} f g := by
     apply CommRingCat.hom_ext
-    refine Eq.trans (Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_) rfl
-    show algebraMap _ _ ((Localization.localRingHom _ _ _ _) (algebraMap _ _ r)) =
+    rw [CommRingCat.hom_ofHom, CommRingCat.hom_comp, CommRingCat.hom_ofHom, CommRingCat.hom_ofHom]
+    refine Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_
+    show ((Localization.localRingHom _ _ _ _).comp (Localization.localRingHom _ _ _ _)) _ =
       algebraMap _ _ ((P.diag.map (f ≫ g)).hom.toRingHom r)
-    rw [Localization.localRingHom_to_map, P.diag.map_comp]; rfl
+    rw [RingHom.comp_apply, Localization.localRingHom_to_map, Localization.localRingHom_to_map,
+      P.diag.map_comp]; rfl
 
 /-- The cocone over `localizationDiag P p` with apex `Localization.AtPrime p`, with structure maps
 the canonical `Localization.localRingHom` induced by the colimit injections. -/
@@ -360,16 +361,20 @@ noncomputable def localizationCocone : Cocone (localizationDiag P p) where
         Localization.localRingHom (colimitPrime P p i) p (P.ι.app i).hom.toRingHom rfl
       naturality {i j} f := by
         apply CommRingCat.hom_ext
-        rw [show ((CommRingCat.ofHom _ ≫ CommRingCat.ofHom _ : _ ⟶ _).hom) =
-          (Localization.localRingHom _ _ (P.ι.app j).hom.toRingHom rfl).comp
-            (Localization.localRingHom _ _ (P.diag.map f).hom.toRingHom _) from rfl,
-          ← Localization.localRingHom_comp]
-        show Localization.localRingHom _ _ _ _ = _
-        refine Localization.localRingHom_unique _ _ _ _ fun r ↦ ?_
-        show algebraMap _ _ ((P.ι.app j).hom.toRingHom ((P.diag.map f).hom.toRingHom r)) =
-          algebraMap _ _ ((P.ι.app i).hom.toRingHom r)
-        congr 1
-        exact DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) r }
+        refine RingHom.ext fun x ↦ ?_
+        obtain ⟨⟨r, s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective
+          (colimitPrime P p i).primeCompl x
+        show (Localization.localRingHom (colimitPrime P p j) p (P.ι.app j).hom.toRingHom rfl)
+            ((Localization.localRingHom (colimitPrime P p i) (colimitPrime P p j)
+              (P.diag.map f).hom.toRingHom (colimitPrime_comap_diag P p f))
+                (IsLocalization.mk' _ r ⟨s, hs⟩)) =
+          (Localization.localRingHom (colimitPrime P p i) p (P.ι.app i).hom.toRingHom rfl)
+            (IsLocalization.mk' _ r ⟨s, hs⟩)
+        rw [Localization.localRingHom_mk', Localization.localRingHom_mk',
+          Localization.localRingHom_mk']
+        refine congrArg₂ (IsLocalization.mk' _) ?_ (Subtype.ext ?_)
+        · exact DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) r
+        · exact DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) s }
 
 /-- **Surjectivity** for the colimit recognition: every element of `Localization.AtPrime p` (where
 `p ⊆ S = colim Aᵢ`) is the image of an element of `Localization.AtPrime (colimitPrime P p i)`
@@ -390,7 +395,8 @@ private lemma exists_localizationCocone_eq (z : Localization.AtPrime p) :
   have hu' : (P.ι.app i).hom u' = u := (hnat (IsFiltered.rightToMax i₁ i₂) u₀).trans hu₀
   have hu'_mem : u' ∈ (colimitPrime P p i).primeCompl := fun hmem ↦ hu (hu' ▸ hmem)
   refine ⟨i, IsLocalization.mk' _ s' ⟨u', hu'_mem⟩, ?_⟩
-  show Localization.localRingHom _ _ _ _ _ = _
+  change Localization.localRingHom (colimitPrime P p i) p (P.ι.app i).hom.toRingHom rfl
+    (IsLocalization.mk' _ s' ⟨u', hu'_mem⟩) = _
   rw [Localization.localRingHom_mk']
   exact congrArg₂ (IsLocalization.mk' _) hs' (Subtype.ext hu')
 
@@ -402,7 +408,8 @@ private lemma exists_eq_of_localizationCocone_eq (i : ι)
     (hxy : (localizationCocone P p).ι.app i x = (localizationCocone P p).ι.app i y) :
     ∃ (k : ι) (f : i ⟶ k),
       (localizationDiag P p).map f x = (localizationDiag P p).map f y := by
-  change Localization.localRingHom _ _ _ _ _ = Localization.localRingHom _ _ _ _ _ at hxy
+  change Localization.localRingHom (colimitPrime P p i) p (P.ι.app i).hom.toRingHom rfl x =
+    Localization.localRingHom (colimitPrime P p i) p (P.ι.app i).hom.toRingHom rfl y at hxy
   obtain ⟨⟨r₁, s₁, hs₁⟩, rfl⟩ :=
     IsLocalization.mk'_surjective (colimitPrime P p i).primeCompl x
   obtain ⟨⟨r₂, s₂, hs₂⟩, rfl⟩ :=
@@ -434,12 +441,21 @@ private lemma exists_eq_of_localizationCocone_eq (i : ι)
     show ((P.diag.map fij).hom ∘ (P.diag.map li).hom) x = _
     rw [P.diag.map_comp]; rfl
   have hs₁_pc : (P.diag.map (li ≫ fij)).hom s₁ ∈ (colimitPrime P p k).primeCompl := by
-    rw [colimitPrime_comap_diag P p (li ≫ fij)] at hs₁
-    exact fun hmem ↦ hs₁ hmem
+    intro hmem
+    apply hs₁
+    show (P.ι.app i).hom s₁ ∈ p
+    rw [← DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w (li ≫ fij))) s₁]
+    exact hmem
   have hs₂_pc : (P.diag.map (li ≫ fij)).hom s₂ ∈ (colimitPrime P p k).primeCompl := by
-    rw [colimitPrime_comap_diag P p (li ≫ fij)] at hs₂
-    exact fun hmem ↦ hs₂ hmem
-  show Localization.localRingHom _ _ _ _ _ = Localization.localRingHom _ _ _ _ _
+    intro hmem
+    apply hs₂
+    show (P.ι.app i).hom s₂ ∈ p
+    rw [← DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w (li ≫ fij))) s₂]
+    exact hmem
+  change Localization.localRingHom (colimitPrime P p i) (colimitPrime P p k)
+      (P.diag.map (li ≫ fij)).hom.toRingHom (colimitPrime_comap_diag P p (li ≫ fij)) _ =
+    Localization.localRingHom (colimitPrime P p i) (colimitPrime P p k)
+      (P.diag.map (li ≫ fij)).hom.toRingHom (colimitPrime_comap_diag P p (li ≫ fij)) _
   rw [Localization.localRingHom_mk', Localization.localRingHom_mk', IsLocalization.eq]
   refine ⟨⟨ck, hck_mem⟩, ?_⟩
   have hjeq' :
