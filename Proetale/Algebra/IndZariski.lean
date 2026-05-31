@@ -311,13 +311,18 @@ private noncomputable def colimitPrime (p : Ideal S) (i : ι) : Ideal (P.diag.ob
 private instance (p : Ideal S) [p.IsPrime] (i : ι) : (colimitPrime P p i).IsPrime :=
   Ideal.IsPrime.comap _
 
+omit [IsFiltered ι] in
 private lemma colimitPrime_comap_algebraMap (p : Ideal S) (i : ι) :
     p.comap (algebraMap R S) =
       (colimitPrime P p i).comap (algebraMap R (P.diag.obj i)) := by
+  have hcomm (r : R) :
+      (P.ι.app i).hom (algebraMap R (P.diag.obj i) r) = algebraMap R S r :=
+    (P.ι.app i).hom.commutes r
   ext r
-  simp only [Ideal.mem_comap, colimitPrime, ← (P.ι.app i).hom.commutes r]
+  simp only [Ideal.mem_comap, colimitPrime, ← hcomm r]
   rfl
 
+omit [IsFiltered ι] in
 private lemma colimitPrime_comap_diag (p : Ideal S) {i j : ι} (f : i ⟶ j) :
     colimitPrime P p i = (colimitPrime P p j).comap (P.diag.map f).hom.toRingHom := by
   unfold colimitPrime
@@ -385,7 +390,8 @@ private lemma exists_localRingHom_eq_of_localRingHom_eq (p : Ideal S) [p.IsPrime
   have hcj_to_c : (P.ι.app j).hom cj = c := (hnat fij c').trans hc'
   have hcj_mem : cj ∈ (colimitPrime P p j).primeCompl := fun hmem ↦ hcp (hcj_to_c ▸ hmem)
   have hq_eq_j : p.comap (algebraMap R S) =
-      (colimitPrime P p j).comap (algebraMap R (P.diag.obj j)) := colimitPrime_comap_algebraMap P p j
+      (colimitPrime P p j).comap (algebraMap R (P.diag.obj j)) :=
+    colimitPrime_comap_algebraMap P p j
   have hs₁' : s₁ ∈ ((colimitPrime P p j).comap (algebraMap R (P.diag.obj j))).primeCompl :=
     fun hmem ↦ hs₁ (hq_eq_j.symm ▸ hmem)
   have hs₂' : s₂ ∈ ((colimitPrime P p j).comap (algebraMap R (P.diag.obj j))).primeCompl :=
@@ -420,13 +426,14 @@ lemma of_colimitPresentation
     obtain ⟨w, rfl⟩ :=
       ((RingHom.bijectiveOnStalks_algebraMap.mpr (h i)).localRingHom_of_eq
         (colimitPrime_comap_algebraMap P p i)).2 zᵢ
-    have hcomp : (P.ι.app i).hom.toRingHom.comp (algebraMap R (P.diag.obj i)) = algebraMap R S :=
-      RingHom.ext fun r ↦ (P.ι.app i).hom.commutes r
     refine ⟨w, ?_⟩
-    rw [← RingHom.comp_apply, ← Localization.localRingHom_comp _ _ _ _
-      (colimitPrime_comap_algebraMap P p i) _ rfl]
-    congr 1
-    exact hcomp
+    have hcomm (r : R) :
+        (P.ι.app i).hom (algebraMap R (P.diag.obj i) r) = algebraMap R S r :=
+      (P.ι.app i).hom.commutes r
+    obtain ⟨⟨r, s, hs⟩, rfl⟩ :=
+      IsLocalization.mk'_surjective (p.comap (algebraMap R S)).primeCompl w
+    rw [Localization.localRingHom_mk', Localization.localRingHom_mk', Localization.localRingHom_mk']
+    exact congrArg₂ (IsLocalization.mk' _) (hcomm r).symm (Subtype.ext (hcomm s).symm)
 
 end ColimitPresentation
 
