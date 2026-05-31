@@ -49,6 +49,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     Then $S$ is a local ring.
     \label{lemma:henselian-local-integral-local}
     \lean{IsLocalRing.of_henselianLocalRing_of_isIntegral_of_isDomain}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -74,6 +75,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     the extension of residue fields $\kappa(S) / \kappa(R)$ is algebraic.
     \label{lemma:integral-local-algebraic-residue-field}
     \lean{Algebra.IsAlgebraic.residueField_of_isIntegral}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -88,6 +90,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     is purely inseparable, then $T \otimes_{R} S$ is a local ring.
     \label{lemma:tensorprod-local-purely-inseparable}
     \lean{Algebra.isLocalRing_tensorProduct_of_isPurelyInseparable_residueField}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -709,6 +712,7 @@ suffices for our purposes.
     there is a unique prime $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and
     $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $A \to B$ is an isomorphism.
     \lean{Algebra.WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -748,6 +752,7 @@ suffices for our purposes.
     two different prime ideals $q_1$ and $q_2$ in $B$, then $B$ has a nontrivial
     idempotent element $e$ (i.i. $e^2 = e$).
     \lean{Algebra.IndEtale.exists_isIdempotentElem_of_two_primes}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -767,6 +772,7 @@ suffices for our purposes.
     $\kappa(q) \otimes_A B$ has a nontrivial idempotent element.
     \uses{def:ind-etale}
     \lean{Algebra.IndEtale.exists_isIdempotentElem_tensorProduct_of_residueField_ne}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -845,6 +851,7 @@ suffices for our purposes.
     \uses{def:weakly-etale-algebra,
     def:strictly-henselian-local-ring}
     \lean{Algebra.WeaklyEtale.bijective_of_isStrictlyHenselianLocalRing}
+    \leanok
 \end{theorem}
 
 \begin{proof}
