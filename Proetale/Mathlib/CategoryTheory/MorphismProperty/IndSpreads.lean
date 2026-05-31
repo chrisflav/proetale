@@ -92,15 +92,60 @@ alias exists_isPushout_of_isFiltered_of_hom := IndSpreads.exists_isPushout_of_ho
 
 variable (Q : MorphismProperty C)
 
--- TODO: this is in mathlib with the correct assumptions, fix this one
-instance [P.IsStableUnderComposition] [PreIndSpreads.{w} P] :
-    IsStableUnderComposition (ind.{w} P) where
-  comp_mem {X Y Z} f g :=
-      fun ⟨If, _, _, Df, tf, sf, hsf, hstf⟩ ⟨Ig, _, _, Dg, tg, sg, hsg, hstg⟩ ↦ by
-    choose σ T' f' u h hf' using fun i ↦ P.exists_isPushout_of_isFiltered hsf (tg.app i) (hstg i).1
-    sorry
+/-- If `f : X ⟶ Y` is `ind P` and `g : Y ⟶ Z` satisfies `P`, then `f ≫ g : X ⟶ Z` is `ind P`.
 
-instance [P.IsMultiplicative] [PreIndSpreads.{w} P] : (ind.{w} P).IsMultiplicative where
+This is the key step in showing that `ind P` is stable under composition: it descends `g` to a
+finite stage of the filtered colimit presentation of `Y` via `PreIndSpreads`, forms pushouts to
+build a presentation of `Z`, and checks that each stage is in `P`. -/
+lemma ind_comp_mem {P : MorphismProperty C} [P.IsStableUnderComposition]
+    [P.IsStableUnderCobaseChange] [HasPushouts C] [PreIndSpreads.{w} P]
+    {X Y Z : C} {f : X ⟶ Y} (hf : ind.{w} P f) {g : Y ⟶ Z} (hg : P g) :
+    ind.{w} P (f ≫ g) := by
+  obtain ⟨J, _, _, D, sX, tY, htY, hData⟩ := hf
+  obtain ⟨j₀, T', g', q, hpush, hg'⟩ := P.exists_isPushout_of_isFiltered htY g hg
+  let D' : CategoryTheory.Under j₀ ⥤ C :=
+    (CategoryTheory.Under.post D ⋙ CategoryTheory.Under.pushout g') ⋙
+      CategoryTheory.Under.forget _
+  let c'₀ : Cocone D' :=
+    (CategoryTheory.Under.pushout g' ⋙ CategoryTheory.Under.forget _).mapCocone
+      ((Cocone.mk _ tY).underPost j₀)
+  let c' : Cocone D' := c'₀.extend hpush.isoPushout.inv
+  let hc' : IsColimit c' :=
+    IsColimit.extendIso _ (isColimitOfPreserves _ (htY.underPost j₀))
+  let s' : (Functor.const (CategoryTheory.Under j₀)).obj X ⟶ D' :=
+    { app k := sX.app k.right ≫ pushout.inl (D.map k.hom) g'
+      naturality k l a := by
+        have hnat := sX.naturality a.right
+        simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp] at hnat
+        simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+        dsimp [D', CategoryTheory.Under.post, CategoryTheory.Under.pushout]
+        rw [Category.assoc, pushout.inl_desc, ← Category.assoc, ← hnat] }
+  refine ⟨CategoryTheory.Under j₀, inferInstance, inferInstance,
+      D', s', c'.ι, hc', fun k ↦ ⟨?_, ?_⟩⟩
+  · exact P.comp_mem _ _ (hData k.right).1 (P.pushout_inl _ _ hg')
+  · have hkey : pushout.inl (D.map k.hom) g' ≫ c'₀.ι.app k =
+        tY.app k.right ≫ pushout.inl ((Cocone.mk _ tY).ι.app j₀) g' := by
+      dsimp [c'₀]
+      exact pushout.inl_desc _ _ _
+    have hcomp : pushout.inl (D.map k.hom) g' ≫ c'.ι.app k = tY.app k.right ≫ g := by
+      simp only [c', Cocone.extend_ι, NatTrans.comp_app, Functor.const_map_app]
+      rw [← Category.assoc, hkey, Category.assoc, hpush.inl_isoPushout_inv]
+    dsimp only [s']
+    rw [Category.assoc, hcomp, ← Category.assoc, (hData k.right).2]
+
+/-- If `P` ind-spreads, then `ind P` is stable under composition, provided the assumptions of
+`MorphismProperty.ind_ind` are satisfied: `LocallySmall.{w} C` and
+`P ≤ isFinitelyPresentable.{w} C`. -/
+lemma IsStableUnderComposition.ind_of_le_isFinitelyPresentable {P : MorphismProperty C}
+    [P.IsStableUnderComposition] [P.IsStableUnderCobaseChange] [HasPushouts C]
+    [PreIndSpreads.{w} P] [LocallySmall.{w} C] (H : P ≤ isFinitelyPresentable.{w} C) :
+    (ind.{w} P).IsStableUnderComposition where
+  comp_mem f g hf hg := by
+    rw [← ind_ind H]
+    obtain ⟨J, _, _, D, sY, tZ, htZ, hData⟩ := hg
+    refine ⟨J, ‹_›, ‹_›, D, (Functor.const J).map f ≫ sY, tZ, htZ, fun k ↦ ⟨?_, ?_⟩⟩
+    · simpa using ind_comp_mem hf (hData k).1
+    · simpa using f ≫= (hData k).2
 
 /--
 A property of morphisms `P` is said to pro-spread if `P`-morphisms into cofiltered limits

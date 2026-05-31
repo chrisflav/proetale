@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.LocalIso
 import Mathlib.RingTheory.RingHom.OpenImmersion
+import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Tactic.Algebraize
 import Mathlib.Tactic.DepRewrite
@@ -86,3 +87,28 @@ lemma respectsIso : RespectsIso IsLocalIso :=
   stableUnderComposition.respectsIso fun e ↦ .of_bijective e.bijective
 
 end RingHom.IsLocalIso
+
+/-- `RingHom.IsLocalIso` is stable under base change. -/
+lemma RingHom.IsLocalIso.isStableUnderBaseChange :
+    RingHom.IsStableUnderBaseChange RingHom.IsLocalIso := by
+  refine RingHom.IsStableUnderBaseChange.mk RingHom.IsLocalIso.respectsIso ?_
+  intro R S T _ _ _ _ _ hRT
+  rw [RingHom.isLocalIso_algebraMap] at hRT ⊢
+  infer_instance
+
+namespace CategoryTheory.MorphismProperty
+
+/-- The `MorphismProperty` on `CommRingCat` associated to `RingHom.IsLocalIso` is stable
+under cobase change. -/
+instance isLocalIso_isStableUnderCobaseChange :
+    (RingHom.toMorphismProperty RingHom.IsLocalIso).IsStableUnderCobaseChange := by
+  rw [RingHom.isStableUnderCobaseChange_toMorphismProperty_iff]
+  exact RingHom.IsLocalIso.isStableUnderBaseChange
+
+/-- The `MorphismProperty` on `CommRingCat` associated to `RingHom.IsLocalIso` is stable
+under composition. -/
+instance isLocalIso_isStableUnderComposition :
+    (RingHom.toMorphismProperty RingHom.IsLocalIso).IsStableUnderComposition where
+  comp_mem _ _ hf hg := hg.comp hf
+
+end CategoryTheory.MorphismProperty

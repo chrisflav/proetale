@@ -17,7 +17,7 @@ In this file we define ind-étale algebras and ring homomorphisms.
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits TensorProduct
 
 variable (R : Type u) {S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -28,6 +28,9 @@ def CommAlgCat.etale : ObjectProperty (CommAlgCat.{u} R) :=
 lemma CommAlgCat.etale_eq : etale R = RingHom.toObjectProperty RingHom.Etale R := by
   ext S
   exact RingHom.etale_algebraMap.symm
+
+instance : (MorphismProperty.ind.{u} CommRingCat.etale.{u}).IsStableUnderComposition :=
+  .ind_of_le_isFinitelyPresentable CommRingCat.etale_le_isFinitelyPresentable.{u}
 
 /-- An algebra is ind-étale if it can be written as the filtered colimit of étale
 algebras. -/
@@ -44,11 +47,6 @@ variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
 lemma iff_ind_etale (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
     Algebra.IndEtale R S ↔ ObjectProperty.ind.{u} (CommAlgCat.etale R) (.of R S) :=
   Algebra.indEtale_iff R S
-
-lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [Algebra.IndEtale R S] [Algebra.IndEtale S T] :
-    Algebra.IndEtale R T :=
-  sorry
 
 /-- Étale `R`-algebras are finitely presented. -/
 lemma etale_le_finitePresentation :
@@ -87,6 +85,24 @@ instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Idea
     Algebra.IsSeparable p.ResidueField q.ResidueField :=
   sorry
 
+/-- If `B` is an ind-étale algebra over a field `K` and `B` has at least two distinct prime
+ideals, then `B` has a nontrivial idempotent element. -/
+theorem exists_isIdempotentElem_of_two_primes {K B : Type u} [Field K] [CommRing B]
+    [Algebra K B] [Algebra.IndEtale K B] {q₁ q₂ : Ideal B} [q₁.IsPrime] [q₂.IsPrime]
+    (h : q₁ ≠ q₂) :
+    ∃ e : B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 :=
+  sorry
+
+/-- If `B` is an ind-étale algebra over a field `K` and `q` is a prime ideal of `B` whose
+residue field is strictly larger than `K`, then the tensor product
+`κ(q) ⊗[K] B` has a nontrivial idempotent element. -/
+theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
+    [Field K] [CommRing B] [Algebra K B] [Algebra.IndEtale K B]
+    (q : Ideal B) [q.IsPrime]
+    (h : ¬ Function.Bijective (algebraMap K q.ResidueField)) :
+    ∃ e : q.ResidueField ⊗[K] B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 :=
+  sorry
+
 end Algebra.IndEtale
 
 /-- A ring hom is ind-étale if and only if it is an ind-étale algebra. -/
@@ -120,8 +136,9 @@ variable {R S : Type u} [CommRing R] [CommRing S]
 
 lemma comp {T : Type u} [CommRing T] {g : S →+* T} {f : R →+* S} (hg : g.IndEtale)
     (hf : f.IndEtale) : (g.comp f).IndEtale := by
-  algebraize [f, g, (g.comp f)]
-  exact Algebra.IndEtale.trans R S T
+  rw [iff_ind_etale] at hf hg ⊢
+  rw [CommRingCat.ofHom_comp]
+  exact (MorphismProperty.ind.{u} CommRingCat.etale).comp_mem _ _ hf hg
 
 /-- Ind-étale ring homomorphisms are stable under base change. -/
 lemma isStableUnderBaseChange : IsStableUnderBaseChange IndEtale := by
@@ -164,3 +181,17 @@ lemma _root_.RingHom.IndZariski.indEtale {f : R →+* S}
   exact .of_indZariski R S
 
 end RingHom.IndEtale
+
+namespace Algebra.IndEtale
+
+variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+
+lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [Algebra.IndEtale R S] [Algebra.IndEtale S T] :
+    Algebra.IndEtale R T := by
+  rw [← RingHom.IndEtale.algebraMap_iff R T, IsScalarTower.algebraMap_eq R S T]
+  exact RingHom.IndEtale.comp
+    ((RingHom.IndEtale.algebraMap_iff S T).mpr ‹_›)
+    ((RingHom.IndEtale.algebraMap_iff R S).mpr ‹_›)
+
+end Algebra.IndEtale
