@@ -53,7 +53,7 @@ lemma bijective_of_bijective_residueFieldMap [IsLocalRing R] [IsLocalRing S]
 /-- Let `R → S` be a weakly étale local homomorphism of local rings.  If for every prime
 `p ⊂ R` there is a unique prime `q ⊂ S` lying over `p` and `κ(p) = κ(q)`, then `R → S` is
 an isomorphism. -/
-lemma WeaklyEtale.bijective_of_unique_primes_of_bijective_residueFieldMap
+lemma WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap
     [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] [Algebra.WeaklyEtale R S]
     (h : Function.Bijective (PrimeSpectrum.comap <| algebraMap R S))
     (hres : ∀ (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p],

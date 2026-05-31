@@ -11,6 +11,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     a finite product of Henselian local rings, each finite over $R$.
     \label{lemma:finite-over-henselian-local}
     \lean{HenselianLocalRing.exists_pi_of_finite}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -707,7 +708,7 @@ suffices for our purposes.
     Let $A \to B$ be a weakly étale local homomorphism of local rings. For all $\mathfrak{p} \subset A$,
     there is a unique prime $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and
     $\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})$. Then $A \to B$ is an isomorphism.
-    \lean{Algebra.WeaklyEtale.bijective_of_unique_primes_of_bijective_residueFieldMap}
+    \lean{Algebra.WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap}
 \end{lemma}
 
 \begin{proof}
@@ -734,6 +735,7 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Suppose $x, y$ are two distinct points that lives in the same connected component. Then the
     projection of $x, y$ will be always fall in the same connected components, thus equal. This
     is a contradiction.

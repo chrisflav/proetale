@@ -43,7 +43,9 @@ variable (S : Type u) [CommRing S] [Algebra R S] [Module.Finite R S]
 /-- A finite algebra over a Henselian local ring is, as a ring, a finite product of
 Henselian local rings, each finite over the base.
 
-[Stacks 04GH (1)](https://stacks.math.columbia.edu/tag/04GH). -/
+[Stacks 04GH (1)](https://stacks.math.columbia.edu/tag/04GH).
+
+This is destined to go directly to Mathlib, so it should not be worked on here. -/
 theorem exists_pi_of_finite :
     ∃ (ι : Type u) (_ : Fintype ι) (B : ι → Type u) (_ : ∀ i, CommRing (B i))
       (_ : ∀ i, IsLocalRing (B i)) (_ : ∀ i, HenselianLocalRing (B i))
@@ -72,8 +74,6 @@ variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 /-- The residue field extension induced by a local integral homomorphism of local rings is
 algebraic. -/
 theorem IsAlgebraic.residueField_of_isIntegral [Algebra.IsIntegral R S] :
-    letI : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-      (IsLocalRing.ResidueField.map (algebraMap R S)).toAlgebra
     Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
   sorry
 
@@ -86,12 +86,7 @@ integral.  If `κ(S)/κ(R)` or `κ(T)/κ(R)` is purely inseparable, the tensor p
 theorem isLocalRing_tensorProduct_of_isPurelyInseparable_residueField
     (T : Type u) [CommRing T] [Algebra R T] [IsLocalRing T] [IsLocalHom (algebraMap R T)]
     [Algebra.IsIntegral R S]
-    (h :
-      letI : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-        (IsLocalRing.ResidueField.map (algebraMap R S)).toAlgebra
-      letI : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField T) :=
-        (IsLocalRing.ResidueField.map (algebraMap R T)).toAlgebra
-      IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) ∨
+    (h : IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) ∨
         IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField T)) :
     IsLocalRing (S ⊗[R] T) :=
   sorry
