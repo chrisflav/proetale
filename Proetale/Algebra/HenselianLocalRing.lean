@@ -2,7 +2,7 @@ import Proetale.Algebra.WeaklyEtale
 
 universe u
 
-variable {R S : Type u} [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+variable {R S : Type u} [CommRing R] [CommRing S] [IsLocalRing S]
 
 open TensorProduct
 
