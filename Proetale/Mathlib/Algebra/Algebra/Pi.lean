@@ -31,7 +31,7 @@ variable {k : Type*} [CommSemiring k] {I : Type*} [DecidableEq I]
 /-- An algebra homomorphism from a finite product of commutative rings to a nontrivial local
 algebra factors through one of the factors: there exists `j : I` with `ψ (Pi.single j 1) = 1`
 and `ψ (Pi.single i 1) = 0` for every `i ≠ j`. -/
-lemma exists_pi_single_eq_one_of_isLocalRing [Finite I] [IsLocalRing B] [Nontrivial B]
+lemma exists_pi_single_eq_one_of_isLocalRing [Finite I] [IsLocalRing B]
     (ψ : (∀ i, A i) →ₐ[k] B) :
     ∃ j : I, ψ (Pi.single j 1) = 1 ∧ ∀ i, i ≠ j → ψ (Pi.single i 1) = 0 := by
   have : Fintype I := Fintype.ofFinite I
