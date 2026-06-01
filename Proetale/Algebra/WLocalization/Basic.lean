@@ -302,6 +302,7 @@ lemma stratum_anti {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :
     exact Ideal.span_mono (Finset.coe_subset.mpr hFF')
 
 /-- The type of disjoint union decompositions of `E` into two finite sets. -/
+@[ext]
 structure Stratification.Index (E : Finset A) where
   left : Finset A
   right : Finset A
@@ -446,9 +447,7 @@ private lemma ProdStrata.map_transport_eq {E : Finset A}
          Generalization.locClosedSubset j.function j.ideal)
     (x : ProdStrata E) :
     Generalization.map h (x j) = x i := by
-  obtain rfl : j = i := by
-    cases i; cases j
-    simpa only [Stratification.Index.mk.injEq] using ⟨hl, hr⟩
+  obtain rfl : j = i := Stratification.Index.ext hl hr
   simp
 
 /-- Two `Generalization.map` calls into the same target, starting from `ProdStrata`-components
@@ -462,9 +461,7 @@ private lemma ProdStrata.map_transport_comp_eq {E : Finset A} {f' : A} {I' : Ide
             Generalization.locClosedSubset j₂.function j₂.ideal)
     (x : ProdStrata E) :
     Generalization.map h₁ (x j₁) = Generalization.map h₂ (x j₂) := by
-  obtain rfl : j₁ = j₂ := by
-    cases j₁; cases j₂
-    simpa only [Stratification.Index.mk.injEq] using ⟨hl, hr⟩
+  obtain rfl : j₁ = j₂ := Stratification.Index.ext hl hr
   rfl
 
 variable (A) in
