@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
 import Mathlib.FieldTheory.Separable
+import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.RingHom.Etale
 import Proetale.Algebra.IndZariski
@@ -88,12 +89,41 @@ instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLoca
   have : Algebra.Etale k (P.diag.obj i) := hP i
   exact IsSeparable.of_algHom_etale_to_isLocalRing k (P.diag.obj i) R (P.ι.app i).hom a
 
+/-- An ind-étale ring extension induces separable algebraic extensions on residue fields. -/
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
     [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra p q] :
-    Algebra.IsSeparable p.ResidueField q.ResidueField :=
-  sorry
+    Algebra.IsSeparable p.ResidueField q.ResidueField := by
+  obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := R) (S := S)
+  letI : SmallCategory ι := hcat
+  letI : IsFiltered ι := hfilt
+  -- Every image in `q.ResidueField` of an element of `S` factors through a finite étale
+  -- `p.ResidueField`-subalgebra, hence is separable over `p.ResidueField`.
+  have key (s : S) : IsSeparable p.ResidueField (algebraMap S q.ResidueField s) := by
+    have hcolim : IsColimit ((forget (CommAlgCat.{u} R)).mapCocone P.cocone) :=
+      isColimitOfPreserves (forget (CommAlgCat.{u} R)) P.isColimit
+    obtain ⟨i, sᵢ, hsᵢ⟩ := Types.jointly_surjective_of_isColimit hcolim s
+    have : Algebra.Etale R (P.diag.obj i) := hP i
+    let φ : (p.ResidueField ⊗[R] P.diag.obj i) →ₐ[p.ResidueField] q.ResidueField :=
+      Algebra.TensorProduct.lift (Algebra.ofId p.ResidueField q.ResidueField)
+        ((IsScalarTower.toAlgHom R S q.ResidueField).comp (P.ι.app i).hom)
+        (fun _ _ ↦ Commute.all _ _)
+    have hφ : φ ((1 : p.ResidueField) ⊗ₜ[R] sᵢ) = algebraMap S q.ResidueField s := by
+      simp only [φ, Algebra.TensorProduct.lift_tmul, map_one, one_mul, AlgHom.comp_apply,
+        IsScalarTower.coe_toAlgHom']
+      exact congrArg (algebraMap S q.ResidueField) hsᵢ
+    exact hφ ▸ IsSeparable.of_algHom_etale_to_isLocalRing p.ResidueField _ q.ResidueField φ _
+  -- A general element of `q.ResidueField` is a ratio of two images from `S`.
+  refine ⟨fun y ↦ ?_⟩
+  rw [← mem_separableClosure_iff (F := p.ResidueField) (E := q.ResidueField)]
+  obtain ⟨x, m, _, hxm⟩ := IsFractionRing.div_surjective (A := S ⧸ q) y
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  obtain ⟨m, rfl⟩ := Ideal.Quotient.mk_surjective m
+  rw [← hxm, Ideal.algebraMap_quotient_residueField_mk,
+    Ideal.algebraMap_quotient_residueField_mk]
+  exact div_mem (mem_separableClosure_iff.mpr (key x))
+    (mem_separableClosure_iff.mpr (key m))
 
 /-- If `B` is an ind-étale algebra over a field `K` and `B` has at least two distinct prime
 ideals, then `B` has a nontrivial idempotent element. -/
