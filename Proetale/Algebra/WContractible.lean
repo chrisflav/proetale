@@ -197,7 +197,7 @@ instance indZariski : Algebra.IndZariski A (Pullback S f) :=
   .trans A (S → A) (Pullback S f)
 
 theorem bijectiveOnStalks_algebraMap : (algebraMap A (Pullback S f)).BijectiveOnStalks :=
-  RingHom.bijectiveOnStalks_algebraMap.mpr (Algebra.IndZariski.bijectiveOnStalks _ _)
+  Algebra.IndZariski.bijectiveOnStalks_algebraMap _ _
 
 -- Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting for 1.123
 

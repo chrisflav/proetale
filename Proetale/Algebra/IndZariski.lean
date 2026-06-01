@@ -304,7 +304,7 @@ theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
 
 instance (priority := 100) bijectiveOnStalks [Algebra.IndZariski R S] :
     Algebra.BijectiveOnStalks R S :=
-  RingHom.bijectiveOnStalks_algebraMap.mp bijectiveOnStalks_algebraMap
+  RingHom.bijectiveOnStalks_algebraMap.mp (bijectiveOnStalks_algebraMap R S)
 
 /-- If `S` is a filtered colimit of ind-Zariski `R`-algebras, then `S` is ind-Zariski. -/
 theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
@@ -377,8 +377,7 @@ lemma flat (h : f.IndZariski) : f.Flat := by
 @[stacks 096T]
 theorem bijectiveOnStalks (h : f.IndZariski) : f.BijectiveOnStalks := by
   algebraize [f]
-  exact RingHom.bijectiveOnStalks_algebraMap.mpr
-    (Algebra.IndZariski.bijectiveOnStalks R S)
+  exact Algebra.IndZariski.bijectiveOnStalks_algebraMap R S
 
 /-- Ind-Zariski is equivalent to ind-ind-Zariski. -/
 lemma iff_ind_indZariski (f : R →+* S) :
