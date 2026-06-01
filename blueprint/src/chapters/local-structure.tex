@@ -1094,6 +1094,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:pullback-spectral,thm:cartesian-profinite,thm:closed-points-isom-pi0}
   We know that $Y$ is spectral and $T = \pi_0(Y)$ by \Cref{thm:cartesian-profinite}. Assume $X$ is w-local and let $X^c \subset X$ be its closed points. The inverse image $Y^c \subset Y$ of $X^c$ maps bijectively onto $T$, since $X^c \to \pi_0(X)$ is a bijection by \Cref{thm:closed-points-isom-pi0}. (Note that we do not yet know whether $Y^c$ is the set of closed points of $Y$.) Moreover, $Y^c$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y^c \to \pi_0(Y) = T$ is a homeomorphism by \verb`isHomeomorph_iff_continuous_bijective` (\stacksproject{08YE}). It follows that all points of $Y^c$ are closed in $Y$: if some $y \in Y^c$ specialized to a distinct closed point $y'$ (which also falls in $Y$ since $Y$ is closed), then both would map to the same point in $T$, contradicting the bijectivity of $Y^c \to T$.
 
