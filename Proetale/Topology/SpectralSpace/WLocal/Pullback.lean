@@ -20,7 +20,8 @@ universe u
 variable {X Y T : Type u} [TopologicalSpace X] [WLocalSpace X] [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
 
--- Helper: In the pullback, the map (f, g) is injective (since Y is homeomorphic to a subspace of X × T).
+-- Helper: In the pullback, the map `(f, g)` is injective (`Y` is homeomorphic to a subspace
+-- of `X × T`).
 omit [WLocalSpace X] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T] in
 private lemma ConnectedComponents.fg_injective_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
     {i : C(T, ConnectedComponents X)}
