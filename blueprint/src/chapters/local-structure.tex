@@ -676,6 +676,8 @@ The following example shows that our definition agrees with the one in
     \label{lem:sh-iff-henselian-and-sep-closed}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
     \uses{def:strictly-henselian-local-ring}
+    \lean{isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1537,6 +1539,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:w-localization-closed-points, lemma:w-localization-ind-Zariski}
     By \ref{lemma:w-localization-ind-Zariski}, $A \to A_w$ is flat. Because
     $V(I_w)$ surjects onto $\spec{A}$ by \ref{lemma:w-localization-closed-points},
@@ -1976,6 +1979,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $A = \colim_i A_i$ such that $A_i$ is an étale $k$-algebra for all $i$.
     Let $\mathfrak{m}$ be the maximal ideal of $A$. Since localization commutes with colimits,
     we obtain $A = A_{\mathfrak{m}} = \colim_i (A_i)_{\mathfrak{m}_i}$ where

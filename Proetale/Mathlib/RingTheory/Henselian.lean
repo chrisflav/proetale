@@ -11,6 +11,15 @@ instance (R : Type*) [CommRing R] [IsStrictlyHenselianLocalRing R] :
     IsSepClosed (IsLocalRing.ResidueField R) :=
   IsStrictlyHenselianLocalRing.isSepClosed_residueField
 
+/-- A local ring is strictly Henselian if and only if it is Henselian and its residue
+field is separably closed. -/
+theorem isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed
+    (R : Type*) [CommRing R] [IsLocalRing R] :
+    IsStrictlyHenselianLocalRing R ↔
+      HenselianLocalRing R ∧ IsSepClosed (IsLocalRing.ResidueField R) :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩,
+    fun h ↦ have := h.1; ⟨h.2⟩⟩
+
 /-- `HenselianLocalRing` transfers along a ring isomorphism. -/
 theorem HenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
     [HenselianLocalRing R] (e : R ≃+* S) : HenselianLocalRing S := by

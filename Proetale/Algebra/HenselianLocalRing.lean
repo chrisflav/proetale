@@ -1,4 +1,5 @@
 import Proetale.Algebra.WeaklyEtale
+import Proetale.Mathlib.RingTheory.Henselian
 
 universe u
 
@@ -27,5 +28,12 @@ lemma WeaklyEtale.bijective_of_henselianLocalRing [HenselianLocalRing R]
     [IsSepClosed (IsLocalRing.ResidueField R)] [Algebra.WeaklyEtale R S] :
     Function.Bijective (algebraMap R S) :=
   sorry
+
+/-- If `R → S` is a local homomorphism of local rings, `R` is strictly henselian and `S` is
+weakly étale over `R`, then `R → S` is an isomorphism. -/
+lemma WeaklyEtale.bijective_of_isStrictlyHenselianLocalRing [IsStrictlyHenselianLocalRing R]
+    [Algebra.WeaklyEtale R S] :
+    Function.Bijective (algebraMap R S) :=
+  WeaklyEtale.bijective_of_henselianLocalRing
 
 end Algebra

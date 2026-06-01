@@ -8,6 +8,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.RingHom.Etale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.Etale
+import Proetale.Mathlib.RingTheory.Etale.Field
 
 /-!
 # Ind-étale algebras
@@ -17,7 +18,7 @@ In this file we define ind-étale algebras and ring homomorphisms.
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits TensorProduct
 
 variable (R : Type u) {S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -76,13 +77,40 @@ instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S := by
 
 instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLocalRing R] :
     Algebra.IsSeparable k R := by
-  sorry
+  obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := k) (S := R)
+  letI : SmallCategory ι := hcat
+  letI : IsFiltered ι := hfilt
+  refine ⟨fun x ↦ ?_⟩
+  have hcolim : IsColimit ((forget (CommAlgCat.{u} k)).mapCocone P.cocone) :=
+    isColimitOfPreserves (forget (CommAlgCat.{u} k)) P.isColimit
+  obtain ⟨i, a, ha⟩ := Types.jointly_surjective_of_isColimit hcolim x
+  rw [← ha]
+  have : Algebra.Etale k (P.diag.obj i) := hP i
+  exact IsSeparable.of_algHom_etale_to_isLocalRing k (P.diag.obj i) R (P.ι.app i).hom a
 
 instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
     [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra p q] :
     Algebra.IsSeparable p.ResidueField q.ResidueField :=
+  sorry
+
+/-- If `B` is an ind-étale algebra over a field `K` and `B` has at least two distinct prime
+ideals, then `B` has a nontrivial idempotent element. -/
+theorem exists_isIdempotentElem_of_two_primes {K B : Type u} [Field K] [CommRing B]
+    [Algebra K B] [Algebra.IndEtale K B] {q₁ q₂ : Ideal B} [q₁.IsPrime] [q₂.IsPrime]
+    (h : q₁ ≠ q₂) :
+    ∃ e : B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 :=
+  sorry
+
+/-- If `B` is an ind-étale algebra over a field `K` and `q` is a prime ideal of `B` whose
+residue field is strictly larger than `K`, then the tensor product
+`κ(q) ⊗[K] B` has a nontrivial idempotent element. -/
+theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
+    [Field K] [CommRing B] [Algebra K B] [Algebra.IndEtale K B]
+    (q : Ideal B) [q.IsPrime]
+    (h : ¬ Function.Bijective (algebraMap K q.ResidueField)) :
+    ∃ e : q.ResidueField ⊗[K] B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 :=
   sorry
 
 end Algebra.IndEtale

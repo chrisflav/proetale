@@ -10,6 +10,7 @@ import Proetale.Algebra.IndBijectiveOnStalks
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Algebra.IndZariski
+import Proetale.Algebra.IntegralLocal
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
 import Proetale.Algebra.ProEtaleContraction
@@ -73,12 +74,14 @@ import Proetale.Mathlib.CategoryTheory.Sites.PrecoverageGenerating
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.FieldTheory.IsSepClosed
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
+import Proetale.Mathlib.RingTheory.Etale.Field
 import Proetale.Mathlib.RingTheory.Etale.Prod
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Flat.Pi
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 import Proetale.Mathlib.RingTheory.Ideal.Pure
+import Proetale.Mathlib.RingTheory.Idempotents
 import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom

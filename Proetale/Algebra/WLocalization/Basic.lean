@@ -369,6 +369,21 @@ instance (E : Finset A) : Algebra A (ProdStrata E) := fast_instance%
 noncomputable def ProdStrata.ideal (E : Finset A) : Ideal (ProdStrata E) :=
   Ideal.pi fun _ ↦ Generalization.ideal _ _
 
+/-- `Spec (ProdStrata E) → Spec A` is surjective. -/
+lemma ProdStrata.specComap_surjective (E : Finset A) :
+    Function.Surjective (PrimeSpectrum.comap (algebraMap A (ProdStrata E))) := by
+  intro p
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
+    (Stratification.Index.iUnion_stratum (A := A) E ▸ Set.mem_univ p)
+  rw [← locClosedSubset_function_ideal] at hi
+  have h_in_range :
+      p ∈ Set.range (PrimeSpectrum.comap
+        (algebraMap A (Generalization i.function i.ideal))) := by
+    rw [Generalization.range_algebraMap_generalization, mem_generalizationHull_iff]
+    exact ⟨p, hi, specializes_rfl⟩
+  obtain ⟨q, hq⟩ := h_in_range
+  exact ⟨PrimeSpectrum.comap (Pi.evalRingHom _ i) q, hq⟩
+
 -- wrong
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (ProdStrata E))
@@ -496,10 +511,15 @@ instance (E : Finset A) : Finite (Stratification.Index E) := by
   obtain ⟨hl₂, hr₂⟩ := sub u₂
   exact (Stratification.Index.mk.injEq ..).mpr ⟨aux hl₁ hl₂ hL, aux hr₁ hr₂ hR⟩
 
-lemma indZariski_prodStrata (E : Finset A) :
+lemma indZariski_prodStrata {A : Type u} [CommRing A] (E : Finset A) :
     Algebra.IndZariski A (ProdStrata E) :=
   inferInstanceAs <| Algebra.IndZariski A
     (∀ i : Stratification.Index E, Generalization i.function i.ideal)
+
+instance ProdStrata.faithfullyFlat (E : Finset A) :
+    Module.FaithfullyFlat A (ProdStrata E) := by
+  have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata E
+  exact Module.FaithfullyFlat.of_comap_surjective (ProdStrata.specComap_surjective E)
 
 instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   have h := fun E => indZariski_prodStrata (A := A) E
@@ -507,7 +527,8 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) := by
     (Finset A) _ _ colimitPresentation h
 
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
-  sorry
+  CommAlgCat.faithfullyFlat_of_colimitPresentation colimitPresentation fun E ↦
+    inferInstanceAs (Module.FaithfullyFlat A (ProdStrata E))
 
 /-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
 This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/

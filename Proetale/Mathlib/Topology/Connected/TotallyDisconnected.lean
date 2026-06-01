@@ -1,3 +1,4 @@
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Inseparable
@@ -138,3 +139,16 @@ def ConnectedComponents.mkHomeomorph [TotallyDisconnectedSpace S] : S ≃ₜ Con
   right_inv := ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
   continuous_toFun := continuous_coe
   continuous_invFun := continuous_id.connectedComponentsLift_continuous
+
+open CategoryTheory CategoryTheory.Limits
+
+universe v u
+
+/-- The inverse limit of a system of totally disconnected topological spaces is
+totally disconnected. -/
+instance TopCat.limitCone_pt_totallyDisconnectedSpace
+    {J : Type v} [SmallCategory J] (F : J ⥤ TopCat.{max v u})
+    [∀ j, TotallyDisconnectedSpace (F.obj j)] :
+    TotallyDisconnectedSpace (TopCat.limitCone.{v, u} F).pt := by
+  change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
+  exact Subtype.totallyDisconnectedSpace
