@@ -25,8 +25,8 @@ lemma IsSeparable.of_algHom_etale_to_isLocalRing (k : Type u) [Field k] (A : Typ
   have : Module.Finite k A := Algebra.FormallyUnramified.finite_of_free k A
   obtain ⟨I, _, Ai, hfield, halg, e, hprop⟩ :=
     (Algebra.Etale.iff_exists_algEquiv_prod (K := k) (A := A)).mp inferInstance
-  letI : ∀ i, Field (Ai i) := hfield
-  letI : ∀ i, Algebra k (Ai i) := halg
+  let : ∀ i, Field (Ai i) := hfield
+  let : ∀ i, Algebra k (Ai i) := halg
   classical
   let ψ : (∀ i, Ai i) →ₐ[k] B := φ.comp e.symm
   obtain ⟨j, hj, hothers⟩ := ψ.exists_pi_single_eq_one_of_isLocalRing
