@@ -100,9 +100,36 @@ instance : HasFiniteCoproducts (P.CostructuredArrow ⊤ Scheme.Spec S) where
       apply IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
     apply MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
 
+/-- `CostructuredArrow.toOver Scheme.Spec S` preserves binary coproducts. This follows because
+`proj ⋙ Spec` preserves coproducts and `Over.forget S` reflects them. -/
+noncomputable instance : PreservesColimitsOfShape (Discrete WalkingPair)
+    (CategoryTheory.CostructuredArrow.toOver Scheme.Spec S) := by
+  have : PreservesColimitsOfShape (Discrete WalkingPair)
+      (CategoryTheory.CostructuredArrow.toOver Scheme.Spec S ⋙
+        CategoryTheory.Over.forget S) := by
+    change PreservesColimitsOfShape (Discrete WalkingPair) <|
+      CategoryTheory.CostructuredArrow.proj Scheme.Spec S ⋙ Scheme.Spec
+    infer_instance
+  exact preservesColimitsOfShape_of_reflects_of_preserves _ (CategoryTheory.Over.forget S)
+
 instance : PreservesColimitsOfShape (Discrete WalkingPair)
-    (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S) :=
-  sorry
+    (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S) := by
+  haveI : (MorphismProperty.commaObj Scheme.Spec (.fromPUnit S) P).IsClosedUnderColimitsOfShape
+      (Discrete WalkingPair) := by
+    apply IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
+  haveI : CreatesColimitsOfShape (Discrete WalkingPair)
+      (MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec S) :=
+    MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed
+      (L := Scheme.Spec) (R := Functor.fromPUnit S) P (Discrete WalkingPair)
+  have : PreservesColimitsOfShape (Discrete WalkingPair)
+      (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S ⋙
+        MorphismProperty.Over.forget P ⊤ S) := by
+    change PreservesColimitsOfShape (Discrete WalkingPair) <|
+      MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec S ⋙
+        CategoryTheory.CostructuredArrow.toOver Scheme.Spec S
+    infer_instance
+  exact preservesColimitsOfShape_of_reflects_of_preserves _
+    (MorphismProperty.Over.forget P ⊤ S)
 
 instance : FinitaryExtensive (P.CostructuredArrow ⊤ Scheme.Spec S) :=
   CategoryTheory.finitaryExtensive_of_preserves_and_reflects_isomorphism
