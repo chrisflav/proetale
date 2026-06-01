@@ -31,34 +31,18 @@ instance (J : Type*) [Category J] [IsConnected J] [HasLimitsOfShape J C]
     [HasLimitsOfShape J D] :
     PreservesLimitsOfShape J (CostructuredArrow.toOver F X) where
   preservesLimit {K} := by
-    have : PreservesLimitsOfShape J (CostructuredArrow.proj F X) := by
-      infer_instance
     have : PreservesLimit K (CostructuredArrow.toOver F X ⋙ Over.forget X) := by
       change PreservesLimit K (CostructuredArrow.proj F X ⋙ F)
       infer_instance
-    have : HasLimit (K ⋙ CostructuredArrow.toOver F X) := by
-      infer_instance
-    have : PreservesLimit (K ⋙ CostructuredArrow.toOver F X) (Over.forget X) := by
-      infer_instance
-    have : ReflectsLimit (K ⋙ CostructuredArrow.toOver F X) (Over.forget X) :=
-      reflectsLimit_of_reflectsIsomorphisms _ _
     apply Limits.preservesLimit_of_reflects_of_preserves _ (Over.forget X)
 
 instance (J : Type*) [Category J] [HasColimitsOfShape J C] [HasColimitsOfShape J D]
     [HasColimitsOfShape J (Over X)] [PreservesColimitsOfShape J F] :
     PreservesColimitsOfShape J (CostructuredArrow.toOver F X) where
   preservesColimit {K} := by
-    have : PreservesColimitsOfShape J (CostructuredArrow.proj F X) := by
-      infer_instance
     have : PreservesColimit K (CostructuredArrow.toOver F X ⋙ Over.forget X) := by
       change PreservesColimit K (CostructuredArrow.proj F X ⋙ F)
       infer_instance
-    have : HasColimit (K ⋙ CostructuredArrow.toOver F X) := by
-      infer_instance
-    have : PreservesColimit (K ⋙ CostructuredArrow.toOver F X) (Over.forget X) := by
-      infer_instance
-    have : ReflectsColimit (K ⋙ CostructuredArrow.toOver F X) (Over.forget X) :=
-      reflectsColimit_of_reflectsIsomorphisms _ _
     apply Limits.preservesColimit_of_reflects_of_preserves _ (Over.forget X)
 
 end
