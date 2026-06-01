@@ -44,6 +44,23 @@ instance (J : Type*) [Category J] [IsConnected J] [HasLimitsOfShape J C]
       reflectsLimit_of_reflectsIsomorphisms _ _
     apply Limits.preservesLimit_of_reflects_of_preserves _ (Over.forget X)
 
+instance (J : Type*) [Category J] [HasColimitsOfShape J C] [HasColimitsOfShape J D]
+    [HasColimitsOfShape J (Over X)] [PreservesColimitsOfShape J F] :
+    PreservesColimitsOfShape J (CostructuredArrow.toOver F X) where
+  preservesColimit {K} := by
+    have : PreservesColimitsOfShape J (CostructuredArrow.proj F X) := by
+      infer_instance
+    have : PreservesColimit K (CostructuredArrow.toOver F X ⋙ Over.forget X) := by
+      change PreservesColimit K (CostructuredArrow.proj F X ⋙ F)
+      infer_instance
+    have : HasColimit (K ⋙ CostructuredArrow.toOver F X) := by
+      infer_instance
+    have : PreservesColimit (K ⋙ CostructuredArrow.toOver F X) (Over.forget X) := by
+      infer_instance
+    have : ReflectsColimit (K ⋙ CostructuredArrow.toOver F X) (Over.forget X) :=
+      reflectsColimit_of_reflectsIsomorphisms _ _
+    apply Limits.preservesColimit_of_reflects_of_preserves _ (Over.forget X)
+
 end
 
 namespace MorphismProperty
@@ -52,6 +69,8 @@ variable {C D : Type*} [Category C] [Category D]
 variable (P : MorphismProperty D) (Q : MorphismProperty C) [Q.IsMultiplicative] (F : C ⥤ D) (X : D)
 
 namespace CostructuredArrow
+
+section Limits
 
 variable [P.IsStableUnderBaseChange]
   [P.IsStableUnderComposition] [P.HasOfPostcompProperty P]
@@ -64,6 +83,27 @@ instance : PreservesLimitsOfShape WalkingCospan (CostructuredArrow.toOver P F X)
       CostructuredArrow.forget P ⊤ F X ⋙ CategoryTheory.CostructuredArrow.toOver F X
     infer_instance
   exact preservesLimitsOfShape_of_reflects_of_preserves _ (Over.forget _ _ X)
+
+end Limits
+
+section Colimits
+
+variable (J : Type*) [Category J] [HasColimitsOfShape J C] [HasColimitsOfShape J D]
+  [HasColimitsOfShape J (P.Over ⊤ X)] [PreservesColimitsOfShape J F]
+  [(MorphismProperty.commaObj F (Functor.fromPUnit X) P).IsClosedUnderColimitsOfShape J]
+
+instance : PreservesColimitsOfShape J (CostructuredArrow.toOver P F X) := by
+  have : CreatesColimitsOfShape J (CostructuredArrow.forget P ⊤ F X) :=
+    MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed
+      (L := F) (R := .fromPUnit X) (P := P) (J := J)
+  have : PreservesColimitsOfShape J
+      (CostructuredArrow.toOver P F X ⋙ Over.forget P ⊤ X) := by
+    change PreservesColimitsOfShape J <|
+      CostructuredArrow.forget P ⊤ F X ⋙ CategoryTheory.CostructuredArrow.toOver F X
+    infer_instance
+  exact preservesColimitsOfShape_of_reflects_of_preserves _ (Over.forget _ _ X)
+
+end Colimits
 
 end CostructuredArrow
 
@@ -91,45 +131,17 @@ instance IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
   · intro D _ X s h
     exact IsZariskiLocalAtSource.sigmaDesc (h ⟨·⟩)
 
+instance IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete_commaObj
+    {ι : Type*} [Small.{u} ι] {C : Type*} [Category C] [HasColimitsOfShape (Discrete ι) C]
+    (L : C ⥤ Scheme.{u}) [PreservesColimitsOfShape (Discrete ι) L] (X : Scheme.{u}) :
+    (MorphismProperty.commaObj L (Functor.fromPUnit.{0} X) P).IsClosedUnderColimitsOfShape
+      (Discrete ι) :=
+  IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete L X
+
 variable [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] [P.IsMultiplicative]
 
 instance : HasFiniteCoproducts (P.CostructuredArrow ⊤ Scheme.Spec S) where
-  out n := by
-    have : (MorphismProperty.commaObj Scheme.Spec (.fromPUnit S) P).IsClosedUnderColimitsOfShape
-        (Discrete (Fin n)) := by
-      apply IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
-    apply MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
-
-/-- `CostructuredArrow.toOver Scheme.Spec S` preserves binary coproducts. This follows because
-`proj ⋙ Spec` preserves coproducts and `Over.forget S` reflects them. -/
-noncomputable instance : PreservesColimitsOfShape (Discrete WalkingPair)
-    (CategoryTheory.CostructuredArrow.toOver Scheme.Spec S) := by
-  have : PreservesColimitsOfShape (Discrete WalkingPair)
-      (CategoryTheory.CostructuredArrow.toOver Scheme.Spec S ⋙
-        CategoryTheory.Over.forget S) := by
-    change PreservesColimitsOfShape (Discrete WalkingPair) <|
-      CategoryTheory.CostructuredArrow.proj Scheme.Spec S ⋙ Scheme.Spec
-    infer_instance
-  exact preservesColimitsOfShape_of_reflects_of_preserves _ (CategoryTheory.Over.forget S)
-
-instance : PreservesColimitsOfShape (Discrete WalkingPair)
-    (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S) := by
-  haveI : (MorphismProperty.commaObj Scheme.Spec (.fromPUnit S) P).IsClosedUnderColimitsOfShape
-      (Discrete WalkingPair) := by
-    apply IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete
-  haveI : CreatesColimitsOfShape (Discrete WalkingPair)
-      (MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec S) :=
-    MorphismProperty.Comma.forgetCreatesColimitsOfShapeOfClosed
-      (L := Scheme.Spec) (R := Functor.fromPUnit S) P (Discrete WalkingPair)
-  have : PreservesColimitsOfShape (Discrete WalkingPair)
-      (MorphismProperty.CostructuredArrow.toOver P Scheme.Spec S ⋙
-        MorphismProperty.Over.forget P ⊤ S) := by
-    change PreservesColimitsOfShape (Discrete WalkingPair) <|
-      MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec S ⋙
-        CategoryTheory.CostructuredArrow.toOver Scheme.Spec S
-    infer_instance
-  exact preservesColimitsOfShape_of_reflects_of_preserves _
-    (MorphismProperty.Over.forget P ⊤ S)
+  out _ := inferInstance
 
 instance : FinitaryExtensive (P.CostructuredArrow ⊤ Scheme.Spec S) :=
   CategoryTheory.finitaryExtensive_of_preserves_and_reflects_isomorphism
