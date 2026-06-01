@@ -84,21 +84,6 @@ lemma Functor.coinducedTopology_comp (J : GrothendieckTopology C) (F : C ⥤ D) 
   · rw [Functor.le_coinducedTopology_iff]
     apply isCocontinuous_comp _ _ _ (F.coinducedTopology J)
 
-lemma Functor.IsCocontinuous.of_iso {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-    {F G : C ⥤ D} (e : F ≅ G) [F.IsCocontinuous J K] :
-    G.IsCocontinuous J K where
-  cover_lift {U} S hS := by
-    refine J.superset_covering ?_
-      (F.cover_lift J K (K.pullback_stable (e.hom.app U) hS))
-    intro Y f (hf : S.arrows (F.map f ≫ e.hom.app U))
-    have := S.downward_closed hf (e.inv.app Y)
-    rwa [e.hom.naturality f, ← Category.assoc, Iso.inv_hom_id_app, Category.id_comp] at this
-
-lemma Functor.IsCocontinuous.iff_of_iso {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-    {F G : C ⥤ D} (e : F ≅ G) :
-    F.IsCocontinuous J K ↔ G.IsCocontinuous J K :=
-  ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
-
 variable {F} in
 lemma Functor.coinducedTopology_eq_of_iso {J : GrothendieckTopology C} {G : C ⥤ D} (e : F ≅ G) :
     F.coinducedTopology J = G.coinducedTopology J := by
@@ -218,29 +203,6 @@ lemma fooo : CoverPreserving (F.weakInducedTopology J) J F where
     | transitive X S R _ _ _ _ =>
       sorry
 
-lemma Functor.op_comp_isSheaf_of_isSheaf_type (J : GrothendieckTopology C)
-    {K : GrothendieckTopology D} [F.IsContinuous J K] {G : Dᵒᵖ ⥤ Type*} (h : Presieve.IsSheaf K G) :
-    Presieve.IsSheaf J (F.op ⋙ G) := by
-  rw [← isSheaf_iff_isSheaf_of_type] at h ⊢
-  exact F.op_comp_isSheaf_of_isSheaf _ _ _ h
-
-/-- Continuous functors send covering sieves to covering sieves.
-The converse is false, see [SGA4, III, Exemple 1.9.3][sga4]. -/
-lemma CoverPreserving.of_isContinuous (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    [F.IsContinuous J K] :
-    CoverPreserving J K F where
-  cover_preserve {X S} hS := by
-    rw [K.mem_iff_isSheafFor_closedSieves]
-    obtain ⟨ι, Y, f, rfl⟩ := S.exists_eq_ofArrows
-    rw [Sieve.ofArrows, ← Sieve.generate_map_eq_functorPushforward,
-      ← Presieve.isSheafFor_iff_generate, Presieve.map_ofArrows]
-    have := Functor.op_comp_isSheaf_of_isSheaf_type F J (classifier_isSheaf K) _ hS
-    rw [Sieve.ofArrows, ← Presieve.isSheafFor_iff_generate] at this
-    rw [Presieve.isSheafFor_arrows_iff] at this ⊢
-    intro x hx
-    refine this x fun i j Z gi gj hgij ↦ hx _ _ _ _ _ ?_
-    simp [← Functor.map_comp, hgij]
-
 --lemma booasdf {X : C} (S : Sieve (F.obj X)) (hs : S ∈ J (F.obj X)) :
 --    Sieve.functorPullback F S ∈ F.inducedTopology' J X := by
 --  rw [GrothendieckTopology.mem_iff_isSheafFor_closedSieves]
@@ -329,12 +291,6 @@ lemma asdfasdf (J : GrothendieckTopology C) (K : GrothendieckTopology D) :
   · sorry
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
-/-- If `F` is flat, it is continuous if and only if it preserves covers. -/
-lemma Functor.isContinuous_iff_coverPreserving [RepresentablyFlat F] :
-    F.IsContinuous J K ↔ CoverPreserving J K F := by
-  refine ⟨fun h ↦ .of_isContinuous _ _ _, fun h ↦ ?_⟩
-  apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) h
 
 lemma aux [RepresentablyFlat F] {X : C} (S : Sieve X)
     (hS : Sieve.functorPushforward F S ∈ K _) :
