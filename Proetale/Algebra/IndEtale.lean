@@ -76,50 +76,52 @@ instance (priority := 100) of_indZariski [IndZariski R S] : IndEtale R S := by
   refine ObjectProperty.ind_mono (isLocalIso_le_etale R) _ ?_
   rwa [← Algebra.IndZariski.iff_ind_isLocalIso]
 
-instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLocalRing R] :
-    Algebra.IsSeparable k R := by
-  obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := k) (S := R)
+/-- Let `A → B` be an ind-étale algebra and let `L` be a local ring that is also an algebra
+over a field `k`, in a way compatible with the `A`-algebra structures. Then for every
+`A`-algebra homomorphism `φ : B →ₐ[A] L` and every `b : B`, the image `φ b` is separable
+over `k`. -/
+lemma isSeparable_of_algHom_to_isLocalRing {A B : Type u} [CommRing A] [CommRing B]
+    [Algebra A B] [IndEtale A B] (k L : Type u) [Field k] [CommRing L] [IsLocalRing L]
+    [Algebra A k] [Algebra A L] [Algebra k L] [IsScalarTower A k L]
+    (φ : B →ₐ[A] L) (b : B) : IsSeparable k (φ b) := by
+  obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := A) (S := B)
   letI : SmallCategory ι := hcat
   letI : IsFiltered ι := hfilt
-  refine ⟨fun x ↦ ?_⟩
-  have hcolim : IsColimit ((forget (CommAlgCat.{u} k)).mapCocone P.cocone) :=
-    isColimitOfPreserves (forget (CommAlgCat.{u} k)) P.isColimit
-  obtain ⟨i, a, ha⟩ := Types.jointly_surjective_of_isColimit hcolim x
-  rw [← ha]
-  have : Algebra.Etale k (P.diag.obj i) := hP i
-  exact IsSeparable.of_algHom_etale_to_isLocalRing k (P.diag.obj i) R (P.ι.app i).hom a
+  have hcolim : IsColimit ((forget (CommAlgCat.{u} A)).mapCocone P.cocone) :=
+    isColimitOfPreserves (forget (CommAlgCat.{u} A)) P.isColimit
+  obtain ⟨i, bᵢ, hbᵢ⟩ := Types.jointly_surjective_of_isColimit hcolim b
+  have : Algebra.Etale A (P.diag.obj i) := hP i
+  let ψ : (k ⊗[A] P.diag.obj i) →ₐ[k] L :=
+    Algebra.TensorProduct.lift (Algebra.ofId k L) (φ.comp (P.ι.app i).hom)
+      (fun _ _ ↦ Commute.all _ _)
+  have hψ : ψ ((1 : k) ⊗ₜ[A] bᵢ) = φ b := by
+    simpa [ψ] using congrArg φ hbᵢ
+  rw [← hψ]
+  exact IsSeparable.of_algHom_etale_to_isLocalRing k _ L ψ _
 
-/-- An ind-étale ring extension induces separable algebraic extensions on residue fields. -/
-instance isSeparable_residueField [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S)
+instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLocalRing R] :
+    Algebra.IsSeparable k R :=
+  ⟨fun x ↦ isSeparable_of_algHom_to_isLocalRing k R (AlgHom.id k R) x⟩
+
+/-- An ind-étale ring extension `R → S` induces a separable extension `κ(p) → κ(q)` on
+residue fields, for any pair of primes `q ∈ Spec S` lying over `p ∈ Spec R`. -/
+instance isSeparable_residueField [IndEtale R S] (p : Ideal R) (q : Ideal S)
     [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra p q] :
     Algebra.IsSeparable p.ResidueField q.ResidueField := by
-  obtain ⟨ι, hcat, hfilt, P, hP⟩ := IndEtale.exists_colimitPresentation (R := R) (S := S)
-  letI : SmallCategory ι := hcat
-  letI : IsFiltered ι := hfilt
   -- Every image in `q.ResidueField` of an element of `S` factors through a finite étale
   -- `p.ResidueField`-subalgebra, hence is separable over `p.ResidueField`.
-  have key (s : S) : IsSeparable p.ResidueField (algebraMap S q.ResidueField s) := by
-    have hcolim : IsColimit ((forget (CommAlgCat.{u} R)).mapCocone P.cocone) :=
-      isColimitOfPreserves (forget (CommAlgCat.{u} R)) P.isColimit
-    obtain ⟨i, sᵢ, hsᵢ⟩ := Types.jointly_surjective_of_isColimit hcolim s
-    have : Algebra.Etale R (P.diag.obj i) := hP i
-    let φ : (p.ResidueField ⊗[R] P.diag.obj i) →ₐ[p.ResidueField] q.ResidueField :=
-      Algebra.TensorProduct.lift (Algebra.ofId p.ResidueField q.ResidueField)
-        ((IsScalarTower.toAlgHom R S q.ResidueField).comp (P.ι.app i).hom)
-        (fun _ _ ↦ Commute.all _ _)
-    have hφ : φ ((1 : p.ResidueField) ⊗ₜ[R] sᵢ) = algebraMap S q.ResidueField s := by
-      simp only [φ, Algebra.TensorProduct.lift_tmul, map_one, one_mul, AlgHom.comp_apply,
-        IsScalarTower.coe_toAlgHom']
-      exact congrArg (algebraMap S q.ResidueField) hsᵢ
-    exact hφ ▸ IsSeparable.of_algHom_etale_to_isLocalRing p.ResidueField _ q.ResidueField φ _
-  -- A general element of `q.ResidueField` is a ratio of two images from `S`.
+  have key (s : S) : IsSeparable p.ResidueField (algebraMap S q.ResidueField s) :=
+    isSeparable_of_algHom_to_isLocalRing p.ResidueField q.ResidueField
+      (IsScalarTower.toAlgHom R S q.ResidueField) s
   refine ⟨fun y ↦ ?_⟩
+  -- A general element of `q.ResidueField` is a ratio of images of two elements of `S`;
+  -- we conclude via `separableClosure`, which is closed under division.
   rw [← mem_separableClosure_iff (F := p.ResidueField) (E := q.ResidueField)]
-  obtain ⟨x, m, _, hxm⟩ := IsFractionRing.div_surjective (A := S ⧸ q) y
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  obtain ⟨m, rfl⟩ := Ideal.Quotient.mk_surjective m
+  obtain ⟨x', m', _, hxm⟩ := IsFractionRing.div_surjective (A := S ⧸ q) y
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x'
+  obtain ⟨m, rfl⟩ := Ideal.Quotient.mk_surjective m'
   rw [← hxm, Ideal.algebraMap_quotient_residueField_mk,
     Ideal.algebraMap_quotient_residueField_mk]
   exact div_mem (mem_separableClosure_iff.mpr (key x))
