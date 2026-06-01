@@ -438,32 +438,6 @@ lemma ProdStrata.mapsTo_map_specComap {E F : Finset A} (h : E ⊆ F) :
     ← Ideal.map_le_iff_le_comap] at hp ⊢
   exact (map_ideal_le h).trans hp
 
-/-- If two indices share `left` and `right`, then transporting a `ProdStrata`-component along
-`Generalization.map` recovers the other component. -/
-private lemma ProdStrata.map_transport_eq {E : Finset A}
-    {i j : Stratification.Index E}
-    (hl : j.left = i.left) (hr : j.right = i.right)
-    (h : Generalization.locClosedSubset i.function i.ideal ⊆
-         Generalization.locClosedSubset j.function j.ideal)
-    (x : ProdStrata E) :
-    Generalization.map h (x j) = x i := by
-  obtain rfl : j = i := Stratification.Index.ext hl hr
-  simp
-
-/-- Two `Generalization.map` calls into the same target, starting from `ProdStrata`-components
-of indices that share `left` and `right`, give equal results. -/
-private lemma ProdStrata.map_transport_comp_eq {E : Finset A} {f' : A} {I' : Ideal A}
-    {j₁ j₂ : Stratification.Index E}
-    (hl : j₁.left = j₂.left) (hr : j₁.right = j₂.right)
-    (h₁ : Generalization.locClosedSubset f' I' ⊆
-            Generalization.locClosedSubset j₁.function j₁.ideal)
-    (h₂ : Generalization.locClosedSubset f' I' ⊆
-            Generalization.locClosedSubset j₂.function j₂.ideal)
-    (x : ProdStrata E) :
-    Generalization.map h₁ (x j₁) = Generalization.map h₂ (x j₂) := by
-  obtain rfl : j₁ = j₂ := Stratification.Index.ext hl hr
-  rfl
-
 variable (A) in
 /-- The diagram whose colimit is the w-localization of `A`. -/
 noncomputable def diag : Finset A ⥤ CommAlgCat A where
@@ -474,21 +448,35 @@ noncomputable def diag : Finset A ⥤ CommAlgCat A where
     ext x i
     simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_id, AlgHom.coe_id, id_eq,
       ProdStrata.map_apply]
-    refine ProdStrata.map_transport_eq ?_ ?_ _ x
-    · exact Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
-        Set.subset_union_left.trans i.union_eq.le
-    · exact Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
-        Set.subset_union_right.trans i.union_eq.le
+    suffices h : ∀ {j : Stratification.Index E} (_ : j = i)
+        (h : Generalization.locClosedSubset i.function i.ideal ⊆
+             Generalization.locClosedSubset j.function j.ideal),
+        Generalization.map h (x j) = x i by
+      exact h (Stratification.Index.ext
+        (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+          Set.subset_union_left.trans i.union_eq.le)
+        (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+          Set.subset_union_right.trans i.union_eq.le)) _
+    rintro j rfl _
+    simp
   map_comp {E F G} f g := by
     classical
     ext x i
     simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_comp, AlgHom.coe_comp, Function.comp_apply,
       ProdStrata.map_apply, Generalization.map_map]
-    refine ProdStrata.map_transport_comp_eq ?_ ?_ _ _ x
-    · simp only [Stratification.Index.restrict_left,
-        ← Finset.inter_assoc, Finset.inter_eq_left.mpr (leOfHom f)]
-    · simp only [Stratification.Index.restrict_right,
-        ← Finset.inter_assoc, Finset.inter_eq_left.mpr (leOfHom f)]
+    suffices h : ∀ (j₁ j₂ : Stratification.Index E) (_ : j₁ = j₂) (f' : A) (I' : Ideal A)
+        (h₁ : Generalization.locClosedSubset f' I' ⊆
+                Generalization.locClosedSubset j₁.function j₁.ideal)
+        (h₂ : Generalization.locClosedSubset f' I' ⊆
+                Generalization.locClosedSubset j₂.function j₂.ideal),
+        Generalization.map h₁ (x j₁) = Generalization.map h₂ (x j₂) by
+      exact h _ _ (Stratification.Index.ext
+        (by simp only [Stratification.Index.restrict_left,
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr (leOfHom f)])
+        (by simp only [Stratification.Index.restrict_right,
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr (leOfHom f)])) _ _ _ _
+    rintro j₁ j₂ rfl f' I' h₁ h₂
+    rfl
 
 variable (A) in
 /-- The w-localization of a ring as an object of `CommAlgCat A` is the colimit over
