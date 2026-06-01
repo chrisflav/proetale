@@ -31,14 +31,14 @@ private lemma ConnectedComponents.fg_injective_of_isPullback {f : C(Y, X)} {g : 
     pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
   have hE_g : ∀ y, (E y).val.1 = g y := by
     intro y
-    show ((pb.isoPullback ≪≫
+    change ((pb.isoPullback ≪≫
       pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y).val.1 = _
     simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
     rw [pullbackIsoProdSubtype_hom_apply]
     exact ConcreteCategory.congr_hom pb.isoPullback_hom_fst y
   have hE_f : ∀ y, (E y).val.2 = f y := by
     intro y
-    show ((pb.isoPullback ≪≫
+    change ((pb.isoPullback ≪≫
       pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y).val.2 = _
     simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
     rw [pullbackIsoProdSubtype_hom_apply]
@@ -161,14 +161,14 @@ theorem ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback
         pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
       have hE_g : ∀ y', (E y').val.1 = g y' := by
         intro y'
-        show ((pb.isoPullback ≪≫
+        change ((pb.isoPullback ≪≫
           pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y').val.1 = _
         simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
         rw [pullbackIsoProdSubtype_hom_apply]
         exact ConcreteCategory.congr_hom pb.isoPullback_hom_fst y'
       have hE_f : ∀ y', (E y').val.2 = f y' := by
         intro y'
-        show ((pb.isoPullback ≪≫
+        change ((pb.isoPullback ≪≫
           pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y').val.2 = _
         simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
         rw [pullbackIsoProdSubtype_hom_apply]
@@ -194,10 +194,10 @@ theorem ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback
         rw [specializes_prod]
         constructor
         · -- g-component: g(y) ⤳ g(y_c) = g(y)
-          show (E y).val.1 ⤳ (E y_c).val.1
+          change (E y).val.1 ⤳ (E y_c).val.1
           rw [hE_g, hE_g, hgy_c]
         · -- f-component: f(y) ⤳ x_c
-          show (E y).val.2 ⤳ (E y_c).val.2
+          change (E y).val.2 ⤳ (E y_c).val.2
           rw [hE_f, hE_f, hfy_c]; exact hfy_xc
       -- Transfer from ambient to subtype via IsInducing
       have hsub_spec : E y ⤳ E y_c :=
@@ -277,7 +277,7 @@ theorem ConnectedComponents.isWLocalMap_of_isPullback {f : C(Y, X)} {g : C(Y, T)
       -- f = Prod.snd ∘ Subtype.val ∘ E
       have hf_eq : ∀ y, f y = (E y).val.2 := by
         intro y'
-        show f y' = ((pb.isoPullback ≪≫
+        change f y' = ((pb.isoPullback ≪≫
           pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y').val.2
         simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
         rw [pullbackIsoProdSubtype_hom_apply]
