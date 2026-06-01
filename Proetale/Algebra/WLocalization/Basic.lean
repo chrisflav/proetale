@@ -448,34 +448,31 @@ noncomputable def diag : Finset A ⥤ CommAlgCat A where
     ext x i
     simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_id, AlgHom.coe_id, id_eq,
       ProdStrata.map_apply]
-    suffices h : ∀ {j : Stratification.Index E} (_ : j = i)
-        (h : Generalization.locClosedSubset i.function i.ideal ⊆
-             Generalization.locClosedSubset j.function j.ideal),
-        Generalization.map h (x j) = x i by
-      exact h (Stratification.Index.ext
-        (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
-          Set.subset_union_left.trans i.union_eq.le)
-        (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
-          Set.subset_union_right.trans i.union_eq.le)) _
-    rintro j rfl _
-    simp
+    generalize_proofs h pf
+    have hi : i.restrict h = i := Stratification.Index.ext
+      (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+        Set.subset_union_left.trans i.union_eq.le)
+      (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+        Set.subset_union_right.trans i.union_eq.le)
+    revert pf
+    rw [hi]
+    intro pf
+    exact Generalization.map_id pf (x i)
   map_comp {E F G} f g := by
     classical
     ext x i
     simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_comp, AlgHom.coe_comp, Function.comp_apply,
       ProdStrata.map_apply, Generalization.map_map]
-    suffices h : ∀ (j₁ j₂ : Stratification.Index E) (_ : j₁ = j₂) (f' : A) (I' : Ideal A)
-        (h₁ : Generalization.locClosedSubset f' I' ⊆
-                Generalization.locClosedSubset j₁.function j₁.ideal)
-        (h₂ : Generalization.locClosedSubset f' I' ⊆
-                Generalization.locClosedSubset j₂.function j₂.ideal),
-        Generalization.map h₁ (x j₁) = Generalization.map h₂ (x j₂) by
-      exact h _ _ (Stratification.Index.ext
+    generalize_proofs hfg pf pfg pff pf'
+    have hi : (i.restrict pfg).restrict pff = i.restrict hfg :=
+      Stratification.Index.ext
         (by simp only [Stratification.Index.restrict_left,
-            ← Finset.inter_assoc, Finset.inter_eq_left.mpr (leOfHom f)])
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr pff])
         (by simp only [Stratification.Index.restrict_right,
-            ← Finset.inter_assoc, Finset.inter_eq_left.mpr (leOfHom f)])) _ _ _ _
-    rintro j₁ j₂ rfl f' I' h₁ h₂
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr pff])
+    revert pf'
+    rw [hi]
+    intro pf'
     rfl
 
 variable (A) in
