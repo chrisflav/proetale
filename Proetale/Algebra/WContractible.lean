@@ -158,7 +158,7 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap A (Restriction T))
 variable {T}
 
 /-- The zero locus of the kernel of `A → RestrictClopen W` equals `W`. -/
-private lemma zeroLocus_ker_restrictClopen_eq (W : Clopens (PrimeSpectrum A)) :
+lemma zeroLocus_ker_restrictClopen_eq (W : Clopens (PrimeSpectrum A)) :
     zeroLocus (RingHom.ker (algebraMap A (RestrictClopen W)) : Set A) =
       (W : Set (PrimeSpectrum A)) := by
   rw [← range_comap_of_surjective (RestrictClopen W) (algebraMap A (RestrictClopen W))
@@ -168,7 +168,7 @@ private lemma zeroLocus_ker_restrictClopen_eq (W : Clopens (PrimeSpectrum A)) :
 
 /-- For `W` a clopen containing the preimage of `T`, the kernel of `A → RestrictClopen W`
 is contained in the kernel of the algebra map into the colimit `Restriction T`. -/
-private lemma ker_algebraMap_restrictClopen_le
+lemma ker_algebraMap_restrictClopen_le
     {W : Clopens (PrimeSpectrum A)} (hW : ConnectedComponents.mk ⁻¹' T ≤ W) :
     RingHom.ker (algebraMap A (RestrictClopen W)) ≤
       RingHom.ker (algebraMap A (Restriction T)) := by
