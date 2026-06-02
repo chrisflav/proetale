@@ -52,6 +52,7 @@ import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Proetale.Mathlib.CategoryTheory.Limits.Types.Filtered
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Basic
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
