@@ -430,10 +430,9 @@ lemma ProdStrata.specComap_surjective (E : Finset A) :
   obtain ⟨q, hq⟩ := h_in_range
   exact ⟨PrimeSpectrum.comap (Pi.evalRingHom _ i) q, hq⟩
 
--- Heavy proof: the surjOn case at the end goes through a `change` bridging
--- `ProdStrata E ≡ ∀ i, Generalization ...`, which unfolds nested `def`s
--- (`ProdStrata`, `Generalization`, `Localization`) and is expensive.
 set_option maxHeartbeats 4000000 in
+-- The surjOn case bridges `ProdStrata E ≡ ∀ i, Generalization ...` via `change`,
+-- which unfolds nested `def`s (`ProdStrata`, `Generalization`, `Localization`).
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (ProdStrata E))
     (zeroLocus (ProdStrata.ideal E)) .univ := by
