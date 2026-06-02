@@ -297,10 +297,10 @@ instance (priority := 100) _root_.Module.Flat.of_indZariski [Algebra.IndZariski 
 theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
     (algebraMap R S).BijectiveOnStalks := by
   obtain ⟨ι, _, _, P, h⟩ := IndZariski.exists_colimitPresentation (R := R) (S := S)
-  refine RingHom.bijectiveOnStalks_algebraMap.mpr ?_
-  exact Algebra.BijectiveOnStalks.of_colimitPresentation P fun i ↦
-    RingHom.bijectiveOnStalks_algebraMap.mp
-      (RingHom.IsLocalIso.bijectiveOnStalks (RingHom.isLocalIso_algebraMap.mpr (h i)))
+  exact RingHom.bijectiveOnStalks_algebraMap.mpr
+    (Algebra.BijectiveOnStalks.of_colimitPresentation P fun i ↦
+      RingHom.bijectiveOnStalks_algebraMap.mp
+        (RingHom.IsLocalIso.bijectiveOnStalks (RingHom.isLocalIso_algebraMap.mpr (h i))))
 
 instance (priority := 100) bijectiveOnStalks [Algebra.IndZariski R S] :
     Algebra.BijectiveOnStalks R S :=
