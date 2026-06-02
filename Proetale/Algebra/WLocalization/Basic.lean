@@ -347,7 +347,7 @@ lemma Stratification.Index.right_eq_sdiff {E : Finset A} [DecidableEq A]
 
 instance (E : Finset A) : Finite (Stratification.Index E) :=
   Finite.of_injective (β := ↥E.powerset)
-    (fun i ↦ ⟨i.left, Finset.mem_powerset.mpr fun a ha ↦
+    (fun i ↦ ⟨i.left, Finset.mem_powerset.mpr fun _ ha ↦
       Finset.mem_coe.mp (i.union_eq ▸ Set.mem_union_left _ (Finset.mem_coe.mpr ha))⟩)
     fun _ _ h ↦ Stratification.Index.ext_of_left (Subtype.ext_iff.mp h)
 
@@ -452,9 +452,9 @@ i.ideal)`. This is the API replacement for `change` calls bridging
 `ProdStrata E ≡ ∀ i, Generalization …`. -/
 lemma ProdStrata.comap_evalRingHom_mem_zeroLocus_ideal_iff {E : Finset A}
     (i : Stratification.Index E) (q : PrimeSpectrum (Generalization i.function i.ideal)) :
-    PrimeSpectrum.comap
+    ((PrimeSpectrum.comap
         (Pi.evalRingHom (fun j : Stratification.Index E ↦
-          Generalization j.function j.ideal) i) q ∈
+          Generalization j.function j.ideal) i) q) : PrimeSpectrum (ProdStrata E)) ∈
       zeroLocus (ProdStrata.ideal E) ↔
     q ∈ zeroLocus (Generalization.ideal i.function i.ideal : Set _) := by
   classical
@@ -468,11 +468,13 @@ lemma ProdStrata.comap_evalRingHom_mem_zeroLocus_ideal_iff {E : Finset A}
       · rw [Pi.single_eq_of_ne h]
         exact Ideal.zero_mem _
     have hz_q := (PrimeSpectrum.mem_zeroLocus _ _).mp hq hmem
-    rw [comap_asIdeal, SetLike.mem_coe, Ideal.mem_comap,
-      Pi.evalRingHom_apply, Pi.single_eq_same] at hz_q
-    exact hz_q
-  · rw [comap_asIdeal, SetLike.mem_coe, Ideal.mem_comap, Pi.evalRingHom_apply]
-    exact (PrimeSpectrum.mem_zeroLocus _ _).mp hq ((ProdStrata.mem_ideal_iff z).mp hz i)
+    rw [comap_asIdeal, SetLike.mem_coe, Ideal.mem_comap] at hz_q
+    have hz' : ((Pi.single i a : ProdStrata E)) i ∈ q.asIdeal := hz_q
+    rwa [Pi.single_eq_same] at hz'
+  · rw [comap_asIdeal, SetLike.mem_coe, Ideal.mem_comap]
+    have hz_i : z i ∈ q.asIdeal :=
+      (PrimeSpectrum.mem_zeroLocus _ _).mp hq ((ProdStrata.mem_ideal_iff z).mp hz i)
+    exact hz_i
 
 /-- The strata of distinct `Stratification.Index E` are disjoint subsets of `Spec A`. -/
 lemma stratum_disjoint_of_ne {E : Finset A} {i j : Stratification.Index E} (h : i ≠ j) :
@@ -492,10 +494,10 @@ lemma stratum_disjoint_of_ne {E : Finset A} {i j : Stratification.Index E} (h : 
   obtain ⟨a, ha₁, ha₂⟩ | ⟨a, ha₁, ha₂⟩ :
       (∃ a ∈ i.left, a ∉ j.left) ∨ (∃ a ∈ j.left, a ∉ i.left) := by
     by_contra hcontra
-    push_neg at hcontra
+    push Not at hcontra
     apply hlne
     ext a
-    exact ⟨fun ha ↦ not_not.mp (hcontra.1 a ha), fun ha ↦ not_not.mp (hcontra.2 a ha)⟩
+    exact ⟨fun ha ↦ hcontra.1 a ha, fun ha ↦ hcontra.2 a ha⟩
   · exact aux ha₁ ha₂
   · exact (aux ha₁ ha₂).symm
 
