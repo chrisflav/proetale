@@ -32,6 +32,12 @@ lemma proAffineEtale.of_isAffine {X Y : Scheme.{u}} [IsAffine X] (f : X ⟶ Y) [
     proAffineEtale f :=
   MorphismProperty.le_pro _ _ ⟨‹_›, ⟨‹_›, trivial⟩⟩
 
+/-- The domain of a pro-affine étale morphism is affine. -/
+lemma proAffineEtale.isAffine {X S : Scheme.{u}} {f : X ⟶ S} (hf : proAffineEtale f) :
+    IsAffine X :=
+  -- Proof: An inverse limit of affine schemes is affine.
+  sorry
+
 /-- `IsAffine` is preserved under isomorphisms. -/
 instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme.{u}) (IsAffine ·) where
   of_iso e h := (IsAffine.iff_of_isIso e.hom).mp h
