@@ -94,11 +94,6 @@ def mk {X : Scheme.{u}} (f : X ⟶ S) (hf : proAffineEtale f) : S.AffineProEt :=
 lemma proAffineEtale_hom {X Y : S.AffineProEt} (f : X ⟶ Y) : proAffineEtale f.left :=
   MorphismProperty.of_postcomp _ _ Y.hom Y.prop <| by simpa using X.prop
 
--- TODO: move me
-instance {X Y : S.ProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
-  have : WeaklyEtale (f.left ≫ Y.hom) := by simp [X.prop]
-  .of_comp _ Y.hom
-
 instance {X Y : S.AffineProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
   proAffineEtale_le_weaklyEtale _ (proAffineEtale_hom f)
 
@@ -263,7 +258,7 @@ noncomputable def zariskiTopology : GrothendieckTopology S.AffineProEt :=
   (toProEt S).inducedTopology (ProEt.zariskiTopology S)
 
 lemma zariskiTopology_eq_toGrothendieck_zariskiPrecoverage :
-    zariskiTopology S = (zariskiPrecoverage S).toGrothendieck :=
+    zariskiTopology S = (zariskiPrecoverage S).toGrothendieck := by
   sorry
 
 instance : (toProEt S).IsContinuous (topology S) (ProEt.topology S) := by
