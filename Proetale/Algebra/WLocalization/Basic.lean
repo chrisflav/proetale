@@ -345,6 +345,7 @@ lemma Stratification.Index.right_eq_sdiff {E : Finset A} [DecidableEq A]
   ext a
   rw [Finset.mem_sdiff, mem_right_iff]
 
+omit [CommRing A] in
 instance (E : Finset A) : Finite (Stratification.Index E) :=
   Finite.of_injective (β := ↥E.powerset)
     (fun i ↦ ⟨i.left, Finset.mem_powerset.mpr fun _ ha ↦
@@ -394,6 +395,29 @@ lemma Stratification.Index.iUnion_stratum (E : Finset A) :
   · simp +contextual [Set.mem_iInter, Finset.mem_filter]
   · simp +contextual [mem_zeroLocus, Set.subset_def]
 
+/-- Given `a ∈ i.left` and `a ∉ j.left`, the strata of `i` and `j` are disjoint. -/
+lemma stratum_disjoint_of_mem_left_not_mem_left {E : Finset A}
+    {i j : Stratification.Index E} {a : A} (ha_i : a ∈ i.left) (ha_j : a ∉ j.left) :
+    Disjoint (stratum i.left i.right) (stratum j.left j.right) := by
+  have ha_in_E : a ∈ E := Finset.mem_coe.mp
+    (i.union_eq ▸ Set.mem_union_left _ (Finset.mem_coe.mpr ha_i))
+  have ha_in_jr : a ∈ j.right :=
+    (Stratification.Index.mem_right_iff j a).mpr ⟨ha_in_E, ha_j⟩
+  rw [Set.disjoint_left]
+  intro p hp_i hp_j
+  simp only [stratum, Set.mem_inter_iff, Set.mem_iInter] at hp_i hp_j
+  exact hp_i.1 a ha_i (hp_j.2 (Ideal.subset_span (Finset.mem_coe.mpr ha_in_jr)))
+
+/-- The strata of distinct `Stratification.Index E` are disjoint subsets of `Spec A`. -/
+lemma stratum_disjoint_of_ne {E : Finset A} {i j : Stratification.Index E} (h : i ≠ j) :
+    Disjoint (stratum i.left i.right) (stratum j.left j.right) := by
+  have hlne : i.left ≠ j.left := fun heq ↦ h (Stratification.Index.ext_of_left heq)
+  rcases not_and_or.mp (mt Finset.Subset.antisymm_iff.mpr hlne) with hsub | hsub
+  · obtain ⟨a, ha_i, ha_j⟩ := Finset.not_subset.mp hsub
+    exact stratum_disjoint_of_mem_left_not_mem_left ha_i ha_j
+  · obtain ⟨a, ha_j, ha_i⟩ := Finset.not_subset.mp hsub
+    exact (stratum_disjoint_of_mem_left_not_mem_left ha_j ha_i).symm
+
 /-- The product of the generalizations of `Z(E', E'')` indexed by all disjoint union decompositions
 `E = E' ⨿ E''`. -/
 def ProdStrata (E : Finset A) : Type _ :=
@@ -418,21 +442,11 @@ instance (E : Finset A) : Algebra A (ProdStrata E) := fast_instance%
 noncomputable def ProdStrata.ideal (E : Finset A) : Ideal (ProdStrata E) :=
   Ideal.pi fun _ ↦ Generalization.ideal _ _
 
-/-- Membership in `ProdStrata.ideal E` is pointwise membership in each `Generalization.ideal`.
-This lemma exists for performance reasons, so consumers do not need to unfold the nested
-`def`s `ProdStrata`, `ProdStrata.ideal`, and `Ideal.pi`. -/
+/-- Membership in `ProdStrata.ideal E` is pointwise membership in each `Generalization.ideal`. -/
 lemma ProdStrata.mem_ideal_iff {E : Finset A} (x : ProdStrata E) :
     x ∈ ProdStrata.ideal E ↔
       ∀ i : Stratification.Index E, x i ∈ Generalization.ideal i.function i.ideal :=
   Iff.rfl
-
-/-- The composition of `Pi.evalRingHom _ i` with `algebraMap A (ProdStrata E)` equals
-`algebraMap A (Generalization i.function i.ideal)`. -/
-lemma ProdStrata.evalRingHom_comp_algebraMap {E : Finset A} (i : Stratification.Index E) :
-    (Pi.evalRingHom (fun j : Stratification.Index E ↦ Generalization j.function j.ideal) i).comp
-        (algebraMap A (ProdStrata E)) =
-      algebraMap A (Generalization i.function i.ideal) :=
-  rfl
 
 /-- Contracting `q : PrimeSpectrum (Generalization i.function i.ideal)` along `Pi.evalRingHom`
 and then along the algebra map equals contracting `q` directly along
@@ -448,8 +462,7 @@ lemma ProdStrata.comap_algebraMap_comap_evalRingHom {E : Finset A}
 
 /-- The contraction `PrimeSpectrum.comap (Pi.evalRingHom _ i) q` lies in
 `zeroLocus (ProdStrata.ideal E)` iff `q` lies in `zeroLocus (Generalization.ideal i.function
-i.ideal)`. This is the API replacement for `change` calls bridging
-`ProdStrata E ≡ ∀ i, Generalization …`. -/
+i.ideal)`. -/
 lemma ProdStrata.comap_evalRingHom_mem_zeroLocus_ideal_iff {E : Finset A}
     (i : Stratification.Index E) (q : PrimeSpectrum (Generalization i.function i.ideal)) :
     ((PrimeSpectrum.comap
@@ -472,49 +485,7 @@ lemma ProdStrata.comap_evalRingHom_mem_zeroLocus_ideal_iff {E : Finset A}
     have hz' : ((Pi.single i a : ProdStrata E)) i ∈ q.asIdeal := hz_q
     rwa [Pi.single_eq_same] at hz'
   · rw [comap_asIdeal, SetLike.mem_coe, Ideal.mem_comap]
-    have hz_i : z i ∈ q.asIdeal :=
-      (PrimeSpectrum.mem_zeroLocus _ _).mp hq ((ProdStrata.mem_ideal_iff z).mp hz i)
-    exact hz_i
-
-/-- The strata of distinct `Stratification.Index E` are disjoint subsets of `Spec A`. -/
-lemma stratum_disjoint_of_ne {E : Finset A} {i j : Stratification.Index E} (h : i ≠ j) :
-    Disjoint (stratum i.left i.right) (stratum j.left j.right) := by
-  have hlne : i.left ≠ j.left := fun heq ↦ h (Stratification.Index.ext_of_left heq)
-  have aux : ∀ {i' j' : Stratification.Index E} {a : A}, a ∈ i'.left → a ∉ j'.left →
-      Disjoint (stratum i'.left i'.right) (stratum j'.left j'.right) := by
-    intro i' j' a ha_i ha_j
-    rw [Set.disjoint_left]
-    intro p hp_i hp_j
-    have ha_in_E : a ∈ E := Finset.mem_coe.mp
-      (i'.union_eq ▸ Set.mem_union_left _ (Finset.mem_coe.mpr ha_i))
-    have ha_in_jr : a ∈ j'.right :=
-      (Stratification.Index.mem_right_iff j' a).mpr ⟨ha_in_E, ha_j⟩
-    simp only [stratum, Set.mem_inter_iff, Set.mem_iInter] at hp_i hp_j
-    exact hp_i.1 a ha_i (hp_j.2 (Ideal.subset_span (Finset.mem_coe.mpr ha_in_jr)))
-  obtain ⟨a, ha₁, ha₂⟩ | ⟨a, ha₁, ha₂⟩ :
-      (∃ a ∈ i.left, a ∉ j.left) ∨ (∃ a ∈ j.left, a ∉ i.left) := by
-    by_contra hcontra
-    push Not at hcontra
-    apply hlne
-    ext a
-    exact ⟨fun ha ↦ hcontra.1 a ha, fun ha ↦ hcontra.2 a ha⟩
-  · exact aux ha₁ ha₂
-  · exact (aux ha₁ ha₂).symm
-
-/-- `Spec (ProdStrata E) → Spec A` is surjective. -/
-lemma ProdStrata.specComap_surjective (E : Finset A) :
-    Function.Surjective (PrimeSpectrum.comap (algebraMap A (ProdStrata E))) := by
-  intro p
-  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
-    (Stratification.Index.iUnion_stratum (A := A) E ▸ Set.mem_univ p)
-  rw [← locClosedSubset_function_ideal] at hi
-  have h_in_range :
-      p ∈ Set.range (PrimeSpectrum.comap
-        (algebraMap A (Generalization i.function i.ideal))) := by
-    rw [Generalization.range_algebraMap_generalization, mem_generalizationHull_iff]
-    exact ⟨p, hi, specializes_rfl⟩
-  obtain ⟨q, hq⟩ := h_in_range
-  exact ⟨PrimeSpectrum.comap (Pi.evalRingHom _ i) q, hq⟩
+    exact (PrimeSpectrum.mem_zeroLocus _ _).mp hq ((ProdStrata.mem_ideal_iff z).mp hz i)
 
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (ProdStrata E))
@@ -538,11 +509,10 @@ lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
         PrimeSpectrum.comap (algebraMap A (Generalization i₂.function i₂.ideal)) q₂ := by
       rw [← ProdStrata.comap_algebraMap_comap_evalRingHom i₁ q₁,
         ← ProdStrata.comap_algebraMap_comap_evalRingHom i₂ q₂, hq₁, hq₂, heq]
-    have h_same : i₁ = i₂ := by
+    obtain rfl : i₁ = i₂ := by
       by_contra hne
       rw [locClosedSubset_function_ideal] at h_img₁ h_img₂
       exact Set.disjoint_left.mp (stratum_disjoint_of_ne hne) h_img₁ (heq' ▸ h_img₂)
-    subst h_same
     have hq_eq : q₁ = q₂ :=
       (Generalization.bijOn_algebraMap_generalization_specComap_zeroLocus_ideal
         i₁.function i₁.ideal).injOn hq₁_mem hq₂_mem heq'
@@ -557,6 +527,13 @@ lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     refine ⟨PrimeSpectrum.comap (Pi.evalRingHom R i) q,
       (ProdStrata.comap_evalRingHom_mem_zeroLocus_ideal_iff i q).mpr hq_mem, ?_⟩
     rw [ProdStrata.comap_algebraMap_comap_evalRingHom, hq_eq]
+
+/-- `Spec (ProdStrata E) → Spec A` is surjective. -/
+lemma ProdStrata.specComap_surjective (E : Finset A) :
+    Function.Surjective (PrimeSpectrum.comap (algebraMap A (ProdStrata E))) := fun p ↦
+  let ⟨q, _, hq⟩ :=
+    (ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal E).surjOn (Set.mem_univ p)
+  ⟨q, hq⟩
 
 lemma ProdStrata.exists_specializes_zeroLocus_ideal {E : Finset A}
     (x : PrimeSpectrum (ProdStrata E)) :
