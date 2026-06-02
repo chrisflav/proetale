@@ -239,6 +239,63 @@ lemma isClosedEmbedding_algebraMap_specComap :
   PrimeSpectrum.isClosedEmbedding_comap_of_surjective (Restriction T)
     (algebraMap A (Restriction T)) (algebraMap_surjective T)
 
+/-- If `A` is w-local, then `Restriction T` is w-local. This is part of Stacks 097D. -/
+instance instIsWLocalRing [IsWLocalRing A] : IsWLocalRing (Restriction T) :=
+  IsWLocalRing.of_surjective (algebraMap_surjective T)
+
+/-- If `A` is w-local and `T ⊆ π₀(Spec A)` is closed, then the connected components of
+`Spec (Restriction T)` are canonically homeomorphic to `T`. This is the identification used
+in the construction of the w-contractification (Stacks 097D, `def:modify-pi0-profinite`). -/
+def connectedComponentsEquiv [IsWLocalRing A] (h : IsClosed T) :
+    ConnectedComponents (PrimeSpectrum (Restriction T)) ≃ₜ T := by
+  set f : PrimeSpectrum (Restriction T) → PrimeSpectrum A :=
+    PrimeSpectrum.comap (algebraMap A (Restriction T))
+  have hce : IsClosedEmbedding f := isClosedEmbedding_algebraMap_specComap
+  have hrange : Set.range f = ConnectedComponents.mk ⁻¹' T :=
+    range_algebraMap_specComap h
+  have hmem (q : PrimeSpectrum (Restriction T)) : ConnectedComponents.mk (f q) ∈ T := by
+    have : f q ∈ Set.range f := Set.mem_range_self q
+    rw [hrange] at this
+    exact this
+  let φ : PrimeSpectrum (Restriction T) → T :=
+    fun q ↦ ⟨ConnectedComponents.mk (f q), hmem q⟩
+  have hφ_cont : Continuous φ :=
+    (ConnectedComponents.continuous_coe.comp hce.continuous).subtype_mk _
+  let ψ : ConnectedComponents (PrimeSpectrum (Restriction T)) → T :=
+    Continuous.connectedComponentsLift hφ_cont
+  have hψ_cont : Continuous ψ := Continuous.connectedComponentsLift_continuous _
+  have hsurj : Function.Surjective ψ := by
+    rintro ⟨t, ht⟩
+    obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
+    obtain ⟨q, hq⟩ : x ∈ Set.range f := hrange ▸ ht
+    exact ⟨ConnectedComponents.mk q, by simp [ψ, φ, hq]⟩
+  have hinj : Function.Injective ψ := by
+    refine Continuous.connectedComponentsLift_injective hφ_cont ?_
+    rintro ⟨t, ht⟩
+    obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
+    have hfib_eq : φ ⁻¹' {⟨ConnectedComponents.mk x, ht⟩} =
+        f ⁻¹' connectedComponent x := by
+      ext q
+      simp only [Set.mem_preimage, Set.mem_singleton_iff, Subtype.mk.injEq, φ]
+      rw [← connectedComponents_preimage_singleton, Set.mem_preimage,
+        Set.mem_singleton_iff]
+    rw [hfib_eq]
+    have hcc_sub : (connectedComponent x : Set (PrimeSpectrum A)) ⊆ Set.range f := by
+      rw [hrange]
+      intro y hy
+      have hxy : ConnectedComponents.mk y = ConnectedComponents.mk x :=
+        ConnectedComponents.coe_eq_coe.mpr (connectedComponent_eq hy).symm
+      change ConnectedComponents.mk y ∈ T
+      rw [hxy]
+      exact ht
+    have himg : f '' (f ⁻¹' (connectedComponent x : Set (PrimeSpectrum A))) =
+        connectedComponent x :=
+      Set.image_preimage_eq_of_subset hcc_sub
+    refine hce.isInducing.isPreconnected_image.mp ?_
+    rw [himg]
+    exact isPreconnected_connectedComponent
+  exact Continuous.homeoOfEquivCompactToT2 (f := .ofBijective ψ ⟨hinj, hsurj⟩) hψ_cont
+
 end Restriction
 
 end Restriction
