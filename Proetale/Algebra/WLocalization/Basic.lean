@@ -108,6 +108,20 @@ noncomputable def map {f f' : A} {I I' : Ideal A}
     (Generalization f' I') (RingHom.id A) (submonoid_le h)
   commutes' r := by simp
 
+@[simp]
+lemma map_id {f : A} {I : Ideal A} (h : locClosedSubset f I ⊆ locClosedSubset f I)
+    (x : Generalization f I) : map h x = x := by
+  simp [map]
+
+/-- Composition of `Generalization.map`s is again a `Generalization.map`. -/
+lemma map_map {f₁ f₂ f₃ : A} {I₁ I₂ I₃ : Ideal A}
+    (h₁₂ : locClosedSubset f₂ I₂ ⊆ locClosedSubset f₁ I₁)
+    (h₂₃ : locClosedSubset f₃ I₃ ⊆ locClosedSubset f₂ I₂)
+    (x : Generalization f₁ I₁) :
+    map h₂₃ (map h₁₂ x) = map (h₂₃.trans h₁₂) x := by
+  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq (submonoid f₁ I₁) x
+  simp [map, IsLocalization.map_mk']
+
 /-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
 the generalization hull of `D(f) ∩ V(I)`. -/
 lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
@@ -288,6 +302,7 @@ lemma stratum_anti {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :
     exact Ideal.span_mono (Finset.coe_subset.mpr hFF')
 
 /-- The type of disjoint union decompositions of `E` into two finite sets. -/
+@[ext]
 structure Stratification.Index (E : Finset A) where
   left : Finset A
   right : Finset A
@@ -443,8 +458,37 @@ variable (A) in
 noncomputable def diag : Finset A ⥤ CommAlgCat A where
   obj E := .of A (ProdStrata E)
   map {E F} f := CommAlgCat.ofHom (ProdStrata.map <| leOfHom f)
-  map_id E := sorry
-  map_comp := sorry
+  map_id E := by
+    classical
+    ext x i
+    simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_id, AlgHom.coe_id, id_eq,
+      ProdStrata.map_apply]
+    generalize_proofs h pf
+    have hi : i.restrict h = i := Stratification.Index.ext
+      (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+        Set.subset_union_left.trans i.union_eq.le)
+      (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+        Set.subset_union_right.trans i.union_eq.le)
+    revert pf
+    rw [hi]
+    intro pf
+    exact Generalization.map_id pf (x i)
+  map_comp {E F G} f g := by
+    classical
+    ext x i
+    simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_comp, AlgHom.coe_comp, Function.comp_apply,
+      ProdStrata.map_apply, Generalization.map_map]
+    generalize_proofs hfg pf pfg pff pf'
+    have hi : (i.restrict pfg).restrict pff = i.restrict hfg :=
+      Stratification.Index.ext
+        (by simp only [Stratification.Index.restrict_left,
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr pff])
+        (by simp only [Stratification.Index.restrict_right,
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr pff])
+    revert pf'
+    rw [hi]
+    intro pf'
+    rfl
 
 variable (A) in
 /-- The w-localization of a ring as an object of `CommAlgCat A` is the colimit over

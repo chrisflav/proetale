@@ -12,6 +12,17 @@ lemma Specializes.connectedComponents_mk_eq {a b : X} (hab : a ⤳ b) :
     isConnected_singleton.closure.subset_connectedComponent
       (subset_closure rfl) hab.mem_closure
 
+/-- Any preimage under `ConnectedComponents.mk` is a union of connected components. -/
+lemma ConnectedComponents.iUnion_connectedComponent_preimage_mk
+    (T : Set (ConnectedComponents X)) :
+    ⋃ x ∈ (ConnectedComponents.mk ⁻¹' T : Set X), connectedComponent x =
+      ConnectedComponents.mk ⁻¹' T := by
+  ext x
+  simp only [Set.mem_iUnion, Set.mem_preimage, exists_prop]
+  refine ⟨?_, fun hx ↦ ⟨x, hx, mem_connectedComponent⟩⟩
+  rintro ⟨y, hy, hxy⟩
+  exact (ConnectedComponents.coe_eq_coe'.mpr hxy) ▸ hy
+
 -- add `@[stacks 0906]` to `ConnectedComponents.totallyDisconnectedSpace`
 
 -- after `IsPreconnected.eqOn_const_of_mapsTo` if the proof need some lemma of the form
