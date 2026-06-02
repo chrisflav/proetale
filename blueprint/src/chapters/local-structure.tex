@@ -108,6 +108,7 @@ In general, $\pi_0(X) \times \pi_0(Y)$ is continuous and bijective, but not nece
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Use the universal property of connected components.
 \end{proof}
 
@@ -398,7 +399,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/00EA}{Tag 00EA}, (1) + (2)(a)]{stacks-project}}]
   \label{thm:localization-isom-of-going-down}
-  \lean{Algebra.HasGoingDown.factor_bijective_of_subsingleton}
+  \lean{Algebra.HasGoingDown.isLocalization_atPrime_of_subsingleton}
   \leanok
   Let $A \to B$ be a ring map which has going down. Let $\p \subset A$ be a prime ideal and let 
   $\q \subset B$ be a prime ideal lying over $\p$. Assume that and there is at most one prime
@@ -406,6 +407,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 \end{lemma}
 
 \begin{proof}
+  \leanok
   It suffices to show that all the elements of $B - \q$ are all invertible in $B_{\p B}$. Suppose the contrary, let $x \in B - \q$ be an element not invertible in $B_{\p B}$. We can find a prime ideal $\q' \subseteq \p B$ of $B$ containing $x$. By going down there exists a prime $\q'' \subseteq \q$ lying over $\p' = A \cap \q'$. By the uniqueness of primes lying over $\p'$ we see that $\q' = \q''$, which contradicts the fact that $x \notin \q$.
 \end{proof}
 
@@ -613,6 +615,7 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{lemma}
 
 \begin{proof}
+    \leanok
     $S^{-1} A = \colim_{f \in S} A_f$ and $A \to A_f$ is a local isomorphism.
 \end{proof}
 
@@ -673,6 +676,8 @@ The following example shows that our definition agrees with the one in
     \label{lem:sh-iff-henselian-and-sep-closed}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
     \uses{def:strictly-henselian-local-ring}
+    \lean{isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -733,11 +738,12 @@ The following example shows that our definition agrees with the one in
   \lean{Algebra.IndEtale.trans, RingHom.IndEtale.comp}
   \leanok
   \uses{def:ind-etale}
-  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale, 
+  Let $A \to B$ and $B \to C$ be ring maps. If $A \to B$ and $B \to C$ are ind-étale,
   then $A \to C$ is ind-étale.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -905,6 +911,7 @@ Obviously, every w-purely-local morphism is w-local.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{lemma:spectral-constructible-closed-closed}
   Since every point is closed, there are no nontrivial specializations between points. By \Cref{item:specialization-closed-spectral-constructible-closed-closed} in \Cref{lemma:spectral-constructible-closed-closed}, all constructible subsets of $X$ are closed. In particular, every compact open subset is also closed. Since $X$ is spectral, thus T0, for any two points there is a quasi-compact open (also closed) containing exactly one of them. Thus $X$ is profinite by \verb`isTotallyDisconnected_of_isClopen_set`.
 \end{proof}
@@ -933,6 +940,7 @@ Obviously, every w-purely-local morphism is w-local.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Let $X$ be a spectral space and let $W$ denote $E^g$. Since every point of $W$ specializes to a point of $E$ we see that an open of $W$ which contains $E$ is equal to $W$. Hence since $E$ is quasi-compact, so is $W$. If $x \in X$, $x \notin W$, then $Z = \overline{\{x\}}$ is disjoint from $W$. Since $W$ is quasi-compact we can find a quasi-compact open $U$ (since there is a open basis of quasi-compact opens of $X$ and finitely many of them would suffice to cover $W$) with $W \subset U$ and $U \cap Z = \emptyset$. We conclude that $W$ is an intersection of quasi-compact open subsets.
 \end{proof}
 
@@ -1011,6 +1019,7 @@ a quasi-compact open $U$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:spectral-constructible-quasi-compact}
     It suffices to show the first claim. Let $x \in \overline{E}$
     and let $\{U_i\}_{i \in I}$ be the set of quasi-compact open neighbourhoods of $x$.
@@ -1121,6 +1130,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:closed-subspace-w-local}
   This is \Cref{thm:closed-subspace-w-local}.
 \end{proof}
@@ -1170,6 +1180,7 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:closed-points-isom-pi0,thm:w-local-set-decomposition,
     thm:isom-of-identifies-local-rings-bijective}
   By \Cref{thm:isom-of-identifies-local-rings-bijective}, it suffices to show
@@ -1225,6 +1236,7 @@ on the choice of $f$ and $I$ \stacksproject{096V}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $S = S_{f, I}$, $Z = D(f) \cap V(I)$ and $J = \tildeideal{I}{f}$.
 
     Note that $Z$ is homeomorphic to $\spec{(A/I)_f}$.
@@ -1319,6 +1331,7 @@ $V( \tildeideal{I}{f})$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $x \in \spec{A}$ and $E = E' \coprod E''$ a disjoint union decomposition. Then
     $x \in Z(E', E'')$ if and only if $f(x) \neq 0$ for all $f \in E'$ and $f(x) = 0$
     for all $f \in E''$. Hence $x$ is contained in
@@ -1400,6 +1413,7 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This holds because for every decomposition $E_2 = E_2' \coprod E_2''$
     and $E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$, the induced map
     $\spec{A_{\widetilde{Z(E_2', E_2'')}}} \to \spec{A_{\widetilde{Z(E_1', E_1'')}}}$
@@ -1434,6 +1448,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Omitted.
 \end{proof}
 
@@ -1446,6 +1461,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:ind-Zariski-products, lemma:ind-ind-Zariski}
     For $E \subseteq A$ a finite subset, the $A$-algebra $A_E$ is ind-Zariski
     as a finite product of ind-Zariski algebras by \ref{lemma:ind-Zariski-products}.
@@ -1523,6 +1539,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:w-localization-closed-points, lemma:w-localization-ind-Zariski}
     By \ref{lemma:w-localization-ind-Zariski}, $A \to A_w$ is flat. Because
     $V(I_w)$ surjects onto $\spec{A}$ by \ref{lemma:w-localization-closed-points},
@@ -1962,6 +1979,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $A = \colim_i A_i$ such that $A_i$ is an étale $k$-algebra for all $i$.
     Let $\mathfrak{m}$ be the maximal ideal of $A$. Since localization commutes with colimits,
     we obtain $A = A_{\mathfrak{m}} = \colim_i (A_i)_{\mathfrak{m}_i}$ where
@@ -1982,9 +2000,18 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
 \begin{proof}
     \uses{lemma:field-local-ind-etale}
-    Let $\mathfrak{p}$ be a prime ideal of $B$. After base change along $A \to \kappa(\mathfrak{p}^c)$,
-    we may assume $A = k$ is a field. After postcomposing with the ind-étale map $B \to B_{\mathfrak{p}}$,
-    we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-ind-etale}.
+    \leanok
+    Let $\mathfrak{q}$ be a prime ideal of $B$ lying over $\mathfrak{p} \subseteq A$.
+    Write $B = \colim_i B_i$ as a filtered colimit of étale $A$-algebras. Every element
+    $s \in B$ lifts to some $s_i \in B_i$, and the composition
+    \[
+        \kappa(\mathfrak{p}) \otimes_A B_i \to \kappa(\mathfrak{q})
+    \]
+    is an algebra homomorphism from the étale $\kappa(\mathfrak{p})$-algebra
+    $\kappa(\mathfrak{p}) \otimes_A B_i$ to the local ring $\kappa(\mathfrak{q})$, so by
+    \ref{lemma:field-local-ind-etale} the image of $s$ in $\kappa(\mathfrak{q})$ is separable
+    over $\kappa(\mathfrak{p})$. A general element of $\kappa(\mathfrak{q})$ is a ratio of two
+    such images, and separability passes to ratios via the separable closure.
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
@@ -2060,6 +2087,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:intersection-closed-open-iff}
   Each $A \to A_W$ is a localization at an idempotent. Passing to filtered colimits, $A \to A_T$ is surjective and ind-Zariski.
 

@@ -1,5 +1,6 @@
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Algebra.IndEtale
+import Proetale.Algebra.HenselianLocalRing
 
 universe u
 

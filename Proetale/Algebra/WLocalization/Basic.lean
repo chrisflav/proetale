@@ -64,35 +64,217 @@ instance indZariski : Algebra.IndZariski A (Generalization f I) := by
   dsimp [Generalization]
   infer_instance
 
+/-- The locally closed subset `D(f) ∩ V(I)` of `Spec A`. -/
 def locClosedSubset (f : A) (I : Ideal A) : Set (PrimeSpectrum A) :=
   basicOpen f ∩ zeroLocus I
 
-/-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
-the generalization hull of `D(f) ∩ V(I)`. -/
-lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
-    Set.range (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) =
-    generalizationHull (locClosedSubset f I) :=
-  sorry
-
-lemma bijOn_algebraMap_generalization_specComap_zeroLocus_ideal (f : A) (I : Ideal A) :
-    Set.BijOn (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) (zeroLocus (ideal f I))
-    (locClosedSubset f I) :=
-  sorry
+/-- Characterization of `submonoid f I`: an element `a : A` lies in `submonoid f I` if and only
+if `a` lies outside every prime in `locClosedSubset f I = D(f) ∩ V(I)`. -/
+lemma mem_submonoid_iff (f : A) (I : Ideal A) (a : A) :
+    a ∈ submonoid f I ↔ ∀ p ∈ locClosedSubset f I, a ∉ p.asIdeal := by
+  rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff,
+    IsScalarTower.algebraMap_apply A (A ⧸ I),
+    ← PrimeSpectrum.basicOpen_le_basicOpen_iff_algebraMap_isUnit
+      (f := Ideal.Quotient.mk I f) (S := Localization.Away (Ideal.Quotient.mk I f))]
+  refine ⟨fun hle p ⟨hpf, hpI⟩ hap ↦ ?_, fun h p_bar hp_bar hmka ↦ ?_⟩
+  · simp only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen] at hpf
+    rw [PrimeSpectrum.mem_zeroLocus] at hpI
+    obtain ⟨p_bar, rfl⟩ : p ∈ Set.range (PrimeSpectrum.comap (Ideal.Quotient.mk I)) := by
+      rw [range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
+        PrimeSpectrum.mem_zeroLocus, Ideal.mk_ker]
+      exact hpI
+    have hpb_f : p_bar ∈ basicOpen (Ideal.Quotient.mk I f) :=
+      (PrimeSpectrum.mem_basicOpen _ _).mpr fun h ↦ hpf (Ideal.mem_comap.mpr h)
+    exact (PrimeSpectrum.mem_basicOpen _ _).mp (hle hpb_f) (Ideal.mem_comap.mp hap)
+  · simp only [PrimeSpectrum.mem_basicOpen] at hp_bar ⊢
+    refine h (PrimeSpectrum.comap (Ideal.Quotient.mk I) p_bar) ⟨?_, ?_⟩ hmka
+    · simpa [PrimeSpectrum.mem_basicOpen] using hp_bar
+    · rw [PrimeSpectrum.mem_zeroLocus]
+      intro b hb
+      rw [comap_asIdeal, SetLike.mem_coe, Ideal.mem_comap,
+        Ideal.Quotient.eq_zero_iff_mem.mpr hb]
+      exact p_bar.asIdeal.zero_mem
 
 theorem submonoid_le {f f' : A} {I I' : Ideal A} (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
-    submonoid f I ≤ submonoid f' I' :=
-  sorry
+    submonoid f I ≤ submonoid f' I' := by
+  intro a ha
+  rw [mem_submonoid_iff] at ha ⊢
+  exact fun p hp ↦ ha p (h hp)
 
 noncomputable def map {f f' : A} {I I' : Ideal A}
     (h : locClosedSubset f' I' ⊆ locClosedSubset f I) :
     Generalization f I →ₐ[A] Generalization f' I' where
   toRingHom := IsLocalization.map (T := Generalization.submonoid f' I')
     (Generalization f' I') (RingHom.id A) (submonoid_le h)
-  commutes' := sorry
+  commutes' r := by simp
+
+@[simp]
+lemma map_id {f : A} {I : Ideal A} (h : locClosedSubset f I ⊆ locClosedSubset f I)
+    (x : Generalization f I) : map h x = x := by
+  simp [map]
+
+/-- Composition of `Generalization.map`s is again a `Generalization.map`. -/
+lemma map_map {f₁ f₂ f₃ : A} {I₁ I₂ I₃ : Ideal A}
+    (h₁₂ : locClosedSubset f₂ I₂ ⊆ locClosedSubset f₁ I₁)
+    (h₂₃ : locClosedSubset f₃ I₃ ⊆ locClosedSubset f₂ I₂)
+    (x : Generalization f₁ I₁) :
+    map h₂₃ (map h₁₂ x) = map (h₂₃.trans h₁₂) x := by
+  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq (submonoid f₁ I₁) x
+  simp [map, IsLocalization.map_mk']
+
+/-- The image of `Spec (Generalization f I)` in `Spec A` is equal to
+the generalization hull of `D(f) ∩ V(I)`. -/
+lemma range_algebraMap_generalization (f : A) (I : Ideal A) :
+    Set.range (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) =
+    generalizationHull (locClosedSubset f I) := by
+  rw [PrimeSpectrum.localization_comap_range (Generalization f I) (submonoid f I)]
+  ext p
+  simp only [Set.mem_setOf_eq, mem_generalizationHull_iff]
+  refine ⟨fun hdisj ↦ ?_, ?_⟩
+  · have hf_not_rad : f ∉ Ideal.radical (p.asIdeal ⊔ I) := by
+      rw [Ideal.mem_radical_iff]
+      push Not
+      intro n hfn
+      rw [Submodule.mem_sup] at hfn
+      obtain ⟨a, ha, b, hb, hab⟩ := hfn
+      have ha_sub : a ∈ submonoid f I := by
+        rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff,
+          IsScalarTower.algebraMap_apply A (A ⧸ I)]
+        have h_eq : (algebraMap A (A ⧸ I)) a = (algebraMap A (A ⧸ I)) (f ^ n) := by
+          simp only [Ideal.Quotient.algebraMap_eq, ← hab, map_add,
+            Ideal.Quotient.eq_zero_iff_mem.mpr hb, add_zero]
+        rw [h_eq]
+        have hmem : (Ideal.Quotient.mk I f) ^ n ∈ Submonoid.powers (Ideal.Quotient.mk I f) :=
+          ⟨n, rfl⟩
+        exact IsLocalization.map_units (Localization.Away (Ideal.Quotient.mk I f)) ⟨_, hmem⟩
+      exact Set.disjoint_left.mp hdisj ha_sub ha
+    rw [Ideal.radical_eq_sInf, Ideal.mem_sInf] at hf_not_rad
+    push Not at hf_not_rad
+    obtain ⟨q, ⟨hle, hq_prime⟩, hfq⟩ := hf_not_rad
+    refine ⟨⟨q, hq_prime⟩, ⟨?_, ?_⟩, ?_⟩
+    · simpa [PrimeSpectrum.mem_basicOpen] using hfq
+    · exact (PrimeSpectrum.mem_zeroLocus _ _).mpr fun x hx ↦ hle (Ideal.mem_sup_right hx)
+    · rw [← PrimeSpectrum.le_iff_specializes]
+      exact fun x hx ↦ hle (Ideal.mem_sup_left hx)
+  · rintro ⟨q, hq, hpq⟩
+    rw [← PrimeSpectrum.le_iff_specializes] at hpq
+    exact Set.disjoint_left.mpr fun a ha_sub ha_p ↦
+      (mem_submonoid_iff f I a).mp ha_sub q hq (hpq ha_p)
+
+/-- Given `q ∈ locClosedSubset f I`, the prime ideal `q · Generalization f I` of
+`Generalization f I` lies in `zeroLocus (ideal f I)` and contracts to `q`. -/
+private lemma exists_mem_zeroLocus_ideal_specComap_eq {f : A} {I : Ideal A}
+    {q : PrimeSpectrum A} (hq : q ∈ locClosedSubset f I) :
+    ∃ y ∈ zeroLocus (ideal f I),
+      PrimeSpectrum.comap (algebraMap A (Generalization f I)) y = q := by
+  have hq_disj : Disjoint (submonoid f I : Set A) (q.asIdeal : Set A) :=
+    Set.disjoint_left.mpr fun a ha ha_q ↦ (mem_submonoid_iff f I a).mp ha q hq ha_q
+  refine ⟨⟨Ideal.map (algebraMap A (Generalization f I)) q.asIdeal,
+    IsLocalization.isPrime_of_isPrime_disjoint (submonoid f I) (Generalization f I)
+      q.asIdeal q.isPrime hq_disj⟩, ?_, ?_⟩
+  · rw [PrimeSpectrum.mem_zeroLocus]
+    intro z hz
+    simp only [ideal, SetLike.mem_coe, RingHom.mem_ker] at hz
+    obtain ⟨a, s, hzas⟩ := IsLocalization.exists_mk'_eq (submonoid f I) z
+    rw [← hzas] at hz ⊢
+    have hz' : algebraMap A (Localization.Away (Ideal.Quotient.mk I f)) a = 0 := by
+      have h3 := IsLocalization.mk'_spec (M := submonoid f I) (Generalization f I) a s
+      have h4 : toLocQuotient f I (IsLocalization.mk' (Generalization f I) a s *
+          algebraMap A (Generalization f I) (s : A)) =
+        toLocQuotient f I (algebraMap A (Generalization f I) a) := congr_arg _ h3
+      rw [map_mul, hz, zero_mul, (toLocQuotient f I).commutes] at h4
+      exact h4.symm
+    have ha_q : a ∈ q.asIdeal := by
+      have hqI : I ≤ q.asIdeal := (PrimeSpectrum.mem_zeroLocus _ _).mp hq.2
+      have hfq : f ∉ q.asIdeal := hq.1
+      rw [IsScalarTower.algebraMap_apply A (A ⧸ I)] at hz'
+      obtain ⟨⟨_, n, rfl⟩, hc⟩ := (IsLocalization.map_eq_zero_iff
+        (Submonoid.powers (Ideal.Quotient.mk I f))
+        (Localization.Away (Ideal.Quotient.mk I f)) _).mp hz'
+      have hfna : f ^ n * a ∈ I :=
+        Ideal.Quotient.eq_zero_iff_mem.mp (by rw [map_mul, map_pow]; exact hc)
+      exact (q.isPrime.mem_or_mem (hqI hfna)).resolve_left
+        (mt (q.isPrime.mem_of_pow_mem n) hfq)
+    rw [SetLike.mem_coe, IsLocalization.mk'_mem_map_algebraMap_iff (submonoid f I)]
+    exact ⟨1, (submonoid f I).one_mem, by simpa using ha_q⟩
+  · exact PrimeSpectrum.ext (IsLocalization.under_map_of_isPrime_disjoint (submonoid f I)
+      (Generalization f I) q.isPrime hq_disj)
+
+lemma bijOn_algebraMap_generalization_specComap_zeroLocus_ideal (f : A) (I : Ideal A) :
+    Set.BijOn (PrimeSpectrum.comap <| algebraMap A (Generalization f I)) (zeroLocus (ideal f I))
+      (locClosedSubset f I) := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro y hy
+    rw [PrimeSpectrum.mem_zeroLocus] at hy
+    have hdisj := ((IsLocalization.isPrime_iff_isPrime_disjoint (submonoid f I)
+      (Generalization f I) y.asIdeal).mp y.isPrime).2
+    have hf_sub : f ∈ submonoid f I := by
+      rw [submonoid, Submonoid.mem_comap, IsUnit.mem_submonoid_iff,
+        IsScalarTower.algebraMap_apply A (A ⧸ I)]
+      have hmem : Ideal.Quotient.mk I f ∈ Submonoid.powers (Ideal.Quotient.mk I f) :=
+        ⟨1, pow_one _⟩
+      exact IsLocalization.map_units (Localization.Away (Ideal.Quotient.mk I f)) ⟨_, hmem⟩
+    refine ⟨fun hfq ↦ Set.disjoint_left.mp hdisj hf_sub hfq, ?_⟩
+    rw [PrimeSpectrum.mem_zeroLocus]
+    intro a ha
+    refine hy ?_
+    simp only [ideal, SetLike.mem_coe, RingHom.mem_ker]
+    rw [(toLocQuotient f I).commutes, IsScalarTower.algebraMap_apply A (A ⧸ I)]
+    simp [Ideal.Quotient.eq_zero_iff_mem.mpr ha]
+  · exact (PrimeSpectrum.localization_comap_isEmbedding (Generalization f I)
+      (submonoid f I)).injective.injOn
+  · intro q hq
+    exact exists_mem_zeroLocus_ideal_specComap_eq hq
 
 lemma exists_specializes_zeroLocus_ideal {f : A} (I : Ideal A)
-    (x : PrimeSpectrum (Generalization f I)) : ∃ y ∈ zeroLocus (ideal f I), x ⤳ y :=
-  sorry
+    (x : PrimeSpectrum (Generalization f I)) : ∃ y ∈ zeroLocus (ideal f I), x ⤳ y := by
+  have hp_range : PrimeSpectrum.comap (algebraMap A (Generalization f I)) x ∈
+      generalizationHull (locClosedSubset f I) :=
+    range_algebraMap_generalization f I ▸ ⟨x, rfl⟩
+  rw [mem_generalizationHull_iff] at hp_range
+  obtain ⟨q, hq_loc, hpq⟩ := hp_range
+  obtain ⟨y, hy_mem, hy_eq⟩ := exists_mem_zeroLocus_ideal_specComap_eq hq_loc
+  refine ⟨y, hy_mem, ?_⟩
+  rw [← (PrimeSpectrum.localization_comap_isEmbedding (Generalization f I)
+    (submonoid f I)).specializes_iff, hy_eq]
+  exact hpq
+
+/-- An element of the form `algebraMap A _ a` in `Generalization f I` is killed by
+`toLocQuotient f I` iff some power of `f` times `a` lies in `I`. -/
+lemma toLocQuotient_algebraMap_eq_zero_iff (a : A) :
+    toLocQuotient f I (algebraMap A _ a) = 0 ↔ ∃ n : ℕ, f ^ n * a ∈ I := by
+  rw [(toLocQuotient f I).commutes,
+    IsScalarTower.algebraMap_apply A (A ⧸ I) (Localization.Away (Ideal.Quotient.mk I f))]
+  simp only [IsLocalization.map_eq_zero_iff (Submonoid.powers (Ideal.Quotient.mk I f)),
+    Subtype.exists, Submonoid.mem_powers_iff, exists_prop, exists_exists_eq_and]
+  refine exists_congr fun n ↦ ?_
+  rw [Ideal.Quotient.algebraMap_eq, ← map_pow, ← map_mul, Ideal.Quotient.eq_zero_iff_mem]
+
+/-- If `I ≤ I'` and `f ∣ f'`, the canonical map `Generalization f I → Generalization f' I'`
+sends the kernel ideal `ideal f I` into the kernel ideal `ideal f' I'`. -/
+lemma map_ideal_le {f f' : A} {I I' : Ideal A}
+    (h_sub : locClosedSubset f' I' ⊆ locClosedSubset f I) (hI : I ≤ I') (hf : f ∣ f') :
+    (ideal f I).map (map h_sub).toRingHom ≤ ideal f' I' := by
+  rw [Ideal.map_le_iff_le_comap]
+  intro z hz
+  simp only [Ideal.mem_comap, ideal, RingHom.mem_ker] at hz ⊢
+  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq (submonoid f I) z
+  have h_alg_zero : toLocQuotient f I (algebraMap A _ a) = 0 := by
+    have := congr_arg (toLocQuotient f I) (IsLocalization.mk'_spec _ a s)
+    rw [map_mul, hz, zero_mul] at this
+    exact this.symm
+  obtain ⟨n, hfna⟩ := (toLocQuotient_algebraMap_eq_zero_iff f I a).mp h_alg_zero
+  obtain ⟨g, hfg⟩ := hf
+  have hf'na : f' ^ n * a ∈ I' := by
+    rw [hfg, mul_pow, show f ^ n * g ^ n * a = g ^ n * (f ^ n * a) by ring]
+    exact I'.mul_mem_left _ (hI hfna)
+  have h_alg_zero' : algebraMap A (Localization.Away (Ideal.Quotient.mk I' f')) a = 0 := by
+    rw [← (toLocQuotient f' I').commutes]
+    exact (toLocQuotient_algebraMap_eq_zero_iff f' I' a).mpr ⟨n, hf'na⟩
+  have hmk' := congr_arg (toLocQuotient f' I' ∘ map h_sub)
+    (IsLocalization.mk'_spec (Generalization f I) a s)
+  simp only [Function.comp_apply, map_mul, AlgHom.commutes, h_alg_zero'] at hmk'
+  exact (submonoid_le h_sub s.2).mul_left_eq_zero.mp hmk'
 
 end Generalization
 
@@ -120,6 +302,7 @@ lemma stratum_anti {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :
     exact Ideal.span_mono (Finset.coe_subset.mpr hFF')
 
 /-- The type of disjoint union decompositions of `E` into two finite sets. -/
+@[ext]
 structure Stratification.Index (E : Finset A) where
   left : Finset A
   right : Finset A
@@ -143,15 +326,39 @@ lemma locClosedSubset_function_ideal {E : Finset A} (i : Stratification.Index E)
 @[simps]
 noncomputable
 def Stratification.Index.restrict {E F : Finset A} (i : Stratification.Index F)
-    (h : E ⊆ F) : Stratification.Index E where
-  left := open Classical in E ∩ i.left
-  right := open Classical in E ∩ i.right
-  disjoint := sorry
-  union_eq := sorry
+    (h : E ⊆ F) : Stratification.Index E :=
+  open Classical in
+  { left := E ∩ i.left
+    right := E ∩ i.right
+    disjoint := i.disjoint.mono Finset.inter_subset_right Finset.inter_subset_right
+    union_eq := by
+      simp only [Finset.coe_inter]
+      rw [← Set.inter_union_distrib_left, i.union_eq,
+        Set.inter_eq_left.mpr (Finset.coe_subset.mpr h)] }
+
+lemma Stratification.Index.function_restrict_dvd_function {E F : Finset A}
+    (i : Stratification.Index F) (h : E ⊆ F) :
+    (i.restrict h).function ∣ i.function := by
+  classical
+  simpa only [function, restrict_left] using
+    Finset.prod_dvd_prod_of_subset _ _ id Finset.inter_subset_right
+
+lemma Stratification.Index.ideal_restrict_le {E F : Finset A}
+    (i : Stratification.Index F) (h : E ⊆ F) :
+    (i.restrict h).ideal ≤ i.ideal := by
+  classical
+  simpa only [ideal, restrict_right] using
+    Ideal.span_mono (Finset.coe_subset.mpr Finset.inter_subset_right)
 
 lemma Stratification.Index.iUnion_stratum (E : Finset A) :
-    ⋃ (i : Stratification.Index E), stratum i.left i.right = .univ :=
-  sorry
+    ⋃ (i : Stratification.Index E), stratum i.left i.right = .univ := by
+  classical
+  refine Set.eq_univ_of_forall fun p ↦ Set.mem_iUnion.mpr ?_
+  refine ⟨⟨E.filter (· ∉ p.asIdeal), E.filter (· ∈ p.asIdeal),
+    (Finset.disjoint_filter_filter_not E E _).symm, ?_⟩, ?_, ?_⟩
+  · rw [← Finset.coe_union, Finset.union_comm, Finset.filter_union_filter_not_eq]
+  · simp +contextual [Set.mem_iInter, Finset.mem_filter]
+  · simp +contextual [mem_zeroLocus, Set.subset_def]
 
 /-- The product of the generalizations of `Z(E', E'')` indexed by all disjoint union decompositions
 `E = E' ⨿ E''`. -/
@@ -177,6 +384,21 @@ instance (E : Finset A) : Algebra A (ProdStrata E) := fast_instance%
 noncomputable def ProdStrata.ideal (E : Finset A) : Ideal (ProdStrata E) :=
   Ideal.pi fun _ ↦ Generalization.ideal _ _
 
+/-- `Spec (ProdStrata E) → Spec A` is surjective. -/
+lemma ProdStrata.specComap_surjective (E : Finset A) :
+    Function.Surjective (PrimeSpectrum.comap (algebraMap A (ProdStrata E))) := by
+  intro p
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
+    (Stratification.Index.iUnion_stratum (A := A) E ▸ Set.mem_univ p)
+  rw [← locClosedSubset_function_ideal] at hi
+  have h_in_range :
+      p ∈ Set.range (PrimeSpectrum.comap
+        (algebraMap A (Generalization i.function i.ideal))) := by
+    rw [Generalization.range_algebraMap_generalization, mem_generalizationHull_iff]
+    exact ⟨p, hi, specializes_rfl⟩
+  obtain ⟨q, hq⟩ := h_in_range
+  exact ⟨PrimeSpectrum.comap (Pi.evalRingHom _ i) q, hq⟩
+
 -- wrong
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (ProdStrata E))
@@ -194,28 +416,79 @@ lemma ProdStrata.mem_zeroLocus_ideal_of_isClosed {E : Finset A} {x : PrimeSpectr
   have := hy.mem_closed hx (by simp)
   grind only [= Set.mem_singleton_iff]
 
+lemma ProdStrata.locClosedSubset_subset_restrict {E F : Finset A} (h : E ⊆ F)
+    (i : Stratification.Index F) :
+    Generalization.locClosedSubset i.function i.ideal ⊆
+      Generalization.locClosedSubset (i.restrict h).function (i.restrict h).ideal := by
+  rw [locClosedSubset_function_ideal, locClosedSubset_function_ideal]
+  exact stratum_anti (by simp) (by simp)
+
 /-- If `E ⊆ F`, this is the canonical map `A_E → A_F`. -/
 noncomputable def ProdStrata.map {E F : Finset A} (h : E ⊆ F) :
     ProdStrata E →ₐ[A] ProdStrata F :=
   Pi.algHom _ _ fun i ↦
-    AlgHom.comp
-      (Generalization.map <| by
-        rw [locClosedSubset_function_ideal, locClosedSubset_function_ideal]
-        apply stratum_anti <;> simp)
+    AlgHom.comp (Generalization.map (locClosedSubset_subset_restrict h i))
       (Pi.evalAlgHom _ _ (i.restrict h))
+
+@[simp]
+lemma ProdStrata.map_apply {E F : Finset A} (h : E ⊆ F) (x : ProdStrata E)
+    (i : Stratification.Index F) :
+    ProdStrata.map h x i =
+      Generalization.map (locClosedSubset_subset_restrict h i) (x (i.restrict h)) := rfl
+
+lemma ProdStrata.map_ideal_le {E F : Finset A} (h : E ⊆ F) :
+    (ProdStrata.ideal E).map (map h).toRingHom ≤ ProdStrata.ideal F := by
+  rw [Ideal.map_le_iff_le_comap]
+  intro x hx
+  refine (Ideal.mem_pi _ _).mpr fun i ↦ ?_
+  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_apply]
+  exact Generalization.map_ideal_le _ (i.ideal_restrict_le h) (i.function_restrict_dvd_function h)
+    (Ideal.mem_map_of_mem _ ((Ideal.mem_pi _ _).mp hx _))
 
 lemma ProdStrata.mapsTo_map_specComap {E F : Finset A} (h : E ⊆ F) :
     Set.MapsTo (PrimeSpectrum.comap (map h).toRingHom)
       (zeroLocus (ideal F)) (zeroLocus (ideal E)) := by
-  sorry
+  intro p hp
+  simp only [mem_zeroLocus, SetLike.coe_subset_coe, comap_asIdeal,
+    ← Ideal.map_le_iff_le_comap] at hp ⊢
+  exact (map_ideal_le h).trans hp
 
 variable (A) in
 /-- The diagram whose colimit is the w-localization of `A`. -/
 noncomputable def diag : Finset A ⥤ CommAlgCat A where
   obj E := .of A (ProdStrata E)
   map {E F} f := CommAlgCat.ofHom (ProdStrata.map <| leOfHom f)
-  map_id E := sorry
-  map_comp := sorry
+  map_id E := by
+    classical
+    ext x i
+    simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_id, AlgHom.coe_id, id_eq,
+      ProdStrata.map_apply]
+    generalize_proofs h pf
+    have hi : i.restrict h = i := Stratification.Index.ext
+      (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+        Set.subset_union_left.trans i.union_eq.le)
+      (Finset.inter_eq_right.mpr <| Finset.coe_subset.mp <|
+        Set.subset_union_right.trans i.union_eq.le)
+    revert pf
+    rw [hi]
+    intro pf
+    exact Generalization.map_id pf (x i)
+  map_comp {E F G} f g := by
+    classical
+    ext x i
+    simp only [CommAlgCat.hom_ofHom, CommAlgCat.hom_comp, AlgHom.coe_comp, Function.comp_apply,
+      ProdStrata.map_apply, Generalization.map_map]
+    generalize_proofs hfg pf pfg pff pf'
+    have hi : (i.restrict pfg).restrict pff = i.restrict hfg :=
+      Stratification.Index.ext
+        (by simp only [Stratification.Index.restrict_left,
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr pff])
+        (by simp only [Stratification.Index.restrict_right,
+            ← Finset.inter_assoc, Finset.inter_eq_left.mpr pff])
+    revert pf'
+    rw [hi]
+    intro pf'
+    rfl
 
 variable (A) in
 /-- The w-localization of a ring as an object of `CommAlgCat A` is the colimit over
@@ -282,11 +555,15 @@ instance (E : Finset A) : Finite (Stratification.Index E) := by
   obtain ⟨hl₂, hr₂⟩ := sub u₂
   exact (Stratification.Index.mk.injEq ..).mpr ⟨aux hl₁ hl₂ hL, aux hr₁ hr₂ hR⟩
 
-lemma indZariski_prodStrata (E : Finset A) :
-    Algebra.IndZariski A (ProdStrata E) := by
-  change Algebra.IndZariski A
+lemma indZariski_prodStrata {A : Type u} [CommRing A] (E : Finset A) :
+    Algebra.IndZariski A (ProdStrata E) :=
+  inferInstanceAs <| Algebra.IndZariski A
     (∀ i : Stratification.Index E, Generalization i.function i.ideal)
-  exact Algebra.IndZariski.pi A _
+
+instance ProdStrata.faithfullyFlat (E : Finset A) :
+    Module.FaithfullyFlat A (ProdStrata E) := by
+  have : Algebra.IndZariski A (ProdStrata E) := indZariski_prodStrata E
+  exact Module.FaithfullyFlat.of_comap_surjective (ProdStrata.specComap_surjective E)
 
 instance indZariski : Algebra.IndZariski A (WLocalization A) := by
   have h := fun E => indZariski_prodStrata (A := A) E
@@ -294,7 +571,8 @@ instance indZariski : Algebra.IndZariski A (WLocalization A) := by
     (Finset A) _ _ colimitPresentation h
 
 instance faithfullyFlat : Module.FaithfullyFlat A (WLocalization A) :=
-  sorry
+  CommAlgCat.faithfullyFlat_of_colimitPresentation colimitPresentation fun E ↦
+    inferInstanceAs (Module.FaithfullyFlat A (ProdStrata E))
 
 /-- If `V(I) ⊆ Spec A` consists only of closed points, then `V(I·WLocA) → V(I)` is a bijection.
 This restricts the bijection `V(WLocalization.ideal A) ≃ Spec A` to `V(I·WLocA) ⊆ closedPoints`. -/
