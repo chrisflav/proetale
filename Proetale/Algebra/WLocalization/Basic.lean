@@ -318,6 +318,7 @@ def Stratification.Index.ideal {E : Finset A} (i : Stratification.Index E) : Ide
   Ideal.span i.right
 
 open Classical in
+omit [CommRing A] in
 /-- In a disjoint union decomposition `E = E' ⨿ E''`, the right part is determined by the
 left part as `E \ E'`. -/
 lemma Stratification.Index.right_eq_sdiff {E : Finset A}
@@ -429,6 +430,9 @@ lemma ProdStrata.specComap_surjective (E : Finset A) :
   obtain ⟨q, hq⟩ := h_in_range
   exact ⟨PrimeSpectrum.comap (Pi.evalRingHom _ i) q, hq⟩
 
+-- Heavy proof: the surjOn case at the end goes through a `change` bridging
+-- `ProdStrata E ≡ ∀ i, Generalization ...`, which unfolds nested `def`s
+-- (`ProdStrata`, `Generalization`, `Localization`) and is expensive.
 set_option maxHeartbeats 4000000 in
 lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (ProdStrata E))
@@ -482,7 +486,7 @@ lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
       have hlne : i₁.left ≠ i₂.left := fun h ↦ hne (index_eq_of_left_eq h)
       have hex : ∃ a, (a ∈ i₁.left ∧ a ∉ i₂.left) ∨ (a ∉ i₁.left ∧ a ∈ i₂.left) := by
         by_contra hall
-        push_neg at hall
+        push Not at hall
         exact hlne (Finset.ext fun a ↦
           ⟨(hall a).1, fun h ↦ by_contra fun hn ↦ absurd h ((hall a).2 hn)⟩)
       obtain ⟨a, (⟨ha1, ha2⟩ | ⟨ha1, ha2⟩)⟩ := hex
