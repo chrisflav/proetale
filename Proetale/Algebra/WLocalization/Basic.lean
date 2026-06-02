@@ -317,12 +317,11 @@ def Stratification.Index.function {E : Finset A} (i : Stratification.Index E) : 
 def Stratification.Index.ideal {E : Finset A} (i : Stratification.Index E) : Ideal A :=
   Ideal.span i.right
 
-omit [CommRing A] in
+open Classical in
 /-- In a disjoint union decomposition `E = E' ⨿ E''`, the right part is determined by the
 left part as `E \ E'`. -/
 lemma Stratification.Index.right_eq_sdiff {E : Finset A}
     (i : Stratification.Index E) : i.right = E \ i.left := by
-  classical
   ext a
   simp only [Finset.mem_sdiff]
   refine ⟨fun ha ↦ ⟨Finset.mem_coe.mp (i.union_eq ▸ Set.mem_union_right _ (Finset.mem_coe.mpr ha)),
@@ -331,7 +330,6 @@ lemma Stratification.Index.right_eq_sdiff {E : Finset A}
     i.union_eq ▸ Finset.mem_coe.mpr haE
   exact hmem.resolve_left (Finset.mem_coe.mp · |> hal)
 
-omit [CommRing A] in
 instance Stratification.Index.instFinite (E : Finset A) :
     Finite (Stratification.Index E) := by
   classical
@@ -447,21 +445,20 @@ lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
     obtain ⟨i₂, q₂, hq₂⟩ := @PrimeSpectrum.exists_comap_evalRingHom_eq
       (Stratification.Index E) (fun i ↦ Generalization i.function i.ideal) _ _
       (y₂ : PrimeSpectrum (∀ i : Stratification.Index E, Generalization i.function i.ideal))
-    have hmem (i₀ : Stratification.Index E) (a : A)
-        (ha : a ∈ Generalization.ideal i₀.function i₀.ideal) :
-        (Pi.single i₀ a : ProdStrata E) ∈ ProdStrata.ideal E := by
-      rw [ProdStrata.mem_ideal_iff]
-      intro j
-      by_cases h : j = i₀
-      · subst h; rwa [Pi.single_eq_same]
-      · rw [Pi.single_eq_of_ne h]; exact Ideal.zero_mem _
+    classical
     have hq_mem (i₀ : Stratification.Index E) (q₀ : PrimeSpectrum (Generalization i₀.function _))
         (y₀ : PrimeSpectrum (ProdStrata E)) (hy₀ : y₀ ∈ zeroLocus (ProdStrata.ideal E))
         (hq₀ : PrimeSpectrum.comap (Pi.evalRingHom (fun j : Stratification.Index E ↦
           Generalization j.function j.ideal) i₀) q₀ = y₀) :
         q₀ ∈ zeroLocus (Generalization.ideal i₀.function i₀.ideal : Set _) := by
       intro a ha
-      have hz_q := (PrimeSpectrum.mem_zeroLocus _ _).mp (hq₀ ▸ hy₀) (hmem i₀ a ha)
+      have hmem : (Pi.single i₀ a : ProdStrata E) ∈ ProdStrata.ideal E := by
+        rw [ProdStrata.mem_ideal_iff]
+        intro j
+        by_cases h : j = i₀
+        · subst h; rwa [Pi.single_eq_same]
+        · rw [Pi.single_eq_of_ne h]; exact Ideal.zero_mem _
+      have hz_q := (PrimeSpectrum.mem_zeroLocus _ _).mp (hq₀ ▸ hy₀) hmem
       have hz_q' : (Pi.evalRingHom (fun j : Stratification.Index E ↦
           Generalization j.function j.ideal) i₀) (Pi.single i₀ a) ∈ (q₀.asIdeal : Set _) :=
         Ideal.mem_comap.mp hz_q
@@ -511,7 +508,7 @@ lemma ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal (E : Finset A) :
         i₁.function i₁.ideal).injOn hq₁_mem hq₂_mem heq'
     rw [← hq₁, ← hq₂, hq_eq]
   · intro p _
-    obtain ⟨i, hi⟩ : ∃ i, p ∈ stratum i.left i.right := by
+    obtain ⟨i, hi⟩ : ∃ i : Stratification.Index E, p ∈ stratum i.left i.right := by
       simpa [Set.mem_iUnion] using
         Set.eq_univ_iff_forall.mp (Stratification.Index.iUnion_stratum E) p
     have hp_loc : p ∈ Generalization.locClosedSubset i.function i.ideal :=
