@@ -4,12 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
+import Proetale.Mathlib.CategoryTheory.Sites.Finite
+import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Coherent.Affine
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Basic
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Proetale.Pro.PresheafColimit
+import Proetale.Pro.Generating
 import Proetale.Morphisms.ProAffineEtale
 import Proetale.Topology.LocalProperties
 import Proetale.Algebra.IndWeaklyEtale
@@ -91,10 +94,11 @@ def mk {X : Scheme.{u}} (f : X ⟶ S) (hf : proAffineEtale f) : S.AffineProEt :=
 lemma proAffineEtale_hom {X Y : S.AffineProEt} (f : X ⟶ Y) : proAffineEtale f.left :=
   MorphismProperty.of_postcomp _ _ Y.hom Y.prop <| by simpa using X.prop
 
--- TODO: move me
-instance {X Y : S.ProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
-  have : WeaklyEtale (f.left ≫ Y.hom) := by simp [X.prop]
-  .of_comp _ Y.hom
+instance {X Y : S.AffineProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
+  proAffineEtale_le_weaklyEtale _ (proAffineEtale_hom f)
+
+instance (X : S.AffineProEt) : IsAffine X.left :=
+  X.prop.isAffine
 
 /-- The inclusion of the affine pro-étale site into the pro-étale site. -/
 @[simps! map]
@@ -228,6 +232,20 @@ instance isCoverDense_toProEt : (toProEt S).IsCoverDense (ProEt.topology S) := b
     rw [WeaklyEtale.Spec_iff]
     exact h₁.weaklyEtale
 
+noncomputable
+def precoverage : Precoverage (AffineProEt S) :=
+  Precoverage.comap (toProEt S ⋙ ProEt.forget S ⋙ Over.forget S) Scheme.proetalePrecoverage
+
+instance : PreservesLimitsOfShape WalkingCospan (toProEt S) :=
+  sorry
+
+variable (S) in
+/-- The Zariski precoverage on the affine pro-étale site. -/
+noncomputable def zariskiPrecoverage : Precoverage (AffineProEt S) :=
+  Precoverage.comap (toProEt S ⋙ ProEt.forget S ⋙ Over.forget S) Scheme.zariskiPrecoverage
+  deriving Precoverage.HasIsos, Precoverage.IsStableUnderComposition,
+    Precoverage.IsStableUnderBaseChange
+
 instance : (toProEt S).LocallyCoverDense (ProEt.zariskiTopology S) :=
   sorry
 
@@ -238,6 +256,10 @@ noncomputable def topology : GrothendieckTopology S.AffineProEt :=
 
 noncomputable def zariskiTopology : GrothendieckTopology S.AffineProEt :=
   (toProEt S).inducedTopology (ProEt.zariskiTopology S)
+
+lemma zariskiTopology_eq_toGrothendieck_zariskiPrecoverage :
+    zariskiTopology S = (zariskiPrecoverage S).toGrothendieck := by
+  sorry
 
 instance : (toProEt S).IsContinuous (topology S) (ProEt.topology S) := by
   dsimp [topology]
@@ -265,10 +287,108 @@ def sheafPushforward :
 it is a Zariksi sheaf and satifies the sheaf condition for single surjective morphisms. -/
 lemma isSheaf {F : (AffineProEt S)ᵒᵖ ⥤ Type*}
     (h₁ : Presheaf.IsSheaf (zariskiTopology S) F)
-    (h₂ : ∀ {U V : AffineProEt S} (f : U ⟶ V) [Surjective f.hom.left],
+    (h₂ : ∀ {U V : AffineProEt S} (f : U ⟶ V) [Surjective f.left],
       (Presieve.singleton f).IsSheafFor F) :
     Presheaf.IsSheaf (topology S) F :=
   sorry
+
+lemma _root_.AlgebraicGeometry.Scheme.OpenCover.exists_finite_restrictIndex_mem {X : Scheme.{u}}
+    [CompactSpace X] (𝒰 : X.OpenCover) :
+    ∃ (ι : Type u) (_ : Finite ι) (s : ι → 𝒰.I₀),
+      (𝒰.restrictIndex s).presieve₀ ∈ Scheme.zariskiPrecoverage X :=
+  ⟨𝒰.finiteSubcover.I₀, inferInstance, _, 𝒰.finiteSubcover.mem₀⟩
+
+noncomputable
+def minimalPrecoverage : Precoverage (AffineProEt S) :=
+  -- Finite Zariski coverings
+  (.finite _ ⊓ zariskiPrecoverage S) ⊔
+  -- Singleton coverings by surjective morphisms
+  (.singleton _ ⊓ MorphismProperty.precoverage (fun _ _ f ↦ Surjective f.left))
+
+lemma minimalPrecoverage_le_finite : minimalPrecoverage S ≤ .finite _ := by
+  rw [minimalPrecoverage, sup_le_iff]
+  exact ⟨inf_le_left, le_trans inf_le_left (Precoverage.singleton_le_finite _)⟩
+
+lemma _root_.CategoryTheory.Presieve.IsSheafFor.of_le {C : Type*} [Category* C]
+    {F : Cᵒᵖ ⥤ Type*}
+    {X : C} {R S : Presieve X} (hle : R ≤ S)
+    (h₁ : Presieve.IsSheafFor F R)
+    (h₂ : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f →
+      Presieve.IsSeparatedFor F (Sieve.pullback f (.generate R)).arrows) :
+    Presieve.IsSheafFor F S := by
+  rw [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
+  refine ⟨fun x t₁ t₂ ht₁ ht₂ ↦ ?_, ?_⟩
+  · exact h₁.isSeparatedFor _ _ _ (Presieve.isAmalgamation_restrict hle x t₁ ht₁)
+      (Presieve.isAmalgamation_restrict hle x t₂ ht₂)
+  · intro x hx
+    use h₁.amalgamate _ (hx.restrict hle)
+    intro W j hj
+    apply (h₂ hj).ext
+    intro Y f ⟨U, v, v', hv', heq⟩
+    rw [← comp_apply, ← F.map_comp, ← op_comp, ← heq, op_comp, F.map_comp, comp_apply,
+      h₁.valid_glue _ _ hv', Presieve.FamilyOfElements.restrict,
+      hx _ _ (hle _ _ hv') hj heq]
+
+lemma generates_minimalPrecoverage :
+      (minimalPrecoverage S).Generates (topology S) where
+  le_toPrecoverage := by
+    -- TODO: clean up these proofs when the induced topology is refactored
+    rw [minimalPrecoverage, sup_le_iff]
+    refine ⟨?_, ?_⟩
+    · refine le_trans inf_le_right ?_
+      intro X R hR
+      simp only [topology, GrothendieckTopology.mem_toPrecoverage_iff,
+        Functor.mem_inducedTopology_sieves_iff]
+      rw [ProEt.topology, ← Sieve.generate_map_eq_functorPushforward]
+      refine Precoverage.generate_mem_toGrothendieck ?_
+      simp only [ProEt.precoverage, Precoverage.mem_comap_iff, Functor.comp_obj, ProEt.forget_obj,
+        Over.forget_obj, toProEt_obj_left, Presieve.map_comp]
+      simp only [zariskiPrecoverage, Precoverage.mem_comap_iff, Functor.comp_obj, ProEt.forget_obj,
+        Over.forget_obj, toProEt_obj_left, Presieve.map_comp] at hR
+      exact zariskiPrecoverage_le_propQCPrecoverage _ hR
+    · rintro X R ⟨⟨Y, f, rfl⟩, hf⟩
+      simp only [MorphismProperty.singleton_mem_precoverage_iff] at hf
+      simp only [topology, ProEt.topology, GrothendieckTopology.mem_toPrecoverage_iff,
+        Functor.mem_inducedTopology_sieves_iff]
+      rw [← Sieve.generate_map_eq_functorPushforward]
+      refine Precoverage.generate_mem_toGrothendieck ?_
+      simp only [ProEt.precoverage, Presieve.map_singleton, toProEt_map, Precoverage.mem_comap_iff,
+        Functor.comp_obj, ProEt.forget_obj, Over.forget_obj, toProEt_obj_left, Functor.comp_map,
+        ProEt.forget_map, Comma.Hom.hom_mk, Over.forget_map]
+      exact f.left.singleton_mem_propQCPrecoverage inferInstance
+  isSheaf_of_forall_max F hF := by
+    rw [← isSheaf_iff_isSheaf_of_type]
+    refine isSheaf _ ?_ ?_
+    · rw [isSheaf_iff_isSheaf_of_type]
+      intro X R hR
+      rw [zariskiTopology_eq_toGrothendieck_zariskiPrecoverage] at hR
+      rw [Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition] at hR
+      simp_rw [Precoverage.mem_iff_exists_zeroHypercover] at hR
+      obtain ⟨_, ⟨𝒰, _, rfl⟩, hle⟩ := hR
+      obtain ⟨ι, hι, s, hs⟩ := Scheme.OpenCover.exists_finite_restrictIndex_mem (X := X.left)
+        (𝒰.map _ le_rfl)
+      let 𝒱 : (zariskiPrecoverage S).ZeroHypercover X :=
+        ⟨𝒰.restrictIndex s, by
+          simp only [zariskiPrecoverage, Precoverage.mem_comap_iff, Functor.comp_obj,
+            ProEt.forget_obj, Over.forget_obj, toProEt_obj_left, Presieve.map_ofArrows,
+            PreZeroHypercover.restrictIndex_I₀, PreZeroHypercover.restrictIndex_X,
+            Function.comp_apply, PreZeroHypercover.restrictIndex_f, Functor.comp_map, toProEt_map,
+            ProEt.forget_map, Comma.Hom.hom_mk, Over.forget_map]
+          exact hs⟩
+      have : Finite 𝒱.I₀ := hι
+      refine Presieve.IsSheafFor.of_le (R := 𝒱.presieve₀) (le_trans (by simp [𝒱]) hle) ?_ ?_
+      · apply hF
+        refine .inl ⟨?_, 𝒱.mem₀⟩
+        simp [Set.finite_range]
+      · intro Y f hf
+        rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate]
+        rw [← 𝒱.presieve₀_pullback₁]
+        apply (hF _ _).isSeparatedFor
+        refine .inl ⟨?_, (𝒱.pullback₂ _).mem₀⟩
+        simp [Set.finite_range]
+    · intro U V f hf
+      apply hF
+      exact .inr ⟨by simp, by simpa⟩
 
 end AffineProEt
 
@@ -290,12 +410,14 @@ noncomputable def AffineEtale.toAffineProEt (S : Scheme.{u}) :
       exact .of_isAffine f)
     (by simp)
 
-/-- The topology on the affine pro-étale site is generated by limits
-of `1`-hypercovers in the affine étale site. -/
-instance :
-    (GrothendieckTopology.oneHypercoverRelativelyRepresentable.{u}
-      (AffineEtale.toAffineProEt S) (Type u)
-      (AffineEtale.topology S) (AffineProEt.topology S)).IsGenerating :=
+instance : PreservesLimitsOfShape WalkingCospan (AffineEtale.toAffineProEt S) :=
+  sorry
+
+/-- The coverings in the minimal precoverage on the affine pro-étale site can be written
+as cofiltered limits of coverings in the affine étale site. -/
+lemma minimalPrecoverage_le_relativelyPresentable :
+    AffineProEt.minimalPrecoverage S ≤
+      Precoverage.relativelyPresentable (AffineEtale.toAffineProEt S) (AffineEtale.topology S) :=
   sorry
 
 end AlgebraicGeometry.Scheme
