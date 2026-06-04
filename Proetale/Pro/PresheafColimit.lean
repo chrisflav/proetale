@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+import Mathlib.CategoryTheory.Presentable.Finite
 import Proetale.Pro.Basic
 
 /-!

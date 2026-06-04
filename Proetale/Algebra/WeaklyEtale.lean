@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib
+import Proetale.Mathlib.RingTheory.Ideal.Pure
 import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 
@@ -199,9 +200,18 @@ end
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
+/-- The multiplication map `S ⊗[R] S → S` is flat iff the kernel of the multiplication map
+(i.e. `KaehlerDifferential.ideal R S`) is a pure ideal in `S ⊗[R] S`. -/
+lemma flat_lmul'_iff_kaehlerDifferential_ideal_pure :
+    (TensorProduct.lmul' (S := S) R).toRingHom.Flat ↔ (KaehlerDifferential.ideal R S).Pure :=
+  RingHom.flat_iff_pure_ker_of_surjective (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)
+
 lemma FormallyUnramified.of_flat_lmul' (h : (TensorProduct.lmul' (S := S) R).Flat) :
-    FormallyUnramified R S :=
-  sorry
+    FormallyUnramified R S := by
+  have hp : (KaehlerDifferential.ideal R S).Pure :=
+    flat_lmul'_iff_kaehlerDifferential_ideal_pure.mp h
+  rw [formallyUnramified_iff]
+  exact (Ideal.cotangent_subsingleton_iff _).mpr (Ideal.isIdempotentElem_of_pure _)
 
 namespace WeaklyEtale
 

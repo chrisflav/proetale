@@ -1,4 +1,5 @@
 import Mathlib
+import Proetale.Mathlib.FieldTheory.IsSepClosed
 
 -- Rename `HenselianRing` to `IsHenselianRing`, ``HenselianLocalRing` to `IsHenselianLocalRing`.
 
@@ -9,6 +10,54 @@ class IsStrictlyHenselianLocalRing (R : Type*) [CommRing R] : Prop
 instance (R : Type*) [CommRing R] [IsStrictlyHenselianLocalRing R] :
     IsSepClosed (IsLocalRing.ResidueField R) :=
   IsStrictlyHenselianLocalRing.isSepClosed_residueField
+
+/-- A local ring is strictly Henselian if and only if it is Henselian and its residue
+field is separably closed. -/
+theorem isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed
+    (R : Type*) [CommRing R] [IsLocalRing R] :
+    IsStrictlyHenselianLocalRing R ↔
+      HenselianLocalRing R ∧ IsSepClosed (IsLocalRing.ResidueField R) :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩,
+    fun h ↦ have := h.1; ⟨h.2⟩⟩
+
+/-- `HenselianLocalRing` transfers along a ring isomorphism. -/
+theorem HenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
+    [HenselianLocalRing R] (e : R ≃+* S) : HenselianLocalRing S := by
+  have : IsLocalRing S := e.isLocalRing
+  refine HenselianLocalRing.mk fun f hf a₀ hmem hunit => ?_
+  let f' : Polynomial R := f.map e.symm.toRingHom
+  have heval : f'.eval (e.symm a₀) = e.symm (f.eval a₀) :=
+    Polynomial.eval_map_apply (p := f) e.symm.toRingHom a₀
+  have hderiv : f'.derivative.eval (e.symm a₀) = e.symm (f.derivative.eval a₀) := by
+    rw [Polynomial.derivative_map (f := e.symm.toRingHom)]
+    exact Polynomial.eval_map_apply (p := f.derivative) e.symm.toRingHom a₀
+  have hmem' : f'.eval (e.symm a₀) ∈ IsLocalRing.maximalIdeal R := by
+    rw [IsLocalRing.mem_maximalIdeal] at hmem
+    rw [heval, IsLocalRing.mem_maximalIdeal]
+    intro hu
+    exact hmem (by simpa using hu.map e)
+  have hunit' : IsUnit (f'.derivative.eval (e.symm a₀)) :=
+    hderiv ▸ hunit.map e.symm.toRingHom
+  obtain ⟨a, ha_root, ha_diff⟩ :=
+    HenselianLocalRing.is_henselian f' (hf.map _) (e.symm a₀) hmem' hunit'
+  refine ⟨e a, ?_, ?_⟩
+  · have hf_eq : f'.map e.toRingHom = f := by
+      simp [f', Polynomial.map_map]
+    have key : f.eval (e a) = e (f'.eval a) := by
+      rw [← hf_eq]; exact Polynomial.eval_map_apply (p := f') e.toRingHom a
+    rw [Polynomial.IsRoot.def, key, Polynomial.IsRoot.def.mp ha_root, map_zero]
+  · rw [IsLocalRing.mem_maximalIdeal] at ha_diff ⊢
+    intro hu
+    apply ha_diff
+    have : a - e.symm a₀ = e.symm (e a - a₀) := by simp
+    rw [this]
+    exact hu.map e.symm.toRingHom
+
+/-- `IsStrictlyHenselianLocalRing` transfers along a ring isomorphism. -/
+theorem IsStrictlyHenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
+    [IsStrictlyHenselianLocalRing R] (e : R ≃+* S) : IsStrictlyHenselianLocalRing S :=
+  have : HenselianLocalRing S := .of_ringEquiv e
+  ⟨IsSepClosed.of_ringEquiv (IsLocalRing.ResidueField.mapEquiv e)⟩
 
 universe u v
 

@@ -1,7 +1,27 @@
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Inseparable
 
 variable {X : Type*} [TopologicalSpace X]
+
+/-- A specialization induces equality of connected components. -/
+lemma Specializes.connectedComponents_mk_eq {a b : X} (hab : a ⤳ b) :
+    ConnectedComponents.mk a = ConnectedComponents.mk b :=
+  ConnectedComponents.coe_eq_coe.mpr <| connectedComponent_eq <|
+    isConnected_singleton.closure.subset_connectedComponent
+      (subset_closure rfl) hab.mem_closure
+
+/-- Any preimage under `ConnectedComponents.mk` is a union of connected components. -/
+lemma ConnectedComponents.iUnion_connectedComponent_preimage_mk
+    (T : Set (ConnectedComponents X)) :
+    ⋃ x ∈ (ConnectedComponents.mk ⁻¹' T : Set X), connectedComponent x =
+      ConnectedComponents.mk ⁻¹' T := by
+  ext x
+  simp only [Set.mem_iUnion, Set.mem_preimage, exists_prop]
+  refine ⟨?_, fun hx ↦ ⟨x, hx, mem_connectedComponent⟩⟩
+  rintro ⟨y, hy, hxy⟩
+  exact (ConnectedComponents.coe_eq_coe'.mpr hxy) ▸ hy
 
 -- add `@[stacks 0906]` to `ConnectedComponents.totallyDisconnectedSpace`
 
@@ -130,3 +150,16 @@ def ConnectedComponents.mkHomeomorph [TotallyDisconnectedSpace S] : S ≃ₜ Con
   right_inv := ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
   continuous_toFun := continuous_coe
   continuous_invFun := continuous_id.connectedComponentsLift_continuous
+
+open CategoryTheory CategoryTheory.Limits
+
+universe v u
+
+/-- The inverse limit of a system of totally disconnected topological spaces is
+totally disconnected. -/
+instance TopCat.limitCone_pt_totallyDisconnectedSpace
+    {J : Type v} [SmallCategory J] (F : J ⥤ TopCat.{max v u})
+    [∀ j, TotallyDisconnectedSpace (F.obj j)] :
+    TotallyDisconnectedSpace (TopCat.limitCone.{v, u} F).pt := by
+  change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
+  exact Subtype.totallyDisconnectedSpace
