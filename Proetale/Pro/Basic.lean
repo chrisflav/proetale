@@ -153,12 +153,13 @@ def limitPresentation (pres : RelativeLimitPresentation J F X) : LimitPresentati
   π := pres.π
   isLimit := pres.isLimit
 
-noncomputable def self (X : C) : RelativeLimitPresentation PUnit.{s + 1} F (F.obj X) where
+@[simps]
+noncomputable def self [IsConnected J] (X : C) : RelativeLimitPresentation J F (F.obj X) where
   diag := (Functor.const _).obj X
   π := (F.constComp _ X).inv
   isLimit := .equivOfNatIsoOfIso (F.constComp _ X).symm _
     (Cone.mk _ (F.constComp _ X).inv) (Cone.ext (Iso.refl _))
-    (isLimitConstCone PUnit.{s + 1} (F.obj X))
+    (isLimitConstCone J (F.obj X))
 
 /-- Map a relative limit presentation under an isomorphism. -/
 @[simps]
@@ -196,6 +197,18 @@ variable (f : pres₁.Hom pres₂)
 @[reassoc (attr := simp)]
 lemma map_π (j : J) : f.map ≫ pres₂.π.app j = pres₁.π.app j ≫ F.map (f.natTrans.app j) :=
   pres₂.isLimit.map_π _ _ j
+
+@[simps]
+def self [IsConnected J] {X Y : C} (f : X ⟶ Y) :
+    (self (F := F) (J := J) X).Hom (self (J := J) Y) where
+  natTrans.app j := f
+
+@[simp]
+lemma self_map [IsConnected J] {X Y : C} (f : X ⟶ Y) :
+    (self (J := J) (F := F) f).map = F.map f := by
+  refine (RelativeLimitPresentation.self (J := J) Y).isLimit.hom_ext fun j ↦ ?_
+  rw [map_π]
+  simp
 
 end Hom
 
