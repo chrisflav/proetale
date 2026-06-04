@@ -475,85 +475,11 @@ instance : PreservesCofilteredLimitsOfSize.{u, u} (toProEt S) :=
 instance : PreservesCofilteredLimitsOfSize.{u, u} (ProEt.forget S) :=
   sorry
 
-@[simps]
-def _root_.CategoryTheory.Limits.RelativeLimitPresentation.precomp
-    {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {J K : Type*} [Category* J] [Category* K]
-    {X : D} (pres : RelativeLimitPresentation J F X)
-    (G : K ⥤ J) [G.Initial] :
-    RelativeLimitPresentation K F X where
-  diag := G ⋙ pres.diag
-  π := (Functor.constCompWhiskeringLeftIso _ _).inv.app _ ≫
-    Functor.whiskerLeft _ pres.π ≫ (Functor.associator _ _ _).inv
-  isLimit :=
-    -- use initial
-    sorry
-
-@[simps]
-noncomputable
-def _root_.CategoryTheory.Limits.RelativeLimitPresentation.restrict
-    {C D : Type*} [Category* C] [HasPullbacks C] [Category* D] {F : C ⥤ D} {J : Type*} [Category* J]
-    {X : D} (pres : RelativeLimitPresentation J F X)
-    [PreservesLimitsOfShape WalkingCospan F]
-    {j : J} {U : C} (f : U ⟶ pres.diag.obj j)
-    (V : D) (fst : V ⟶ F.obj U) (snd : V ⟶ X)
-    (hg : IsPullback fst snd (F.map f) (pres.π.app j)) :
-    RelativeLimitPresentation (Over j) F V where
-  diag.obj i := pullback (pres.diag.map i.hom) f
-  diag.map {i j} u := pullback.map _ _ _ _ (pres.diag.map u.left) (𝟙 _) (𝟙 _)
-    (by simp [← Functor.map_comp]) (by simp)
-  π.app k := by
-    dsimp
-    refine (IsPullback.map _ (.of_hasPullback _ _)).lift ?_ ?_ ?_
-    · exact snd ≫ pres.π.app k.left
-    · exact fst
-    · have := Cone.w pres.cone k.hom
-      dsimp at this
-      simp [hg.w, this]
-  π.naturality i k u := by
-    simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, id_eq,
-      Category.id_comp, Functor.comp_map]
-    refine (IsPullback.map _ (.of_hasPullback _ _)).hom_ext ?_ ?_
-    · simp only [IsPullback.lift_fst, Category.assoc, ← Functor.map_comp, limit.lift_π,
-        PullbackCone.mk_pt, PullbackCone.mk_π_app]
-      have := pres.π.naturality u.left
-      -- TODO: add API for RelativeLimitPresentation
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
-        Functor.comp_map] at this
-      simp [Functor.map_comp, this]
-    · simp [← Functor.map_comp]
-  isLimit :=
-    sorry
-
-@[simps]
-noncomputable
-def _root_.CategoryTheory.Limits.RelativeLimitPresentation.restrictHom
-    {C D : Type*} [Category* C] [HasPullbacks C] [Category* D] {F : C ⥤ D} {J : Type*} [Category* J]
-    {X : D} (pres : RelativeLimitPresentation J F X)
-    [PreservesLimitsOfShape WalkingCospan F]
-    [IsCofiltered J]
-    {j : J} {U : C} (f : U ⟶ pres.diag.obj j)
-    (V : D) (fst : V ⟶ F.obj U) (snd : V ⟶ X)
-    (hg : IsPullback fst snd (F.map f) (pres.π.app j)) :
-    (pres.restrict _ _ _ _ hg).Hom (pres.precomp (Over.forget _)) where
-  natTrans.app j := pullback.fst _ _
-
-@[simp]
-lemma _root_.CategoryTheory.Limits.RelativeLimitPresentation.restrictHom_map
-    {C D : Type*} [Category* C] [HasPullbacks C] [Category* D] {F : C ⥤ D} {J : Type*} [Category* J]
-    {X : D} (pres : RelativeLimitPresentation J F X)
-    [PreservesLimitsOfShape WalkingCospan F]
-    [IsCofiltered J]
-    {j : J} {U : C} (f : U ⟶ pres.diag.obj j)
-    (V : D) (fst : V ⟶ F.obj U) (snd : V ⟶ X)
-    (hg : IsPullback fst snd (F.map f) (pres.π.app j)) :
-    (pres.restrictHom _ _ _ _ hg).map = snd := by
-  refine (pres.precomp (Over.forget j)).isLimit.hom_ext ?_
-  intro i
-  simp only [RelativeLimitPresentation.precomp_diag, Functor.comp_obj, Over.forget_obj,
-    RelativeLimitPresentation.Hom.map_π, Functor.const_obj_obj,
-    RelativeLimitPresentation.restrict_diag_obj, RelativeLimitPresentation.restrict_π_app, id_eq,
-    RelativeLimitPresentation.restrictHom_natTrans_app, IsPullback.lift_fst]
-  simp
+lemma singleton_inf_le_relativelyPresentable :
+    (Precoverage.singleton S.AffineProEt ⊓
+      MorphismProperty.precoverage fun _ _ f ↦ Surjective f.left) ≤
+      Precoverage.relativelyPresentable (AffineEtale.toAffineProEt S) (AffineEtale.topology S) :=
+  sorry
 
 /-- The coverings in the minimal precoverage on the affine pro-étale site can be written
 as cofiltered limits of coverings in the affine étale site. -/
@@ -595,7 +521,7 @@ lemma minimalPrecoverage_le_relativelyPresentable :
       have h2 := CostructuredArrow.w (pres.π.app i).toCommaMorphism
       dsimp at h2
       simp [V, (hg a).w_assoc, x, 𝒰', h2, h1]
-    -- let v' (a : 𝒰.I₀) : Γ((pres.diag.obj i).left.unop, ⊤) ⟶ _ := sorry
+    let 𝒱 : Scheme.OpenCover (Spec (pres.diag.obj _).left.unop) := ⟨⟨_, _, v⟩, hv⟩
     let covpres : 𝒰.RelativeLimitPresentation (AffineEtale.toAffineProEt S) (Over i) := by
       refine ⟨?_, ?_, ?_, ?_⟩
       · exact pres.precomp (Over.forget i)
@@ -609,11 +535,43 @@ lemma minimalPrecoverage_le_relativelyPresentable :
     refine ⟨Over i, inferInstance, inferInstance, covpres, ?_⟩
     intro a
     apply AffineEtale.zariskiTopology_le_topology
+    let iso : (covpres.preZeroHypercover a).map (AffineEtale.toScheme S) ≅
+        (𝒱.pullback₁ (Spec.map (pres.diag.map a.hom).left.unop)).toPreZeroHypercover := by
+      refine PreZeroHypercover.isoMk (.refl _) ?_ ?_
+      · intro k
+        dsimp [Etale.forget, covpres, 𝒱]
+        refine Scheme.Spec.mapIso ?_ ≪≫
+            PreservesPullback.iso Scheme.Spec (pres.diag.map a.hom).left (v' k).left ≪≫ ?_
+        · exact PreservesPullback.iso
+            (MorphismProperty.CostructuredArrow.forget _ _ _ _ ⋙
+              CategoryTheory.CostructuredArrow.proj _ _) _ _
+        · refine pullback.congrHom rfl ?_
+          simp only [Spec_obj, MorphismProperty.CostructuredArrow.homMk_left, Spec_map,
+            Quiver.Hom.unop_op, Spec.map_preimage, v']
+          rfl
+      · intro k
+        -- TODO: Improve this by defining a `AffineEtale.toRing`
+        simp only [Functor.comp_obj, Over.forget_obj, PreZeroHypercover.map_X,
+          PreZeroHypercover.RelativeLimitPresentation.preZeroHypercover_X,
+          Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.map_I₀,
+          PreZeroHypercover.RelativeLimitPresentation.preZeroHypercover_I₀,
+          PreZeroHypercover.pullback₁_I₀, PreZeroHypercover.pullback₁_X, Spec_obj, Spec_map, id_eq,
+          Iso.trans_hom, Functor.mapIso_hom, PreservesPullback.iso_hom, pullback.congrHom_hom,
+          PreZeroHypercover.pullback₁_f, Category.assoc, limit.lift_π, PullbackCone.mk_pt,
+          PullbackCone.mk_π_app, Category.comp_id, PreZeroHypercover.map_f,
+          PreZeroHypercover.RelativeLimitPresentation.preZeroHypercover_f, Functor.comp_map,
+          Etale.forget_map, Over.forget_map, AffineEtale.Spec_map_left, 𝒱]
+        simp only [← Scheme.Spec_map]
+        rw [pullbackComparison_comp_fst]
+        simp only [Spec_map, ← Spec.map_comp, ← unop_comp]
+        congr 2
+        apply pullbackComparison_comp_fst
+    rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀]
     refine Precoverage.generate_mem_toGrothendieck ?_
-    simp only [Precoverage.mem_comap_iff, Functor.comp_obj, Over.forget_obj, Presieve.map_ofArrows,
-      Functor.comp_map, Etale.forget_map, Over.forget_map, AffineEtale.Spec_map_left]
-    sorry
-  · sorry
+    simp only [Precoverage.mem_comap_iff, ← PreZeroHypercover.presieve₀_map]
+    apply PreZeroHypercover.mem_of_iso iso.symm
+    exact (𝒱.pullback₁ (Spec.map (pres.diag.map a.hom).left.unop)).mem₀
+  · apply singleton_inf_le_relativelyPresentable
 
 end AffineProEt
 

@@ -35,6 +35,7 @@ structure PreZeroHypercover.RelativeLimitPresentation (J : Type*) [Category* J] 
   hf : ∀ i, (f i).map = E.f i
 
 variable {F} in
+@[simps]
 def PreZeroHypercover.RelativeLimitPresentation.preZeroHypercover {J : Type*} [Category* J] {X : D}
     {E : PreZeroHypercover.{w} X} (pres : E.RelativeLimitPresentation F J) (j : J) :
     PreZeroHypercover.{w} (pres.pres.diag.obj j) where
@@ -110,6 +111,80 @@ def Limits.RelativeLimitPresentation.pullback {X Y S : D} (f : X ⟶ S) (g : Y �
       · apply pY.isLimit.hom_ext
         intro j
         simpa using hm j =≫ F.map (pullback.snd _ _)
+
+@[simps]
+noncomputable
+def Limits.RelativeLimitPresentation.precomp
+    {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {J K : Type*} [Category* J] [Category* K]
+    {X : D} (pres : RelativeLimitPresentation J F X)
+    (G : K ⥤ J) [G.Initial] :
+    RelativeLimitPresentation K F X where
+  diag := G ⋙ pres.diag
+  π := (Functor.constCompWhiskeringLeftIso _ _).inv.app _ ≫
+    Functor.whiskerLeft _ pres.π ≫ (Functor.associator _ _ _).inv
+  isLimit := by
+    refine IsLimit.postcomposeHomEquiv (Functor.associator _ _ _).symm _ ?_
+    refine (Functor.Initial.isLimitExtendConeEquiv (G := pres.diag ⋙ F) G _) ?_
+    refine IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ?_ pres.isLimit
+    refine Cone.ext (.refl _) fun j ↦ ?_
+    simpa using pres.π.naturality _
+
+@[simps!]
+noncomputable
+def Limits.RelativeLimitPresentation.restrict
+    {C D : Type*} [Category* C] [HasPullbacks C] [Category* D] {F : C ⥤ D} {J : Type*} [Category* J]
+    {X : D} (pres : RelativeLimitPresentation J F X)
+    [IsCofiltered J]
+    [PreservesLimitsOfShape WalkingCospan F]
+    {j : J} {U : C} (f : U ⟶ pres.diag.obj j)
+    (V : D) (fst : V ⟶ F.obj U) (snd : V ⟶ X)
+    (hg : IsPullback fst snd (F.map f) (pres.π.app j)) :
+    RelativeLimitPresentation (Over j) F V :=
+  haveI : CategoryTheory.IsConnected (Over j) := IsCofiltered.isConnected _
+  RelativeLimitPresentation.pullback _ _ (F.map f) hg.flip.cone hg.flip.isLimit
+    (pres.precomp (Over.forget j))
+    (.self _)
+    (.self _)
+    { natTrans.app j := pres.diag.map j.hom
+      natTrans.naturality := by simp [← Functor.map_comp] }
+    (.self f)
+    (by
+      apply ((RelativeLimitPresentation.self (F := F) (J := Over j) _)).isLimit.hom_ext
+      intro k
+      rw [RelativeLimitPresentation.Hom.map_π]
+      simpa using (pres.π.naturality k.hom).symm)
+    (by simp)
+
+@[simps]
+noncomputable
+def Limits.RelativeLimitPresentation.restrictHom
+    {C D : Type*} [Category* C] [HasPullbacks C] [Category* D] {F : C ⥤ D} {J : Type*} [Category* J]
+    {X : D} (pres : RelativeLimitPresentation J F X)
+    [PreservesLimitsOfShape WalkingCospan F]
+    [IsCofiltered J]
+    {j : J} {U : C} (f : U ⟶ pres.diag.obj j)
+    (V : D) (fst : V ⟶ F.obj U) (snd : V ⟶ X)
+    (hg : IsPullback fst snd (F.map f) (pres.π.app j)) :
+    (pres.restrict _ _ _ _ hg).Hom (pres.precomp (Over.forget _)) where
+  natTrans.app j := pullback.fst _ _
+
+@[simp]
+lemma Limits.RelativeLimitPresentation.restrictHom_map
+    {C D : Type*} [Category* C] [HasPullbacks C] [Category* D] {F : C ⥤ D} {J : Type*} [Category* J]
+    {X : D} (pres : RelativeLimitPresentation J F X)
+    [PreservesLimitsOfShape WalkingCospan F]
+    [IsCofiltered J]
+    {j : J} {U : C} (f : U ⟶ pres.diag.obj j)
+    (V : D) (fst : V ⟶ F.obj U) (snd : V ⟶ X)
+    (hg : IsPullback fst snd (F.map f) (pres.π.app j)) :
+    (pres.restrictHom _ _ _ _ hg).map = snd := by
+  refine (pres.precomp (Over.forget j)).isLimit.hom_ext ?_
+  intro i
+  simp only [RelativeLimitPresentation.precomp_diag, Functor.comp_obj, Over.forget_obj,
+    RelativeLimitPresentation.Hom.map_π, Functor.const_obj_obj,
+    RelativeLimitPresentation.restrict_diag_obj, RelativeLimitPresentation.restrict_π_app,
+    RelativeLimitPresentation.restrictHom_natTrans_app]
+  simp
 
 @[simps]
 noncomputable
