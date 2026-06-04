@@ -1368,6 +1368,7 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:subset-stratification}
     By definition $I_E$ is the product of the ideals defining $Z(E', E'')$ in
     $\spec{A_{\widetilde{Z(E', E'')}}}$. Hence the first claim. The second
@@ -1386,6 +1387,7 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:locally-closed-specializations}
     Let $x \in \spec{A_E}$. Then $x$ is in $\spec{A_{\widetilde{Z(E', E'')}}}$ for some
     $E = E' \coprod E''$. By
@@ -2000,9 +2002,18 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
 \begin{proof}
     \uses{lemma:field-local-ind-etale}
-    Let $\mathfrak{p}$ be a prime ideal of $B$. After base change along $A \to \kappa(\mathfrak{p}^c)$,
-    we may assume $A = k$ is a field. After postcomposing with the ind-étale map $B \to B_{\mathfrak{p}}$,
-    we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-ind-etale}.
+    \leanok
+    Let $\mathfrak{q}$ be a prime ideal of $B$ lying over $\mathfrak{p} \subseteq A$.
+    Write $B = \colim_i B_i$ as a filtered colimit of étale $A$-algebras. Every element
+    $s \in B$ lifts to some $s_i \in B_i$, and the composition
+    \[
+        \kappa(\mathfrak{p}) \otimes_A B_i \to \kappa(\mathfrak{q})
+    \]
+    is an algebra homomorphism from the étale $\kappa(\mathfrak{p})$-algebra
+    $\kappa(\mathfrak{p}) \otimes_A B_i$ to the local ring $\kappa(\mathfrak{q})$, so by
+    \ref{lemma:field-local-ind-etale} the image of $s$ in $\kappa(\mathfrak{q})$ is separable
+    over $\kappa(\mathfrak{p})$. A general element of $\kappa(\mathfrak{q})$ is a ratio of two
+    such images, and separability passes to ratios via the separable closure.
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
@@ -2078,6 +2089,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:intersection-closed-open-iff}
   Each $A \to A_W$ is a localization at an idempotent. Passing to filtered colimits, $A \to A_T$ is surjective and ind-Zariski.
 

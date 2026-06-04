@@ -79,6 +79,13 @@ def map {W₁ W₂ : Clopens (PrimeSpectrum A)} (h : W₁ ≤ W₂) :
   toRingHom := lift (isIdempotentElemEquivClopens.symm W₂).val (isUnit_of_dvd _ (val_dvd h))
   commutes' r := by simp
 
+/-- The range of `Spec`-side comap of the algebra map `A → RestrictClopen W` is `W`. -/
+lemma range_comap (W : Clopens (PrimeSpectrum A)) :
+    Set.range (PrimeSpectrum.comap (algebraMap A (RestrictClopen W))) =
+      (W : Set (PrimeSpectrum A)) := by
+  rw [localization_away_comap_range (RestrictClopen W) (isIdempotentElemEquivClopens.symm W).val]
+  exact congr_arg Opens.carrier (basicOpen_isIdempotentElemEquivClopens_symm W)
+
 end RestrictClopen
 
 open scoped CategoryTheory
@@ -150,14 +157,87 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap A (Restriction T))
 
 variable {T}
 
+/-- The zero locus of the kernel of `A → RestrictClopen W` equals `W`. -/
+lemma zeroLocus_ker_restrictClopen_eq (W : Clopens (PrimeSpectrum A)) :
+    zeroLocus (RingHom.ker (algebraMap A (RestrictClopen W)) : Set A) =
+      (W : Set (PrimeSpectrum A)) := by
+  rw [← range_comap_of_surjective (RestrictClopen W) (algebraMap A (RestrictClopen W))
+        (IsLocalization.Away.algebraMap_surjective_of_isIdempotentElem _
+          (isIdempotentElemEquivClopens.symm W).prop),
+      RestrictClopen.range_comap]
+
+/-- For `W` a clopen containing the preimage of `T`, the kernel of `A → RestrictClopen W`
+is contained in the kernel of the algebra map into the colimit `Restriction T`. -/
+lemma ker_algebraMap_restrictClopen_le
+    {W : Clopens (PrimeSpectrum A)} (hW : ConnectedComponents.mk ⁻¹' T ≤ W) :
+    RingHom.ker (algebraMap A (RestrictClopen W)) ≤
+      RingHom.ker (algebraMap A (Restriction T)) := by
+  intro a ha
+  rw [RingHom.mem_ker] at ha ⊢
+  let ι : RestrictClopen W →ₐ[A] Restriction T :=
+    (colimit.ι (Restriction.diag T) (Opposite.op ⟨W, hW⟩)).hom
+  calc algebraMap A (Restriction T) a
+      = ι (algebraMap A (RestrictClopen W) a) := (ι.commutes a).symm
+    _ = ι 0 := by rw [ha]
+    _ = 0 := map_zero _
+
+/-- The image of `Spec(Restriction T) → Spec A` is the preimage of `T` under the projection
+`Spec A → π₀(Spec A)`, whenever `T` is closed. -/
 lemma range_algebraMap_specComap (h : IsClosed T) :
     Set.range (PrimeSpectrum.comap <| algebraMap A (Restriction T)) =
-      ConnectedComponents.mk ⁻¹' T :=
-  sorry
+      ConnectedComponents.mk ⁻¹' T := by
+  rw [range_comap_of_surjective _ _ (algebraMap_surjective T)]
+  refine Set.Subset.antisymm ?_ ?_
+  · -- ⊆: any prime in `V(ker)` lies in every clopen containing the preimage of `T`,
+    -- hence in the intersection of all such clopens, which is the preimage of `T`
+    -- by Stacks 04PL.
+    intro p hp
+    have hp_mem_W : ∀ (W : Clopens (PrimeSpectrum A)),
+        ConnectedComponents.mk ⁻¹' T ≤ W → p ∈ (W : Set (PrimeSpectrum A)) := fun W hW ↦ by
+      rw [← zeroLocus_ker_restrictClopen_eq W]
+      exact zeroLocus_anti_mono (ker_algebraMap_restrictClopen_le (T := T) hW) hp
+    obtain ⟨J, hJ⟩ := isClosed_and_iUnion_connectedComponent_eq_iff.mp
+      ⟨h.preimage ConnectedComponents.continuous_coe,
+        _, ConnectedComponents.iUnion_connectedComponent_preimage_mk T⟩
+    rw [← hJ]
+    simp only [Set.iInter_coe_set, Set.mem_iInter, Subtype.forall]
+    intro V hV hVJ
+    refine hp_mem_W ⟨V, hV⟩ ?_
+    rw [← hJ]
+    exact Set.iInter_subset_of_subset ⟨⟨V, hV⟩, hVJ⟩ le_rfl
+  · -- ⊇: given `a ∈ ker(A → Restriction T)`, the equality criterion for filtered colimits
+    -- yields a clopen `W ⊇ T` at which `a` already vanishes. Then `p ∈ W` forces `a ∈ p`.
+    intro p hp
+    rw [mem_zeroLocus]
+    intro a ha
+    rw [SetLike.mem_coe, RingHom.mem_ker] at ha
+    let ι_top := colimit.ι (Restriction.diag T) (Opposite.op ⟨(⊤ : Clopens _), le_top⟩)
+    have heq_in_colim : ι_top.hom (algebraMap A (RestrictClopen ⊤) a) =
+        ι_top.hom (0 : RestrictClopen ⊤) :=
+      (ι_top.hom.commutes a).trans (ha.trans (map_zero ι_top.hom).symm)
+    obtain ⟨k, f, g, hfg⟩ :=
+      (Types.FilteredColimit.isColimit_eq_iff
+        (Restriction.diag T ⋙ CategoryTheory.forget (CommAlgCat A))
+        (isColimitOfPreserves (CategoryTheory.forget (CommAlgCat A))
+          (colimit.isColimit (Restriction.diag T)))).mp heq_in_colim
+    let W := k.unop.val
+    have hW : ConnectedComponents.mk ⁻¹' T ≤ W := k.unop.property
+    have hf_alg : (Restriction.diag T ⋙ CategoryTheory.forget (CommAlgCat A)).map f
+        (algebraMap A (RestrictClopen ⊤) a) = algebraMap A (RestrictClopen W) a :=
+      ((Restriction.diag T).map f).hom.commutes a
+    have ha_zero : algebraMap A (RestrictClopen W) a = 0 := by
+      rw [← hf_alg, hfg]
+      exact map_zero ((Restriction.diag T).map g).hom
+    have hker_le : RingHom.ker (algebraMap A (RestrictClopen W)) ≤ p.asIdeal := by
+      rw [← SetLike.coe_subset_coe, ← PrimeSpectrum.mem_zeroLocus]
+      exact zeroLocus_ker_restrictClopen_eq W ▸ hW hp
+    exact hker_le (RingHom.mem_ker.mpr ha_zero)
 
-lemma isClosedEmbedding_algebraMap_specComap (h : IsClosed T) :
+/-- The map `Spec(Restriction T) → Spec A` is a closed embedding. -/
+lemma isClosedEmbedding_algebraMap_specComap :
     IsClosedEmbedding (PrimeSpectrum.comap <| algebraMap A (Restriction T)) :=
-  sorry
+  PrimeSpectrum.isClosedEmbedding_comap_of_surjective (Restriction T)
+    (algebraMap A (Restriction T)) (algebraMap_surjective T)
 
 end Restriction
 
