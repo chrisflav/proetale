@@ -243,22 +243,19 @@ lemma isClosedEmbedding_algebraMap_specComap :
 instance isWLocalRing [IsWLocalRing A] : IsWLocalRing (Restriction T) :=
   IsWLocalRing.of_surjective (algebraMap_surjective T)
 
-/-- Auxiliary `T`-valued map underlying `connectedComponentsMap`. -/
-private def connectedComponentsMapAux (h : IsClosed T) :
-    PrimeSpectrum (Restriction T) → T :=
-  fun q ↦ ⟨ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap A (Restriction T)) q),
-    show _ ∈ ConnectedComponents.mk ⁻¹' T from
-      range_algebraMap_specComap h ▸ Set.mem_range_self q⟩
-
-private lemma continuous_connectedComponentsMapAux (h : IsClosed T) :
-    Continuous (connectedComponentsMapAux h) :=
-  (ConnectedComponents.continuous_coe.comp
-    isClosedEmbedding_algebraMap_specComap.continuous).subtype_mk _
-
 /-- The natural map from the connected components of `Spec (Restriction T)` to `T`. -/
 def connectedComponentsMap (h : IsClosed T) :
     ConnectedComponents (PrimeSpectrum (Restriction T)) → T :=
-  (continuous_connectedComponentsMapAux h).connectedComponentsLift
+  ((ConnectedComponents.continuous_coe.comp
+        isClosedEmbedding_algebraMap_specComap.continuous).subtype_mk
+      fun q ↦ (range_algebraMap_specComap h ▸ Set.mem_range_self q :
+        _ ∈ ConnectedComponents.mk ⁻¹' T)).connectedComponentsLift
+
+@[simp]
+lemma connectedComponentsMap_mk (h : IsClosed T) (q : PrimeSpectrum (Restriction T)) :
+    (connectedComponentsMap h (ConnectedComponents.mk q) : ConnectedComponents (PrimeSpectrum A)) =
+      ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap A (Restriction T)) q) :=
+  rfl
 
 lemma continuous_connectedComponentsMap (h : IsClosed T) :
     Continuous (connectedComponentsMap h) :=
@@ -270,35 +267,29 @@ lemma surjective_connectedComponentsMap (h : IsClosed T) :
   obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
   obtain ⟨q, hq⟩ : x ∈ Set.range (PrimeSpectrum.comap (algebraMap A (Restriction T))) :=
     range_algebraMap_specComap h ▸ ht
-  exact ⟨ConnectedComponents.mk q,
-    by simp [connectedComponentsMap, connectedComponentsMapAux, hq]⟩
+  exact ⟨ConnectedComponents.mk q, Subtype.ext (by simp [hq])⟩
 
 lemma injective_connectedComponentsMap (h : IsClosed T) :
     Function.Injective (connectedComponentsMap h) := by
   refine Continuous.connectedComponentsLift_injective _ ?_
   rintro ⟨t, ht⟩
   obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
-  set f := PrimeSpectrum.comap (algebraMap A (Restriction T)) with hf_def
+  let f := PrimeSpectrum.comap (algebraMap A (Restriction T))
   have hce : IsClosedEmbedding f := isClosedEmbedding_algebraMap_specComap
-  have hfib_eq : connectedComponentsMapAux h ⁻¹' {⟨ConnectedComponents.mk x, ht⟩} =
-      f ⁻¹' connectedComponent x := by
-    ext q
-    simp only [Set.mem_preimage, Set.mem_singleton_iff, Subtype.mk.injEq,
-      connectedComponentsMapAux]
-    rw [← connectedComponents_preimage_singleton, Set.mem_preimage, Set.mem_singleton_iff]
-  rw [hfib_eq]
   have hcc_sub : (connectedComponent x : Set (PrimeSpectrum A)) ⊆ Set.range f := by
     rw [range_algebraMap_specComap h]
     intro y hy
     have hxy : ConnectedComponents.mk y = ConnectedComponents.mk x :=
       ConnectedComponents.coe_eq_coe.mpr (connectedComponent_eq hy).symm
     rwa [Set.mem_preimage, hxy]
-  have himg : f '' (f ⁻¹' (connectedComponent x : Set (PrimeSpectrum A))) =
-      connectedComponent x :=
-    Set.image_preimage_eq_of_subset hcc_sub
-  refine hce.isInducing.isPreconnected_image.mp ?_
-  rw [himg]
-  exact isPreconnected_connectedComponent
+  have h_pre : IsPreconnected (f ⁻¹' (connectedComponent x : Set (PrimeSpectrum A))) := by
+    refine hce.isInducing.isPreconnected_image.mp ?_
+    rw [Set.image_preimage_eq_of_subset hcc_sub]
+    exact isPreconnected_connectedComponent
+  convert h_pre using 1
+  ext q
+  simp only [Set.mem_preimage, Set.mem_singleton_iff, Subtype.mk.injEq, Function.comp_apply, f,
+    ← connectedComponents_preimage_singleton]
 
 lemma isHomeomorph_connectedComponentsMap (h : IsClosed T) :
     IsHomeomorph (connectedComponentsMap h) :=
