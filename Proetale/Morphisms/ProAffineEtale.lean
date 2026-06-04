@@ -3,10 +3,11 @@ Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
-import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
+import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 import Proetale.Algebra.IndEtale
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
 
 /-!
@@ -34,9 +35,10 @@ lemma proAffineEtale.of_isAffine {X Y : Scheme.{u}} [IsAffine X] (f : X ⟶ Y) [
 
 /-- The domain of a pro-affine étale morphism is affine. -/
 lemma proAffineEtale.isAffine {X S : Scheme.{u}} {f : X ⟶ S} (hf : proAffineEtale f) :
-    IsAffine X :=
-  -- Proof: An inverse limit of affine schemes is affine.
-  sorry
+    IsAffine X := by
+  obtain ⟨J, _, _, D, t, s, hs, hts⟩ := hf
+  have hAff (j : J) : IsAffine (D.obj j) := ofObjectProperty_top_right_iff.mp (hts j).1.2
+  exact Scheme.isAffine_of_isLimit (Cone.mk _ s) hs
 
 /-- `IsAffine` is preserved under isomorphisms. -/
 instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme.{u}) (IsAffine ·) where
