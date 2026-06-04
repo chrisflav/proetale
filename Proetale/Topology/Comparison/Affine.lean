@@ -478,7 +478,9 @@ instance : PreservesCofilteredLimitsOfSize.{u, u} (ProEt.forget S) :=
 lemma singleton_inf_le_relativelyPresentable :
     (Precoverage.singleton S.AffineProEt ⊓
       MorphismProperty.precoverage fun _ _ f ↦ Surjective f.left) ≤
-      Precoverage.relativelyPresentable (AffineEtale.toAffineProEt S) (AffineEtale.topology S) :=
+      Precoverage.relativelyPresentable (AffineEtale.toAffineProEt S) (AffineEtale.topology S) := by
+  rintro X R ⟨⟨Y, f, rfl⟩, hf⟩
+  simp only [MorphismProperty.singleton_mem_precoverage_iff] at hf
   sorry
 
 /-- The coverings in the minimal precoverage on the affine pro-étale site can be written
