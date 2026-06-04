@@ -48,6 +48,7 @@ import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Presentation
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
+import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
@@ -107,6 +108,7 @@ import Proetale.Mathlib.Topology.Spectral.Prespectral
 import Proetale.Morphisms.ProAffineEtale
 import Proetale.Morphisms.WeaklyEtale
 import Proetale.Pro.Basic
+import Proetale.Pro.Generating
 import Proetale.Pro.PresheafColimit
 import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Coherent.Affine
