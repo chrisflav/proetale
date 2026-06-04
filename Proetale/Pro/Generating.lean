@@ -237,6 +237,30 @@ theorem isSheaf_of_generates_of_isRelativelyPresentable (P : Dᵒᵖ ⥤ A) (h :
     R.preZeroHypercover.toPreOneHypercover _
   exact (h₁ _ hR).toPreOneHypercover _ _ _
 
+def adsfasdfasdfa {C : Type*} [Category* C] [Limits.HasPullbacks C]
+    (X : C) (E : PreOneHypercover X) :
+    True :=
+  sorry
+
+theorem isSheaf_of_generates_of_isRelativelyPresentable' (P : Dᵒᵖ ⥤ A) (h : IsSheaf J (F.op ⋙ P))
+    [PreservesFilteredColimitsOfSize.{w, w} P] [HasFilteredColimitsOfSize.{w, w} A]
+    [AB5OfSize.{w} A] (H : B.Generates K)
+    (h₁ : ∀ (X : D) (R : Presieve X), R ∈ B X → ∃ (R' : Presieve X),
+      R' ≤ R ∧ R' ∈ Precoverage.relativelyPresentable F J _)
+    (h₂ : B ≤ Precoverage.finite _) :
+    IsSheaf K P := by
+  rw [H.isSheaf_iff_preZeroHypercover (A := A)]
+  intro X R hR
+  dsimp [PreOneHypercover.IsSheafFor]
+  rw [(R.preZeroHypercover.isLimitSaturateEquivOfHasPullbacks _).nonempty_congr]
+  obtain ⟨S, hle, hS⟩ := h₁ _ _ hR
+  have : R.preZeroHypercover.Finite := by
+    rw [← Presieve.finite_uncurry_iff]
+    exact h₂ _ hR
+  sorry
+  --apply PreOneHypercover.IsSheafFor.of_preservesFilteredColimitsOfSize.{_, w} J _ (F := F) h
+  --  R.preZeroHypercover.toPreOneHypercover _
+  --exact (h₁ _ hR).toPreOneHypercover _ _ _
 end Presheaf
 
 end CategoryTheory
