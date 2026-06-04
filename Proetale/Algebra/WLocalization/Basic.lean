@@ -851,6 +851,9 @@ lemma exists_map_eq_of_ι_eq (G : Finset A) (x y : ProdStrata G)
   exact ⟨H, leOfHom f, hf⟩
 
 set_option maxHeartbeats 800000 in
+-- The two-stage filtered-colimit argument in the `surjOn` case unfolds enough definitions
+-- (set notations, ideal coercions, `algebraMap`-naturality squares) to overshoot the default
+-- heartbeat budget.
 lemma bijOn_algebraMap_specComap_zeroLocus_ideal :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (WLocalization A))
       (zeroLocus (ideal A)) .univ := by
