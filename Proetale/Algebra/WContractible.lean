@@ -243,55 +243,76 @@ lemma isClosedEmbedding_algebraMap_specComap :
 instance isWLocalRing [IsWLocalRing A] : IsWLocalRing (Restriction T) :=
   IsWLocalRing.of_surjective (algebraMap_surjective T)
 
+/-- Auxiliary `T`-valued map underlying `connectedComponentsMap`. -/
+private def connectedComponentsMapAux (h : IsClosed T) :
+    PrimeSpectrum (Restriction T) → T :=
+  fun q ↦ ⟨ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap A (Restriction T)) q),
+    show _ ∈ ConnectedComponents.mk ⁻¹' T from
+      range_algebraMap_specComap h ▸ Set.mem_range_self q⟩
+
+private lemma continuous_connectedComponentsMapAux (h : IsClosed T) :
+    Continuous (connectedComponentsMapAux h) :=
+  (ConnectedComponents.continuous_coe.comp
+    isClosedEmbedding_algebraMap_specComap.continuous).subtype_mk _
+
+/-- The natural map from the connected components of `Spec (Restriction T)` to `T`. -/
+def connectedComponentsMap (h : IsClosed T) :
+    ConnectedComponents (PrimeSpectrum (Restriction T)) → T :=
+  (continuous_connectedComponentsMapAux h).connectedComponentsLift
+
+lemma continuous_connectedComponentsMap (h : IsClosed T) :
+    Continuous (connectedComponentsMap h) :=
+  Continuous.connectedComponentsLift_continuous _
+
+lemma surjective_connectedComponentsMap (h : IsClosed T) :
+    Function.Surjective (connectedComponentsMap h) := by
+  rintro ⟨t, ht⟩
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
+  obtain ⟨q, hq⟩ : x ∈ Set.range (PrimeSpectrum.comap (algebraMap A (Restriction T))) :=
+    range_algebraMap_specComap h ▸ ht
+  exact ⟨ConnectedComponents.mk q,
+    by simp [connectedComponentsMap, connectedComponentsMapAux, hq]⟩
+
+lemma injective_connectedComponentsMap (h : IsClosed T) :
+    Function.Injective (connectedComponentsMap h) := by
+  refine Continuous.connectedComponentsLift_injective _ ?_
+  rintro ⟨t, ht⟩
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
+  set f := PrimeSpectrum.comap (algebraMap A (Restriction T)) with hf_def
+  have hce : IsClosedEmbedding f := isClosedEmbedding_algebraMap_specComap
+  have hfib_eq : connectedComponentsMapAux h ⁻¹' {⟨ConnectedComponents.mk x, ht⟩} =
+      f ⁻¹' connectedComponent x := by
+    ext q
+    simp only [Set.mem_preimage, Set.mem_singleton_iff, Subtype.mk.injEq,
+      connectedComponentsMapAux]
+    rw [← connectedComponents_preimage_singleton, Set.mem_preimage, Set.mem_singleton_iff]
+  rw [hfib_eq]
+  have hcc_sub : (connectedComponent x : Set (PrimeSpectrum A)) ⊆ Set.range f := by
+    rw [range_algebraMap_specComap h]
+    intro y hy
+    have hxy : ConnectedComponents.mk y = ConnectedComponents.mk x :=
+      ConnectedComponents.coe_eq_coe.mpr (connectedComponent_eq hy).symm
+    rwa [Set.mem_preimage, hxy]
+  have himg : f '' (f ⁻¹' (connectedComponent x : Set (PrimeSpectrum A))) =
+      connectedComponent x :=
+    Set.image_preimage_eq_of_subset hcc_sub
+  refine hce.isInducing.isPreconnected_image.mp ?_
+  rw [himg]
+  exact isPreconnected_connectedComponent
+
+lemma isHomeomorph_connectedComponentsMap (h : IsClosed T) :
+    IsHomeomorph (connectedComponentsMap h) :=
+  Homeomorph.isHomeomorph <| Continuous.homeoOfEquivCompactToT2
+    (f := Equiv.ofBijective _
+      ⟨injective_connectedComponentsMap h, surjective_connectedComponentsMap h⟩)
+    (continuous_connectedComponentsMap h)
+
 /-- If `T ⊆ π₀(Spec A)` is closed, then the connected components of `Spec (Restriction T)` are
 canonically homeomorphic to `T`. This is the identification used in the construction of the
 w-contractification (Stacks 097D, `def:modify-pi0-profinite`). -/
 def connectedComponentsHomeo (h : IsClosed T) :
-    ConnectedComponents (PrimeSpectrum (Restriction T)) ≃ₜ T := by
-  let f : PrimeSpectrum (Restriction T) → PrimeSpectrum A :=
-    PrimeSpectrum.comap (algebraMap A (Restriction T))
-  have hce : IsClosedEmbedding f := isClosedEmbedding_algebraMap_specComap
-  have hrange : Set.range f = ConnectedComponents.mk ⁻¹' T :=
-    range_algebraMap_specComap h
-  have hmem (q : PrimeSpectrum (Restriction T)) : ConnectedComponents.mk (f q) ∈ T :=
-    show f q ∈ ConnectedComponents.mk ⁻¹' T from hrange ▸ Set.mem_range_self q
-  let φ : PrimeSpectrum (Restriction T) → T :=
-    fun q ↦ ⟨ConnectedComponents.mk (f q), hmem q⟩
-  have hφ_cont : Continuous φ :=
-    (ConnectedComponents.continuous_coe.comp hce.continuous).subtype_mk _
-  let ψ : ConnectedComponents (PrimeSpectrum (Restriction T)) → T :=
-    Continuous.connectedComponentsLift hφ_cont
-  have hψ_cont : Continuous ψ := Continuous.connectedComponentsLift_continuous _
-  have hsurj : Function.Surjective ψ := by
-    rintro ⟨t, ht⟩
-    obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
-    obtain ⟨q, hq⟩ : x ∈ Set.range f := hrange ▸ ht
-    exact ⟨ConnectedComponents.mk q, by simp [ψ, φ, hq]⟩
-  have hinj : Function.Injective ψ := by
-    refine Continuous.connectedComponentsLift_injective hφ_cont ?_
-    rintro ⟨t, ht⟩
-    obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe t
-    have hfib_eq : φ ⁻¹' {⟨ConnectedComponents.mk x, ht⟩} =
-        f ⁻¹' connectedComponent x := by
-      ext q
-      simp only [Set.mem_preimage, Set.mem_singleton_iff, Subtype.mk.injEq, φ]
-      rw [← connectedComponents_preimage_singleton, Set.mem_preimage,
-        Set.mem_singleton_iff]
-    rw [hfib_eq]
-    have hcc_sub : (connectedComponent x : Set (PrimeSpectrum A)) ⊆ Set.range f := by
-      rw [hrange]
-      intro y hy
-      have hxy : ConnectedComponents.mk y = ConnectedComponents.mk x :=
-        ConnectedComponents.coe_eq_coe.mpr (connectedComponent_eq hy).symm
-      rwa [Set.mem_preimage, hxy]
-    have himg : f '' (f ⁻¹' (connectedComponent x : Set (PrimeSpectrum A))) =
-        connectedComponent x :=
-      Set.image_preimage_eq_of_subset hcc_sub
-    refine hce.isInducing.isPreconnected_image.mp ?_
-    rw [himg]
-    exact isPreconnected_connectedComponent
-  exact Continuous.homeoOfEquivCompactToT2
-    (f := Equiv.ofBijective ψ ⟨hinj, hsurj⟩) hψ_cont
+    ConnectedComponents (PrimeSpectrum (Restriction T)) ≃ₜ T :=
+  (isHomeomorph_connectedComponentsMap h).homeomorph _
 
 end Restriction
 
