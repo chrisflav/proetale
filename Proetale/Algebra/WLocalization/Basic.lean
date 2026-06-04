@@ -654,19 +654,24 @@ noncomputable instance commRing : CommRing (WLocalization A) :=
 noncomputable instance algebra : Algebra A (WLocalization A) :=
   inferInstanceAs <| Algebra A (WLocalization.commAlgCat A)
 
-noncomputable def ideal : Ideal (WLocalization A) :=
-  ⨆ E : Finset A, Ideal.map (colimitPresentation.ι.app E).hom (ProdStrata.ideal E)
+/-! ### Colimit-presentation helpers
+
+These declarations expose the colimit presentation of `WLocalization A` at the level of
+elements: `ιRingHom A E` is the structural ring hom from a finite stage, `exists_rep` says
+every element comes from some stage, and the various `ideal_map_*` lemmas package the
+directed system used to describe `ideal A`. -/
 
 /-- The ring hom `ProdStrata E → WLocalization A` induced by the colimit presentation. -/
-private noncomputable abbrev ιRingHom (E : Finset A) : ProdStrata E →+* WLocalization A :=
-  (colimitPresentation (A := A)).ι.app E |>.hom.toRingHom
+noncomputable def ιRingHom (E : Finset A) : ProdStrata E →+* WLocalization A :=
+  ((colimitPresentation (A := A)).ι.app E).hom.toRingHom
 
-/-- The CommRingCat-level cocone for the colimit presentation. -/
-private noncomputable def commRingCatCocone :
+/-- The `CommRingCat`-level cocone for the colimit presentation. -/
+noncomputable def commRingCatCocone :
     Cocone (diag A ⋙ forget₂ (CommAlgCat A) CommRingCat) :=
   (forget₂ (CommAlgCat A) CommRingCat).mapCocone (colimit.cocone (diag A))
 
-private noncomputable def commRingCatIsColimit : IsColimit (commRingCatCocone A) :=
+/-- The `CommRingCat`-level cocone is a colimit cocone. -/
+noncomputable def commRingCatIsColimit : IsColimit (commRingCatCocone A) :=
   isColimitOfPreserves (forget₂ (CommAlgCat A) CommRingCat) (colimit.isColimit _)
 
 /-- Every element of `WLocalization A` is in the image of `ιRingHom` from some stage. -/
@@ -676,18 +681,26 @@ lemma exists_rep (x : WLocalization A) :
   exact ⟨E, y, hy⟩
 
 /-- The cocone relation: `ιRingHom` commutes with `ProdStrata.map` for `E ⊆ G`. -/
-lemma ιRingHom_apply_map {E G : Finset A} (h : E ⊆ G) (c : ProdStrata E) :
+lemma ιRingHom_map_apply {E G : Finset A} (h : E ⊆ G) (c : ProdStrata E) :
     ιRingHom A G (ProdStrata.map h c) = ιRingHom A E c := by
   have hw : (diag A).map (homOfLE h) ≫ colimit.ι (diag A) G = colimit.ι (diag A) E :=
     colimit.w (diag A) (homOfLE h)
   have key : ((diag A).map (homOfLE h) ≫ colimit.ι (diag A) G).hom c =
       (colimit.ι (diag A) E).hom c :=
-    congrArg (fun (f : (diag A).obj E ⟶ commAlgCat A) ↦ f.hom c) hw
+    congrArg (fun f ↦ f.hom c) hw
   simpa [diag] using key
 
-/-- Every element of `Ideal.map (ιRingHom E) (ProdStrata.ideal E)` has a single-stage
-representative. -/
-lemma exists_rep_map_ideal (E : Finset A) (b : WLocalization A)
+noncomputable def ideal : Ideal (WLocalization A) :=
+  ⨆ E : Finset A, Ideal.map (ιRingHom A E) (ProdStrata.ideal E)
+
+/-- The defining presentation of `ideal A` as a supremum over finite stages. -/
+lemma ideal_eq_iSup :
+    ideal A = ⨆ E : Finset A, Ideal.map (ιRingHom A E) (ProdStrata.ideal E) :=
+  rfl
+
+/-- Every element of `Ideal.map (ιRingHom E) (ProdStrata.ideal E)` is the image of an
+element of `ProdStrata.ideal G` for some stage `G` (which may differ from `E`). -/
+lemma exists_rep_of_mem_ideal_map (E : Finset A) (b : WLocalization A)
     (hb : b ∈ Ideal.map (ιRingHom A E) (ProdStrata.ideal E)) :
     ∃ (G : Finset A) (d : ProdStrata G), d ∈ ProdStrata.ideal G ∧ ιRingHom A G d = b := by
   classical
@@ -707,8 +720,8 @@ lemma exists_rep_map_ideal (E : Finset A) (b : WLocalization A)
           (Ideal.mem_map_of_mem (ProdStrata.map Finset.subset_union_left).toRingHom hd₁))
         (ProdStrata.map_ideal_le Finset.subset_union_right
           (Ideal.mem_map_of_mem (ProdStrata.map Finset.subset_union_right).toRingHom hd₂)), ?_⟩
-    rw [map_add, ιRingHom_apply_map A Finset.subset_union_left,
-      ιRingHom_apply_map A Finset.subset_union_right, hι₁, hι₂]
+    rw [map_add, ιRingHom_map_apply A Finset.subset_union_left,
+      ιRingHom_map_apply A Finset.subset_union_right, hι₁, hι₂]
   | smul r b₁ _ ih₁ =>
     obtain ⟨G₁, d₁, hd₁, hι₁⟩ := ih₁
     obtain ⟨F, s, hs⟩ := exists_rep A r
@@ -718,21 +731,20 @@ lemma exists_rep_map_ideal (E : Finset A) (b : WLocalization A)
       Ideal.mul_mem_left _ _
         (ProdStrata.map_ideal_le Finset.subset_union_left
           (Ideal.mem_map_of_mem (ProdStrata.map Finset.subset_union_left).toRingHom hd₁)), ?_⟩
-    rw [smul_eq_mul, map_mul, ιRingHom_apply_map A Finset.subset_union_right,
-      ιRingHom_apply_map A Finset.subset_union_left, hs, hι₁]
+    rw [smul_eq_mul, map_mul, ιRingHom_map_apply A Finset.subset_union_right,
+      ιRingHom_map_apply A Finset.subset_union_left, hs, hι₁]
 
-/-- The system `E ↦ Ideal.map (ιRingHom E) (ProdStrata.ideal E)` is monotone. -/
-private lemma ideal_map_mono {E G : Finset A} (h : E ⊆ G) :
+/-- The family `E ↦ Ideal.map (ιRingHom E) (ProdStrata.ideal E)` is monotone. -/
+lemma ideal_map_mono {E G : Finset A} (h : E ⊆ G) :
     Ideal.map (ιRingHom A E) (ProdStrata.ideal E) ≤
       Ideal.map (ιRingHom A G) (ProdStrata.ideal G) := by
-  rw [Ideal.map_le_iff_le_comap]
-  intro c hc
-  rw [Ideal.mem_comap, ← ιRingHom_apply_map A h]
-  exact Ideal.mem_map_of_mem _ (ProdStrata.map_ideal_le h
-    (Ideal.mem_map_of_mem (ProdStrata.map h).toRingHom hc))
+  have hcomp : (ιRingHom A G).comp (ProdStrata.map h).toRingHom = ιRingHom A E := by
+    ext c; exact ιRingHom_map_apply A h c
+  rw [← hcomp, ← Ideal.map_map]
+  exact Ideal.map_mono (ProdStrata.map_ideal_le h)
 
-/-- The system `E ↦ Ideal.map (ιRingHom E) (ProdStrata.ideal E)` is directed. -/
-private lemma ideal_map_directed :
+/-- The family `E ↦ Ideal.map (ιRingHom E) (ProdStrata.ideal E)` is directed. -/
+lemma ideal_map_directed :
     Directed (· ≤ ·) (fun E : Finset A ↦
       Ideal.map (ιRingHom A E) (ProdStrata.ideal E)) := by
   classical
@@ -740,19 +752,16 @@ private lemma ideal_map_directed :
     ideal_map_mono A Finset.subset_union_right⟩
 
 /-- At each finite stage, the comap of a prime sup the stage ideal is not the whole ring. -/
-private lemma comap_ιRingHom_sup_ideal_ne_top (E : Finset A)
+lemma comap_ιRingHom_sup_ideal_ne_top (E : Finset A)
     (x : PrimeSpectrum (WLocalization A)) :
     (PrimeSpectrum.comap (ιRingHom A E) x).asIdeal ⊔ ProdStrata.ideal E ≠ ⊤ := by
+  intro htop
   obtain ⟨t, ht_mem, ht_spec⟩ := ProdStrata.exists_specializes_zeroLocus_ideal
     (PrimeSpectrum.comap (ιRingHom A E) x)
-  intro htop
-  have hle1 : (PrimeSpectrum.comap (ιRingHom A E) x).asIdeal ≤ t.asIdeal :=
-    (PrimeSpectrum.le_iff_specializes _ _).mpr ht_spec
-  have hle2 : (ProdStrata.ideal E : Set (ProdStrata E)) ⊆ t.asIdeal :=
-    (PrimeSpectrum.mem_zeroLocus _ _).mp ht_mem
-  refine t.isPrime.ne_top (t.asIdeal.eq_top_iff_one.mpr ?_)
-  refine sup_le hle1 (SetLike.coe_subset_coe.mp hle2) ?_
-  exact htop ▸ Submodule.mem_top
+  have hle : (PrimeSpectrum.comap (ιRingHom A E) x).asIdeal ⊔ ProdStrata.ideal E ≤ t.asIdeal :=
+    sup_le ((PrimeSpectrum.le_iff_specializes _ _).mpr ht_spec)
+      ((PrimeSpectrum.mem_zeroLocus _ _).mp ht_mem)
+  exact t.isPrime.ne_top (top_le_iff.mp (htop ▸ hle))
 
 lemma bijOn_algebraMap_specComap_zeroLocus_ideal :
     Set.BijOn (PrimeSpectrum.comap <| algebraMap A (WLocalization A))
@@ -763,22 +772,22 @@ lemma exists_mem_zeroLocus_ideal_specializes (x : PrimeSpectrum (WLocalization A
     ∃ y ∈ zeroLocus (ideal A), x ⤳ y := by
   suffices h : x.asIdeal ⊔ ideal A ≠ ⊤ by
     obtain ⟨m, hm, hle⟩ := Ideal.exists_le_maximal _ h
+    obtain ⟨hle₁, hle₂⟩ := sup_le_iff.mp hle
     exact ⟨⟨m, hm.isPrime⟩,
-      (PrimeSpectrum.mem_zeroLocus _ _).mpr (sup_le_iff.mp hle).2,
-      (PrimeSpectrum.le_iff_specializes _ _).mp (sup_le_iff.mp hle).1⟩
+      (PrimeSpectrum.mem_zeroLocus _ _).mpr hle₂,
+      (PrimeSpectrum.le_iff_specializes _ _).mp hle₁⟩
   intro htop
   have h1 : (1 : WLocalization A) ∈ x.asIdeal ⊔ ideal A := htop ▸ Submodule.mem_top
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp h1
-  have hideal : ideal A = ⨆ E : Finset A, Ideal.map (ιRingHom A E) (ProdStrata.ideal E) := rfl
-  rw [hideal, Submodule.mem_iSup_of_directed _ (ideal_map_directed A)] at hb
+  rw [ideal_eq_iSup, Submodule.mem_iSup_of_directed _ (ideal_map_directed A)] at hb
   obtain ⟨E₀, hbE⟩ := hb
-  obtain ⟨G, d, hd, hιd⟩ := exists_rep_map_ideal A E₀ b hbE
-  have hab' : (1 : WLocalization A) - b = a := by linear_combination -hab
+  obtain ⟨G, d, hd, hιd⟩ := exists_rep_of_mem_ideal_map A E₀ b hbE
+  have hab' : (1 : WLocalization A) - b = a := (eq_sub_of_add_eq hab).symm
   have h_one_mem : (1 : ProdStrata G) ∈
       (PrimeSpectrum.comap (ιRingHom A G) x).asIdeal ⊔ ProdStrata.ideal G := by
     refine Submodule.mem_sup.mpr ⟨1 - d, ?_, d, hd, sub_add_cancel 1 d⟩
-    simp only [PrimeSpectrum.comap_asIdeal, Ideal.mem_comap, map_sub, map_one, hιd, hab']
-    exact ha
+    simpa only [PrimeSpectrum.comap_asIdeal, Ideal.mem_comap, map_sub, map_one, hιd, hab']
+      using ha
   exact comap_ιRingHom_sup_ideal_ne_top A G x
     (((PrimeSpectrum.comap (ιRingHom A G) x).asIdeal ⊔
       ProdStrata.ideal G).eq_top_iff_one.mpr h_one_mem)
