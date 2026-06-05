@@ -170,6 +170,21 @@ of this property.
     Omitted, see \stacksproject{092J}.
 \end{proof}
 
+\begin{lemma}[\stacksproject{092J}]
+    \uses{def:weakly-etale-algebra}
+    \label{lem:weakly-etale-localization}
+    \lean{Algebra.WeaklyEtale.of_isLocalization}
+    \leanok
+    For any commutative ring $A$ and multiplicative submonoid $S \subseteq A$, the
+    localization map $A \to S^{-1} A$ is weakly étale.
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    The localization $A \to S^{-1} A$ is flat. Moreover, the multiplication map
+    $S^{-1} A \otimes_{A} S^{-1} A \to S^{-1} A$ is bijective, hence flat.
+\end{proof}
+
 \begin{lemma}[\stacksproject{092H}]
     \label{lem:weakly-etale-base-change}
     If $B$ is a weakly-étale $A$-algebra and $A'$ is any $A$-algebra, the base change
