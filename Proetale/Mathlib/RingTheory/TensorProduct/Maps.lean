@@ -1,3 +1,4 @@
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.TensorProduct.Maps
 
 open TensorProduct
@@ -8,6 +9,12 @@ lemma TensorProduct.lmul'_surjective {R S : Type*} [CommSemiring R] [CommSemirin
     [Algebra R S] :
     Function.Surjective (Algebra.TensorProduct.lmul' (R := R) (S := S)) :=
   fun x ↦ ⟨1 ⊗ₜ x, by simp⟩
+
+lemma TensorProduct.one_tmul_sub_tmul_one_mem_ker_lmul' {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] (a : S) :
+    (1 ⊗ₜ[R] a - a ⊗ₜ[R] 1 : S ⊗[R] S) ∈
+      RingHom.ker (Algebra.TensorProduct.lmul' (R := R) (S := S)).toRingHom := by
+  simp [RingHom.mem_ker]
 
 section
 
