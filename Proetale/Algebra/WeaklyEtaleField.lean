@@ -63,6 +63,46 @@ instance absolutelyFlat_tensor_self (K L : Type u) [CommRing K] [CommRing L] [Al
   Ring.AbsolutelyFlat.of_flat_lmul' L (L ⊗[K] L)
     (Algebra.WeaklyEtale.flat_lmul' L (L ⊗[K] L))
 
+section Field
+
+variable (K L : Type u) [Field K] [Field L] [Algebra K L]
+
+/-- The multiplication map `L ⊗[K] L → L` is surjective. -/
+lemma surjective_lmul'_of_field :
+    Function.Surjective (Algebra.TensorProduct.lmul' (R := K) (S := L)) :=
+  fun x ↦ ⟨1 ⊗ₜ x, by simp⟩
+
+/-- A weakly étale extension between fields is formally unramified.
+
+Restated for convenience from the general
+`Algebra.WeaklyEtale ⇒ Algebra.FormallyUnramified` instance. -/
+lemma formallyUnramified_of_isField [Algebra.WeaklyEtale K L] :
+    Algebra.FormallyUnramified K L :=
+  inferInstance
+
+/-- If `K → L` is a weakly étale extension between fields, then `L ⊗[K] L` is reduced.
+
+Derived from `Ring.AbsolutelyFlat (L ⊗[K] L)` via the local-rings-are-fields
+characterisation of absolutely flat rings. -/
+instance isReduced_tensor_self [Algebra.WeaklyEtale K L] : IsReduced (L ⊗[K] L) := by
+  refine isReduced_ofLocalizationMaximal _ fun P hP ↦ ?_
+  have : P.IsPrime := hP.isPrime
+  have hfld : IsField (Localization.AtPrime P) :=
+    Ring.AbsolutelyFlat.isField_of_isLocalization_prime
+      (R := L ⊗[K] L) P (Localization.AtPrime P)
+  let _ := hfld.toField
+  infer_instance
+
+variable {K L} in
+/-- For `a ∈ L`, the element `1 ⊗ a - a ⊗ 1 ∈ L ⊗[K] L` lies in the kernel of
+multiplication. -/
+lemma sub_mem_ker_lmul' (a : L) :
+    (1 ⊗ₜ[K] a - a ⊗ₜ[K] 1 : L ⊗[K] L) ∈
+      RingHom.ker (Algebra.TensorProduct.lmul' (R := K) (S := L)).toRingHom := by
+  simp [RingHom.mem_ker]
+
+end Field
+
 variable (K L : Type u) [CommRing K] [CommRing L] [Algebra K L]
 
 /-- The `L`-algebra evaluation `L[X] →ₐ[L] L ⊗[K] L` sending `X` to `1 ⊗ a`.
