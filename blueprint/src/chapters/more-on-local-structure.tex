@@ -62,15 +62,15 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{proof}
 
 \begin{lemma}
+    Let $R \to S$ be an integral ring map of local rings. Then $R \to S$ is a local ring homomorphism.
     \label{lemma:integral-local-hom}
     \lean{RingHom.IsIntegral.isLocalHom_of_isLocalRing}
     \leanok
-    Let $R \to S$ be an integral ring map of local rings. Then $R \to S$ is a local ring homomorphism.
 \end{lemma}
 
 \begin{proof}
     \leanok
-    This follows from going-up (use \verb`Ideal.IsMaximal.under`).
+    This follows from going-up.
 \end{proof}
 
 \begin{lemma}
