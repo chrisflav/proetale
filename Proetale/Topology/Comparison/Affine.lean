@@ -120,31 +120,12 @@ instance : (toProEt S).Faithful :=
   inferInstanceAs <|
     (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale le_rfl).Faithful
 
-/-- `proAffineEtale` is closed under cospan limits in `Over S`: a pullback of a
-cospan whose three legs have `proAffineEtale` structural maps again has
-`proAffineEtale` structural map. The cospan legs are maps between affine
-schemes, so `proAffineEtale` is stable under base change along them. -/
-instance : (proAffineEtale.overObj (X := S)).IsClosedUnderLimitsOfShape WalkingCospan where
-  limitsOfShape_le := by
-    rintro Y ⟨p⟩
-    haveI : ∀ j : WalkingCospan, IsAffine (p.diag.obj j).left := fun j =>
-      (p.prop_diag_obj j).isAffine
-    haveI : IsAffineHom (p.diag.map WalkingCospan.Hom.inl).left :=
-      isAffineHom_of_isAffine _
-    have h : IsPullback ((p.π.app .left).left) ((p.π.app .right).left)
-        ((p.diag.map WalkingCospan.Hom.inl).left)
-          ((p.diag.map WalkingCospan.Hom.inr).left) :=
-      IsPullback.of_isLimit_cone <|
-        Limits.isLimitOfPreserves (CategoryTheory.Over.forget S) p.isLimit
-    rw [MorphismProperty.overObj_iff,
-      show Y.hom = (p.π.app .left).left ≫ (p.diag.obj .left).hom by simp]
-    refine proAffineEtale.comp_mem _ _ ?_ (p.prop_diag_obj _)
-    refine MorphismProperty.IsStableUnderBaseChangeAlong.of_isPullback h.flip ?_
-    exact MorphismProperty.of_postcomp _ _ (p.diag.obj WalkingCospan.one).hom
-      (p.prop_diag_obj .one) (by simpa using p.prop_diag_obj .right)
-
+/-- The affine pro-étale site has pullbacks, computed as in `Over S`. -/
 instance : HasPullbacks (AffineProEt S) := by
-  apply +allowSynthFailures MorphismProperty.Comma.hasLimitsOfShape_of_closedUnderLimitsOfShape
+  -- `allowSynthFailures` is needed because the closure instance is registered on
+  -- `proAffineEtale.overObj S`, but the goal here is phrased in terms of `commaObj`.
+  apply (config := { allowSynthFailures := true })
+    MorphismProperty.Comma.hasLimitsOfShape_of_closedUnderLimitsOfShape
   · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over S))
   · exact inferInstanceAs ((proAffineEtale.overObj (X := S)).IsClosedUnderLimitsOfShape _)
 
