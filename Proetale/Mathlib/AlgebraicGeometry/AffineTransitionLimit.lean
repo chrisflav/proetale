@@ -367,7 +367,8 @@ lemma exists_eq_isLimitMap_whisker (f : c.pt ⟶ c'.pt)
     [∀ i, LocallyOfFinitePresentation (t.app i)] [∀ i, LocallyOfFinitePresentation (t'.app i)] :
     ∃ (J : Type u) (_ : SmallCategory J) (_ : IsCofiltered J) (G : J ⥤ I) (G' : J ⥤ I')
       (_ : G.Initial) (_ : G'.Initial) (g : G ⋙ D ⟶ G' ⋙ D'),
-      f = IsLimit.map (c.whisker _) ((Functor.Initial.isLimitWhiskerEquiv _ _).symm hc') g := by
+      f = IsLimit.map (c.whisker _) ((Functor.Initial.isLimitWhiskerEquiv _ _).symm hc') g ∧
+      (∀ j, g.app j ≫ t'.app _ = t.app _) := by
   obtain ⟨i'⟩ := IsCofiltered.nonempty (C := I')
   obtain ⟨i, g, hi, hg⟩ := Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation _ t
     (t'.app i') _ hc (f ≫ c'.π.app i') (by ext; simp [hf _ i'])
@@ -408,13 +409,17 @@ lemma exists_eq_isLimitMap_whisker (f : c.pt ⟶ c'.pt)
     (Over.homMk f rfl)
   use J, inferInstance, inferInstance, G ⋙ Over.forget _, G' ⋙ Over.forget _, inferInstance,
     inferInstance
-  refine ⟨Functor.whiskerRight g (Over.forget S), ?_⟩
-  apply ((Functor.Initial.isLimitWhiskerEquiv (G' ⋙ Over.forget i') c').symm hc').hom_ext
-  intro j
-  rw [IsLimit.map_π]
-  have := hg =≫ (Cone.whisker G'
-    (Over.liftCone _ ((Over.forget i').whiskerLeft t') (Cone.whisker _ _) _ hp')).π.app j
-  rw [IsLimit.map_π] at this
-  simpa using congr($(this).left)
+  refine ⟨Functor.whiskerRight g (Over.forget S), ?_, ?_⟩
+  · apply ((Functor.Initial.isLimitWhiskerEquiv (G' ⋙ Over.forget i') c').symm hc').hom_ext
+    intro j
+    rw [IsLimit.map_π]
+    have := hg =≫ (Cone.whisker G'
+      (Over.liftCone _ ((Over.forget i').whiskerLeft t') (Cone.whisker _ _) _ hp')).π.app j
+    rw [IsLimit.map_π] at this
+    simpa using congr($(this).left)
+  · simp only [Functor.comp_obj, Over.forget_obj, Functor.const_obj_obj, Functor.whiskerRight_app,
+      Over.lift_obj, Functor.whiskerLeft_app, Over.forget_map]
+    intro j
+    simpa using Over.w (g.app j)
 
 end AlgebraicGeometry

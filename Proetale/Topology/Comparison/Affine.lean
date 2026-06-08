@@ -418,6 +418,48 @@ noncomputable def AffineEtale.toAffineProEt (S : Scheme.{u}) :
       exact .of_isAffine f)
     (by simp)
 
+@[reassoc (attr := simp)]
+lemma AffineEtale.SpecMap_hom {X Y : S.AffineEtale} (f : X ⟶ Y) :
+    Spec.map f.left.unop ≫ Y.hom = X.hom := by
+  simpa using CommaMorphism.w f.toCommaMorphism
+
+variable {S} in
+def AffineEtale.ring (X : S.AffineEtale) : CommRingCat :=
+  X.left.unop
+
+variable {S} in
+def AffineEtale.Hom.ring {X Y : S.AffineEtale} (f : X ⟶ Y) :
+    Y.ring ⟶ X.ring :=
+  (CommaMorphism.left f.toCommaMorphism).unop
+
+@[simp]
+lemma AffineEtale.Hom.ring_comp {X Y Z : S.AffineEtale} (f : X ⟶ Y)
+    (g : Y ⟶ Z) :
+    Hom.ring (f ≫ g) = Hom.ring g ≫ Hom.ring f :=
+  rfl
+
+variable {S} in
+noncomputable
+def AffineEtale.homMk {X Y : S.AffineEtale} (f : Y.ring ⟶ X.ring)
+    (h : Scheme.Spec.map f.op ≫ Y.hom = X.hom := by cat_disch) :
+    X ⟶ Y :=
+  MorphismProperty.CostructuredArrow.homMk f.op trivial h
+
+@[simp]
+lemma AffineEtale.homMk_left {X Y : S.AffineEtale} (f : Y.ring ⟶ X.ring)
+    (h : Scheme.Spec.map f.op ≫ Y.hom = X.hom := by cat_disch) :
+    Hom.ring (homMk f h) = f :=
+  rfl
+
+@[ext]
+lemma AffineEtale.Hom.ext {X Y : S.AffineEtale} {f g : X ⟶ Y}
+    (h : Hom.ring f = Hom.ring g) :
+    f = g := by
+  apply MorphismProperty.Comma.Hom.ext
+  · apply Quiver.Hom.unop_inj
+    exact h
+  · simp
+
 namespace AffineProEt
 
 instance : ReflectsCofilteredLimitsOfSize.{u, u} (CategoryTheory.Over.forget S) where
@@ -462,9 +504,6 @@ lemma exists_relativeLimitPresentation (X : S.AffineProEt) :
       simp [Scheme.isoSpec_hom_naturality]
     · refine Cone.ext (Iso.refl _) (by cat_disch)
 
-instance : PreservesLimitsOfShape WalkingCospan (AffineEtale.toAffineProEt S) :=
-  sorry
-
 noncomputable
 abbrev toScheme : AffineProEt S ⥤ Scheme.{u} :=
   toProEt S ⋙ ProEt.forget _ ⋙ Over.forget _
@@ -475,11 +514,84 @@ instance : PreservesCofilteredLimitsOfSize.{u, u} (toProEt S) :=
 instance : PreservesCofilteredLimitsOfSize.{u, u} (ProEt.forget S) :=
   sorry
 
+instance {X : S.AffineEtale} : Etale ((AffineEtale.toAffineProEt S).obj X).hom :=
+  X.prop
+
+instance {X : S.AffineEtale} : Etale X.hom :=
+  X.prop
+
+lemma exists_relativeLimitPresentation_hom {X Y : S.AffineProEt} (f : X ⟶ Y) :
+    ∃ (J : Type u) (_ : SmallCategory J) (_ : IsCofiltered J)
+      (pX : RelativeLimitPresentation J (AffineEtale.toAffineProEt S) X)
+      (pY : RelativeLimitPresentation J (AffineEtale.toAffineProEt S) Y)
+      (hom : pX.Hom pY),
+      f = hom.map := by
+  obtain ⟨J₁, _, _, ⟨pres₁⟩⟩ := Y.exists_relativeLimitPresentation
+  obtain ⟨J₂, _, _, ⟨pres₂⟩⟩ := X.exists_relativeLimitPresentation
+  have : ∀ (i : J₂),
+      CompactSpace ↥(((pres₂.diag ⋙ AffineEtale.toAffineProEt S) ⋙ toScheme S).obj i) := by
+    dsimp; infer_instance
+  have : ∀ {i j : J₂} (f : i ⟶ j),
+      IsAffineHom (((pres₂.diag ⋙ AffineEtale.toAffineProEt S) ⋙ toScheme S).map f) := by
+    dsimp; infer_instance
+  have (i : J₂) : QuasiSeparatedSpace
+      ↥(((pres₂.diag ⋙ AffineEtale.toAffineProEt S) ⋙ toScheme S).obj i) := by
+    dsimp; infer_instance
+  let t₂ : (pres₂.diag ⋙ AffineEtale.toAffineProEt S) ⋙ toScheme S ⟶ (Functor.const J₂).obj S :=
+    .mk fun _ ↦ Over.hom _
+  have (i : J₂) : LocallyOfFinitePresentation (t₂.app i) := by dsimp [t₂]; infer_instance
+  let t₁ : (pres₁.diag ⋙ AffineEtale.toAffineProEt S) ⋙ toScheme S ⟶ (Functor.const J₁).obj S :=
+    .mk fun _ ↦ Over.hom _
+  have w (i : J₂) (i' : J₁) :
+      (pres₂.π.app i).left ≫ t₂.app i =
+        f.left ≫ (pres₁.π.app i').left ≫ t₁.app i' := by
+    simp only [Functor.const_obj_obj, Functor.comp_obj, AffineEtale.toAffineProEt_obj_left,
+      ProEt.forget_obj, toProEt_obj_hom, AffineEtale.toAffineProEt_obj_hom, t₁, t₂]
+    have := MorphismProperty.Over.w (pres₂.π.app i)
+    dsimp at this
+    rw [this]
+    have := MorphismProperty.Over.w (pres₁.π.app i')
+    dsimp at this
+    rw [this]
+    simp
+  have (i : J₁) : LocallyOfFinitePresentation (t₁.app i) := by dsimp [t₁]; infer_instance
+  obtain ⟨J, _, _, G, G', _, _, g, hg, hfac⟩ := exists_eq_isLimitMap_whisker (S := S) _
+    t₂ _ (isLimitOfPreserves (toScheme S) pres₂.isLimit) _ t₁ _
+    (isLimitOfPreserves (toScheme S) pres₁.isLimit) f.left w
+  refine ⟨J, inferInstance, inferInstance, pres₂.precomp G, pres₁.precomp G', ?_, ?_⟩
+  · refine { natTrans.app := ?_, natTrans.naturality := ?_ }
+    · intro j
+      refine AffineEtale.homMk (Spec.preimage (g.app j)) ?_
+      simpa using hfac j
+    · intro i j u
+      simp only [RelativeLimitPresentation.precomp_diag, Functor.comp_obj, Functor.comp_map]
+      ext : 1
+      simp only [AffineEtale.Hom.ring_comp, AffineEtale.homMk_left]
+      apply Spec.map_injective
+      simpa using g.naturality u
+  · apply (pres₁.precomp G').isLimit.hom_ext
+    intro j
+    rw [RelativeLimitPresentation.Hom.map_π]
+    simp only [RelativeLimitPresentation.precomp_diag, Functor.comp_obj,
+      RelativeLimitPresentation.precomp_π, Functor.whiskeringLeft_obj_obj, NatTrans.comp_app,
+      Functor.const_obj_obj, Functor.constCompWhiskeringLeftIso_inv_app_app,
+      Functor.whiskerLeft_app, Functor.associator_inv_app, Category.comp_id, Category.id_comp]
+    apply (toScheme S).map_injective
+    dsimp
+    have := hg =≫ (Cone.whisker G' ((toScheme S).mapCone { pt := Y, π := pres₁.π })).π.app j
+    rw [IsLimit.map_π] at this
+    change f.left ≫ _ = _ ≫ _
+    simpa [AffineEtale.homMk] using this
+
+instance : PreservesLimitsOfShape WalkingCospan (AffineEtale.toAffineProEt S) :=
+  sorry
+
 lemma singleton_inf_le_relativelyPresentable :
     (Precoverage.singleton S.AffineProEt ⊓
       MorphismProperty.precoverage fun _ _ f ↦ Surjective f.left) ≤
       Precoverage.relativelyPresentable (AffineEtale.toAffineProEt S) (AffineEtale.topology S) := by
   rintro X R ⟨⟨Y, f, rfl⟩, hf⟩
+  obtain ⟨J, _, _, pY, pX, hom, rfl⟩ := exists_relativeLimitPresentation_hom _ f
   simp only [MorphismProperty.singleton_mem_precoverage_iff] at hf
   sorry
 
