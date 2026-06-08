@@ -357,31 +357,19 @@ lemma pi {ι : Type*} [_root_.Finite ι] {B : ι → Type v} [∀ i, CommRing (B
 
 /-- A binary product of ring homomorphisms that are bijective on stalks is bijective on stalks. -/
 @[stacks 096E "(2)"]
-lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T}
+lemma prod {T : Type v} [CommRing T] {f : R →+* S} {g : R →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) :
     (f.prod g).BijectiveOnStalks := by
-  refine of_span_unit_ideal {((1, 0) : S × T), ((0, 1) : S × T)} ?_ ?_
-  · rw [Ideal.eq_top_iff_one, show (1 : S × T) = (1, 0) + (0, 1) by ext <;> simp]
-    exact (Ideal.span _).add_mem
-      (Ideal.subset_span (Set.mem_insert _ _))
-      (Ideal.subset_span (Set.mem_insert_of_mem _ rfl))
-  · rintro x (rfl | rfl) Sg _ _ _
-    · letI : Algebra (S × T) S := (RingHom.fst S T).toAlgebra
-      let e := (IsLocalization.algEquiv (Submonoid.powers ((1, 0) : S × T)) S Sg).toRingEquiv
-      have heq : (algebraMap (S × T) Sg).comp (f.prod g) = e.toRingHom.comp f := by
-        ext r
-        exact ((IsLocalization.algEquiv (Submonoid.powers ((1, 0) : S × T)) S Sg).commutes
-          (f r, g r)).symm
-      rw [heq]
-      exact hf.comp e.bijectiveOnStalks
-    · letI : Algebra (S × T) T := (RingHom.snd S T).toAlgebra
-      let e := (IsLocalization.algEquiv (Submonoid.powers ((0, 1) : S × T)) T Sg).toRingEquiv
-      have heq : (algebraMap (S × T) Sg).comp (f.prod g) = e.toRingHom.comp g := by
-        ext r
-        exact ((IsLocalization.algEquiv (Submonoid.powers ((0, 1) : S × T)) T Sg).commutes
-          (f r, g r)).symm
-      rw [heq]
-      exact hg.comp e.bijectiveOnStalks
+  let B : Fin 2 → Type v := Fin.cases S fun _ ↦ T
+  letI : ∀ i, CommRing (B i) :=
+    Fin.cases (motive := fun i ↦ CommRing (B i)) ‹CommRing S› fun _ ↦ ‹CommRing T›
+  let F : ∀ i, R →+* B i := Fin.cases (motive := fun i ↦ R →+* B i) f fun _ ↦ g
+  have hF : ∀ i, (F i).BijectiveOnStalks :=
+    Fin.cases (motive := fun i ↦ (F i).BijectiveOnStalks) hf fun _ ↦ hg
+  have key : f.prod g = (RingEquiv.piFinTwo B).toRingHom.comp (Pi.ringHom F) := by
+    ext r <;> rfl
+  rw [key]
+  exact (pi hF).comp (RingEquiv.piFinTwo B).bijectiveOnStalks
 
 end RingHom.BijectiveOnStalks
 
