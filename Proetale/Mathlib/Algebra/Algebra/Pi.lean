@@ -22,6 +22,7 @@ def AlgEquiv.piFinTwo (A : Type*) [CommSemiring A] (R : Fin 2 → Type*)
   { RingEquiv.piFinTwo R with
     commutes' := fun _ => rfl }
 
+-- `_root_.Finite` is required below because `AlgHom.Finite` is in scope inside this namespace.
 namespace AlgHom
 
 variable {k : Type*} [CommSemiring k] {I : Type*} [DecidableEq I]
