@@ -221,6 +221,10 @@ instance (priority := low) [WeaklyEtale R S] : FormallyUnramified R S :=
 instance (priority := low) [WeaklyEtale R S] [FinitePresentation R S] : Etale R S :=
   .of_formallyUnramified_of_flat
 
+/-- Every étale algebra is weakly étale. -/
+@[stacks 092N "(2)"]
+theorem of_etale [Algebra.Etale R S] : Algebra.WeaklyEtale R S := inferInstance
+
 end WeaklyEtale
 
 end Algebra
