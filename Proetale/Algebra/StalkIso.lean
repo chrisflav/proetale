@@ -331,10 +331,10 @@ lemma snd (T : Type*) [CommRing T] : (RingHom.snd S T).BijectiveOnStalks := by
 /-- A ring isomorphism is bijective on stalks. -/
 lemma _root_.RingEquiv.bijectiveOnStalks (e : R ≃+* S) :
     (e : R →+* S).BijectiveOnStalks := fun p _ ↦
-  (Localization.localRingEquiv p e rfl).bijective
+  (Localization.localRingEquiv (p.comap e) p e rfl).bijective
 
 /-- A finite product of ring homomorphisms that are bijective on stalks is bijective on stalks. -/
-lemma pi {ι : Type*} [Finite ι] {B : ι → Type v} [∀ i, CommRing (B i)]
+lemma pi {ι : Type*} [_root_.Finite ι] {B : ι → Type v} [∀ i, CommRing (B i)]
     {f : ∀ i, R →+* B i} (hf : ∀ i, (f i).BijectiveOnStalks) :
     (Pi.ringHom f).BijectiveOnStalks := by
   classical
@@ -351,25 +351,37 @@ lemma pi {ι : Type*} [Finite ι] {B : ι → Type v} [∀ i, CommRing (B i)]
   have heq : (algebraMap (∀ j, B j) Sg).comp (Pi.ringHom f) =
       e.toRingEquiv.toRingHom.comp (f i) := by
     ext r
-    show algebraMap (∀ j, B j) Sg (Pi.ringHom f r) = e (f i r)
-    rw [show f i r = algebraMap (∀ j, B j) (B i) (Pi.ringHom f r) from rfl, e.commutes]
+    exact (e.commutes (Pi.ringHom f r)).symm
   rw [heq]
   exact (hf i).comp e.toRingEquiv.bijectiveOnStalks
 
 /-- A binary product of ring homomorphisms that are bijective on stalks is bijective on stalks. -/
 @[stacks 096E "(2)"]
-lemma prod {T : Type v} [CommRing T] {f : R →+* S} {g : R →+* T}
+lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) :
     (f.prod g).BijectiveOnStalks := by
-  let B : Fin 2 → Type v := ![S, T]
-  let fam : ∀ i, R →+* B i := Fin.cons f (Fin.cons g finZeroElim)
-  have hfam (i : Fin 2) : (fam i).BijectiveOnStalks := by
-    refine Fin.cases hf (Fin.cases hg ?_) i
-    exact fun i ↦ i.elim0
-  have heq : f.prod g = (RingEquiv.piFinTwo B).toRingHom.comp (Pi.ringHom fam) := by
-    ext r <;> rfl
-  rw [heq]
-  exact (pi hfam).comp (RingEquiv.piFinTwo B).bijectiveOnStalks
+  refine of_span_unit_ideal {((1, 0) : S × T), ((0, 1) : S × T)} ?_ ?_
+  · rw [Ideal.eq_top_iff_one, show (1 : S × T) = (1, 0) + (0, 1) by ext <;> simp]
+    exact (Ideal.span _).add_mem
+      (Ideal.subset_span (Set.mem_insert _ _))
+      (Ideal.subset_span (Set.mem_insert_of_mem _ rfl))
+  · rintro x (rfl | rfl) Sg _ _ _
+    · letI : Algebra (S × T) S := (RingHom.fst S T).toAlgebra
+      let e := (IsLocalization.algEquiv (Submonoid.powers ((1, 0) : S × T)) S Sg).toRingEquiv
+      have heq : (algebraMap (S × T) Sg).comp (f.prod g) = e.toRingHom.comp f := by
+        ext r
+        exact ((IsLocalization.algEquiv (Submonoid.powers ((1, 0) : S × T)) S Sg).commutes
+          (f r, g r)).symm
+      rw [heq]
+      exact hf.comp e.bijectiveOnStalks
+    · letI : Algebra (S × T) T := (RingHom.snd S T).toAlgebra
+      let e := (IsLocalization.algEquiv (Submonoid.powers ((0, 1) : S × T)) T Sg).toRingEquiv
+      have heq : (algebraMap (S × T) Sg).comp (f.prod g) = e.toRingHom.comp g := by
+        ext r
+        exact ((IsLocalization.algEquiv (Submonoid.powers ((0, 1) : S × T)) T Sg).commutes
+          (f r, g r)).symm
+      rw [heq]
+      exact hg.comp e.bijectiveOnStalks
 
 end RingHom.BijectiveOnStalks
 
