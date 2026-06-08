@@ -83,6 +83,7 @@ import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Flat.Pi
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
+import Proetale.Mathlib.RingTheory.Ideal.GoingUp
 import Proetale.Mathlib.RingTheory.Ideal.Pure
 import Proetale.Mathlib.RingTheory.Idempotents
 import Proetale.Mathlib.RingTheory.RingHom.Flat
@@ -91,6 +92,7 @@ import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.Topology
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 import Proetale.Mathlib.RingTheory.WeaklyEtale.Local
+import Proetale.Mathlib.RingTheory.WeaklyEtale.Localization
 import Proetale.Mathlib.RingTheory.WeaklyEtale.Pi
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
