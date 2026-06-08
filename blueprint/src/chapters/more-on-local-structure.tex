@@ -64,10 +64,13 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \begin{lemma}
     Let $R \to S$ be an integral ring map of local rings. Then $R \to S$ is a local ring homomorphism.
     \label{lemma:integral-local-hom}
+    \lean{RingHom.IsIntegral.isLocalHom_of_isLocalRing}
+    \leanok
 \end{lemma}
 
 \begin{proof}
-    This follows from going-up (use \verb`Ideal.IsMaximal.under`).
+    \leanok
+    This follows from going-up.
 \end{proof}
 
 \begin{lemma}
@@ -168,6 +171,21 @@ of this property.
 \begin{proof}
     \leanok
     Omitted, see \stacksproject{092J}.
+\end{proof}
+
+\begin{lemma}[\stacksproject{092J}]
+    \uses{def:weakly-etale-algebra}
+    \label{lem:weakly-etale-localization}
+    \lean{Algebra.WeaklyEtale.of_isLocalization}
+    \leanok
+    For any commutative ring $A$ and multiplicative submonoid $S \subseteq A$, the
+    localization map $A \to S^{-1} A$ is weakly étale.
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    The localization $A \to S^{-1} A$ is flat. Moreover, the multiplication map
+    $S^{-1} A \otimes_{A} S^{-1} A \to S^{-1} A$ is bijective, hence flat.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092H}]
