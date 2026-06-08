@@ -75,12 +75,11 @@ lemma of_comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
     (hf : f.BijectiveOnStalks) (hgf : (g.comp f).BijectiveOnStalks) :
     g.BijectiveOnStalks := by
   intro p hp
-  have hq : (p.comap g).IsPrime := Ideal.IsPrime.comap g
+  have hcc : (p.comap g).comap f = p.comap (g.comp f) := Ideal.comap_comap f g
+  refine (Function.Bijective.of_comp_iff _ (hf.localRingHom_of_eq hcc.symm)).mp ?_
   have key := hgf p
-  rw [Localization.localRingHom_comp
-    (I := p.comap (g.comp f)) (p.comap g) p f (Ideal.comap_comap f g) g rfl] at key
-  exact (Function.Bijective.of_comp_iff _
-    (hf.localRingHom_of_eq (Ideal.comap_comap f g).symm)).mp key
+  rwa [Localization.localRingHom_comp
+    (I := p.comap (g.comp f)) (p.comap g) p f hcc g rfl] at key
 
 /-- `BijectiveOnStalks` is preserved under taking quotients by an ideal and its extension. -/
 lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
@@ -337,18 +336,20 @@ lemma comp (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
   exact (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›).comp
     (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›)
 
-/-- If `R → S` and `R → T` are both bijective on stalks, and `S → T` is an `R`-algebra map,
-then `S → T` is bijective on stalks. -/
+/-- If `R → S → T` is a tower of `R`-algebras such that `R → S` and `R → T` are both bijective
+on stalks, then `S → T` is bijective on stalks. -/
 @[stacks 096D]
 lemma of_comp (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
     [Algebra.BijectiveOnStalks R S] [Algebra.BijectiveOnStalks R T] :
     Algebra.BijectiveOnStalks S T := by
-  refine RingHom.bijectiveOnStalks_algebraMap.mp ?_
-  refine RingHom.BijectiveOnStalks.of_comp (f := algebraMap R S)
-    (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›) ?_
-  rw [← IsScalarTower.algebraMap_eq]
-  exact RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›
+  have hRS : (algebraMap R S).BijectiveOnStalks :=
+    RingHom.bijectiveOnStalks_algebraMap.mpr inferInstance
+  have hRT : (algebraMap R T).BijectiveOnStalks :=
+    RingHom.bijectiveOnStalks_algebraMap.mpr inferInstance
+  refine RingHom.bijectiveOnStalks_algebraMap.mp <|
+    RingHom.BijectiveOnStalks.of_comp (f := algebraMap R S) hRS ?_
+  rwa [← IsScalarTower.algebraMap_eq]
 
 instance (priority := 100) of_isStandardOpenImmersion (R T : Type*) [CommRing R] [CommRing T]
     [Algebra R T] [Algebra.IsStandardOpenImmersion R T] : Algebra.BijectiveOnStalks R T :=
