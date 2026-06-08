@@ -221,11 +221,6 @@ instance (priority := low) [WeaklyEtale R S] : FormallyUnramified R S :=
 instance (priority := low) [WeaklyEtale R S] [FinitePresentation R S] : Etale R S :=
   .of_formallyUnramified_of_flat
 
-/-- Named alias for the anonymous Mathlib instance `Etale → WeaklyEtale`, used as a
-stable blueprint reference. -/
-@[stacks 092N "(2)"]
-lemma of_etale [Etale R S] : WeaklyEtale R S := inferInstance
-
 end WeaklyEtale
 
 end Algebra
