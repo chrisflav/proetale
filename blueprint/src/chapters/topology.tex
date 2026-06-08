@@ -34,8 +34,16 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     for every affine open $U$ of $Y$ and every affine open $V$ of $X$ with $f(U) \subset V$,
     the induced ring homomorphism $\Gamma(X, V) \to \Gamma(Y, U)$ is weakly étale.
     \uses{def:weakly-etale-algebra, def:weakly-etale-morphism}
+    \lean{AlgebraicGeometry.WeaklyEtale.hasRingHomProperty}
+    \leanok
     \label{lemma:weakly-etale-hasringhomprop}
 \end{lemma}
+
+\begin{proof}
+    \leanok
+    Weakly étale morphisms of schemes are local on source and on target for the Zariski topology,
+    so the property descends to affine opens, where it matches the ring-theoretic definition.
+\end{proof}
 
 \begin{lemma}
     Etale morphisms are weakly étale.

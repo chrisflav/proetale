@@ -35,6 +35,12 @@ instance : HasRingHomProperty @WeaklyEtale.{u} RingHom.WeaklyEtale := by
   simp only [CommRingCat.hom_ofHom, autoParam, RingHom.flat_algebraMap_iff,
     RingHom.weaklyEtale_algebraMap_iff, Algebra.weaklyEtale_iff]
 
+/-- A morphism of schemes is weakly étale if and only if for every affine open `U ⊆ Y` and
+every affine open `V ⊆ X` with `f(U) ⊆ V`, the induced ring homomorphism
+`Γ(X, V) → Γ(Y, U)` is weakly étale. -/
+theorem hasRingHomProperty : HasRingHomProperty @WeaklyEtale.{u} RingHom.WeaklyEtale :=
+  inferInstance
+
 instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f] : Etale f := by
   have : FormallyUnramified f := by
     rw [HasRingHomProperty.iff_appLE (P := @FormallyUnramified)]
