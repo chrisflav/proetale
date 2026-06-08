@@ -18,6 +18,9 @@ import Proetale.Topology.LocalProperties
 import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Mathlib.CategoryTheory.Sites.Grothendieck
 import Proetale.Mathlib.CategoryTheory.Sites.Hypercover.Zero
+import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
+import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineEtale
+import Mathlib.CategoryTheory.Filtered.Connected
 
 /-!
 # Affine pro-étale site
@@ -257,6 +260,10 @@ noncomputable def topology : GrothendieckTopology S.AffineProEt :=
 noncomputable def zariskiTopology : GrothendieckTopology S.AffineProEt :=
   (toProEt S).inducedTopology (ProEt.zariskiTopology S)
 
+lemma zariskiTopology_le_topology : zariskiTopology S ≤ topology S := by
+  intro X R hR
+  exact ProEt.zariskiTopology_le_topology _ _ hR
+
 lemma zariskiTopology_eq_toGrothendieck_zariskiPrecoverage :
     zariskiTopology S = (zariskiPrecoverage S).toGrothendieck := by
   sorry
@@ -401,6 +408,7 @@ noncomputable def AffineProEt.baseChange {S T : Scheme.{u}} (f : S ⟶ T) [IsAff
   MorphismProperty.Over.pullback _ _ f
 
 /-- The inclusion of the affine étale site into the affine pro-étale site. -/
+@[simps! obj_left map_left obj_hom]
 noncomputable def AffineEtale.toAffineProEt (S : Scheme.{u}) :
     S.AffineEtale ⥤ S.AffineProEt :=
   MorphismProperty.CostructuredArrow.pre Scheme.Spec (𝟭 _) S
@@ -410,14 +418,163 @@ noncomputable def AffineEtale.toAffineProEt (S : Scheme.{u}) :
       exact .of_isAffine f)
     (by simp)
 
+namespace AffineProEt
+
+instance : ReflectsCofilteredLimitsOfSize.{u, u} (CategoryTheory.Over.forget S) where
+  reflects_cofiltered_limits J _ _ := by
+    have : IsConnected J := IsCofiltered.isConnected _
+    infer_instance
+
+instance : PreservesCofilteredLimitsOfSize.{u, u} (CategoryTheory.Over.forget S) where
+  preserves_cofiltered_limits J _ _ := by
+    have : IsConnected J := IsCofiltered.isConnected _
+    infer_instance
+
+-- TODO: Consider if we should make this the definition of `AffineProEt`
+lemma exists_relativeLimitPresentation (X : S.AffineProEt) :
+    ∃ (J : Type u) (_ : SmallCategory J) (_ : IsCofiltered J),
+      Nonempty (RelativeLimitPresentation J (AffineEtale.toAffineProEt S) X) := by
+  obtain ⟨J, _, _, D, t, s, hs, hts⟩ := X.prop
+  have (j : J) : IsAffine (D.obj j) := (hts j).left.right.left
+  have (j : J) : Etale (t.app j) := (hts j).left.left
+  refine ⟨J, inferInstance, inferInstance, ⟨⟨?_, ?_, ?_⟩⟩⟩
+  · refine
+      { obj j := AffineEtale.mk ((Scheme.isoSpec _).inv ≫ t.app j)
+        map {i j} u := by
+          refine MorphismProperty.CostructuredArrow.homMk (.op (D.map u).appTop) trivial ?_
+          have : D.map u ≫ t.app j = t.app i := by simp
+          simp only [Functor.const_obj_obj, AffineEtale.mk_left, Spec_obj, Spec_map,
+            Quiver.Hom.unop_op, AffineEtale.mk_hom]
+          rw [← this, Scheme.isoSpec_inv_naturality_assoc] }
+  · refine { app := ?_, naturality := ?_ }
+    · intro j
+      dsimp
+      dsimp at s
+      refine MorphismProperty.Over.homMk (s.app j ≫ (Scheme.isoSpec _).hom) ?_ trivial
+      cat_disch
+    · intro i j u
+      dsimp [Scheme.AffineProEt]
+      ext
+      simp [Scheme.isoSpec_hom_naturality, ← s.naturality_assoc]
+  · refine isLimitOfReflects (toProEt S ⋙ ProEt.forget _ ⋙ Over.forget _) ?_
+    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ hs
+    · refine NatIso.ofComponents (fun j ↦ Scheme.isoSpec _) ?_
+      simp [Scheme.isoSpec_hom_naturality]
+    · refine Cone.ext (Iso.refl _) (by cat_disch)
+
 instance : PreservesLimitsOfShape WalkingCospan (AffineEtale.toAffineProEt S) :=
+  sorry
+
+noncomputable
+abbrev toScheme : AffineProEt S ⥤ Scheme.{u} :=
+  toProEt S ⋙ ProEt.forget _ ⋙ Over.forget _
+
+instance : PreservesCofilteredLimitsOfSize.{u, u} (toProEt S) :=
+  sorry
+
+instance : PreservesCofilteredLimitsOfSize.{u, u} (ProEt.forget S) :=
+  sorry
+
+lemma singleton_inf_le_relativelyPresentable :
+    (Precoverage.singleton S.AffineProEt ⊓
+      MorphismProperty.precoverage fun _ _ f ↦ Surjective f.left) ≤
+      Precoverage.relativelyPresentable (AffineEtale.toAffineProEt S) (AffineEtale.topology S) := by
+  rintro X R ⟨⟨Y, f, rfl⟩, hf⟩
+  simp only [MorphismProperty.singleton_mem_precoverage_iff] at hf
   sorry
 
 /-- The coverings in the minimal precoverage on the affine pro-étale site can be written
 as cofiltered limits of coverings in the affine étale site. -/
 lemma minimalPrecoverage_le_relativelyPresentable :
     AffineProEt.minimalPrecoverage S ≤
-      Precoverage.relativelyPresentable (AffineEtale.toAffineProEt S) (AffineEtale.topology S) :=
-  sorry
+      Precoverage.relativelyPresentable.{u}
+        (AffineEtale.toAffineProEt S) (AffineEtale.topology S) := by
+  rw [AffineProEt.minimalPrecoverage, sup_le_iff]
+  refine ⟨?_, ?_⟩
+  · intro X R hR
+    let 𝒰 := Precoverage.ZeroHypercover.mk R.preZeroHypercover (by simpa)
+    obtain ⟨J, _, _, ⟨pres⟩⟩ := X.exists_relativeLimitPresentation
+    let 𝒰' : X.left.OpenCover :=
+      𝒰.map (AffineProEt.toProEt _ ⋙ ProEt.forget _ ⋙ Over.forget _) inf_le_right
+    have : ∀ (i : 𝒰'.I₀), IsAffine (𝒰'.X i) := by
+      dsimp [𝒰']
+      infer_instance
+    let F' : AffineProEt S ⥤ Scheme.{u} := toProEt _ ⋙ ProEt.forget _ ⋙ Over.forget _
+    let F : S.AffineEtale ⥤ Scheme.{u} := AffineEtale.Spec _ ⋙ Etale.forget _ ⋙ Over.forget _
+    have : ∀ (i : J), IsAffine ((pres.diag ⋙ F).obj i) := by
+      dsimp [F, Etale.forget]
+      infer_instance
+    let x := (toScheme S).mapCone pres.cone
+    have : Finite 𝒰'.I₀ := hR.left
+    obtain ⟨i, A, v, hv, g, hg⟩ := 𝒰'.exists_of_isCofiltered_of_finite (pres.diag ⋙ F) x
+      (isLimitOfPreserves _ pres.isLimit)
+    have _ (a) : IsOpenImmersion (v a) := hv.right ⟨a⟩
+    -- TODO: make this an instance
+    have : Etale (pres.diag.obj i).hom := (pres.diag.obj i).prop
+    let V (a : 𝒰.I₀) : S.AffineEtale :=
+      AffineEtale.mk (v a ≫ (pres.diag.obj i).hom)
+    let v' (a : 𝒰.I₀) : V a ⟶ pres.diag.obj i :=
+      CostructuredArrow.homMk (Spec.preimage (v a)).op trivial (by simp [V])
+    let g' (a : 𝒰.I₀) : 𝒰.X a ⟶ (AffineEtale.toAffineProEt S).obj (V a) := by
+      refine MorphismProperty.Over.homMk (g a) ?_ trivial
+      -- TODO: add API for MorphismProperty.CostructuredArrow
+      have h1 := CostructuredArrow.w (𝒰.f a).toCommaMorphism
+      dsimp at h1
+      have h2 := CostructuredArrow.w (pres.π.app i).toCommaMorphism
+      dsimp at h2
+      simp [V, (hg a).w_assoc, x, 𝒰', h2, h1]
+    let 𝒱 : Scheme.OpenCover (Spec (pres.diag.obj _).left.unop) := ⟨⟨_, _, v⟩, hv⟩
+    let covpres : 𝒰.RelativeLimitPresentation (AffineEtale.toAffineProEt S) (Over i) := by
+      refine ⟨?_, ?_, ?_, ?_⟩
+      · exact pres.precomp (Over.forget i)
+      · intro a
+        refine pres.restrict (v' a) _ (g' a) (𝒰.f a) ?_
+        refine IsPullback.of_map_of_faithful F' ?_
+        simpa [F', v'] using hg a
+      · intro a
+        apply RelativeLimitPresentation.restrictHom
+      · simp
+    refine ⟨Over i, inferInstance, inferInstance, covpres, ?_⟩
+    intro a
+    apply AffineEtale.zariskiTopology_le_topology
+    let iso : (covpres.preZeroHypercover a).map (AffineEtale.toScheme S) ≅
+        (𝒱.pullback₁ (Spec.map (pres.diag.map a.hom).left.unop)).toPreZeroHypercover := by
+      refine PreZeroHypercover.isoMk (.refl _) ?_ ?_
+      · intro k
+        dsimp [Etale.forget, covpres, 𝒱]
+        refine Scheme.Spec.mapIso ?_ ≪≫
+            PreservesPullback.iso Scheme.Spec (pres.diag.map a.hom).left (v' k).left ≪≫ ?_
+        · exact PreservesPullback.iso
+            (MorphismProperty.CostructuredArrow.forget _ _ _ _ ⋙
+              CategoryTheory.CostructuredArrow.proj _ _) _ _
+        · refine pullback.congrHom rfl ?_
+          simp only [Spec_obj, MorphismProperty.CostructuredArrow.homMk_left, Spec_map,
+            Quiver.Hom.unop_op, Spec.map_preimage, v']
+          rfl
+      · intro k
+        -- TODO: Improve this by defining a `AffineEtale.toRing`
+        simp only [Functor.comp_obj, Over.forget_obj, PreZeroHypercover.map_X,
+          PreZeroHypercover.RelativeLimitPresentation.preZeroHypercover_X,
+          Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.map_I₀,
+          PreZeroHypercover.RelativeLimitPresentation.preZeroHypercover_I₀,
+          PreZeroHypercover.pullback₁_I₀, PreZeroHypercover.pullback₁_X, Spec_obj, Spec_map, id_eq,
+          Iso.trans_hom, Functor.mapIso_hom, PreservesPullback.iso_hom, pullback.congrHom_hom,
+          PreZeroHypercover.pullback₁_f, Category.assoc, limit.lift_π, PullbackCone.mk_pt,
+          PullbackCone.mk_π_app, Category.comp_id, PreZeroHypercover.map_f,
+          PreZeroHypercover.RelativeLimitPresentation.preZeroHypercover_f, Functor.comp_map,
+          Etale.forget_map, Over.forget_map, AffineEtale.Spec_map_left, 𝒱]
+        simp only [← Scheme.Spec_map]
+        rw [pullbackComparison_comp_fst]
+        simp only [Spec_map, ← Spec.map_comp, ← unop_comp]
+        congr 2
+        apply pullbackComparison_comp_fst
+    rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀]
+    refine Precoverage.generate_mem_toGrothendieck ?_
+    simp only [Precoverage.mem_comap_iff, ← PreZeroHypercover.presieve₀_map]
+    apply PreZeroHypercover.mem_of_iso iso.symm
+    exact (𝒱.pullback₁ (Spec.map (pres.diag.map a.hom).left.unop)).mem₀
+  · apply singleton_inf_le_relativelyPresentable
+
+end AffineProEt
 
 end AlgebraicGeometry.Scheme

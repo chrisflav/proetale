@@ -24,6 +24,9 @@ variable (X : Scheme.{u})
 def zariskiTopology : GrothendieckTopology X.ProEt :=
   smallGrothendieckTopologyOfLE (P := @IsOpenImmersion) _ fun _ _ _ _ ↦ inferInstance
 
+lemma zariskiTopology_le_topology : zariskiTopology X ≤ topology X :=
+  sorry
+
 lemma zariskiTopology_eq :
     zariskiTopology X =
       Precoverage.toGrothendieck
