@@ -42,8 +42,9 @@ instance (priority := 900) etale [WeaklyEtale f] [LocallyOfFinitePresentation f]
     exact (HasRingHomProperty.appLE @WeaklyEtale.{u} f ‹_› U V e).formallyUnramified
   exact Etale.of_formallyUnramified_of_flat f
 
-/-- Étale morphisms are weakly étale. -/
-theorem of_etale [Etale f] : WeaklyEtale f := inferInstance
+/-- Named alias for the anonymous Mathlib instance `Etale → WeaklyEtale`, used as a
+stable blueprint reference. -/
+lemma of_etale [Etale f] : WeaklyEtale f := inferInstance
 
 @[simp]
 lemma Spec_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
