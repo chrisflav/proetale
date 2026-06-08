@@ -22,6 +22,7 @@ def AlgEquiv.piFinTwo (A : Type*) [CommSemiring A] (R : Fin 2 → Type*)
   { RingEquiv.piFinTwo R with
     commutes' := fun _ => rfl }
 
+-- `_root_.Finite` is required below because `AlgHom.Finite` is in scope inside this namespace.
 namespace AlgHom
 
 variable {k : Type*} [CommSemiring k] {I : Type*} [DecidableEq I]
@@ -31,7 +32,7 @@ variable {k : Type*} [CommSemiring k] {I : Type*} [DecidableEq I]
 /-- An algebra homomorphism from a finite product of commutative rings to a nontrivial local
 algebra factors through one of the factors: there exists `j : I` with `ψ (Pi.single j 1) = 1`
 and `ψ (Pi.single i 1) = 0` for every `i ≠ j`. -/
-lemma exists_pi_single_eq_one_of_isLocalRing [Finite I] [IsLocalRing B]
+lemma exists_pi_single_eq_one_of_isLocalRing [_root_.Finite I] [IsLocalRing B]
     (ψ : (∀ i, A i) →ₐ[k] B) :
     ∃ j : I, ψ (Pi.single j 1) = 1 ∧ ∀ i, i ≠ j → ψ (Pi.single i 1) = 0 := by
   have : Fintype I := Fintype.ofFinite I
@@ -87,7 +88,7 @@ lemma piFactor_apply (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
 
 /-- An algebra homomorphism `ψ : (∀ i, A i) →ₐ[k] B` to a local algebra is recovered from its
 factor through the unique component `A j` selected by the unit idempotents. -/
-lemma eq_piFactor_apply [Finite I] (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
+lemma eq_piFactor_apply [_root_.Finite I] (ψ : (∀ i, A i) →ₐ[k] B) (j : I)
     (hj : ψ (Pi.single j 1) = 1) (hothers : ∀ i, i ≠ j → ψ (Pi.single i 1) = 0)
     (x : ∀ i, A i) : ψ x = piFactor ψ j hj hothers (x j) := by
   have : Fintype I := Fintype.ofFinite I
