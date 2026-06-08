@@ -68,6 +68,20 @@ lemma localRingHom_of_eq {f : R →+* S} (hf : f.BijectiveOnStalks)
     Function.Bijective (Localization.localRingHom I p f hI) := by
   subst hI; exact hf p
 
+/-- If `f : R →+* S` and the composition `g.comp f : R →+* T` are both bijective on stalks,
+then `g : S →+* T` is bijective on stalks. -/
+@[stacks 096D]
+lemma of_comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+    (hf : f.BijectiveOnStalks) (hgf : (g.comp f).BijectiveOnStalks) :
+    g.BijectiveOnStalks := by
+  intro p hp
+  have hq : (p.comap g).IsPrime := Ideal.IsPrime.comap g
+  have key := hgf p
+  rw [Localization.localRingHom_comp
+    (I := p.comap (g.comp f)) (p.comap g) p f (Ideal.comap_comap f g) g rfl] at key
+  exact (Function.Bijective.of_comp_iff _
+    (hf.localRingHom_of_eq (Ideal.comap_comap f g).symm)).mp key
+
 /-- `BijectiveOnStalks` is preserved under taking quotients by an ideal and its extension. -/
 lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
     (Ideal.quotientMap (I.map f) f I.le_comap_map).BijectiveOnStalks := by
@@ -322,6 +336,19 @@ lemma comp (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
   rw [IsScalarTower.algebraMap_eq R S T]
   exact (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›).comp
     (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›)
+
+/-- If `R → S` and `R → T` are both bijective on stalks, and `S → T` is an `R`-algebra map,
+then `S → T` is bijective on stalks. -/
+@[stacks 096D]
+lemma of_comp (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    [Algebra.BijectiveOnStalks R S] [Algebra.BijectiveOnStalks R T] :
+    Algebra.BijectiveOnStalks S T := by
+  refine RingHom.bijectiveOnStalks_algebraMap.mp ?_
+  refine RingHom.BijectiveOnStalks.of_comp (f := algebraMap R S)
+    (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›) ?_
+  rw [← IsScalarTower.algebraMap_eq]
+  exact RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›
 
 instance (priority := 100) of_isStandardOpenImmersion (R T : Type*) [CommRing R] [CommRing T]
     [Algebra R T] [Algebra.IsStandardOpenImmersion R T] : Algebra.BijectiveOnStalks R T :=
