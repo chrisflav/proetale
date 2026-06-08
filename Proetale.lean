@@ -83,6 +83,7 @@ import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Flat.Pi
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
+import Proetale.Mathlib.RingTheory.Ideal.GoingUp
 import Proetale.Mathlib.RingTheory.Ideal.Pure
 import Proetale.Mathlib.RingTheory.Idempotents
 import Proetale.Mathlib.RingTheory.RingHom.Flat
