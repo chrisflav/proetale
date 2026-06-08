@@ -328,43 +328,48 @@ lemma snd (T : Type*) [CommRing T] : (RingHom.snd S T).BijectiveOnStalks := by
     ext x
     rw [RingHom.comp_apply, Localization.localRingHom_to_map]; rfl)
 
+/-- A ring isomorphism is bijective on stalks. -/
+lemma _root_.RingEquiv.bijectiveOnStalks (e : R ≃+* S) :
+    (e : R →+* S).BijectiveOnStalks := fun p _ ↦
+  (Localization.localRingEquiv p e rfl).bijective
+
+/-- A finite product of ring homomorphisms that are bijective on stalks is bijective on stalks. -/
+lemma pi {ι : Type*} [Finite ι] {B : ι → Type v} [∀ i, CommRing (B i)]
+    {f : ∀ i, R →+* B i} (hf : ∀ i, (f i).BijectiveOnStalks) :
+    (Pi.ringHom f).BijectiveOnStalks := by
+  classical
+  refine of_span_unit_ideal (Set.range fun i ↦ (Pi.single i 1 : ∀ j, B j))
+    (Ideal.span_single_eq_top B) ?_
+  rintro _ ⟨i, rfl⟩ Sg _ _ _
+  letI : Algebra (∀ j, B j) (B i) := (Pi.evalRingHom B i).toAlgebra
+  have he : IsIdempotentElem (Pi.single i 1 : ∀ j, B j) := by
+    rw [IsIdempotentElem, ← Pi.single_mul, mul_one]
+  haveI : IsLocalization.Away (Pi.single i 1 : ∀ j, B j) (B i) :=
+    IsLocalization.away_of_isIdempotentElem he (RingHom.ker_evalRingHom B i)
+      (Function.surjective_eval i)
+  let e := IsLocalization.algEquiv (Submonoid.powers (Pi.single i 1 : ∀ j, B j)) (B i) Sg
+  have heq : (algebraMap (∀ j, B j) Sg).comp (Pi.ringHom f) =
+      e.toRingEquiv.toRingHom.comp (f i) := by
+    ext r
+    show algebraMap (∀ j, B j) Sg (Pi.ringHom f r) = e (f i r)
+    rw [show f i r = algebraMap (∀ j, B j) (B i) (Pi.ringHom f r) from rfl, e.commutes]
+  rw [heq]
+  exact (hf i).comp e.toRingEquiv.bijectiveOnStalks
+
 /-- A binary product of ring homomorphisms that are bijective on stalks is bijective on stalks. -/
 @[stacks 096E "(2)"]
-lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T}
+lemma prod {T : Type v} [CommRing T] {f : R →+* S} {g : R →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) :
-    RingHom.BijectiveOnStalks (f.prod g) := by
-  intro p hp
-  rcases (Ideal.ideal_prod_prime p).mp hp with ⟨q, hq, rfl⟩ | ⟨q, hq, rfl⟩
-  · -- Case `p = q.prod ⊤` for `q : Ideal S` prime. The local ring hom of `f.prod g` at
-    -- `q.prod ⊤` factors through the local ring hom of `fst : S × T →+* S` at `q`, and the
-    -- latter is bijective because `S` is a localization of `S × T` away from `(1, 0)`.
-    have hfst : Ideal.prod q (⊤ : Ideal T) = q.comap (RingHom.fst S T) := by
-      ext; simp [Ideal.mem_comap]
-    have hcomap : (Ideal.prod q (⊤ : Ideal T)).comap (f.prod g) = q.comap f := by
-      ext; simp [Ideal.mem_comap]
-    have hbij_fst := (BijectiveOnStalks.fst (S := S) T).localRingHom_of_eq hfst
-    have hbij_compose : Function.Bijective
-        ((Localization.localRingHom (Ideal.prod q ⊤) q (RingHom.fst S T) hfst).comp
-          (Localization.localRingHom ((Ideal.prod q ⊤).comap (f.prod g)) (Ideal.prod q ⊤)
-            (f.prod g) rfl)) := by
-      rw [← Localization.localRingHom_comp ((Ideal.prod q ⊤).comap (f.prod g)) (Ideal.prod q ⊤)
-        q (f.prod g) rfl (RingHom.fst S T) hfst]
-      exact hf.localRingHom_of_eq hcomap
-    exact (hbij_fst.of_comp_iff' _).mp hbij_compose
-  · -- Case `p = ⊤.prod q` for `q : Ideal T` prime. Symmetric, using `snd`.
-    have hsnd : Ideal.prod (⊤ : Ideal S) q = q.comap (RingHom.snd S T) := by
-      ext; simp [Ideal.mem_comap]
-    have hcomap : (Ideal.prod (⊤ : Ideal S) q).comap (f.prod g) = q.comap g := by
-      ext; simp [Ideal.mem_comap]
-    have hbij_snd := (BijectiveOnStalks.snd (S := S) T).localRingHom_of_eq hsnd
-    have hbij_compose : Function.Bijective
-        ((Localization.localRingHom (Ideal.prod ⊤ q) q (RingHom.snd S T) hsnd).comp
-          (Localization.localRingHom ((Ideal.prod ⊤ q).comap (f.prod g)) (Ideal.prod ⊤ q)
-            (f.prod g) rfl)) := by
-      rw [← Localization.localRingHom_comp ((Ideal.prod ⊤ q).comap (f.prod g)) (Ideal.prod ⊤ q)
-        q (f.prod g) rfl (RingHom.snd S T) hsnd]
-      exact hg.localRingHom_of_eq hcomap
-    exact (hbij_snd.of_comp_iff' _).mp hbij_compose
+    (f.prod g).BijectiveOnStalks := by
+  let B : Fin 2 → Type v := ![S, T]
+  let fam : ∀ i, R →+* B i := Fin.cons f (Fin.cons g finZeroElim)
+  have hfam (i : Fin 2) : (fam i).BijectiveOnStalks := by
+    refine Fin.cases hf (Fin.cases hg ?_) i
+    exact fun i ↦ i.elim0
+  have heq : f.prod g = (RingEquiv.piFinTwo B).toRingHom.comp (Pi.ringHom fam) := by
+    ext r <;> rfl
+  rw [heq]
+  exact (pi hfam).comp (RingEquiv.piFinTwo B).bijectiveOnStalks
 
 end RingHom.BijectiveOnStalks
 
