@@ -429,7 +429,7 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 \begin{lemma}
   \label{thm:finite-product-identifies-local-rings}
   \uses{def:identify-local-rings}
-  \lean{RingHom.BijectiveOnStalks.prod}
+  \lean{RingHom.BijectiveOnStalks.pi, RingHom.BijectiveOnStalks.prod}
   \leanok
   The map \(A \to \prod_{i = 1}^{n} A_i \) identifies local rings, if \(A \to A_i\) identifies
   local rings for all \(i\).
@@ -437,7 +437,9 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
 
 \begin{proof}
   \leanok
-  Omitted.
+  The idempotents \(e_i \in \prod_j A_j\) supported at index \(i\) span the unit ideal, and the
+  localization at \(e_i\) is \(A_i\). Hence \(A \to \prod_j A_j\) identifies local rings if each
+  \(A \to A_i\) does.
 \end{proof}
 
 \begin{lemma}
