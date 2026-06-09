@@ -68,6 +68,19 @@ lemma localRingHom_of_eq {f : R →+* S} (hf : f.BijectiveOnStalks)
     Function.Bijective (Localization.localRingHom I p f hI) := by
   subst hI; exact hf p
 
+/-- If `f : R →+* S` and the composition `g.comp f : R →+* T` are both bijective on stalks,
+then `g : S →+* T` is bijective on stalks. -/
+@[stacks 096D]
+lemma of_comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+    (hf : f.BijectiveOnStalks) (hgf : (g.comp f).BijectiveOnStalks) :
+    g.BijectiveOnStalks := by
+  intro p hp
+  have hcc : (p.comap g).comap f = p.comap (g.comp f) := Ideal.comap_comap f g
+  refine (Function.Bijective.of_comp_iff _ (hf.localRingHom_of_eq hcc.symm)).mp ?_
+  have key := hgf p
+  rwa [Localization.localRingHom_comp
+    (I := p.comap (g.comp f)) (p.comap g) p f hcc g rfl] at key
+
 /-- `BijectiveOnStalks` is preserved under taking quotients by an ideal and its extension. -/
 lemma quotientMap {f : R →+* S} (hf : f.BijectiveOnStalks) (I : Ideal R) :
     (Ideal.quotientMap (I.map f) f I.le_comap_map).BijectiveOnStalks := by
@@ -322,6 +335,21 @@ lemma comp (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
   rw [IsScalarTower.algebraMap_eq R S T]
   exact (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›).comp
     (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›)
+
+/-- If `R → S → T` is a tower of `R`-algebras such that `R → S` and `R → T` are both bijective
+on stalks, then `S → T` is bijective on stalks. -/
+@[stacks 096D]
+lemma of_comp (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    [Algebra.BijectiveOnStalks R S] [Algebra.BijectiveOnStalks R T] :
+    Algebra.BijectiveOnStalks S T := by
+  have hRS : (algebraMap R S).BijectiveOnStalks :=
+    RingHom.bijectiveOnStalks_algebraMap.mpr inferInstance
+  have hRT : (algebraMap R T).BijectiveOnStalks :=
+    RingHom.bijectiveOnStalks_algebraMap.mpr inferInstance
+  refine RingHom.bijectiveOnStalks_algebraMap.mp <|
+    RingHom.BijectiveOnStalks.of_comp (f := algebraMap R S) hRS ?_
+  rwa [← IsScalarTower.algebraMap_eq]
 
 instance (priority := 100) of_isStandardOpenImmersion (R T : Type*) [CommRing R] [CommRing T]
     [Algebra R T] [Algebra.IsStandardOpenImmersion R T] : Algebra.BijectiveOnStalks R T :=

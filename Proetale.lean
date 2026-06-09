@@ -43,8 +43,10 @@ import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+import Proetale.Mathlib.CategoryTheory.Filtered.Basic
 import Proetale.Mathlib.CategoryTheory.Limits.Comma
 import Proetale.Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
+import Proetale.Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Presentation
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
