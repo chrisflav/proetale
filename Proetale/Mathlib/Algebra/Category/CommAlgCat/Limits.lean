@@ -274,11 +274,11 @@ variable {ι : Type u} [SmallCategory ι]
 
 /-- For a colimit presentation in `CommAlgCat R`, the colimit injection at the target composed
 with the diagram map equals the colimit injection at the source. -/
+@[simp]
 lemma ι_app_diag_map_apply (P : ColimitPresentation ι X) {i j : ι} (f : i ⟶ j) (x : P.diag.obj i) :
     (P.ι.app j).hom ((P.diag.map f).hom x) = (P.ι.app i).hom x :=
   DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x
 
-@[simp]
 lemma diag_map_id_apply (P : ColimitPresentation ι X) (i : ι) (x : P.diag.obj i) :
     (P.diag.map (𝟙 i)).hom x = x :=
   DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.diag.map_id i)) x
@@ -289,8 +289,8 @@ lemma diag_map_comp_apply (P : ColimitPresentation ι X) {i j k : ι} (f : i ⟶
   DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.diag.map_comp f g)) x
 
 variable {S : Type u} [CommRing S] [Algebra R S] in
-/-- For a colimit presentation of `S` as a colimit of `R`-algebras, the colimit injection
-commutes with the `R`-algebra structure map. -/
+/-- For a colimit presentation of `S` as a colimit of `R`-algebras, the colimit injection at `i`
+sends the image of `r : R` in the `i`-th object of the diagram to the image of `r` in `S`. -/
 lemma ι_app_algebraMap_apply (P : ColimitPresentation ι (CommAlgCat.of R S)) (i : ι) (r : R) :
     (P.ι.app i).hom (algebraMap R (P.diag.obj i) r) = algebraMap R S r :=
   (P.ι.app i).hom.commutes r

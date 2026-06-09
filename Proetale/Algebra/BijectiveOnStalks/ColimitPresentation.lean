@@ -184,7 +184,7 @@ lemma exists_localRingHom_eq_of_localRingHom_eq
 /-- If two elements of `Localization.AtPrime (contractionIdeal P p i)` have equal images in
 `Localization.AtPrime p`, they become equal in `Localization.AtPrime (contractionIdeal P p k)` for
 some morphism `i ⟶ k`. -/
-private lemma exists_localizationDiag_map_eq (i : ι)
+lemma exists_localizationDiag_map_eq (i : ι)
     (x y : Localization.AtPrime (contractionIdeal P p i))
     (hxy : ((localizationCocone P p).ι.app i).hom x = ((localizationCocone P p).ι.app i).hom y) :
     ∃ (k : ι) (f : i ⟶ k),
