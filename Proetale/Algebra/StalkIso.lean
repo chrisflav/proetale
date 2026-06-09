@@ -360,36 +360,20 @@ lemma pi {ι : Type*} [_root_.Finite ι] {B : ι → Type v} [∀ i, CommRing (B
 
 /-- A binary product of ring homomorphisms that are bijective on stalks is bijective on stalks,
 provided each factor is bijective on stalks. -/
-lemma prod {T : Type*} [CommRing T] {f : R →+* S} {g : R →+* T}
+@[stacks 096E "(2)"]
+lemma prod {T : Type v} [CommRing T] {f : R →+* S} {g : R →+* T}
     (hf : f.BijectiveOnStalks) (hg : g.BijectiveOnStalks) :
     (f.prod g).BijectiveOnStalks := by
-  intro p hp
-  rcases (Ideal.ideal_prod_prime p).mp hp with ⟨q, hq, rfl⟩ | ⟨q, hq, rfl⟩
-  · have hfst : Ideal.prod q (⊤ : Ideal T) = q.comap (RingHom.fst S T) := by
-      ext; simp [Ideal.mem_comap]
-    have hcomap : (Ideal.prod q (⊤ : Ideal T)).comap (f.prod g) = q.comap f := by
-      ext; simp [Ideal.mem_comap]
-    have hbij_fst := (BijectiveOnStalks.fst (S := S) T).localRingHom_of_eq hfst
-    have hbij_comp : Function.Bijective
-        ((Localization.localRingHom (q.prod ⊤) q (RingHom.fst S T) hfst).comp
-          (Localization.localRingHom ((q.prod ⊤).comap (f.prod g)) (q.prod ⊤) (f.prod g) rfl)) := by
-      rw [← Localization.localRingHom_comp ((q.prod ⊤).comap (f.prod g)) (q.prod ⊤) q
-        (f.prod g) rfl (RingHom.fst S T) hfst]
-      exact hf.localRingHom_of_eq hcomap
-    exact (hbij_fst.of_comp_iff' _).mp hbij_comp
-  · have hsnd : Ideal.prod (⊤ : Ideal S) q = q.comap (RingHom.snd S T) := by
-      ext; simp [Ideal.mem_comap]
-    have hcomap : (Ideal.prod (⊤ : Ideal S) q).comap (f.prod g) = q.comap g := by
-      ext; simp [Ideal.mem_comap]
-    have hbij_snd := (BijectiveOnStalks.snd (S := S) T).localRingHom_of_eq hsnd
-    have hbij_comp : Function.Bijective
-        ((Localization.localRingHom ((⊤ : Ideal S).prod q) q (RingHom.snd S T) hsnd).comp
-          (Localization.localRingHom (((⊤ : Ideal S).prod q).comap (f.prod g))
-            ((⊤ : Ideal S).prod q) (f.prod g) rfl)) := by
-      rw [← Localization.localRingHom_comp (((⊤ : Ideal S).prod q).comap (f.prod g))
-        ((⊤ : Ideal S).prod q) q (f.prod g) rfl (RingHom.snd S T) hsnd]
-      exact hg.localRingHom_of_eq hcomap
-    exact (hbij_snd.of_comp_iff' _).mp hbij_comp
+  let B : Fin 2 → Type v := Fin.cases S fun _ ↦ T
+  let _ : ∀ i, CommRing (B i) :=
+    Fin.cases (motive := fun i ↦ CommRing (B i)) ‹CommRing S› fun _ ↦ ‹CommRing T›
+  let F : ∀ i, R →+* B i := Fin.cases (motive := fun i ↦ R →+* B i) f fun _ ↦ g
+  have hF : ∀ i, (F i).BijectiveOnStalks :=
+    Fin.cases (motive := fun i ↦ (F i).BijectiveOnStalks) hf fun _ ↦ hg
+  have key : f.prod g = (RingEquiv.piFinTwo B).toRingHom.comp (Pi.ringHom F) := by
+    ext r <;> rfl
+  rw [key]
+  exact (pi hF).comp (RingEquiv.piFinTwo B).bijectiveOnStalks
 
 end RingHom.BijectiveOnStalks
 
