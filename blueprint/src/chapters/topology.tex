@@ -80,13 +80,13 @@ Before we define the pro-étale site, we recall a few standard definitions.
 
 \begin{definition}[Quasi-compact cover]
     A jointly surjective family $(f_i \colon Y_i \to X)_{i \in I}$ of morphisms of schemes is
-    \emph{quasi-compact} if for
-    every affine open $U$ of $X$ there exist quasi-compact opens $V_i$ in $Y_i$ such that
-    $U = \bigcup_{i \in  I} f_i(V_i)$.
-    \mathlibok
+    \emph{quasi-compact} if for every affine open $U$ of $X$ there exist a finite subset
+    $I_0 \subset I$ and quasi-compact opens $V_i \subset Y_i$ for $i \in I_0$ such that
+    $U = \bigcup_{i \in I_0} f_i(V_i)$.
     \label{def:qc-cover}
     \lean{AlgebraicGeometry.QuasiCompactCover}
     \leanok
+    \mathlibok
 \end{definition}
 
 \begin{lemma}
@@ -106,10 +106,12 @@ Before we define the pro-étale site, we recall a few standard definitions.
 \end{proof}
 
 \begin{definition}
-    Let $\mathcal{P}$ be a morphism property of schemes and $X$ be a scheme.
-    The \emph{small $\mathcal{P}$-site of $X$} is the category of $X$-schemes with
-    structure morphism satisfying $\mathcal{P}$ and with covers given by quasi-compact,
-    jointly surjective families of morphisms satisfying $\mathcal{P}$.
+    Let $\mathcal{P}$ be a morphism property of schemes.
+    The \emph{(big) $\mathcal{P}$-topology} on the category of schemes is the
+    Grothendieck topology whose covers are quasi-compact, jointly surjective
+    families of morphisms satisfying $\mathcal{P}$. For a scheme $X$, the
+    \emph{small $\mathcal{P}$-site of $X$} is obtained by restricting this topology
+    to the slice category of $X$-schemes.
     \label{def:small-P-site}
     \lean{AlgebraicGeometry.Scheme.propQCTopology}
     \leanok
@@ -119,8 +121,10 @@ Before we define the pro-étale site, we recall a few standard definitions.
 If we let $\mathcal{P}$ to be flat morphisms of schemes, we obtain the fpqc site:
 
 \begin{definition}[The fpqc site]
-    Let $X$ be a scheme. The \emph{fqpc site of $X$}, denoted by $\fpqc{X}$, is the
-    $\mathcal{P}$-site of $X$ with $\mathcal{P} = \text{flat}$.
+    The \emph{fpqc topology} is the (big) $\mathcal{P}$-topology with
+    $\mathcal{P} = \text{flat}$. For a scheme $X$, the \emph{fpqc site of $X$},
+    denoted by $\fpqc{X}$, is the small $\mathcal{P}$-site of $X$ with
+    $\mathcal{P} = \text{flat}$.
     \uses{def:small-P-site}
     \label{def:fpqc-site}
     \lean{AlgebraicGeometry.Scheme.fpqcTopology}
@@ -138,13 +142,14 @@ For us, the main relevant property of the fqpc site is that it is subcanonical:
 \end{theorem}
 
 Analogous to the familiar criterion for fpqc sheaves, we have a generalization
-for the small $\mathcal{P}$-site of a scheme.
+for the (big) $\mathcal{P}$-site:
 
 \begin{proposition}
-    Let $F$ be a presheaf on the small $\mathcal{P}$-site. Then $F$ is a sheaf in the
-    if and only if it is a sheaf in the Zariski topology and satisfies
-    the sheaf property for $\{V \to U\}$ with $V$, $U$ affine
-    and $V \to U$ satisfying $\mathcal{P}$.
+    Suppose $\mathcal{P}$ is multiplicative and Zariski-local on the source.
+    Let $F$ be a presheaf on the (big) $\mathcal{P}$-site. Then $F$ is a sheaf
+    if and only if it is a sheaf in the Zariski topology and satisfies the
+    sheaf property for $\{V \to U\}$ with $V$, $U$ affine, $V \to U$ surjective,
+    and satisfying $\mathcal{P}$.
     \uses{def:small-P-site}
     \label{prop:fpqc-sheaf-iff}
     \lean{AlgebraicGeometry.isSheaf_propQCTopology_iff}
@@ -155,7 +160,9 @@ for the small $\mathcal{P}$-site of a scheme.
 We can now define the main object of this chapter:
 
 \begin{definition}[The pro-étale site, {\cite[Definition 4.1.1]{proetale}}]
-    Let $X$ be a scheme. The \emph{pro-étale site of $X$}, denoted by $\proet{X}$, is the
+    The \emph{pro-étale topology} is the (big) $\mathcal{P}$-topology with
+    $\mathcal{P} = \text{weakly étale}$. For a scheme $X$, the
+    \emph{pro-étale site of $X$}, denoted by $\proet{X}$, is the small
     $\mathcal{P}$-site of $X$ with $\mathcal{P} = \text{weakly étale}$.
 
     \uses{def:qc-cover, def:weakly-etale-morphism, def:small-P-site}
