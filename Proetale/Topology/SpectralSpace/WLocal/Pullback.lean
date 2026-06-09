@@ -11,199 +11,193 @@ import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
 /-!
 # Pullback of w-local spaces
 
-Stacks Project 096C
+This file proves the second part of Stacks Project 096C: if `X` is a w-local space and `T`
+is a compact Hausdorff totally disconnected space, then the pullback `Y` of any continuous
+map `i : T → π₀(X)` along the quotient map `mk : X → π₀(X)` is again w-local, the projection
+`Y → X` is a w-local map, and the closed points of `Y` are exactly the preimage of the
+closed points of `X`.
+
+## Main results
+
+* `ConnectedComponents.subtypeHomeoOfIsPullback`: the canonical homeomorphism between the
+  pullback `Y` and the subspace `{(t, x) ∈ T × X // i t = mk x}` of the product.
+* `ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback`: the closed
+  points of `Y` are exactly the preimage of the closed points of `X`.
+* `ConnectedComponents.wlocalSpace_of_isPullback`: `Y` is a w-local space.
+* `ConnectedComponents.isWLocalMap_of_isPullback`: `Y → X` is a w-local map.
+
 -/
 
 open CategoryTheory TopCat
 
 universe u
-variable {X Y T : Type u} [TopologicalSpace X] [WLocalSpace X] [TopologicalSpace Y]
-    [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
 
 namespace ConnectedComponents
 
--- In the pullback `Y` of `i : T → π₀(X)` along `mk : X → π₀(X)`, the pair
--- `(f, g) : Y → X × T` is injective.
-omit [WLocalSpace X] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T] in
-private lemma fg_injective_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
-    {i : C(T, ConnectedComponents X)}
-    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
-    {y₁ y₂ : Y} (hf : f y₁ = f y₂) (hg : g y₁ = g y₂) : y₁ = y₂ := by
-  have inst_hp := pb.hasPullback
-  let E := homeoOfIso (pb.isoPullback ≪≫
+variable {X Y T : Type u} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace T]
+  {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
+  (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
+
+/-- The canonical homeomorphism between the pullback `Y` of `i : T → π₀(X)` along
+`mk : X → π₀(X)` and the subspace `{(t, x) ∈ T × X | i t = mk x}` of the product. -/
+noncomputable def subtypeHomeoOfIsPullback :
+    Y ≃ₜ {p : T × X // i p.1 = ConnectedComponents.mk p.2} :=
+  letI := pb.hasPullback
+  homeoOfIso (pb.isoPullback ≪≫
     pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
-  have hE_g : ∀ y, (E y).val.1 = g y := fun y => by
-    change ((pb.isoPullback ≪≫
-      pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y).val.1 = _
-    simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
-    rw [pullbackIsoProdSubtype_hom_apply]
-    exact ConcreteCategory.congr_hom pb.isoPullback_hom_fst y
-  have hE_f : ∀ y, (E y).val.2 = f y := fun y => by
-    change ((pb.isoPullback ≪≫
-      pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y).val.2 = _
-    simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
-    rw [pullbackIsoProdSubtype_hom_apply]
-    exact ConcreteCategory.congr_hom pb.isoPullback_hom_snd y
-  refine E.injective (Subtype.ext (Prod.ext ?_ ?_))
-  · simp only [hE_g]; exact hg
-  · simp only [hE_f]; exact hf
 
--- Commutativity of the pullback square: `i ∘ g = mk ∘ f`.
-omit [WLocalSpace X] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T] in
-private lemma hw_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
-    {i : C(T, ConnectedComponents X)}
-    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
-    (y : Y) : i (g y) = (f y : ConnectedComponents X) :=
-  ConcreteCategory.congr_hom pb.w y
+@[simp]
+lemma subtypeHomeoOfIsPullback_apply_fst (y : Y) :
+    (subtypeHomeoOfIsPullback pb y).val.1 = g y := by
+  letI := pb.hasPullback
+  change ((pb.isoPullback ≪≫
+    pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y).val.1 = _
+  simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
+  exact ConcreteCategory.congr_hom pb.isoPullback_hom_fst y
 
-set_option linter.unusedSectionVars false in
+@[simp]
+lemma subtypeHomeoOfIsPullback_apply_snd (y : Y) :
+    (subtypeHomeoOfIsPullback pb y).val.2 = f y := by
+  letI := pb.hasPullback
+  change ((pb.isoPullback ≪≫
+    pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y).val.2 = _
+  simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
+  exact ConcreteCategory.congr_hom pb.isoPullback_hom_snd y
+
+include pb in
+/-- The pair `(g, f) : Y → T × X` from the pullback `Y` is injective. -/
+lemma pair_injective_of_isPullback {y₁ y₂ : Y} (hg : g y₁ = g y₂) (hf : f y₁ = f y₂) :
+    y₁ = y₂ :=
+  (subtypeHomeoOfIsPullback pb).injective <| Subtype.ext <| Prod.ext
+    (by simp [hg]) (by simp [hf])
+
+include pb in
+/-- Given `(t, x) ∈ T × X` with `i t = mk x`, there is a point `y` in the pullback `Y`
+with `g y = t` and `f y = x`. -/
+lemma exists_apply_eq_of_isPullback {t : T} {x : X} (h : i t = mk x) :
+    ∃ y : Y, g y = t ∧ f y = x := by
+  refine ⟨(subtypeHomeoOfIsPullback pb).symm ⟨(t, x), h⟩, ?_, ?_⟩
+  · rw [← subtypeHomeoOfIsPullback_apply_fst pb, Homeomorph.apply_symm_apply]
+  · rw [← subtypeHomeoOfIsPullback_apply_snd pb, Homeomorph.apply_symm_apply]
+
+include pb in
+/-- Specialization in the pullback `Y` is detected by specialization of both projections. -/
+lemma specializes_of_specializes_of_isPullback {y₁ y₂ : Y} (hg : g y₁ ⤳ g y₂)
+    (hf : f y₁ ⤳ f y₂) : y₁ ⤳ y₂ := by
+  have hval : ((subtypeHomeoOfIsPullback pb y₁) : T × X) ⤳
+      ((subtypeHomeoOfIsPullback pb y₂) : T × X) := by
+    rw [specializes_prod]
+    refine ⟨?_, ?_⟩
+    · simpa using hg
+    · simpa using hf
+  exact (subtypeHomeoOfIsPullback pb).isInducing.specializes_iff.mp
+    (Topology.IsInducing.subtypeVal.specializes_iff.mp hval)
+
+include pb in
+/-- If the image of `y` under `f` is a closed point of `X`, then `y` is a closed point of
+the pullback `Y`. This direction does not need `X` to be w-local. -/
+lemma mem_closedPoints_of_mem_closedPoints_of_isPullback [T2Space T] {y : Y}
+    (hy : f y ∈ closedPoints X) : y ∈ closedPoints Y := by
+  rw [mem_closedPoints_iff] at hy
+  rw [mem_closedPoints_iff, ← isOpen_compl_iff, isOpen_iff_forall_mem_open]
+  intro z hz
+  rw [Set.mem_compl_iff, Set.mem_singleton_iff] at hz
+  by_cases hfzy : f z = f y
+  · have hgzy : g z ≠ g y := fun h ↦ hz (pair_injective_of_isPullback pb h hfzy)
+    obtain ⟨U, V, hU, _, hgzU, hgyV, hUV⟩ := t2_separation hgzy
+    refine ⟨g ⁻¹' U, fun w hw ↦ ?_, hU.preimage g.continuous, hgzU⟩
+    simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
+    rintro rfl
+    exact Set.disjoint_left.mp hUV hw hgyV
+  · refine ⟨f ⁻¹' {f y}ᶜ, fun w hw ↦ ?_, hy.isOpen_compl.preimage f.continuous,
+      by simp [hfzy]⟩
+    simp only [Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_preimage] at hw ⊢
+    rintro rfl
+    exact hw rfl
+
+section Main
+
+variable [WLocalSpace X] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
+
+include pb
+
 /-- **Stacks Project 096C (second part).** If `Y` is the pullback of `i : T → π₀(X)` along
 `mk : X → π₀(X)`, where `X` is `w`-local and `T` is a compact, Hausdorff, totally
 disconnected space, then the preimage of the closed points of `X` along the first projection
 `f : Y → X` is precisely the closed points of `Y`. -/
 @[stacks 096C "second part"]
-theorem preimage_closedPoints_eq_closedPoints_of_isPullback
-    {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
-    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
+theorem preimage_closedPoints_eq_closedPoints_of_isPullback :
     f ⁻¹' (closedPoints X) = closedPoints Y := by
-  have hw := hw_of_isPullback pb
   ext y
-  refine ⟨fun hy => ?_, fun hy => ?_⟩
-  · -- If `f y` is closed in `X`, every point `z ≠ y` of `Y` can be separated from `y`
-    -- by an open: either `f z ≠ f y` (use `f ⁻¹' {f y}ᶜ`) or `g z ≠ g y` (use the
-    -- `T₂` separation in `T`).
-    rw [Set.mem_preimage, mem_closedPoints_iff] at hy
-    rw [mem_closedPoints_iff, ← isOpen_compl_iff, isOpen_iff_forall_mem_open]
-    intro z hz
-    rw [Set.mem_compl_iff, Set.mem_singleton_iff] at hz
-    by_cases hfzy : f z = f y
-    · have hgzy : g z ≠ g y := fun h => hz (fg_injective_of_isPullback pb hfzy h)
-      obtain ⟨U, V, hU, _, hgzU, hgyV, hUV⟩ := t2_separation hgzy
-      refine ⟨g ⁻¹' U, fun w hw => ?_, hU.preimage g.2, hgzU⟩
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
-      rintro rfl
-      exact Set.disjoint_left.mp hUV hw hgyV
-    · refine ⟨f ⁻¹' {f y}ᶜ, fun w hw => ?_, hy.isOpen_compl.preimage f.2, by simp [hfzy]⟩
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_preimage] at hw ⊢
-      rintro rfl; exact hw rfl
-  · -- If `y` is closed in `Y`, then `f y` specialises to its unique closed point `x_c`
-    -- in the `w`-local `X`. Lifting `(g y, x_c)` through the pullback yields `y_c ∈ Y`
-    -- with `f y_c = x_c`. Componentwise specialization in the subspace
-    -- `{(t, x) | i t = mk x} ⊂ T × X` gives `y ⤳ y_c`, so `y = y_c` by closedness.
-    rw [Set.mem_preimage, mem_closedPoints_iff]
-    rw [mem_closedPoints_iff] at hy
-    haveI : SpectralSpace Y := ConnectedComponents.spectralSpace_of_isPullback pb
-    obtain ⟨x_c, hx_c_closed, hfy_xc⟩ := exists_isClosed_specializes (f y)
-    have hcc : ConnectedComponents.mk x_c = ConnectedComponents.mk (f y) := by
-      rw [ConnectedComponents.coe_eq_coe']
-      exact closure_minimal (Set.singleton_subset_iff.mpr mem_connectedComponent)
-        isClosed_connectedComponent hfy_xc.mem_closure
-    have hmk_eq : mk x_c = i (g y) := hcc.trans (hw y).symm
-    let y_c := pb.lift (TopCat.ofHom (ContinuousMap.const PUnit.{u+1} (g y)))
-      (TopCat.ofHom (ContinuousMap.const PUnit.{u+1} x_c))
-      (by ext ⟨⟩; exact hmk_eq.symm) PUnit.unit
-    have hgy_c : g y_c = g y := ConcreteCategory.congr_hom
-      (pb.lift_fst (TopCat.ofHom (ContinuousMap.const PUnit.{u+1} (g y)))
-        (TopCat.ofHom (ContinuousMap.const PUnit.{u+1} x_c))
-        (by ext ⟨⟩; exact hmk_eq.symm)) PUnit.unit
-    have hfy_c : f y_c = x_c := ConcreteCategory.congr_hom
-      (pb.lift_snd (TopCat.ofHom (ContinuousMap.const PUnit.{u+1} (g y)))
-        (TopCat.ofHom (ContinuousMap.const PUnit.{u+1} x_c))
-        (by ext ⟨⟩; exact hmk_eq.symm)) PUnit.unit
-    have hy_spec_yc : y ⤳ y_c := by
-      rw [specializes_iff_mem_closure]
-      have inst_hp := pb.hasPullback
-      let E := homeoOfIso (pb.isoPullback ≪≫
-        pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
-      have hE_g : ∀ y', (E y').val.1 = g y' := fun y' => by
-        change ((pb.isoPullback ≪≫
-          pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y').val.1 = _
-        simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
-        rw [pullbackIsoProdSubtype_hom_apply]
-        exact ConcreteCategory.congr_hom pb.isoPullback_hom_fst y'
-      have hE_f : ∀ y', (E y').val.2 = f y' := fun y' => by
-        change ((pb.isoPullback ≪≫
-          pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y').val.2 = _
-        simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
-        rw [pullbackIsoProdSubtype_hom_apply]
-        exact ConcreteCategory.congr_hom pb.isoPullback_hom_snd y'
-      have hval_spec : (E y).val ⤳ (E y_c).val := by
-        rw [specializes_prod]
-        refine ⟨?_, ?_⟩
-        · change (E y).val.1 ⤳ (E y_c).val.1
-          rw [hE_g, hE_g, hgy_c]
-        · change (E y).val.2 ⤳ (E y_c).val.2
-          rw [hE_f, hE_f, hfy_c]; exact hfy_xc
-      have hsub_spec : E y ⤳ E y_c :=
-        Topology.IsInducing.subtypeVal.specializes_iff.mp hval_spec
-      exact (E.isInducing.specializes_iff.mp hsub_spec).mem_closure
-    have heq : y = y_c := by
-      have hmem : y_c ∈ closure ({y} : Set Y) := hy_spec_yc.mem_closure
-      rw [hy.closure_eq, Set.mem_singleton_iff] at hmem
-      exact hmem.symm
-    rw [show f y = x_c from heq ▸ hfy_c]
-    exact hx_c_closed
+  refine ⟨mem_closedPoints_of_mem_closedPoints_of_isPullback pb, fun hy ↦ ?_⟩
+  -- If `y` is closed in `Y`, then `f y` specialises to its unique closed point `x_c`
+  -- in the `w`-local `X`. Lift `(g y, x_c)` through the pullback to get `y_c ∈ Y` with
+  -- `f y_c = x_c`. Componentwise specialization gives `y ⤳ y_c`, so `y = y_c` by closedness.
+  rw [Set.mem_preimage, mem_closedPoints_iff]
+  rw [mem_closedPoints_iff] at hy
+  have : SpectralSpace Y := pb.spectralSpace
+  obtain ⟨x_c, hx_c_closed, hfy_xc⟩ := exists_isClosed_specializes (f y)
+  have hmk_eq : ConnectedComponents.mk x_c = ConnectedComponents.mk (f y) := by
+    rw [ConnectedComponents.coe_eq_coe']
+    exact closure_minimal (Set.singleton_subset_iff.mpr mem_connectedComponent)
+      isClosed_connectedComponent hfy_xc.mem_closure
+  have hi_eq : i (g y) = mk x_c :=
+    (ConcreteCategory.congr_hom pb.w y).trans hmk_eq.symm
+  obtain ⟨y_c, hgy_c, hfy_c⟩ := exists_apply_eq_of_isPullback pb hi_eq
+  have hy_spec_yc : y ⤳ y_c := specializes_of_specializes_of_isPullback pb
+    (by rw [hgy_c]) (by rw [hfy_c]; exact hfy_xc)
+  have heq : y = y_c := by
+    have hmem : y_c ∈ closure ({y} : Set Y) := hy_spec_yc.mem_closure
+    rw [hy.closure_eq, Set.mem_singleton_iff] at hmem
+    exact hmem.symm
+  rw [heq, hfy_c]
+  exact hx_c_closed
 
 /-- **Stacks Project 096C (second part).** The pullback of a `w`-local space along a map
 out of a compact, Hausdorff, totally disconnected space is again `w`-local. -/
 @[stacks 096C "second part"]
-theorem wlocalSpace_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
-    {i : C(T, ConnectedComponents X)}
-    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
-    WLocalSpace Y where
+theorem wlocalSpace_of_isPullback : WLocalSpace Y where
   __ := pb.spectralSpace
   eq_of_specializes := by
     intro y c c' hc hc' hyc hyc'
     have hfc : f c ∈ closedPoints X := by
-      have : c ∈ closedPoints Y := mem_closedPoints_iff.mpr hc
-      rwa [← preimage_closedPoints_eq_closedPoints_of_isPullback pb] at this
+      have h : c ∈ closedPoints Y := mem_closedPoints_iff.mpr hc
+      rwa [← preimage_closedPoints_eq_closedPoints_of_isPullback pb] at h
     have hfc' : f c' ∈ closedPoints X := by
-      have : c' ∈ closedPoints Y := mem_closedPoints_iff.mpr hc'
-      rwa [← preimage_closedPoints_eq_closedPoints_of_isPullback pb] at this
+      have h : c' ∈ closedPoints Y := mem_closedPoints_iff.mpr hc'
+      rwa [← preimage_closedPoints_eq_closedPoints_of_isPullback pb] at h
     have hf_eq : f c = f c' :=
       WLocalSpace.eq_of_specializes (mem_closedPoints_iff.mp hfc)
-        (mem_closedPoints_iff.mp hfc') (hyc.map f.2) (hyc'.map f.2)
-    have hg_eq : g c = g c' := (hyc.map g.2).eq.symm.trans (hyc'.map g.2).eq
-    exact fg_injective_of_isPullback pb hf_eq hg_eq
+        (mem_closedPoints_iff.mp hfc') (hyc.map f.continuous) (hyc'.map f.continuous)
+    have hg_eq : g c = g c' :=
+      (hyc.map g.continuous).eq.symm.trans (hyc'.map g.continuous).eq
+    exact pair_injective_of_isPullback pb hg_eq hf_eq
   isClosed_closedPoints := by
     rw [← preimage_closedPoints_eq_closedPoints_of_isPullback pb]
-    exact (WLocalSpace.isClosed_closedPoints (X := X)).preimage f.2
+    exact (WLocalSpace.isClosed_closedPoints (X := X)).preimage f.continuous
 
 /-- **Stacks Project 096C (second part).** The first projection `Y → X` from the pullback
 along `i : T → π₀(X)` is a `w`-local map: it is spectral (in fact proper) and sends closed
 points to closed points. -/
 @[stacks 096C "second part"]
-theorem isWLocalMap_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
-    {i : C(T, ConnectedComponents X)}
-    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
-    IsWLocalMap f where
+theorem isWLocalMap_of_isPullback : IsWLocalMap f where
   toIsSpectralMap := by
-    haveI := pb.spectralSpace
-    haveI := wlocalSpace_of_isPullback pb
-    refine ⟨f.2, ?_⟩
-    -- `f` factors as `Prod.snd ∘ Subtype.val ∘ E` where `E : Y ≃ₜ {p : T × X | i p.1 = mk p.2}`
-    -- is the pullback-to-subtype homeo. `Prod.snd` is proper (`T` compact), the subtype
-    -- inclusion is proper (the equaliser of `i ∘ Prod.fst` and `mk ∘ Prod.snd` is closed
-    -- in `T₂`), and `E` is a homeomorphism. Hence `f` is proper, hence spectral.
-    have inst_hp := pb.hasPullback
-    let E := homeoOfIso (pb.isoPullback ≪≫
-      pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
+    -- `f` factors as `Prod.snd ∘ Subtype.val ∘ subtypeHomeoOfIsPullback pb`. Since `T` is
+    -- compact, `Prod.snd : T × X → X` is proper; the subspace
+    -- `{(t, x) | i t = mk x}` is closed in `T × X` (Hausdorff equaliser), hence its inclusion
+    -- is proper; and a homeomorphism is proper. Therefore `f` is proper, hence spectral.
     have hclosed : IsClosed {p : T × X | i p.1 = ConnectedComponents.mk p.2} :=
-      isClosed_eq (i.2.comp continuous_fst) (continuous_coe.comp continuous_snd)
-    have hsnd_proper : IsProperMap (Prod.snd : T × X → X) :=
-      isProperMap_snd_of_compactSpace
-    have hf_eq : ∀ y, f y = (E y).val.2 := fun y' => by
-      change f y' = ((pb.isoPullback ≪≫
-        pullbackIsoProdSubtype (ofHom i) (ofHom ⟨mk, continuous_coe⟩)).hom y').val.2
-      simp only [Iso.trans_hom, ConcreteCategory.comp_apply]
-      rw [pullbackIsoProdSubtype_hom_apply]
-      exact (ConcreteCategory.congr_hom pb.isoPullback_hom_snd y').symm
+      isClosed_eq (i.continuous.comp continuous_fst) (continuous_coe.comp continuous_snd)
+    have hf_eq : (f : Y → X) = Prod.snd ∘ Subtype.val ∘ subtypeHomeoOfIsPullback pb :=
+      funext fun y ↦ (subtypeHomeoOfIsPullback_apply_snd pb y).symm
     have hf_proper : IsProperMap f := by
-      rw [show (f : Y → X) = Prod.snd ∘ Subtype.val ∘ E from funext hf_eq]
-      exact (hsnd_proper.comp hclosed.isProperMap_subtypeVal).comp E.isProperMap
-    intro s hs hsc
-    exact hf_proper.isSpectralMap.isCompact_preimage_of_isOpen hs hsc
-  closedPoints_subset_preimage_closedPoints y hy := by
+      rw [hf_eq]
+      exact (isProperMap_snd_of_compactSpace.comp hclosed.isProperMap_subtypeVal).comp
+        (subtypeHomeoOfIsPullback pb).isProperMap
+    exact hf_proper.isSpectralMap
+  closedPoints_subset_preimage_closedPoints _ hy := by
     rwa [preimage_closedPoints_eq_closedPoints_of_isPullback pb]
+
+end Main
 
 end ConnectedComponents
