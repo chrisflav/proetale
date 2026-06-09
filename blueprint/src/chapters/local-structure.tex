@@ -545,7 +545,8 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{lemma}
 
 \begin{proof}
-  Omitted.
+  \leanok
+  Write $B$ as a filtered colimit of $A$-algebras $B_i$, each of whose structure map $A \to B_i$ is a local isomorphism. Fix a prime ideal $\mathfrak{q}$ of $B$, let $\mathfrak{q}_i$ be its contraction to $B_i$, and let $\mathfrak{p}$ be its contraction to $A$. Since localization commutes with filtered colimits, $B_{\mathfrak{q}}$ is the filtered colimit of the localizations $(B_i)_{\mathfrak{q}_i}$, and the contraction of $\mathfrak{q}_i$ to $A$ equals $\mathfrak{p}$ for each $i$. The induced maps $A_{\mathfrak{p}} \to (B_i)_{\mathfrak{q}_i}$ are isomorphisms, since each $A \to B_i$ is a local isomorphism. Passing to the filtered colimit yields the isomorphism $A_{\mathfrak{p}} \to B_{\mathfrak{q}}$.
 \end{proof}
 
 \begin{lemma}
