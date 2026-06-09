@@ -85,6 +85,8 @@ Before we define the pro-étale site, we recall a few standard definitions.
     $U = \bigcup_{i \in  I} f_i(V_i)$.
     \mathlibok
     \label{def:qc-cover}
+    \lean{AlgebraicGeometry.QuasiCompactCover}
+    \leanok
 \end{definition}
 
 \begin{lemma}
@@ -109,6 +111,8 @@ Before we define the pro-étale site, we recall a few standard definitions.
     structure morphism satisfying $\mathcal{P}$ and with covers given by quasi-compact,
     jointly surjective families of morphisms satisfying $\mathcal{P}$.
     \label{def:small-P-site}
+    \lean{AlgebraicGeometry.Scheme.propQCTopology}
+    \leanok
     \mathlibok
 \end{definition}
 
@@ -119,6 +123,8 @@ If we let $\mathcal{P}$ to be flat morphisms of schemes, we obtain the fpqc site
     $\mathcal{P}$-site of $X$ with $\mathcal{P} = \text{flat}$.
     \uses{def:small-P-site}
     \label{def:fpqc-site}
+    \lean{AlgebraicGeometry.Scheme.fpqcTopology}
+    \leanok
     \mathlibok
 \end{definition}
 
@@ -141,6 +147,8 @@ for the small $\mathcal{P}$-site of a scheme.
     and $V \to U$ satisfying $\mathcal{P}$.
     \uses{def:small-P-site}
     \label{prop:fpqc-sheaf-iff}
+    \lean{AlgebraicGeometry.isSheaf_propQCTopology_iff}
+    \leanok
     \mathlibok
 \end{proposition}
 
@@ -152,6 +160,8 @@ We can now define the main object of this chapter:
 
     \uses{def:qc-cover, def:weakly-etale-morphism, def:small-P-site}
     \label{def:proetale-site}
+    \lean{AlgebraicGeometry.Scheme.proetaleTopology}
+    \leanok
     \mathlibok
 \end{definition}
 
