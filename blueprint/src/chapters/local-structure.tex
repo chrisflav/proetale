@@ -546,7 +546,7 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 
 \begin{proof}
   \leanok
-  Write $B$ as a filtered colimit of $A$-algebras $B_i$, where each structure map $A \to B_i$ is a local isomorphism. Fix a prime ideal $\mathfrak{q}$ of $B$, and let $\mathfrak{q}_i$ denote the contraction of $\mathfrak{q}$ along the canonical map $B_i \to B$. Since localization commutes with filtered colimits, $B_\mathfrak{q}$ is the filtered colimit of the localizations $(B_i)_{\mathfrak{q}_i}$. The contraction of $\mathfrak{q}_i$ along $A \to B_i$ equals the contraction of $\mathfrak{q}$ along $A \to B$, so the structure maps $A_{\varphi^{-1}(\mathfrak{q})} \to (B_i)_{\mathfrak{q}_i}$ assemble into a cocone. Each $A \to B_i$ is a local isomorphism, hence $A_{\varphi^{-1}(\mathfrak{q})} \to (B_i)_{\mathfrak{q}_i}$ is an isomorphism for every $i$. Passing to the filtered colimit yields the desired isomorphism $A_{\varphi^{-1}(\mathfrak{q})} \to B_\mathfrak{q}$.
+  Write $B$ as a filtered colimit of $A$-algebras $B_i$, each of whose structure map $A \to B_i$ is a local isomorphism. Fix a prime ideal $\mathfrak{q}$ of $B$, let $\mathfrak{q}_i$ be its contraction to $B_i$, and let $\mathfrak{p}$ be its contraction to $A$. Since localization commutes with filtered colimits, $B_{\mathfrak{q}}$ is the filtered colimit of the localizations $(B_i)_{\mathfrak{q}_i}$, and the contraction of $\mathfrak{q}_i$ to $A$ equals $\mathfrak{p}$ for each $i$. The induced maps $A_{\mathfrak{p}} \to (B_i)_{\mathfrak{q}_i}$ are isomorphisms, since each $A \to B_i$ is a local isomorphism. Passing to the filtered colimit yields the isomorphism $A_{\mathfrak{p}} \to B_{\mathfrak{q}}$.
 \end{proof}
 
 \begin{lemma}
