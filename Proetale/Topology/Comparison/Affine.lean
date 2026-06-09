@@ -257,7 +257,7 @@ noncomputable def zariskiPrecoverage : Precoverage (AffineProEt S) :=
     Precoverage.IsStableUnderBaseChange
 
 instance : (toProEt S).LocallyCoverDense (ProEt.zariskiTopology S) := by
-  refine ⟨fun {X} T => ?_⟩
+  refine ⟨fun {X} T ↦ ?_⟩
   have hTP : T.val.functorPushforward (MorphismProperty.Over.forget @WeaklyEtale ⊤ S) ∈
       S.overGrothendieckTopology @IsOpenImmersion X.toComma :=
     T.property
@@ -265,40 +265,38 @@ instance : (toProEt S).LocallyCoverDense (ProEt.zariskiTopology S) := by
     (Scheme.mem_overGrothendieckTopology (S := S) (P := @IsOpenImmersion)
       X.toComma _).mp hTP
   have hcov : ⋃ j, Set.range (𝒰.f j).base = Set.univ := by
-    refine Set.eq_univ_of_forall fun x => ?_
+    refine Set.eq_univ_of_forall fun x ↦ ?_
     obtain ⟨j, y, hy⟩ := Scheme.Cover.exists_eq 𝒰 x
     exact Set.mem_iUnion.mpr ⟨j, y, hy⟩
-  haveI : IsAffine X.toComma.left := X.prop.isAffine
   obtain ⟨idx, g, e, hmem, he⟩ :=
     exists_basicOpen_lift_of_isAffine_cover 𝒰.f hcov
-  let Z : X.toComma.left → S.AffineProEt := fun x =>
-    AffineProEt.mk ((X.toComma.left.basicOpen (g x)).ι ≫ X.hom)
+  let Z : X.left → S.AffineProEt := fun x ↦
+    AffineProEt.mk ((X.left.basicOpen (g x)).ι ≫ X.hom)
       (proAffineEtale.comp_mem _ _ (proAffineEtale.of_isAffine _) X.prop)
-  let ι' : ∀ x, Z x ⟶ X := fun x =>
-    MorphismProperty.Over.homMk (X.toComma.left.basicOpen (g x)).ι
-  have hT_map : ∀ x : X.toComma.left, T.val ((toProEt S).map (ι' x)) := by
+  let ι' : ∀ x, Z x ⟶ X := fun x ↦
+    MorphismProperty.Over.homMk (X.left.basicOpen (g x)).ι
+  -- For each `x : X.left` the basic open `D(g x)` factors through some `Z'` in the
+  -- pushforward sieve, hence `(ι' x)` itself lies in `T.val`.
+  have hT_map : ∀ x : X.left, T.val ((toProEt S).map (ι' x)) := by
     intro x
-    obtain ⟨Z_j, h_j, k_j, hTh_j, hcomp_j⟩ :=
+    obtain ⟨Z', h, k, hTh, hcomp⟩ :=
       hle ((𝒰.X (idx x)).asOver S) ((𝒰.f (idx x)).asOver S) ⟨idx x⟩
-    have hk_over : k_j.left ≫ h_j.left = 𝒰.f (idx x) := by
-      have heq := congr_arg Over.Hom.left hcomp_j
-      simp only [Over.comp_left, OverClass.asOverHom_left, MorphismProperty.Comma.forget_map,
-        MorphismProperty.Comma.Hom.hom_left] at heq
-      exact heq.symm
-    have hZj : Z_j.hom = h_j.left ≫ X.hom := by
-      have := h_j.toCommaMorphism.w
-      simp at this
-      exact this.symm
-    have h_assoc : (e x ≫ k_j.left) ≫ h_j.left = (X.toComma.left.basicOpen (g x)).ι := by
+    have hk_over : k.left ≫ h.left = 𝒰.f (idx x) := by
+      simpa using (congr_arg Over.Hom.left hcomp).symm
+    have hZ' : Z'.hom = h.left ≫ X.hom := by
+      simpa using h.toCommaMorphism.w.symm
+    have h_assoc : (e x ≫ k.left) ≫ h.left = (X.left.basicOpen (g x)).ι := by
       rw [Category.assoc, hk_over, he]
-    have heq : (e x ≫ k_j.left) ≫ Z_j.hom = (Z x).hom := by
-      rw [hZj, ← Category.assoc, h_assoc]; rfl
-    let f_x : (toProEt S).obj (Z x) ⟶ Z_j :=
-      MorphismProperty.Over.homMk (e x ≫ k_j.left) heq
-    have : f_x ≫ h_j = (toProEt S).map (ι' x) :=
+    have heq : (e x ≫ k.left) ≫ Z'.hom = (Z x).hom := by
+      rw [hZ', ← Category.assoc, h_assoc]
+      rfl
+    let f_x : (toProEt S).obj (Z x) ⟶ Z' :=
+      MorphismProperty.Over.homMk (e x ≫ k.left) heq
+    have : f_x ≫ h = (toProEt S).map (ι' x) :=
       MorphismProperty.Over.Hom.ext h_assoc
     rw [← this]
-    exact T.val.downward_closed hTh_j f_x
+    exact T.val.downward_closed hTh f_x
+  -- Reduce to producing, pointwise, an element of the generating Zariski precoverage.
   simp only [ProEt.zariskiTopology,
     Scheme.smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology]
   apply (Scheme.mem_toGrothendieck_smallPretopology _ _).mpr
