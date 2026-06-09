@@ -313,27 +313,15 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
 
 /-- The first projection `S × T →+* S` is bijective on stalks. -/
 lemma fst (T : Type*) [CommRing T] : (RingHom.fst S T).BijectiveOnStalks := by
-  intro p hp
   let _ : Algebra (S × T) S := (RingHom.fst S T).toAlgebra
-  have : IsLocalization.AtPrime (Localization.AtPrime p) (p.comap (algebraMap (S × T) S)) :=
-    IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
-      (Submonoid.powers ((1, 0) : S × T)) (Localization.AtPrime p) p
-  exact IsLocalization.bijective (p.comap (RingHom.fst S T)).primeCompl _ (by
-    ext x
-    rw [RingHom.comp_apply, Localization.localRingHom_to_map]
-    rfl)
+  haveI : Algebra.IsStandardOpenImmersion (S × T) S := ⟨(1, 0), inferInstance⟩
+  exact of_isStandardOpenImmersion (S × T) S
 
 /-- The second projection `S × T →+* T` is bijective on stalks. -/
 lemma snd (T : Type*) [CommRing T] : (RingHom.snd S T).BijectiveOnStalks := by
-  intro p hp
   let _ : Algebra (S × T) T := (RingHom.snd S T).toAlgebra
-  have : IsLocalization.AtPrime (Localization.AtPrime p) (p.comap (algebraMap (S × T) T)) :=
-    IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
-      (Submonoid.powers ((0, 1) : S × T)) (Localization.AtPrime p) p
-  exact IsLocalization.bijective (p.comap (RingHom.snd S T)).primeCompl _ (by
-    ext x
-    rw [RingHom.comp_apply, Localization.localRingHom_to_map]
-    rfl)
+  haveI : Algebra.IsStandardOpenImmersion (S × T) T := ⟨(0, 1), inferInstance⟩
+  exact of_isStandardOpenImmersion (S × T) T
 
 /-- A finite product of ring homomorphisms that are bijective on stalks is bijective on stalks,
 provided each factor is bijective on stalks. -/
