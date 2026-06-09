@@ -8,6 +8,7 @@ import Proetale.Algebra.IndEtale
 import Proetale.Algebra.WeakDimension
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
+import Proetale.Mathlib.RingTheory.WeaklyEtale.Localization
 
 /-!
 # Weakly étale algebras over a field
@@ -107,14 +108,100 @@ lemma isAlgebraic {L : Type*} [Field L] [Algebra k L] [WeaklyEtale k L] :
   exact IntermediateField.isSeparable_of_mem_isSeparable k L
     (IntermediateField.mem_adjoin_simple_self k x)
 
+/-- If the localization of `R` at a prime `p` is a field, the kernel of the localization map
+is `p` itself. -/
+private lemma ker_algebraMap_localization_eq_of_isField {R : Type u} [CommRing R]
+    {p : Ideal R} [p.IsPrime] (hf : IsField (Localization.AtPrime p)) :
+    RingHom.ker (algebraMap R (Localization.AtPrime p)) = p := by
+  refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
+  · obtain ⟨s, hs⟩ := (IsLocalization.map_eq_zero_iff p.primeCompl _ x).mp hx
+    have hmem : ↑s * x ∈ p := by rw [hs]; exact p.zero_mem
+    exact (‹p.IsPrime›.mem_or_mem hmem).resolve_left s.2
+  · have h0 : Ideal.map (algebraMap R (Localization.AtPrime p)) p = ⊥ := by
+      rw [Localization.AtPrime.map_eq_maximalIdeal]
+      exact IsLocalRing.isField_iff_maximalIdeal_eq.mp hf
+    rw [RingHom.mem_ker, ← Ideal.mem_bot, ← h0]
+    exact Ideal.mem_map_of_mem _ hx
+
+/-- A minimal prime `q` of a subalgebra `A` of a weakly étale `k`-algebra `R` is maximal,
+with residue field separable and integral over `k`. Indeed, `q` is the contraction of a
+prime `p` of `R`, and `A ⧸ q` embeds into the localization `R_p`, which is a field that is
+separable algebraic over `k`. -/
+private lemma isMaximal_isSeparable_of_mem_minimalPrimes [WeaklyEtale k R]
+    (A : Subalgebra k R) {q : Ideal A} (hq : q ∈ minimalPrimes A) :
+    q.IsMaximal ∧ Algebra.IsSeparable k (A ⧸ q) ∧ Algebra.IsIntegral k (A ⧸ q) := by
+  haveI : Ring.AbsolutelyFlat R := .of_flat_lmul' k R (flat_lmul' k R)
+  obtain ⟨p, hp, hcomap⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
+    (f := algebraMap A R) Subtype.val_injective q hq
+  haveI := hp
+  have hfield : IsField (Localization.AtPrime p) :=
+    Ring.AbsolutelyFlat.isField_of_isLocalization_prime R p _
+  letI : Field (Localization.AtPrime p) := hfield.toField
+  haveI : WeaklyEtale R (Localization.AtPrime p) := .of_isLocalization R p.primeCompl _
+  haveI : WeaklyEtale k (Localization.AtPrime p) := .trans k R (Localization.AtPrime p)
+  haveI : Algebra.IsSeparable k (Localization.AtPrime p) := isAlgebraic
+  haveI : Algebra.IsAlgebraic k (Localization.AtPrime p) :=
+    ⟨fun x ↦ (Algebra.IsSeparable.isSeparable k x).isIntegral.isAlgebraic⟩
+  -- The induced embedding `A ⧸ q → R_p`.
+  let f : A →ₐ[k] Localization.AtPrime p :=
+    (IsScalarTower.toAlgHom k R (Localization.AtPrime p)).comp A.val
+  have hf : ∀ a : A, f a = 0 ↔ a ∈ q := fun a ↦ by
+    have h1 : f a = 0 ↔ algebraMap A R a ∈ RingHom.ker (algebraMap R (Localization.AtPrime p)) :=
+      RingHom.mem_ker.symm
+    rw [h1, ker_algebraMap_localization_eq_of_isField hfield, ← hcomap, Ideal.mem_comap]
+  let ψ : (A ⧸ q) →ₐ[k] Localization.AtPrime p :=
+    Ideal.Quotient.liftₐ q f fun a ha ↦ (hf a).mpr ha
+  have hψ : Function.Injective ψ := by
+    rw [injective_iff_map_eq_zero]
+    intro a
+    obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
+    intro ha
+    rw [Ideal.Quotient.eq_zero_iff_mem]
+    exact (hf a).mp (by simpa [ψ] using ha)
+  have hmax : q.IsMaximal := by
+    rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
+    exact (AlgEquiv.ofInjective ψ hψ).toMulEquiv.isField
+      (Subalgebra.isField_of_algebraic ψ.range)
+  have hsep : Algebra.IsSeparable k (A ⧸ q) := ⟨fun x ↦ by
+    change (minpoly k x).Separable
+    rw [← minpoly.algHom_eq ψ hψ x]
+    exact Algebra.IsSeparable.isSeparable k (ψ x)⟩
+  exact ⟨hmax, hsep, ⟨fun x ↦ (hsep.isSeparable' x).isIntegral⟩⟩
+
 /-- Any finitely-generated subalgebra of a weakly étale algebra is étale. -/
-lemma etale_of_fg [WeaklyEtale k R] (A : Subalgebra k R) (hA : A.FG) : Etale k A :=
-  sorry
+lemma etale_of_fg [WeaklyEtale k R] (A : Subalgebra k R) (hA : A.FG) : Etale k A := by
+  haveI : Ring.AbsolutelyFlat R := .of_flat_lmul' k R (flat_lmul' k R)
+  haveI : Algebra.FiniteType k A := hA.finiteType
+  haveI : IsNoetherianRing A := Algebra.FiniteType.isNoetherianRing k A
+  haveI : IsReduced A := isReduced_of_injective A.val Subtype.val_injective
+  -- Every prime of `A` contains a minimal prime, which is maximal by the key lemma.
+  have hmax : ∀ q : Ideal A, q.IsPrime → q.IsMaximal := fun q hq ↦ by
+    haveI := hq
+    obtain ⟨q₀, hq₀, hle⟩ := Ideal.exists_minimalPrimes_le (I := (⊥ : Ideal A)) (J := q) bot_le
+    have h := (isMaximal_isSeparable_of_mem_minimalPrimes A hq₀).1
+    exact h.eq_of_le hq.ne_top hle ▸ h
+  haveI : Ring.KrullDimLE 0 A := Ring.krullDimLE_zero_iff.mpr hmax
+  haveI : IsArtinianRing A := IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
+  have hmin : ∀ I : MaximalSpectrum A, I.asIdeal ∈ minimalPrimes A := fun I ↦ by
+    obtain ⟨q₀, hq₀, hle⟩ := Ideal.exists_minimalPrimes_le (I := (⊥ : Ideal A))
+      (J := I.asIdeal) bot_le
+    have h := (isMaximal_isSeparable_of_mem_minimalPrimes A hq₀).1
+    rwa [h.eq_of_le I.isMaximal.ne_top hle] at hq₀
+  -- Hence `A` is a finite product of finite separable field extensions of `k`.
+  rw [Algebra.Etale.iff_exists_algEquiv_prod]
+  refine ⟨MaximalSpectrum A, inferInstance, fun I ↦ A ⧸ I.asIdeal,
+    fun I ↦ Ideal.Quotient.field I.asIdeal, fun I ↦ inferInstance,
+    (IsArtinianRing.equivPi A).restrictScalars k, fun I ↦ ⟨?_, ?_⟩⟩
+  · haveI := (isMaximal_isSeparable_of_mem_minimalPrimes A (hmin I)).2.2
+    haveI : Algebra.FiniteType k (A ⧸ I.asIdeal) :=
+      .of_surjective (Ideal.Quotient.mkₐ k I.asIdeal) (Ideal.Quotient.mkₐ_surjective k _)
+    exact Algebra.IsIntegral.finite
+  · exact (isMaximal_isSeparable_of_mem_minimalPrimes A (hmin I)).2.1
 
 variable (k R) in
 /-- Any weakly étale algebra over a field is ind-étale. -/
 theorem indEtale_field [WeaklyEtale k R] : IndEtale k R :=
-  sorry
+  .of_forall_fg_etale fun A hA ↦ etale_of_fg A hA
 
 /-- If `K → L` is weakly étale and `L` is absolutely flat (e.g. a field), then `L ⊗[K] L`
 is absolutely flat.
