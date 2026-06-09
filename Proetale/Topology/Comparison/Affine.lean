@@ -689,4 +689,47 @@ lemma minimalPrecoverage_le_relativelyPresentable :
 
 end AffineProEt
 
+section SheafComparison
+
+instance (F : S.Etaleᵒᵖ ⥤ Ab.{u + 1}) :
+    PreservesFilteredColimitsOfSize.{u, u}
+      ((AffineProEt.toProEt S).op ⋙ (toProEtale S).op.lan.obj F) :=
+  sorry
+
+instance : AB5OfSize.{u, u} Ab.{u + 1} :=
+  AB5OfSize_of_univLE.{_, _, u + 1, u + 1} Ab
+
+noncomputable
+def AffineEtale.toAffineProEtCompToProEtIso :
+    AffineEtale.toAffineProEt S ⋙ AffineProEt.toProEt S ≅
+      AffineEtale.Spec S ⋙ toProEtale S :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+/-- If `F` is a sheaf on the small étale site, the presheaf pushforward of `F`
+to the small pro-étale site (i.e., the left Kan extension) is a
+sheaf when restricted to the small affine pro-étale site. -/
+lemma isSheaf_lan_toProEtale (F : S.Etaleᵒᵖ ⥤ Ab.{u + 1})
+    (hF : Presheaf.IsSheaf (smallEtaleTopology S) F) :
+    Presheaf.IsSheaf (AffineProEt.topology S)
+      ((AffineProEt.toProEt S).op ⋙ (toProEtale S).op.lan.obj F) := by
+  apply Presheaf.isSheaf_of_generates_of_isRelativelyPresentable
+      (AffineEtale.toAffineProEt S) (AffineProEt.minimalPrecoverage S)
+      (AffineEtale.topology S)
+  · let iso : (AffineEtale.toAffineProEt S).op ⋙
+        (AffineProEt.toProEt S).op ⋙ S.toProEtale.op.lan.obj F ≅
+        (AffineEtale.Spec S).op ⋙ F :=
+      (Functor.associator _ _ _).symm ≪≫
+        Functor.isoWhiskerRight (Functor.opComp _ _).symm _ ≪≫
+        Functor.isoWhiskerRight (NatIso.op (AffineEtale.toAffineProEtCompToProEtIso S).symm) _ ≪≫
+        Functor.isoWhiskerRight (Functor.opComp _ _) _ ≪≫
+        Functor.associator _ _ _ ≪≫
+        Functor.isoWhiskerLeft _ (asIso <| ((toProEtale S).op.lanUnit.app F)).symm
+    rw [Presheaf.isSheaf_of_iso_iff iso]
+    exact Functor.op_comp_isSheaf_of_isSheaf _ _ _ _ hF
+  · exact AffineProEt.generates_minimalPrecoverage S
+  · exact AffineProEt.minimalPrecoverage_le_relativelyPresentable S
+  · exact AffineProEt.minimalPrecoverage_le_finite S
+
+end SheafComparison
+
 end AlgebraicGeometry.Scheme
