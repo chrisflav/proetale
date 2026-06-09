@@ -21,7 +21,7 @@ variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 /-- If `N` is a finitely generated submodule of `M` and every element of `N` is
 `S`-torsion, then a single element of `S` annihilates all of `N`. -/
-lemma Submodule.FG.exists_mem_smul_eq_zero_of_forall {N : Submodule R M}
+lemma Submodule.FG.exists_mem_smul_eq_zero {N : Submodule R M}
     (hN : N.FG) (S : Submonoid R) (h : ∀ x ∈ N, ∃ t ∈ S, t • x = 0) :
     ∃ t ∈ S, ∀ x ∈ N, t • x = 0 := by
   classical
@@ -44,7 +44,7 @@ lemma exists_mem_smul_eq_zero_of_subsingleton
     [Module.Finite R M] (S : Submonoid R) (g : M →ₗ[R] M')
     [IsLocalizedModule S g] [Subsingleton M'] :
     ∃ t ∈ S, ∀ m : M, t • m = 0 := by
-  obtain ⟨t, htS, ht⟩ := Module.Finite.fg_top.exists_mem_smul_eq_zero_of_forall S
+  obtain ⟨t, htS, ht⟩ := Module.Finite.fg_top.exists_mem_smul_eq_zero S
     fun x _ ↦ (IsLocalizedModule.subsingleton_iff S g).mp inferInstance x
   exact ⟨t, htS, fun m ↦ ht m Submodule.mem_top⟩
 
