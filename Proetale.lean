@@ -111,6 +111,7 @@ import Proetale.Mathlib.Topology.Maps.Basic
 import Proetale.Mathlib.Topology.QuasiSeparated
 import Proetale.Mathlib.Topology.Separation.Basic
 import Proetale.Mathlib.Topology.Separation.Hausdorff
+import Proetale.Mathlib.Topology.Separation.Profinite
 import Proetale.Mathlib.Topology.Sober
 import Proetale.Mathlib.Topology.Spectral.Basic
 import Proetale.Mathlib.Topology.Spectral.ConstructibleTopology
