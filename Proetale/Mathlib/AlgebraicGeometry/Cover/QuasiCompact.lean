@@ -9,11 +9,6 @@ import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 /-!
 # Quasi-compact covers of flat, locally finitely presented morphisms
 
-This file packages the blueprint statement `lemma:qc-cover-of-flat-fp`:
-a jointly surjective family of morphisms that are flat and locally of finite
-presentation is a quasi-compact cover. The proof combines
-`UniversallyOpen.of_flat` (Stacks 01UA) with `QuasiCompactCover.of_isOpenMap`
-(Stacks 022C).
 -/
 
 universe u
