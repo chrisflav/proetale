@@ -45,6 +45,10 @@ instance : (precoverage X).IsStableUnderBaseChange := by
   dsimp [precoverage]
   infer_instance
 
+/-- The pro-étale topology on the small pro-étale site is subcanonical, i.e. every representable
+presheaf is a sheaf. -/
+theorem subcanonical : (topology X).Subcanonical := inferInstance
+
 variable {S : Scheme.{u}}
 
 instance {X Y : S.ProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
