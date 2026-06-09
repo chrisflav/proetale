@@ -22,11 +22,14 @@ def AlgEquiv.piFinTwo (A : Type*) [CommSemiring A] (R : Fin 2 → Type*)
   { RingEquiv.piFinTwo R with
     commutes' := fun _ => rfl }
 
-lemma Pi.evalAlgHom_surjective {R : Type*} [CommSemiring R] {ι : Type*}
+lemma Pi.surjective_evalAlgHom {R : Type*} [CommSemiring R] {ι : Type*}
     (A : ι → Type*) [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] (i : ι) :
     Function.Surjective (Pi.evalAlgHom R A i) := by
   classical
   exact fun y ↦ ⟨Pi.single i y, Pi.single_eq_same i y⟩
+
+-- `_root_.Finite` is required below because `AlgHom.Finite` is in scope inside this namespace.
+namespace AlgHom
 
 variable {k : Type*} [CommSemiring k] {I : Type*} [DecidableEq I]
   {A : I → Type*} [∀ i, CommRing (A i)] [∀ i, Algebra k (A i)]

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 The Proetale Authors. All rights reserved.
+Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
@@ -15,7 +15,7 @@ supported only at the index `i₀`, the localization `(∀ i, k i)[1/(Pi.single 
 
 ## Main result
 
-* `Localization.awayPiSingleEquiv`: the canonical `S`-algebra isomorphism
+* `Localization.awaySingleAlgEquiv`: the canonical `S`-algebra isomorphism
   `Localization.Away (Pi.single i₀ s) ≃ₐ[S] Localization.Away s`.
 -/
 
@@ -28,7 +28,7 @@ variable (k : I → Type*) [∀ i, CommRing (k i)] [∀ i, Algebra S (k i)]
 /-- For a family of commutative `S`-algebras `k i` and `s : k i₀`, localizing the product
 `∀ i, k i` at the singleton-supported element `Pi.single i₀ s` collapses to localizing the
 `i₀`-factor at `s`. -/
-noncomputable def awayPiSingleEquiv (i₀ : I) (s : k i₀) :
+noncomputable def awaySingleAlgEquiv (i₀ : I) (s : k i₀) :
     Localization.Away (Pi.single i₀ s) ≃ₐ[S] Localization.Away s := by
   set r : ∀ i, k i := Pi.single i₀ s with hr_def
   let f : (∀ i, k i) →ₐ[S] Localization.Away s :=
