@@ -129,12 +129,32 @@ theorem connectedComponent.prod (s : S) (t : T) :
       hconn_prod.subset_connectedComponent hmem
     exact hsub ⟨hs, ht⟩
 
+theorem ConnectedComponents.bijective_connectedComponentsLift_prod :
+    Function.Bijective (Continuous.connectedComponentsLift
+      (f := fun x : S × T ↦ (mk x.1, mk x.2)) (by continuity)) := by
+  refine ⟨Continuous.connectedComponentsLift_injective _ ?_, ?_⟩
+  · rintro ⟨c, d⟩
+    obtain ⟨s, rfl⟩ := ConnectedComponents.surjective_coe c
+    obtain ⟨t, rfl⟩ := ConnectedComponents.surjective_coe d
+    have heq : (fun x : S × T ↦ (ConnectedComponents.mk x.1, ConnectedComponents.mk x.2)) ⁻¹'
+        {(ConnectedComponents.mk s, ConnectedComponents.mk t)} =
+        connectedComponent s ×ˢ connectedComponent t := by
+      ext ⟨s', t'⟩
+      simp only [Set.mem_preimage, Set.mem_singleton_iff, Prod.mk.injEq,
+        Set.mem_prod, ConnectedComponents.coe_eq_coe']
+    rw [heq]
+    exact isPreconnected_connectedComponent.prod isPreconnected_connectedComponent
+  · rintro ⟨c, d⟩
+    obtain ⟨s, rfl⟩ := ConnectedComponents.surjective_coe c
+    obtain ⟨t, rfl⟩ := ConnectedComponents.surjective_coe d
+    exact ⟨ConnectedComponents.mk (s, t), rfl⟩
+
 theorem ConnectedComponents.isHomeomorph_connectedComponentsLift_prod :
     IsHomeomorph (Continuous.connectedComponentsLift
     (f := fun x : S × T ↦ (mk x.1, mk x.2)) (by continuity)) where
   continuous := Continuous.connectedComponentsLift_continuous (by continuity)
   isOpenMap := sorry
-  bijective := sorry
+  bijective := bijective_connectedComponentsLift_prod S T
 
 variable {S T} in
 noncomputable def ConnectedComponents.prodMap :

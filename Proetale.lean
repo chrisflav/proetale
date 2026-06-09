@@ -44,8 +44,10 @@ import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+import Proetale.Mathlib.CategoryTheory.Filtered.Basic
 import Proetale.Mathlib.CategoryTheory.Limits.Comma
 import Proetale.Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
+import Proetale.Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Presentation
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -84,6 +86,7 @@ import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Flat.Pi
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown
+import Proetale.Mathlib.RingTheory.Ideal.GoingUp
 import Proetale.Mathlib.RingTheory.Ideal.Pure
 import Proetale.Mathlib.RingTheory.Idempotents
 import Proetale.Mathlib.RingTheory.RingHom.Flat
@@ -92,6 +95,7 @@ import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.Topology
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
 import Proetale.Mathlib.RingTheory.WeaklyEtale.Local
+import Proetale.Mathlib.RingTheory.WeaklyEtale.Localization
 import Proetale.Mathlib.RingTheory.WeaklyEtale.Pi
 import Proetale.Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Proetale.Mathlib.Topology.Connected.TotallyDisconnected
@@ -111,6 +115,7 @@ import Proetale.Morphisms.WeaklyEtale
 import Proetale.Pro.Basic
 import Proetale.Pro.Generating
 import Proetale.Pro.PresheafColimit
+import Proetale.Replete.Basic
 import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Coherent.Affine
 import Proetale.Topology.Coherent.Etale
