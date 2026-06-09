@@ -1099,10 +1099,28 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
 
 \begin{proof}
   \leanok
-  \uses{thm:pullback-spectral,thm:cartesian-profinite,thm:closed-points-isom-pi0}
-  We know that $Y$ is spectral and $T = \pi_0(Y)$ by \Cref{thm:cartesian-profinite}. Assume $X$ is w-local and let $X^c \subset X$ be its closed points. The inverse image $Y^c \subset Y$ of $X^c$ maps bijectively onto $T$, since $X^c \to \pi_0(X)$ is a bijection by \Cref{thm:closed-points-isom-pi0}. (Note that we do not yet know whether $Y^c$ is the set of closed points of $Y$.) Moreover, $Y^c$ is quasi-compact as a closed subset of the spectral space $Y$. Hence $Y^c \to \pi_0(Y) = T$ is a homeomorphism by \verb`isHomeomorph_iff_continuous_bijective` (\stacksproject{08YE}). It follows that all points of $Y^c$ are closed in $Y$: if some $y \in Y^c$ specialized to a distinct closed point $y'$ (which also falls in $Y$ since $Y$ is closed), then both would map to the same point in $T$, contradicting the bijectivity of $Y^c \to T$.
+  \uses{thm:pullback-spectral,thm:cartesian-profinite}
+  We know that $Y$ is spectral and $T = \pi_0(Y)$ by \Cref{thm:cartesian-profinite}. The Lean
+  formalisation transports $Y$ to the closed subspace
+  $\{p \in T \times X \mid i(p_1) = \mathrm{mk}(p_2)\}$ of $T \times X$ via the canonical
+  homeomorphism induced by the pullback. Hence the map $(g, f) : Y \to T \times X$ is injective.
+  Assume $X$ is w-local and let $X^c \subset X$ be its closed points.
 
-  Conversely, if $y \in Y$ is a closed point, then it is closed in its fibre over $T$, and its image $x \in X$ is closed in the corresponding (homeomorphic) fibre of $X \to \pi_0(X)$. Since a point in a w-local space is closed if and only if it is closed in its connected component (which is closed), we have $x \in X^c$, so $y \in Y^c$. Thus $Y^c$ is exactly the set of closed points of $Y$. Moreover, since $Y^c \cong T$, each connected component contains a unique closed point, and for each $y \in Y^c$ the set of generalizations of $y$ is precisely the fibre of $Y \to \pi_0(Y)$ (as any generalization of $y$ lies in the same connected component with $y$). The lemma follows.
+  We first show that $f^{-1}(X^c) = Y^c$, the closed points of $Y$.
+  For the forward inclusion, suppose $f(y) \in X^c$ and let $z \neq y$ in $Y$. Either
+  $f(z) \neq f(y)$, in which case $\{f(y)\}^c$ is an open neighbourhood of $z$ avoiding $y$,
+  or $f(z) = f(y)$, in which case injectivity of $(g, f)$ forces $g(z) \neq g(y)$ and $T$-Hausdorff
+  yields an open neighbourhood of $z$ avoiding $y$. For the converse, given a closed $y \in Y$,
+  pick a closed generalization $x_c \leadsto f(y)$ in $X$ (which exists since $X$ is spectral)
+  and lift it through the pullback to $y_c \in Y$ with $y \leadsto y_c$; closedness of $y$
+  forces $y = y_c$, so $f(y) = x_c$ is closed.
+
+  Finally, $Y$ is w-local: the map $(g, f)$ being injective combined with $T$ Hausdorff and
+  $X$ w-local gives that the closed points $Y^c = f^{-1}(X^c)$ form a closed subspace and any
+  point of $Y$ specializes to a unique closed point. The map $f : Y \to X$ is proper (it factors
+  through the closed embedding into $T \times X$ followed by the projection to $X$, which is
+  proper because $T$ is compact), hence spectral, hence w-local since it sends closed points to
+  closed points.
 \end{proof}
 
 \section{w-local rings}
