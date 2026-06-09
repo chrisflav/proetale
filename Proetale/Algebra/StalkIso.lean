@@ -314,13 +314,13 @@ lemma bijective_of_bijective {f : R →+* S} (hf : f.BijectiveOnStalks)
 /-- The first projection `S × T →+* S` is bijective on stalks. -/
 lemma fst (T : Type*) [CommRing T] : (RingHom.fst S T).BijectiveOnStalks := by
   let _ : Algebra (S × T) S := (RingHom.fst S T).toAlgebra
-  haveI : Algebra.IsStandardOpenImmersion (S × T) S := ⟨(1, 0), inferInstance⟩
+  have : Algebra.IsStandardOpenImmersion (S × T) S := ⟨(1, 0), inferInstance⟩
   exact of_isStandardOpenImmersion (S × T) S
 
 /-- The second projection `S × T →+* T` is bijective on stalks. -/
 lemma snd (T : Type*) [CommRing T] : (RingHom.snd S T).BijectiveOnStalks := by
   let _ : Algebra (S × T) T := (RingHom.snd S T).toAlgebra
-  haveI : Algebra.IsStandardOpenImmersion (S × T) T := ⟨(0, 1), inferInstance⟩
+  have : Algebra.IsStandardOpenImmersion (S × T) T := ⟨(0, 1), inferInstance⟩
   exact of_isStandardOpenImmersion (S × T) T
 
 /-- A finite product of ring homomorphisms that are bijective on stalks is bijective on stalks,
