@@ -6,19 +6,14 @@ Authors: Christian Merten
 import Mathlib.AlgebraicGeometry.Limits
 
 /-!
-# Named alias: the category of schemes is finitary extensive
-
-This file provides a `theorem`-shaped, stably-named alias for the anonymous Mathlib
-instance `FinitaryExtensive Scheme` in `Mathlib/AlgebraicGeometry/Limits.lean`.
+# `FinitaryExtensive` for the category of schemes
 -/
 
 universe u
 
-open CategoryTheory
-
-namespace AlgebraicGeometry.Scheme
+namespace AlgebraicGeometry
 
 /-- The category of schemes is finitary extensive. -/
-theorem finitaryExtensive : FinitaryExtensive Scheme.{u} := inferInstance
+lemma finitaryExtensive_scheme : CategoryTheory.FinitaryExtensive Scheme.{u} := inferInstance
 
-end AlgebraicGeometry.Scheme
+end AlgebraicGeometry
