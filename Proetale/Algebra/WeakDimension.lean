@@ -88,8 +88,23 @@ lemma pi_of_isValuationRing {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R 
 that `R → S` is an epi. -/
 lemma isIntegrallyClosedIn_of_isEpi [WeakDimensionLEOne R] [Module.Flat R S] [FaithfulSMul R S]
     [Algebra.IsEpi R S] :
-    IsIntegrallyClosedIn R S :=
-  sorry
+    IsIntegrallyClosedIn R S := by
+  rw [isIntegrallyClosedIn_iff]
+  refine ⟨FaithfulSMul.algebraMap_injective R S, fun {x} hx ↦ ?_⟩
+  let A : Subalgebra R S := Algebra.adjoin R {x}
+  have : Module.Finite R A := Algebra.finite_adjoin_simple_of_isIntegral hx
+  have : Module.Flat R A := flat_submodule R (Subalgebra.toSubmodule A)
+  have : Algebra.IsEpi R A := by
+    rw [Algebra.isEpi_iff_forall_one_tmul_eq]
+    intro a
+    have hinj : Function.Injective ((TensorProduct.lift (LinearMap.mul R S)) ∘ₗ
+        TensorProduct.map A.val.toLinearMap A.val.toLinearMap) :=
+      Algebra.IsEpi.injective_lift_mul.comp <| TensorProduct.map_injective_of_flat_flat _ _
+        Subtype.val_injective Subtype.val_injective
+    exact hinj (by simp)
+  obtain ⟨y, hy⟩ := (Algebra.isEpi_iff_surjective_algebraMap_of_finite (R := R) (A := A)).mp
+    ‹_› ⟨x, Algebra.self_mem_adjoin_singleton R x⟩
+  exact ⟨y, by simpa using congrArg Subtype.val hy⟩
 
 end Ring.WeakDimensionLEOne
 
