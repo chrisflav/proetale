@@ -18,7 +18,9 @@ lemma jointly_surjective_finset_of_isColimit
   classical
   induction s using Finset.induction_on with
   | empty =>
-    refine ⟨IsFiltered.nonempty.some, ?_, ?_⟩ <;> rintro ⟨x, hx⟩ <;> simp at hx
+    refine ⟨IsFiltered.nonempty.some, ?_, ?_⟩ <;>
+      rintro ⟨x, hx⟩ <;>
+      simp at hx
   | @insert a s ha ih =>
     obtain ⟨j₀, lift₀, h₀⟩ := ih
     obtain ⟨j₁, y₁, hy₁⟩ := Types.jointly_surjective_of_isColimit hc a
@@ -29,13 +31,14 @@ lemma jointly_surjective_finset_of_isColimit
         else F.map m₁ y₁, ?_⟩
     rintro ⟨x, hx⟩
     by_cases hxs : x ∈ s
-    · simp only [hxs, ↓reduceDIte]
-      rw [show c.ι.app j (F.map m₀ (lift₀ ⟨x, hxs⟩)) = c.ι.app j₀ (lift₀ ⟨x, hxs⟩) by
-        simp [Cocone.w_apply]]
-      exact h₀ ⟨x, hxs⟩
+    · simp only [hxs, reduceDIte]
+      trans c.ι.app j₀ (lift₀ ⟨x, hxs⟩)
+      · simp [Cocone.w_apply]
+      · exact h₀ ⟨x, hxs⟩
     · obtain rfl : x = a := (Finset.mem_insert.mp hx).resolve_right hxs
-      simp only [hxs, ↓reduceDIte]
-      rw [show c.ι.app j (F.map m₁ y₁) = c.ι.app j₁ y₁ by simp [Cocone.w_apply]]
-      exact hy₁
+      simp only [hxs, reduceDIte]
+      trans c.ι.app j₁ y₁
+      · simp [Cocone.w_apply]
+      · exact hy₁
 
 end CategoryTheory.Limits.Types.FilteredColimit

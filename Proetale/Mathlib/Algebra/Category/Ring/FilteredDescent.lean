@@ -52,20 +52,19 @@ lemma exists_finitePresentation_isPushout_of_isColimit
   let _ : Algebra c.pt A := φ.hom.toAlgebra
   have : Algebra.FinitePresentation c.pt A := hφ
   let P : Algebra.Presentation c.pt A _ _ := Algebra.Presentation.ofFinitePresentation _ _
-  have hPfin : P.coeffs.Finite := P.finite_coeffs
   have hForget : IsColimit ((forget CommRingCat.{u}).mapCocone c) :=
     isColimitOfPreserves (forget CommRingCat.{u}) hc
   obtain ⟨j₀, lift, hlift⟩ :=
-    Types.FilteredColimit.jointly_surjective_finset_of_isColimit hForget hPfin.toFinset
+    Types.FilteredColimit.jointly_surjective_finset_of_isColimit hForget P.finite_coeffs.toFinset
   let R₀ : CommRingCat.{u} := F.obj j₀
   let _ : Algebra R₀ c.pt := (c.ι.app j₀).hom.toAlgebra
   let _ : Algebra R₀ A := (c.ι.app j₀ ≫ φ).hom.toAlgebra
   have : IsScalarTower R₀ c.pt A :=
     .of_algebraMap_eq fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, CommRingCat.hom_comp]
   have : P.HasCoeffs R₀ := by
-    refine ⟨fun r hr ↦ ⟨lift ⟨r, hPfin.mem_toFinset.mpr hr⟩, ?_⟩⟩
+    refine ⟨fun r hr ↦ ⟨lift ⟨r, P.finite_coeffs.mem_toFinset.mpr hr⟩, ?_⟩⟩
     rw [RingHom.algebraMap_toAlgebra]
-    exact hlift ⟨r, hPfin.mem_toFinset.mpr hr⟩
+    exact hlift ⟨r, P.finite_coeffs.mem_toFinset.mpr hr⟩
   let Aⱼ : CommRingCat.{u} := .of (P.ModelOfHasCoeffs R₀)
   let φⱼ : R₀ ⟶ Aⱼ := ofHom (algebraMap R₀ (P.ModelOfHasCoeffs R₀))
   let ψAlg : P.ModelOfHasCoeffs R₀ →ₐ[R₀] A :=
