@@ -44,6 +44,34 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
     Omitted.
 \end{proof}
 
+\begin{lemma}[\stacksproject{00U3}]
+    Let $(R_j)_{j \in J}$ be a filtered diagram of commutative rings with colimit $R$, and
+    let $\varphi : R \to A$ be a finitely presented ring map. Then there exists an index
+    $j_0 \in J$, a commutative ring $A_{j_0}$, a finitely presented ring map
+    $\varphi_{j_0} : R_{j_0} \to A_{j_0}$ and a ring map $\psi : A_{j_0} \to A$ such that
+    the square
+    \[
+    \begin{tikzcd}
+        R_{j_0} \arrow{r} \arrow{d}{\varphi_{j_0}} & R \arrow{d}{\varphi} \\
+        A_{j_0} \arrow{r}{\psi} & A
+    \end{tikzcd}
+    \] is a pushout.
+    \label{lemma:fp-algebra-descent-filtered-colim}
+    \lean{CommRingCat.exists_finitePresentation_isPushout_of_isColimit}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    Choose a finite presentation $A = R[x_1, \ldots, x_n] / (f_1, \ldots, f_m)$.
+    The polynomials $f_1, \ldots, f_m$ involve only finitely many coefficients in $R$.
+    Since the diagram is filtered and the colimit of a filtered diagram of rings agrees with
+    the colimit on underlying sets, there exists an index $j_0 \in J$ such that all these
+    coefficients lift to $R_{j_0}$. Define $A_{j_0}$ by the same presentation over
+    $R_{j_0}$. Then $A \cong R \otimes_{R_{j_0}} A_{j_0}$, which exhibits the desired
+    pushout square.
+\end{proof}
+
 \begin{lemma}
     Let $R$ be a Henselian local ring and $S$ be an integral $R$-algebra and an integral domain.
     Then $S$ is a local ring.

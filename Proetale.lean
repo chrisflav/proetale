@@ -31,6 +31,7 @@ import Proetale.Mathlib.Algebra.Category.AlgCat.FilteredColimits
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Basic
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
+import Proetale.Mathlib.Algebra.Category.Ring.FilteredDescent
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
@@ -56,6 +57,7 @@ import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Proetale.Mathlib.CategoryTheory.Limits.Types.Filtered
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Basic
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Composition
