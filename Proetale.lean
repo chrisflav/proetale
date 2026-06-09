@@ -35,6 +35,7 @@ import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.Algebra.Module.LocalizedModule.Finiteness
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
+import Proetale.Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
