@@ -41,6 +41,7 @@ import Proetale.Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineEtale
+import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineRefinement
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
@@ -70,6 +71,7 @@ import Proetale.Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 import Proetale.Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.Sites.Canonical
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
+import Proetale.Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
 import Proetale.Mathlib.CategoryTheory.Sites.Grothendieck
 import Proetale.Mathlib.CategoryTheory.Sites.Hypercover.Zero
@@ -78,6 +80,8 @@ import Proetale.Mathlib.CategoryTheory.Sites.IsSheafFor
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
 import Proetale.Mathlib.CategoryTheory.Sites.PrecoverageGenerating
+import Proetale.Mathlib.CategoryTheory.Sites.Pullback
+import Proetale.Mathlib.CategoryTheory.Sites.Sheafification
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.FieldTheory.IsSepClosed
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
