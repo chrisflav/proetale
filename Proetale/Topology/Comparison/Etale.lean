@@ -83,16 +83,6 @@ noncomputable abbrev sheafAdjunction :
     ProEt.sheafPullback S A ⊣ ProEt.sheafPushforward S A :=
   (toProEtale S).sheafAdjunctionContinuous _ _ _
 
--- needs more assumptions on `A`
-instance isIso_unit_sheafAdjunction : IsIso (sheafAdjunction S A).unit :=
-  sorry
-
-instance faithful_sheafPullback : (sheafPullback S A).Faithful :=
-  (sheafAdjunction S A).faithful_L_of_mono_unit_app
-
-instance full_sheafPullback : (sheafPullback S A).Full :=
-  (sheafAdjunction S A).full_L_of_isSplitEpi_unit_app
-
 end ProEt
 
 end AlgebraicGeometry.Scheme
