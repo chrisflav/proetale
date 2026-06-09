@@ -5,7 +5,10 @@ Authors: Christian Merten
 -/
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
+import Proetale.Mathlib.CategoryTheory.Sites.Pullback
+import Proetale.Mathlib.CategoryTheory.Sites.Sheafification
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
+import Proetale.Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Coherent.Affine
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
@@ -741,5 +744,162 @@ lemma minimalPrecoverage_le_relativelyPresentable :
   · apply singleton_inf_le_relativelyPresentable
 
 end AffineProEt
+
+section SheafComparison
+
+instance ProEt.preservesFilteredColimitsOfSize_lan_toProEtale (F : S.Etaleᵒᵖ ⥤ Ab.{u + 1}) :
+    PreservesFilteredColimitsOfSize.{u, u}
+      ((AffineProEt.toProEt S).op ⋙ (toProEtale S).op.lan.obj F) :=
+  sorry
+
+instance : AB5OfSize.{u, u} Ab.{u + 1} :=
+  AB5OfSize_of_univLE.{_, _, u + 1, u + 1} Ab
+
+noncomputable
+def AffineEtale.toAffineProEtCompToProEtIso :
+    AffineEtale.toAffineProEt S ⋙ AffineProEt.toProEt S ≅
+      AffineEtale.Spec S ⋙ toProEtale S :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+/-- If `F` is a sheaf on the small étale site, the presheaf pullback of `F`
+to the small pro-étale site (i.e., the left Kan extension) is a
+sheaf when restricted to the small affine pro-étale site. -/
+lemma isSheaf_lan_toProEtale (F : S.Etaleᵒᵖ ⥤ Ab.{u + 1})
+    (hF : Presheaf.IsSheaf (smallEtaleTopology S) F) :
+    Presheaf.IsSheaf (AffineProEt.topology S)
+      ((AffineProEt.toProEt S).op ⋙ (toProEtale S).op.lan.obj F) := by
+  apply Presheaf.isSheaf_of_generates_of_isRelativelyPresentable
+      (AffineEtale.toAffineProEt S) (AffineProEt.minimalPrecoverage S)
+      (AffineEtale.topology S)
+  · let iso : (AffineEtale.toAffineProEt S).op ⋙
+        (AffineProEt.toProEt S).op ⋙ S.toProEtale.op.lan.obj F ≅
+        (AffineEtale.Spec S).op ⋙ F :=
+      (Functor.associator _ _ _).symm ≪≫
+        Functor.isoWhiskerRight (Functor.opComp _ _).symm _ ≪≫
+        Functor.isoWhiskerRight (NatIso.op (AffineEtale.toAffineProEtCompToProEtIso S).symm) _ ≪≫
+        Functor.isoWhiskerRight (Functor.opComp _ _) _ ≪≫
+        Functor.associator _ _ _ ≪≫
+        Functor.isoWhiskerLeft _ (asIso <| ((toProEtale S).op.lanUnit.app F)).symm
+    rw [Presheaf.isSheaf_of_iso_iff iso]
+    exact Functor.op_comp_isSheaf_of_isSheaf _ _ _ _ hF
+  · exact AffineProEt.generates_minimalPrecoverage S
+  · exact AffineProEt.minimalPrecoverage_le_relativelyPresentable S
+  · exact AffineProEt.minimalPrecoverage_le_finite S
+
+namespace ProEt
+
+open Functor in
+/-- The pullback of an étale sheaf `F` to the pro-étale site is isomorphic to the presheaf-pullback
+of `F` (i.e., left Kan extension) after restricting to the affine pro-étale site. -/
+noncomputable def sheafPullbackCompIso :
+    ProEt.sheafPullback S Ab.{u + 1} ⋙
+      Functor.sheafPushforwardContinuous (AffineProEt.toProEt S) _ (AffineProEt.topology S) _ ⋙
+      sheafToPresheaf _ _ ≅
+    sheafToPresheaf _ _ ⋙ (toProEtale S).op.lan ⋙
+      (Functor.whiskeringLeft _ _ _).obj (AffineProEt.toProEt S).op :=
+  isoWhiskerRight (Functor.sheafPullbackIso _ _ _ _) _ ≪≫
+    (associator _ _ _) ≪≫
+    isoWhiskerLeft _ (associator _ _ _) ≪≫
+    isoWhiskerLeft _ (isoWhiskerLeft _ (Functor.associator _ _ _).symm) ≪≫
+    isoWhiskerLeft _ (isoWhiskerLeft _
+      (isoWhiskerRight (IsDenseSubsite.sheafEquivSheafificationCompatibility _ _ _ _).symm _)) ≪≫
+    isoWhiskerLeft _ (isoWhiskerLeft _ (associator _ _ _)) ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    presheafToSheafSheafToPresheafIso _ _ (fun F ↦ isSheaf_lan_toProEtale _ _ F.property) ≪≫
+    Functor.associator _ _ _
+
+lemma sheafPullbackCompIso_inv_app (F : Sheaf S.smallEtaleTopology Ab.{u + 1}) :
+    dsimp% (sheafPullbackCompIso S).inv.app F =
+      Functor.whiskerLeft (AffineProEt.toProEt S).op
+        (toSheafify (ProEt.topology S) (S.toProEtale.op.lan.obj F.obj)) ≫
+      Functor.whiskerLeft (AffineProEt.toProEt S).op
+        ((Functor.sheafPullbackIso _ _ _ _).inv.app _).hom := by
+  dsimp [sheafPullbackCompIso, presheafToSheafSheafToPresheafIso]
+  simp [Functor.sheafPushforwardContinuous]
+
+noncomputable
+def sheafPullbackCompSheafPushforwardIso :
+    sheafPullback S Ab.{u + 1} ⋙ sheafPushforward S Ab.{u + 1} ⋙
+      Functor.sheafPushforwardContinuous (AffineEtale.Spec S) _ (AffineEtale.topology S) _ ⋙
+      sheafToPresheaf _ _ ≅
+    sheafToPresheaf _ _ ⋙ (toProEtale S).op.lan ⋙
+      (Functor.whiskeringLeft _ _ _).obj (toProEtale S).op ⋙
+      (Functor.whiskeringLeft _ _ _).obj (AffineEtale.Spec S).op :=
+  let e : ProEt.sheafPushforward S Ab.{u + 1} ⋙
+        Functor.sheafPushforwardContinuous (AffineEtale.Spec S) _ (AffineEtale.topology S) _ ⋙
+        sheafToPresheaf _ _ ≅
+      Functor.sheafPushforwardContinuous (AffineProEt.toProEt S) _ (AffineProEt.topology S) _ ⋙
+      sheafToPresheaf _ _ ⋙
+      (Functor.whiskeringLeft _ _ _).obj (AffineEtale.toAffineProEt S).op :=
+    Iso.refl _
+  Functor.isoWhiskerLeft _ e ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    Functor.isoWhiskerRight (Functor.associator _ _ _ ≪≫ sheafPullbackCompIso S) _ ≪≫
+    (Functor.associator _ _ _) ≪≫
+    Functor.isoWhiskerLeft _ (Functor.associator _ _ _) ≪≫
+    -- this is some def-eq abuse of composition and `Functor.whiskeringLeft`
+    Functor.isoWhiskerLeft _ (Functor.isoWhiskerLeft _ (Iso.refl _))
+
+lemma sheafPullbackCompSheafPushforwardIso_inv_app (F : Sheaf S.smallEtaleTopology Ab.{u + 1}) :
+    (sheafPullbackCompSheafPushforwardIso S).inv.app F =
+      Functor.whiskerLeft _ (Functor.whiskerLeft _
+        (toSheafify (ProEt.topology S) (S.toProEtale.op.lan.obj F.obj))) ≫
+      Functor.whiskerLeft _ (Functor.whiskerLeft _
+        ((Functor.sheafPullbackIso _ _ _ _).inv.app _).hom) := by
+  dsimp [sheafPullbackCompSheafPushforwardIso]
+  rw [sheafPullbackCompIso_inv_app]
+  rfl
+
+instance isIso_unit_sheafAdjunction : IsIso (sheafAdjunction S Ab.{u + 1}).unit := by
+  -- It suffices to check the isomorphism on the small affine étale site.
+  suffices h : IsIso (Functor.whiskerRight (sheafAdjunction S Ab.{u + 1}).unit
+      (Functor.sheafPushforwardContinuous (AffineEtale.Spec S) _ (AffineEtale.topology S) _ ⋙
+        sheafToPresheaf _ _)) by
+    rw [← Functor.whiskeringRight_obj_map] at h
+    apply isIso_of_reflects_iso _
+      ((Functor.whiskeringRight _ _ _).obj
+      (Functor.sheafPushforwardContinuous (AffineEtale.Spec S) _ (AffineEtale.topology S) _ ⋙
+        sheafToPresheaf _ _))
+  let munit := Functor.whiskerRight
+    (Functor.whiskerLeft (sheafToPresheaf (smallEtaleTopology S) _)
+      ((toProEtale S).op.lanUnit (H := Ab.{u + 1})))
+    ((Functor.whiskeringLeft _ _ _).obj (AffineEtale.Spec S).op)
+  have heq :
+      Functor.whiskerRight (sheafAdjunction _ Ab.{u + 1}).unit
+        (Functor.sheafPushforwardContinuous (AffineEtale.Spec S) _ (AffineEtale.topology S) _ ⋙
+          sheafToPresheaf _ _) =
+      (Functor.leftUnitor _).hom ≫
+        (Functor.sheafPushforwardContinuousCompSheafToPresheafIso _ _ _ _).hom ≫
+        Functor.whiskerRight (Functor.rightUnitor _).inv _ ≫
+        munit ≫
+        (Functor.associator _ _ _).hom ≫
+        (Functor.whiskerLeft _ (Functor.associator _ _ _).hom) ≫
+        (sheafPullbackCompSheafPushforwardIso S).inv ≫
+        (Functor.associator _ _ _).inv := by
+    ext F U : 4
+    dsimp [munit]
+    simp only [Category.id_comp]
+    dsimp [Functor.sheafPushforwardContinuous]
+    simp only [Category.comp_id]
+    rw [sheafPullbackCompSheafPushforwardIso_inv_app]
+    simp only [Functor.whiskerLeft_twice, Category.assoc, Iso.hom_inv_id_assoc]
+    have := Functor.lanUnit_toSheafify_sheafPullbackIso_inv_app_hom_app
+      (toProEtale S) _ _ (ProEt.topology S) F (.op <| ((AffineEtale.Spec S).obj (Opposite.unop U)))
+    dsimp
+    simp [sheafAdjunction, Functor.lan, this]
+  rw [heq]
+  infer_instance
+
+instance faithful_sheafPullback : (sheafPullback S Ab.{u + 1}).Faithful :=
+  (sheafAdjunction S Ab.{u + 1}).faithful_L_of_mono_unit_app
+
+instance full_sheafPullback : (sheafPullback S Ab.{u + 1}).Full :=
+  (sheafAdjunction S Ab.{u + 1}).full_L_of_isSplitEpi_unit_app
+
+end ProEt
+
+end SheafComparison
 
 end AlgebraicGeometry.Scheme
