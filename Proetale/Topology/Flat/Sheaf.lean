@@ -25,15 +25,15 @@ variable {P : MorphismProperty Scheme.{u}}
 
 open Scheme
 
+/-- The fpqc topology on the category of schemes is subcanonical, i.e., every representable
+presheaf is a sheaf. -/
+theorem Scheme.fpqcTopology_subcanonical : fpqcTopology.Subcanonical := inferInstance
+
 variable (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative] [P.IsStableUnderBaseChange]
 
 open Opposite
 
 variable {P}
-
-/-- The fpqc topology on the category of schemes is subcanonical, i.e. every representable
-presheaf is a sheaf. -/
-theorem Scheme.fpqcTopology_subcanonical : fpqcTopology.Subcanonical := inferInstance
 
 @[simp]
 lemma Scheme.Hom.generate_singleton_mem_fpqcTopology_of_locallyOfFinitePresentation
