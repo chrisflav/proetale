@@ -32,8 +32,10 @@ import Proetale.Mathlib.Algebra.Category.CommAlgCat.Basic
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
+import Proetale.Mathlib.Algebra.Module.LocalizedModule.Finiteness
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
 import Proetale.Mathlib.AlgebraicGeometry.Cover.MorphismProperty
+import Proetale.Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 import Proetale.Mathlib.AlgebraicGeometry.Extensive
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Proetale.Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
@@ -43,8 +45,10 @@ import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+import Proetale.Mathlib.CategoryTheory.Filtered.Basic
 import Proetale.Mathlib.CategoryTheory.Limits.Comma
 import Proetale.Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
+import Proetale.Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Limits.Presentation
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -112,6 +116,7 @@ import Proetale.Morphisms.WeaklyEtale
 import Proetale.Pro.Basic
 import Proetale.Pro.Generating
 import Proetale.Pro.PresheafColimit
+import Proetale.Replete.Basic
 import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Coherent.Affine
 import Proetale.Topology.Coherent.Etale

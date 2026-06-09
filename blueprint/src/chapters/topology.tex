@@ -34,16 +34,28 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     for every affine open $U$ of $Y$ and every affine open $V$ of $X$ with $f(U) \subset V$,
     the induced ring homomorphism $\Gamma(X, V) \to \Gamma(Y, U)$ is weakly étale.
     \uses{def:weakly-etale-algebra, def:weakly-etale-morphism}
+    \lean{AlgebraicGeometry.WeaklyEtale.hasRingHomProperty}
+    \leanok
     \label{lemma:weakly-etale-hasringhomprop}
 \end{lemma}
+
+\begin{proof}
+    \leanok
+    Weakly étale morphisms of schemes are local on source and on target for the Zariski topology,
+    so the property descends to affine opens. There it matches the ring-theoretic definition
+    via the characterisation of weakly étale algebras (\Cref{def:weakly-etale-algebra}).
+\end{proof}
 
 \begin{lemma}
     Etale morphisms are weakly étale.
     \uses{def:weakly-etale-morphism}
     \label{lemma:etale-weakly-etale}
+    \leanok
+    \mathlibok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Any étale morphism is flat and its diagonal is an open immersion, hence flat.
 \end{proof}
 
@@ -79,10 +91,13 @@ Before we define the pro-étale site, we recall a few standard definitions.
     the family is quasi-compact.
     \uses{def:qc-cover}
     \label{lemma:qc-cover-of-flat-fp}
+    \lean{AlgebraicGeometry.QuasiCompactCover.of_flat_locallyOfFinitePresentation}
+    \leanok
     \mathlibok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     In this case, every $f_i$ is an open map, from which the claim easily follows.
 \end{proof}
 

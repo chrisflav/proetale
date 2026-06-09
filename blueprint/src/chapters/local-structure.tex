@@ -457,9 +457,12 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
     Let $A$ be a ring and $B \to C$ be an $A$-algebra map. Suppose both
     $A \to B$ and $A \to C$ are bijective on stalks. Then $B \to C$ is bijective on stalks.
     \label{lemma:bijective-on-stalks-of-comp}
+    \lean{Algebra.BijectiveOnStalks.of_comp, RingHom.BijectiveOnStalks.of_comp}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Holds because the same holds for bijective maps of sets.
 \end{proof}
 
@@ -502,6 +505,20 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{definition}
 
 \begin{lemma}
+    Let $R$ be a commutative semiring, $M$ a finitely generated $R$-module, $S \subseteq R$ a submonoid
+    and $g \colon M \to M'$ a localization of $M$ at $S$. Then $M'$ is the trivial module if and only if
+    there exists $t \in S$ such that $t \cdot m = 0$ for all $m \in M$.
+    \label{lemma:fg-localization-subsingleton-uniform-annihilator}
+    \lean{IsLocalizedModule.subsingleton_iff_exists_mem_smul_eq_zero}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    Omitted.
+\end{proof}
+
+\begin{lemma}
     Let $A = \colim_i A_i$ be a filtered colimit of $A$-algebras and let $B$ be an étale $A$-algebra. Then
     there exists an $i$ and an étale $A_i$-algebra $B'$ such that
     \[
@@ -514,8 +531,11 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:fg-localization-subsingleton-uniform-annihilator}
     This follows because every étale algebra is of finite presentation and by possibly enlarging $i$ we can ensure
-    that $B'$ is étale over $A_i$.
+    that $B'$ is étale over $A_i$. The latter step uses
+    \Cref{lemma:fg-localization-subsingleton-uniform-annihilator} to find a single index $i$ whose
+    stage trivialises the relevant cotangent / differentials module.
 \end{proof}
 
 \section{ind-Zariski maps}

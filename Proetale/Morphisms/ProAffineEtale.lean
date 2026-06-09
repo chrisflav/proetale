@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 import Proetale.Algebra.IndEtale
+import Proetale.Mathlib.CategoryTheory.Limits.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Ind
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
@@ -78,6 +79,17 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffineHom f] :
     rw [ofObjectProperty_top_right_iff]
     exact isAffine_of_isAffineHom f'
   infer_instance
+
+/-- `proAffineEtale.overObj S` is closed under cospan limits in `Over S`: a pullback of a
+cospan whose three legs have `proAffineEtale` structural maps again has
+`proAffineEtale` structural map. -/
+instance {S : Scheme.{u}} :
+    (proAffineEtale.overObj (X := S)).IsClosedUnderLimitsOfShape WalkingCospan :=
+  Over.closedUnderLimitsOfShape_walkingCospan_of_baseChangeAlong (P := proAffineEtale)
+    fun h₁ h₂ _ ↦ by
+      have : IsAffine _ := h₁.isAffine
+      have : IsAffine _ := h₂.isAffine
+      infer_instance
 
 /-- For any `MorphismProperty Scheme` `P` coming from a ring-hom property `Q` via
 `HasRingHomProperty`, a morphism `Spec.map f` between affine schemes lies in
