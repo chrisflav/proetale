@@ -148,6 +148,28 @@ lemma _root_.Module.flat_of_localization_atPrime_isField
 instance [AbsolutelyFlat R] : Module.Flat R M :=
   Module.flat_of_localization_atPrime_isField _ _ (fun _ _ ↦ isField_of_isLocalRing _)
 
+variable {R} in
+/-- In an absolutely flat ring every element `a` can be written as `a = a * a * b`,
+i.e. absolutely flat commutative rings are von Neumann regular. -/
+theorem exists_eq_mul_self_mul [AbsolutelyFlat R] (a : R) : ∃ b, a = a * a * b := by
+  have : (Ideal.span {a}).Pure := AbsolutelyFlat.flat _
+  obtain ⟨y, hy, heq⟩ := Ideal.exists_eq_mul_of_pure (Ideal.mem_span_singleton_self a)
+  obtain ⟨b, rfl⟩ := Ideal.mem_span_singleton'.mp hy
+  exact ⟨b, by linear_combination heq⟩
+
+variable {R} in
+/-- A commutative ring in which every element `a` can be written as `a = a * a * b`
+(i.e. a von Neumann regular commutative ring) is absolutely flat. This is the converse of
+`Ring.AbsolutelyFlat.exists_eq_mul_self_mul`. -/
+theorem of_forall_exists_eq_mul_self_mul (h : ∀ a : R, ∃ b, a = a * a * b) :
+    AbsolutelyFlat R := by
+  refine ⟨fun I ↦ Ideal.Pure.of_inf_eq_mul I fun J _ ↦
+    le_antisymm (fun y hy ↦ ?_) (Ideal.mul_le_inf)⟩
+  obtain ⟨hyI, hyJ⟩ := Submodule.mem_inf.mp hy
+  obtain ⟨b, hb⟩ := h y
+  have hy' : y * (b * y) = y := by linear_combination -hb
+  exact hy' ▸ Ideal.mul_mem_mul hyI (J.mul_mem_left b hyJ)
+
 theorem tfae : [AbsolutelyFlat R,
     IsReduced R ∧ ∀ P : Ideal R, P.IsPrime → P.IsMaximal,
     IsReduced R ∧ Ring.KrullDimLE 0 R,
