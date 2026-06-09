@@ -123,8 +123,14 @@ instance : (toProEt S).Faithful :=
   inferInstanceAs <|
     (MorphismProperty.Over.changeProp _ proAffineEtale_le_weaklyEtale le_rfl).Faithful
 
-instance : HasPullbacks (AffineProEt S) :=
-  sorry
+/-- The affine pro-étale site has pullbacks, computed as in `Over S`. -/
+instance : HasPullbacks (AffineProEt S) := by
+  -- `allowSynthFailures` is needed because the closure instance is registered on
+  -- `proAffineEtale.overObj S`, but the goal here is phrased in terms of `commaObj`.
+  apply (config := { allowSynthFailures := true })
+    MorphismProperty.Comma.hasLimitsOfShape_of_closedUnderLimitsOfShape
+  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over S))
+  · exact inferInstanceAs ((proAffineEtale.overObj (X := S)).IsClosedUnderLimitsOfShape _)
 
 /-- The affine pro-étale site embeds densely in the pro-étale site. The key ingredient
 of the proof is the commutative algebra lemma `RingHom.WeaklyEtale.exists_indEtale_comp`. -/
