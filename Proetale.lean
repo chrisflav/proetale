@@ -99,6 +99,7 @@ import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.Topology
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
+import Proetale.Mathlib.RingTheory.WeaklyEtale.GoDown
 import Proetale.Mathlib.RingTheory.WeaklyEtale.Local
 import Proetale.Mathlib.RingTheory.WeaklyEtale.Localization
 import Proetale.Mathlib.RingTheory.WeaklyEtale.Pi
