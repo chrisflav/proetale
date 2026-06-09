@@ -504,33 +504,17 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{definition}
 
 \begin{lemma}
-    Let $R$ be a commutative semiring, $M$ an $R$-module, $S \subseteq R$ a submonoid and
-    $N \subseteq M$ a finitely generated submodule. Suppose every element of $N$ is annihilated
-    by some element of $S$. Then there exists a single $t \in S$ that annihilates all of $N$.
-    \label{lemma:fg-submodule-uniform-annihilator}
-    \lean{Submodule.FG.exists_mem_smul_eq_zero}
-    \leanok
-\end{lemma}
-
-\begin{proof}
-    \leanok
-    Choose a finite generating set $x_1, \ldots, x_n$ of $N$ and elements $t_i \in S$ with
-    $t_i \cdot x_i = 0$. The product $t = \prod_i t_i$ lies in $S$ and annihilates each $x_i$,
-    hence annihilates $N$.
-\end{proof}
-
-\begin{lemma}
     Let $R$ be a commutative semiring, $M$ a finitely generated $R$-module, $S \subseteq R$ a submonoid
     and $g \colon M \to M'$ a localization of $M$ at $S$. Then $M'$ is the trivial module if and only if
     there exists $t \in S$ such that $t \cdot m = 0$ for all $m \in M$.
     \label{lemma:fg-localization-subsingleton-uniform-annihilator}
-    \uses{lemma:fg-submodule-uniform-annihilator}
     \lean{IsLocalizedModule.subsingleton_iff_exists_mem_smul_eq_zero}
     \leanok
 \end{lemma}
 
 \begin{proof}
     \leanok
+    Omitted.
 \end{proof}
 
 \begin{lemma}
