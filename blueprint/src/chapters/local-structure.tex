@@ -80,7 +80,8 @@ In general, $\pi_0(X) \times \pi_0(Y)$ is continuous and bijective, but not nece
 
 \begin{lemma}
   \label{thm:pi0-prod}
-  \lean{connectedComponent.prod,ConnectedComponents.isHomeomorph_connectedComponentsLift_prod,
+  \lean{connectedComponent.prod,ConnectedComponents.bijective_connectedComponentsLift_prod,
+    ConnectedComponents.isHomeomorph_connectedComponentsLift_prod,
     ConnectedComponents.prodMap}
   \leanok
   Let \(X, Y\) be topological spaces. Then we have 
@@ -455,9 +456,12 @@ The following pure algebraic lemma will be used in \Cref{thm:isom-of-identifies-
     Let $A$ be a ring and $B \to C$ be an $A$-algebra map. Suppose both
     $A \to B$ and $A \to C$ are bijective on stalks. Then $B \to C$ is bijective on stalks.
     \label{lemma:bijective-on-stalks-of-comp}
+    \lean{Algebra.BijectiveOnStalks.of_comp, RingHom.BijectiveOnStalks.of_comp}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Holds because the same holds for bijective maps of sets.
 \end{proof}
 
@@ -676,6 +680,8 @@ The following example shows that our definition agrees with the one in
     \label{lem:sh-iff-henselian-and-sep-closed}
     A local ring $(R, \mathfrak{m}, \kappa)$ is strictly Henselian if and only if it is Henselian and $\kappa$ is separably closed.
     \uses{def:strictly-henselian-local-ring}
+    \lean{isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -1234,6 +1240,7 @@ on the choice of $f$ and $I$ \stacksproject{096V}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $S = S_{f, I}$, $Z = D(f) \cap V(I)$ and $J = \tildeideal{I}{f}$.
 
     Note that $Z$ is homeomorphic to $\spec{(A/I)_f}$.
@@ -1328,6 +1335,7 @@ $V( \tildeideal{I}{f})$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $x \in \spec{A}$ and $E = E' \coprod E''$ a disjoint union decomposition. Then
     $x \in Z(E', E'')$ if and only if $f(x) \neq 0$ for all $f \in E'$ and $f(x) = 0$
     for all $f \in E''$. Hence $x$ is contained in
@@ -1364,6 +1372,7 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:subset-stratification}
     By definition $I_E$ is the product of the ideals defining $Z(E', E'')$ in
     $\spec{A_{\widetilde{Z(E', E'')}}}$. Hence the first claim. The second
@@ -1382,6 +1391,7 @@ of the right form by \ref{lemma:subset-stratum-equals-inter}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:locally-closed-specializations}
     Let $x \in \spec{A_E}$. Then $x$ is in $\spec{A_{\widetilde{Z(E', E'')}}}$ for some
     $E = E' \coprod E''$. By
@@ -1409,6 +1419,7 @@ $A_{\widetilde{Z(E_1', E_1'')}} \to A_{\widetilde{Z(E_2', E_2'')}}$.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This holds because for every decomposition $E_2 = E_2' \coprod E_2''$
     and $E_1' = E_1 \cap E_2'$ and $E_1'' = E_1 \cap E_2''$, the induced map
     $\spec{A_{\widetilde{Z(E_2', E_2'')}}} \to \spec{A_{\widetilde{Z(E_1', E_1'')}}}$
@@ -1534,6 +1545,7 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
 \end{lemma}
 
 \begin{proof}
+    \leanok
     \uses{lemma:w-localization-closed-points, lemma:w-localization-ind-Zariski}
     By \ref{lemma:w-localization-ind-Zariski}, $A \to A_w$ is flat. Because
     $V(I_w)$ surjects onto $\spec{A}$ by \ref{lemma:w-localization-closed-points},
@@ -1973,6 +1985,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Let $A = \colim_i A_i$ such that $A_i$ is an étale $k$-algebra for all $i$.
     Let $\mathfrak{m}$ be the maximal ideal of $A$. Since localization commutes with colimits,
     we obtain $A = A_{\mathfrak{m}} = \colim_i (A_i)_{\mathfrak{m}_i}$ where
@@ -1993,9 +2006,18 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 
 \begin{proof}
     \uses{lemma:field-local-ind-etale}
-    Let $\mathfrak{p}$ be a prime ideal of $B$. After base change along $A \to \kappa(\mathfrak{p}^c)$,
-    we may assume $A = k$ is a field. After postcomposing with the ind-étale map $B \to B_{\mathfrak{p}}$,
-    we may assume $B$ is local. Hence the result follows from \ref{lemma:field-local-ind-etale}.
+    \leanok
+    Let $\mathfrak{q}$ be a prime ideal of $B$ lying over $\mathfrak{p} \subseteq A$.
+    Write $B = \colim_i B_i$ as a filtered colimit of étale $A$-algebras. Every element
+    $s \in B$ lifts to some $s_i \in B_i$, and the composition
+    \[
+        \kappa(\mathfrak{p}) \otimes_A B_i \to \kappa(\mathfrak{q})
+    \]
+    is an algebra homomorphism from the étale $\kappa(\mathfrak{p})$-algebra
+    $\kappa(\mathfrak{p}) \otimes_A B_i$ to the local ring $\kappa(\mathfrak{q})$, so by
+    \ref{lemma:field-local-ind-etale} the image of $s$ in $\kappa(\mathfrak{q})$ is separable
+    over $\kappa(\mathfrak{p})$. A general element of $\kappa(\mathfrak{q})$ is a ratio of two
+    such images, and separability passes to ratios via the separable closure.
 \end{proof}
 
 \begin{proposition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097X}{Tag 097X}]{stacks-project}}]
@@ -2071,6 +2093,7 @@ The goal of this section is to show that every ring $A$ admits a faithfully flat
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:intersection-closed-open-iff}
   Each $A \to A_W$ is a localization at an idempotent. Passing to filtered colimits, $A \to A_T$ is surjective and ind-Zariski.
 

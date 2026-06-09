@@ -16,7 +16,7 @@ warn.sorry = false
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "11a4a72aa56994887cff900b09583a5af8fce50f"
+rev = "9a568f0b75d28670664e6d6862d6e01c4625e380"
 
 [[require]]
 name = "checkdecls"
