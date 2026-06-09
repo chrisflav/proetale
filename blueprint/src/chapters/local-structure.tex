@@ -504,6 +504,40 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{definition}
 
 \begin{lemma}
+    Let $R$ be a commutative semiring, $M$ an $R$-module, $S \subseteq R$ a submonoid and
+    $N \subseteq M$ a finitely generated submodule. Suppose every element of $N$ is annihilated
+    by some element of $S$. Then there exists a single $t \in S$ that annihilates all of $N$.
+    \label{lemma:fg-submodule-uniform-annihilator}
+    \lean{Submodule.FG.exists_mem_smul_eq_zero}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    Choose a finite generating set $x_1, \ldots, x_n$ of $N$ and elements $t_i \in S$ with
+    $t_i \cdot x_i = 0$. The product $t = \prod_i t_i$ lies in $S$ and annihilates each $x_i$,
+    hence annihilates $N$.
+\end{proof}
+
+\begin{lemma}
+    Let $R$ be a commutative semiring, $M$ a finitely generated $R$-module, $S \subseteq R$ a submonoid
+    and $g \colon M \to M'$ a localization of $M$ at $S$. Then $M'$ is the trivial module if and only if
+    there exists $t \in S$ such that $t \cdot m = 0$ for all $m \in M$.
+    \label{lemma:fg-localization-subsingleton-uniform-annihilator}
+    \uses{lemma:fg-submodule-uniform-annihilator}
+    \lean{IsLocalizedModule.subsingleton_iff_exists_mem_smul_eq_zero}
+    \leanok
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    The "if" direction is immediate from the universal property of localization. For the "only if"
+    direction, apply \Cref{lemma:fg-submodule-uniform-annihilator} to $N = M$: for every $m \in M$
+    we have $g(m) = 0$ in $M'$, hence by the localization property there exists $t \in S$ with
+    $t \cdot m = 0$.
+\end{proof}
+
+\begin{lemma}
     Let $A = \colim_i A_i$ be a filtered colimit of $A$-algebras and let $B$ be an étale $A$-algebra. Then
     there exists an $i$ and an étale $A_i$-algebra $B'$ such that
     \[
@@ -516,8 +550,11 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \end{lemma}
 
 \begin{proof}
+    \uses{lemma:fg-localization-subsingleton-uniform-annihilator}
     This follows because every étale algebra is of finite presentation and by possibly enlarging $i$ we can ensure
-    that $B'$ is étale over $A_i$.
+    that $B'$ is étale over $A_i$. The latter step uses
+    \Cref{lemma:fg-localization-subsingleton-uniform-annihilator} to find a single index $i$ whose
+    stage trivialises the relevant cotangent / differentials module.
 \end{proof}
 
 \section{ind-Zariski maps}
