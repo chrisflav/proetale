@@ -363,8 +363,111 @@ theorem IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact
       Ring.WeakDimensionLEOne S ∧ Module.Flat S T ∧ FaithfulSMul S T ∧ Algebra.IsEpi S T ∧
       Function.Exact (LinearMap.prod (Algebra.linearMap A L) (Algebra.linearMap A S))
         ((IsScalarTower.toAlgHom A L T).toLinearMap ∘ₗ LinearMap.fst A L S -
-          (IsScalarTower.toAlgHom A S T).toLinearMap ∘ₗ LinearMap.snd A L S) :=
-  sorry
+          (IsScalarTower.toAlgHom A S T).toLinearMap ∘ₗ LinearMap.snd A L S) := by
+  classical
+  -- The image of `A` in `L` is integrally closed in `L`.
+  haveI hicr : IsIntegrallyClosedIn (algebraMap A L).range L := by
+    rw [Subring.isIntegrallyClosedIn_iff]
+    intro x hx
+    obtain ⟨p, hp, hpe⟩ := hx
+    let e : A ≃+* (algebraMap A L).range :=
+      RingEquiv.ofBijective (algebraMap A L).rangeRestrict
+        ⟨fun a b h ↦ FaithfulSMul.algebraMap_injective A L (congrArg Subtype.val h),
+          (algebraMap A L).rangeRestrict_surjective⟩
+    have ha : IsIntegral A x := by
+      refine ⟨p.map e.symm.toRingHom, hp.map _, ?_⟩
+      rw [Polynomial.eval₂_map]
+      have hcomp : (algebraMap A L).comp e.symm.toRingHom =
+          algebraMap (algebraMap A L).range L := by
+        ext y
+        exact congrArg Subtype.val (e.apply_symm_apply y)
+      rw [hcomp]
+      exact hpe
+    exact IsIntegrallyClosedIn.isIntegral_iff.mp ha
+  -- For every element of `L` not in `A`, choose a valuation subring avoiding it.
+  let ι := {x : L // x ∉ (algebraMap A L).range}
+  choose V hVle hVx using fun x : ι ↦
+    Subring.exists_le_valuationSubring_of_isIntegrallyClosedIn x.2
+  -- The algebra structures on `S = Π Vₓ` and `T = Π L`.
+  letI : ∀ x : ι, Algebra A (V x) := fun x ↦
+    ((algebraMap A L).codRestrict (V x).toSubring fun a ↦ hVle x ⟨a, rfl⟩).toAlgebra
+  letI : Algebra (Π x : ι, V x) (ι → L) :=
+    (Pi.ringHom fun x ↦ (V x).subtype.comp (Pi.evalRingHom _ x)).toAlgebra
+  haveI : IsScalarTower A (Π x : ι, V x) (ι → L) :=
+    .of_algebraMap_eq fun a ↦ funext fun x ↦ rfl
+  -- Componentwise non-vanishing characterizes non-zerodivisors of `S`.
+  have hreg : ∀ s : Π x : ι, V x, (∀ x, s x ≠ 0) →
+      s ∈ nonZeroDivisors (Π x : ι, V x) := by
+    intro s hs
+    rw [mem_nonZeroDivisors_iff]
+    constructor <;>
+    · intro t ht
+      funext x
+      have h1 := congrFun ht x
+      simp only [Pi.mul_apply, Pi.zero_apply] at h1
+      rcases mul_eq_zero.mp h1 with h | h
+      · first
+          | exact h
+          | exact absurd h (hs x)
+      · first
+          | exact h
+          | exact absurd h (hs x)
+  have hregcomp : ∀ s : Π x : ι, V x, s ∈ nonZeroDivisors (Π x : ι, V x) → ∀ x, s x ≠ 0 := by
+    intro s hs x hx
+    have h0 : Pi.single x (1 : V x) * s = 0 := by
+      funext y
+      by_cases h : y = x
+      · subst h
+        simp [hx]
+      · simp [Pi.single_eq_of_ne h]
+    have h2 := congrFun ((mem_nonZeroDivisors_iff.mp hs).2 _ h0) x
+    simp only [Pi.single_eq_same, Pi.zero_apply] at h2
+    exact one_ne_zero h2
+  -- `T` is the localization of `S` at its non-zerodivisors.
+  haveI hloc : IsLocalization (nonZeroDivisors (Π x : ι, V x)) (ι → L) := by
+    refine ⟨fun ⟨s, hs⟩ ↦ ?_, fun z ↦ ?_, fun {a b} h ↦ ⟨1, ?_⟩⟩
+    · rw [Pi.isUnit_iff]
+      intro x
+      rw [isUnit_iff_ne_zero]
+      exact fun h ↦ hregcomp s hs x (Subtype.ext h)
+    · choose p hp using fun x : ι ↦ IsLocalization.surj (nonZeroDivisors (V x)) (z x)
+      refine ⟨⟨fun x ↦ (p x).1, ⟨fun x ↦ (p x).2,
+        hreg _ fun x ↦ nonZeroDivisors.ne_zero (p x).2.2⟩⟩, funext fun x ↦ ?_⟩
+      exact hp x
+    · have : a = b := funext fun x ↦ Subtype.ext (congrFun h x)
+      rw [this]
+  refine ⟨Π x : ι, V x, ι → L, inferInstance, inferInstance, inferInstance, inferInstance,
+    inferInstance, inferInstance, inferInstance, inferInstance,
+    Ring.WeakDimensionLEOne.pi_of_isValuationRing fun x : ι ↦ V x,
+    IsLocalization.flat _ (nonZeroDivisors (Π x : ι, V x)),
+    (faithfulSMul_iff_algebraMap_injective _ _).mpr fun a b h ↦
+      funext fun x ↦ Subtype.ext (congrFun h x),
+    CommRingCat.epi_iff_epi.mp (IsLocalization.epi (nonZeroDivisors (Π x : ι, V x)) _),
+    fun y ↦ ?_⟩
+  obtain ⟨l, s⟩ := y
+  constructor
+  · intro hy
+    have hls : ∀ x : ι, l = (s x : L) := fun x ↦ by
+      have h1 := congrFun hy x
+      simp only [LinearMap.sub_apply, LinearMap.comp_apply, LinearMap.fst_apply,
+        LinearMap.snd_apply, AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
+        Pi.sub_apply, Pi.zero_apply, sub_eq_zero] at h1
+      exact h1
+    have hl : l ∈ (algebraMap A L).range := by
+      by_contra h
+      have hmem := (s ⟨l, h⟩).2
+      rw [← hls ⟨l, h⟩] at hmem
+      exact hVx ⟨l, h⟩ hmem
+    obtain ⟨a, ha⟩ := hl
+    refine ⟨a, Prod.ext ha (funext fun x ↦ Subtype.ext ?_)⟩
+    change algebraMap A L a = (s x : L)
+    rw [ha]
+    exact hls x
+  · rintro ⟨a, h⟩
+    rw [← h]
+    change algebraMap L (ι → L) (algebraMap A L a) -
+      algebraMap (Π x : ι, V x) (ι → L) (algebraMap A (Π x : ι, V x) a) = 0
+    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply, sub_self]
 
 open TensorProduct in
 /-- Ring epimorphisms are stable under base change: if `S → T` is an epimorphism of

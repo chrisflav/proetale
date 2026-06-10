@@ -553,7 +553,19 @@ suffices for our purposes.
 
 \begin{proof}
     \uses{lemma:prod-valuation-ring-weak-dim-integrally-closed}
-    TBA.
+    \leanok
+    For every $x \in L \setminus A$, the element $x$ is not integral over $A$, since $A$ is
+    integrally closed in $L$. Hence there exists a valuation subring $A \subseteq V_x \subseteq L$
+    with $x \notin V_x$ (\stacksproject{090P}). Set
+    \[
+        S = \prod_{x \in L \setminus A} V_x \quad \text{and} \quad T = \prod_{x \in L \setminus A} L.
+    \]
+    Then $S$ is of weak dimension $\le 1$ by
+    \Cref{lemma:prod-valuation-ring-weak-dim-integrally-closed}. Since each $V_x$ has fraction
+    field $L$, the map $S \to T$ is the localization at the non-zerodivisors of $S$ (which are
+    exactly the componentwise non-vanishing elements), hence flat, injective and an epimorphism.
+    The square is cartesian: if $l \in L$ and $s \in S$ have the same image in $T$, then
+    $l \in V_x$ for all $x \in L \setminus A$, so $l \in A$, since otherwise $l \notin V_l$.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092W}]
