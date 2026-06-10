@@ -461,6 +461,7 @@ suffices for our purposes.
 
 \begin{proof}
     \uses{lemma:weakly-etale-flat, lemma:weak-dim-flat-submodule}
+    \leanok
     Let $M$ be a flat $B$-module and $N \subseteq M$ a submodule. By
     \Cref{lemma:weakly-etale-flat} it suffices to show that $N$ is $A$-flat.
     Since $B$ is $A$-flat, $M$ is also $A$-flat and hence its submodule $N$
@@ -490,6 +491,7 @@ suffices for our purposes.
 
 \begin{proof}
     \uses{lemma:prod-submodule-fg}
+    \leanok
     Let $I \subseteq \prod_{i \in I} A_i$ be a finitely generated ideal. Let $I_i \subseteq A_i$
     be the image of $I$ in $A_i$.
     By \Cref{lemma:prod-submodule-fg}, $I$ is the product of the $I_i$.
@@ -524,6 +526,7 @@ suffices for our purposes.
 
 \begin{proof}
     \uses{lemma:weak-dim-flat-submodule}
+    \leanok
     Let $x \in B$ be integral over $A$ and $A' = A[x]$. The map $A \to A'$ is injective and finite, so
     to show $A = A'$ it suffices to check that $A \to A'$ is an epimorphism. By
     \Cref{lemma:weak-dim-flat-submodule}, $A'$ is flat over $A$. Hence
@@ -544,11 +547,25 @@ suffices for our purposes.
     \end{tikzcd}
     \] with $S$ of weak dimension $\le 1$ and $S \to T$ a flat, injective epimorphism of rings.
     \label{lemma:integrally-closed-cartesian-weak-dim}
+    \lean{IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact}
+    \leanok
 \end{lemma}
 
 \begin{proof}
     \uses{lemma:prod-valuation-ring-weak-dim-integrally-closed}
-    TBA.
+    \leanok
+    For every $x \in L \setminus A$, the element $x$ is not integral over $A$, since $A$ is
+    integrally closed in $L$. Hence there exists a valuation subring $A \subseteq V_x \subseteq L$
+    with $x \notin V_x$ (\stacksproject{090P}). Set
+    \[
+        S = \prod_{x \in L \setminus A} V_x \quad \text{and} \quad T = \prod_{x \in L \setminus A} L.
+    \]
+    Then $S$ is of weak dimension $\le 1$ by
+    \Cref{lemma:prod-valuation-ring-weak-dim-integrally-closed}. Since each $V_x$ has fraction
+    field $L$, the map $S \to T$ is the localization at the non-zerodivisors of $S$ (which are
+    exactly the componentwise non-vanishing elements), hence flat, injective and an epimorphism.
+    The square is cartesian: if $l \in L$ and $s \in S$ have the same image in $T$, then
+    $l \in V_x$ for all $x \in L \setminus A$, so $l \in A$, since otherwise $l \notin V_l$.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092W}]
@@ -558,12 +575,24 @@ suffices for our purposes.
     in $B \otimes_{A} L$.
     \uses{def:weakly-etale-algebra}
     \label{lemma:weakly-etale-integrally-closed}
+    \lean{Algebra.WeaklyEtale.isIntegrallyClosedIn_tensorProduct}
+    \leanok
 \end{lemma}
 
 \begin{proof}
     \uses{lemma:weak-dim-integrally-closed, lemma:weakly-etale-preserve-weak-dim,
       lemma:integrally-closed-cartesian-weak-dim}
-    % TODO
+    \leanok
+    Choose a cartesian diagram as in \Cref{lemma:integrally-closed-cartesian-weak-dim} and
+    tensor it with the flat $A$-algebra $B$. The resulting diagram with vertices $B$,
+    $B \otimes_A L$, $B \otimes_A S$ and $B \otimes_A T$ is again cartesian. The ring
+    $B \otimes_A S$ is weakly étale over $S$, hence of weak dimension $\le 1$ by
+    \Cref{lemma:weakly-etale-preserve-weak-dim}, and $B \otimes_A S \to B \otimes_A T$ is a
+    flat, injective ring epimorphism, since all three properties are stable under (flat) base
+    change. By \Cref{lemma:weak-dim-integrally-closed}, $B \otimes_A S$ is integrally closed
+    in $B \otimes_A T$. An element of $B \otimes_A L$ integral over $B$ maps to an element of
+    $B \otimes_A T$ integral over $B \otimes_A S$, hence lying in $B \otimes_A S$; by
+    cartesianness it lies in $B$.
 \end{proof}
 
 \section{Fields}
@@ -689,6 +718,7 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Recall that a \emph{pure} ideal $I$ in $A$ is an ideal such that $A/I$ is flat.
     (Use \verb|Ideal.Pure|.) In our case, let $I$ be the kernel of the map $A \to B$.
     Then $I$ is pure and has empty vanishing locus. But we know that pure ideals are determined by
@@ -812,7 +842,9 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable, lemma:henselian-local-integral-local}
+    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable,
+    lemma:henselian-local-integral-local, lemma:weakly-etale-integrally-closed}
+    \leanok
     Let $R'$ be the integral closure of $R / \mathfrak{p}$ in $L$. Since $R \to R / \mathfrak{p} \to R'$
     is integral, $R'$ is local by \Cref{lemma:henselian-local-integral-local}. Moreover,
     the residue field $\kappa(R')$ is an algebraic extension of $\kappa(R)$
@@ -841,6 +873,7 @@ suffices for our purposes.
     lem:idempotent-in-ind-etale-of-primes,
     lem:idempotent-in-ind-etale-of-field-ext,
     lemma:weakly-etale-over-sh-aux}
+    \leanok
     It suffices to show that for all $\mathfrak{p} \subset A$ there is a unique prime
     $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) =
     \kappa(\mathfrak{q})$ by \Cref{lem:isom-of-unique-lying-over-and-residue-field-eq}

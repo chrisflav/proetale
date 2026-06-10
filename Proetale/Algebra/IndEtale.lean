@@ -237,3 +237,97 @@ lemma trans (T : Type u) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower
     ((RingHom.IndEtale.algebraMap_iff R S).mpr ‹_›)
 
 end Algebra.IndEtale
+
+section FGColimitPresentation
+
+variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+
+namespace Subalgebra
+
+instance : Nonempty {A : Subalgebra R S // A.FG} :=
+  ⟨⊥, Subalgebra.fg_bot⟩
+
+instance : IsDirected {A : Subalgebra R S // A.FG} (· ≤ ·) :=
+  ⟨fun A B ↦ ⟨⟨A.1 ⊔ B.1, A.2.sup B.2⟩,
+    Subtype.coe_le_coe.mp le_sup_left, Subtype.coe_le_coe.mp le_sup_right⟩⟩
+
+variable (R S) in
+/-- The filtered diagram of the finitely generated subalgebras of an `R`-algebra `S`. -/
+@[simps]
+def fgDiag : {A : Subalgebra R S // A.FG} ⥤ CommAlgCat.{u} R where
+  obj A := .of R A.1
+  map h := CommAlgCat.ofHom (Subalgebra.inclusion (Subtype.coe_le_coe.mpr h.le))
+  map_id _ := CommAlgCat.hom_ext (AlgHom.ext fun _ ↦ rfl)
+  map_comp _ _ := CommAlgCat.hom_ext (AlgHom.ext fun _ ↦ rfl)
+
+private def descFun (c : Cocone (fgDiag R S)) (x : S) : c.pt :=
+  (c.ι.app ⟨Algebra.adjoin R {x}, fg_def.mpr ⟨{x}, Set.finite_singleton x, rfl⟩⟩).hom
+    ⟨x, Algebra.self_mem_adjoin_singleton R x⟩
+
+private lemma descFun_eq {c : Cocone (fgDiag R S)} (A : {A : Subalgebra R S // A.FG})
+    {x : S} (hx : x ∈ A.1) :
+    descFun c x = (c.ι.app A).hom ⟨x, hx⟩ := by
+  have h : (⟨Algebra.adjoin R {x}, fg_def.mpr ⟨{x}, Set.finite_singleton x, rfl⟩⟩ :
+      {A : Subalgebra R S // A.FG}) ≤ A :=
+    Subtype.coe_le_coe.mp (Algebra.adjoin_le (Set.singleton_subset_iff.mpr hx))
+  have key := congrArg (fun f ↦ f.hom ⟨x, Algebra.self_mem_adjoin_singleton R x⟩)
+    (c.w (homOfLE h))
+  simpa [descFun] using key.symm
+
+private def descAlgHom (c : Cocone (fgDiag R S)) : S →ₐ[R] c.pt where
+  toFun := descFun c
+  map_one' := by
+    change descFun c 1 = 1
+    rw [descFun_eq ⟨⊥, Subalgebra.fg_bot⟩ (one_mem _)]
+    exact map_one _
+  map_zero' := by
+    change descFun c 0 = 0
+    rw [descFun_eq ⟨⊥, Subalgebra.fg_bot⟩ (zero_mem _)]
+    exact map_zero _
+  map_mul' x y := by
+    change descFun c (x * y) = descFun c x * descFun c y
+    have hfg : (Algebra.adjoin R ({x, y} : Set S)).FG := fg_def.mpr ⟨_, Set.toFinite _, rfl⟩
+    have hx : x ∈ Algebra.adjoin R ({x, y} : Set S) := Algebra.subset_adjoin (by simp)
+    have hy : y ∈ Algebra.adjoin R ({x, y} : Set S) := Algebra.subset_adjoin (by simp)
+    rw [descFun_eq ⟨_, hfg⟩ (mul_mem hx hy), descFun_eq ⟨_, hfg⟩ hx, descFun_eq ⟨_, hfg⟩ hy]
+    exact map_mul (c.ι.app ⟨_, hfg⟩).hom ⟨x, hx⟩ ⟨y, hy⟩
+  map_add' x y := by
+    change descFun c (x + y) = descFun c x + descFun c y
+    have hfg : (Algebra.adjoin R ({x, y} : Set S)).FG := fg_def.mpr ⟨_, Set.toFinite _, rfl⟩
+    have hx : x ∈ Algebra.adjoin R ({x, y} : Set S) := Algebra.subset_adjoin (by simp)
+    have hy : y ∈ Algebra.adjoin R ({x, y} : Set S) := Algebra.subset_adjoin (by simp)
+    rw [descFun_eq ⟨_, hfg⟩ (add_mem hx hy), descFun_eq ⟨_, hfg⟩ hx, descFun_eq ⟨_, hfg⟩ hy]
+    exact map_add (c.ι.app ⟨_, hfg⟩).hom ⟨x, hx⟩ ⟨y, hy⟩
+  commutes' r := by
+    change descFun c (algebraMap R S r) = algebraMap R c.pt r
+    rw [descFun_eq ⟨⊥, Subalgebra.fg_bot⟩ (Subalgebra.algebraMap_mem _ r)]
+    exact (c.ι.app _).hom.commutes r
+
+variable (R S) in
+/-- Every `R`-algebra `S` is the filtered colimit of its finitely generated subalgebras. -/
+def fgColimitPresentation :
+    ColimitPresentation {A : Subalgebra R S // A.FG} (CommAlgCat.of R S) where
+  diag := fgDiag R S
+  ι :=
+    { app A := CommAlgCat.ofHom A.1.val
+      naturality _ _ _ := CommAlgCat.hom_ext (AlgHom.ext fun _ ↦ rfl) }
+  isColimit :=
+    { desc c := CommAlgCat.ofHom (descAlgHom c)
+      fac c A := CommAlgCat.hom_ext (AlgHom.ext fun x ↦ descFun_eq A x.2)
+      uniq c m hm := by
+        refine CommAlgCat.hom_ext (AlgHom.ext fun x ↦ ?_)
+        have key := congrArg (fun f ↦ f.hom ⟨x, Algebra.self_mem_adjoin_singleton R x⟩)
+          (hm ⟨Algebra.adjoin R {x}, fg_def.mpr ⟨{x}, Set.finite_singleton x, rfl⟩⟩)
+        simpa [descAlgHom, descFun] using key }
+
+end Subalgebra
+
+/-- If every finitely generated `R`-subalgebra of `S` is étale, then `S` is an ind-étale
+`R`-algebra. -/
+theorem Algebra.IndEtale.of_forall_fg_etale
+    (h : ∀ A : Subalgebra R S, A.FG → Algebra.Etale R A) :
+    Algebra.IndEtale R S :=
+  ⟨{A : Subalgebra R S // A.FG}, inferInstance, inferInstance,
+    Subalgebra.fgColimitPresentation R S, fun A ↦ h A.1 A.2⟩
+
+end FGColimitPresentation
