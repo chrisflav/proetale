@@ -1,4 +1,5 @@
 import Proetale.Algebra.Bijective
+import Proetale.Algebra.IntegralLocal
 import Proetale.Algebra.WeaklyEtaleField
 import Proetale.Mathlib.RingTheory.Henselian
 
@@ -8,11 +9,11 @@ variable {R S : Type u} [CommRing R] [CommRing S] [IsLocalRing S]
 
 open TensorProduct
 
-/- We disable the functorial algebra structure on residue fields of local homomorphisms of
-local rings in favour of the generic one, so that the algebra structure of `κ(p)` on residue
-fields of primes of the fibre ring `κ(p) ⊗[R] S` agrees with the one used in
+/- In the declarations below that deal with residue fields of primes of the fibre ring
+`κ(p) ⊗[R] S`, we locally disable the functorial algebra structure on residue fields of local
+homomorphisms of local rings in favour of the generic one, so that the algebra structure of
+`κ(p)` on these residue fields agrees with the one used in
 `Algebra.IndEtale.exists_isIdempotentElem_tensorProduct_of_residueField_ne`. -/
-attribute [-instance] IsLocalRing.ResidueField.instAlgebra
 
 namespace Algebra.WeaklyEtale
 
@@ -22,15 +23,98 @@ section
 
 variable [HenselianLocalRing R] [IsSepClosed (IsLocalRing.ResidueField R)] [WeaklyEtale R S]
 
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance searches on tensor products with the integral closure of `R` in `L` unfold long
+-- chains of subalgebra and tensor product instances and exceed the default heartbeat limits.
+set_option maxHeartbeats 1600000 in
+-- Elaboration unfolds the same long instance chains as the instance searches.
 /-- If `R → S` is a local homomorphism of local rings, `R` is strictly henselian and `S` is
 weakly-étale over `R`, then for any algebraic field extension `L` of `κ(p)` the
 tensorproduct `L ⊗[R] S` has no nontrivial idempotent elements. -/
-lemma eq_of_isIdempotentElem (p : Ideal R) [p.IsPrime] (L : Type*) [Field L]
+lemma eq_of_isIdempotentElem (p : Ideal R) [p.IsPrime] (L : Type u) [Field L]
     [Algebra p.ResidueField L] [Algebra R L] [Algebra.IsAlgebraic p.ResidueField L]
     [IsScalarTower R p.ResidueField L] {e : L ⊗[R] S} (he : IsIdempotentElem e) :
-    e = 0 ∨ e = 1 :=
-  sorry
+    e = 0 ∨ e = 1 := by
+  -- Let `R'` be the integral closure of `R` (equivalently, of `R ⧸ p`) in `L`.
+  let R' : Subalgebra R L := integralClosure R L
+  haveI : Algebra.IsIntegral R R' := inferInstanceAs (Algebra.IsIntegral R (integralClosure R L))
+  haveI : IsDomain R' := inferInstanceAs (IsDomain (integralClosure R L))
+  haveI : IsIntegrallyClosedIn R' L :=
+    inferInstanceAs (IsIntegrallyClosedIn (integralClosure R L) L)
+  -- `R'` is local with residue field algebraic, hence purely inseparable, over that of `R`.
+  haveI hRloc : IsLocalRing R' :=
+    IsLocalRing.of_henselianLocalRing_of_isIntegral_of_isDomain (R := R)
+  haveI hlochom : IsLocalHom (algebraMap R R') :=
+    ((IsLocalRing.local_hom_TFAE (algebraMap R R')).out 0 4).mpr
+      (IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal _))
+  haveI : Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField R') :=
+    Algebra.IsAlgebraic.residueField_of_isIntegral
+  -- Hence `R' ⊗[R] S` is a local ring.
+  haveI hloc : IsLocalRing (R' ⊗[R] S) :=
+    Algebra.isLocalRing_tensorProduct_of_isPurelyInseparable_residueField R R' S
+      (Or.inl inferInstance)
+  -- `L` is algebraic over `R'`, by clearing denominators via `κ(p) = Frac(R ⧸ p)`.
+  letI : Algebra (R ⧸ p) L :=
+    ((algebraMap p.ResidueField L).comp (algebraMap (R ⧸ p) p.ResidueField)).toAlgebra
+  haveI : IsScalarTower (R ⧸ p) p.ResidueField L := .of_algebraMap_eq' rfl
+  have hker : ∀ a ∈ p, algebraMap R R' a = 0 := fun a ha ↦ Subtype.ext <| by
+    change algebraMap R L a = 0
+    rw [IsScalarTower.algebraMap_apply R p.ResidueField L,
+      Ideal.algebraMap_residueField_eq_zero.mpr ha, map_zero]
+  letI : Algebra (R ⧸ p) R' := (Ideal.Quotient.lift p (algebraMap R R') hker).toAlgebra
+  haveI : IsScalarTower (R ⧸ p) R' L := .of_algebraMap_eq fun a ↦ by
+    obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
+    change algebraMap p.ResidueField L (algebraMap (R ⧸ p) p.ResidueField
+      (Ideal.Quotient.mk p a)) =
+      algebraMap R' L (Ideal.Quotient.lift p (algebraMap R R') hker (Ideal.Quotient.mk p a))
+    rw [Ideal.Quotient.lift_mk, Ideal.algebraMap_quotient_residueField_mk,
+      ← IsScalarTower.algebraMap_apply R p.ResidueField L,
+      ← IsScalarTower.algebraMap_apply R R' L]
+  have hinj : Function.Injective (algebraMap (R ⧸ p) R') := by
+    have h2 : Function.Injective (algebraMap (R ⧸ p) L) := by
+      change Function.Injective
+        ⇑((algebraMap p.ResidueField L).comp (algebraMap (R ⧸ p) p.ResidueField))
+      rw [RingHom.coe_comp]
+      exact (RingHom.injective _).comp p.injective_algebraMap_quotient_residueField
+    rw [IsScalarTower.algebraMap_eq (R ⧸ p) R' L, RingHom.coe_comp] at h2
+    exact h2.of_comp
+  haveI : Algebra.IsAlgebraic R' L :=
+    ⟨fun x ↦ ((IsFractionRing.isAlgebraic_iff (R ⧸ p) p.ResidueField L).mpr
+      (Algebra.IsAlgebraic.isAlgebraic x)).extendScalars hinj⟩
+  haveI : FaithfulSMul R' L :=
+    (faithfulSMul_iff_algebraMap_injective R' L).mpr Subtype.val_injective
+  -- By Stacks 092W, `R' ⊗[R] S` is integrally closed in `(R' ⊗[R] S) ⊗[R'] L ≅ L ⊗[R] S`.
+  haveI hic : IsIntegrallyClosedIn (R' ⊗[R] S) ((R' ⊗[R] S) ⊗[R'] L) :=
+    Algebra.WeaklyEtale.isIntegrallyClosedIn_tensorProduct R' (R' ⊗[R] S) L
+  let ψ : ((R' ⊗[R] S) ⊗[R'] L) ≃ₐ[R'] (L ⊗[R] S) :=
+    (Algebra.TensorProduct.comm R' (R' ⊗[R] S) L).trans
+      (Algebra.TensorProduct.cancelBaseChange R R' R' L S)
+  -- The idempotent `e` is integral over `R' ⊗[R] S`, so it comes from this local ring.
+  have he' : IsIdempotentElem (ψ.symm e) := he.map ψ.symm
+  obtain ⟨b, hb⟩ : ∃ b, algebraMap (R' ⊗[R] S) ((R' ⊗[R] S) ⊗[R'] L) b = ψ.symm e := by
+    rw [← IsIntegrallyClosedIn.isIntegral_iff]
+    refine ⟨Polynomial.X ^ 2 - Polynomial.X, Polynomial.monic_X_pow_sub ?_, ?_⟩
+    · rw [Polynomial.degree_X]
+      norm_num
+    · rw [Polynomial.eval₂_sub, Polynomial.eval₂_X_pow, Polynomial.eval₂_X, pow_two, he',
+        sub_self]
+  have hbinj : Function.Injective (algebraMap (R' ⊗[R] S) ((R' ⊗[R] S) ⊗[R'] L)) :=
+    hic.algebraMap_injective
+  have hbidem : IsIdempotentElem b := by
+    apply hbinj
+    rw [map_mul, hb]
+    exact he'
+  -- A local ring has no nontrivial idempotents.
+  rcases IsLocalRing.isUnit_or_isUnit_one_sub_self b with hu | hu
+  · right
+    have hb1 : b = 1 := hu.mul_left_cancel (by rw [mul_one]; exact hbidem)
+    rw [← ψ.apply_symm_apply e, ← hb, hb1, map_one, map_one]
+  · left
+    have hb0 : b = 0 :=
+      hu.mul_right_cancel (by rw [zero_mul, mul_sub, mul_one, hbidem, sub_self])
+    rw [← ψ.apply_symm_apply e, ← hb, hb0, map_zero, map_zero]
 
+attribute [-instance] IsLocalRing.ResidueField.instAlgebra in
 /-- If `R → S` is a local homomorphism of local rings, `R` is henselian with separably
 closed residue field and `S` is weakly étale over `R`, the fibre rings of `R → S` have a
 single prime. -/
@@ -51,6 +135,7 @@ set_option synthInstance.maxHeartbeats 400000 in
 -- unfold long quotient/localization chains and exceed the default heartbeat limits.
 set_option maxHeartbeats 1600000 in
 -- Elaboration unfolds the same long quotient/localization chains as the instance searches.
+attribute [-instance] IsLocalRing.ResidueField.instAlgebra in
 /-- If `R → S` is a local homomorphism of local rings, `R` is henselian with separably
 closed residue field and `S` is weakly étale over `R`, the residue field extensions of the
 fibre rings of `R → S` are trivial. -/
@@ -90,6 +175,7 @@ lemma bijective_algebraMap_residueField_fiber (p : Ideal R) [p.IsPrime]
 
 end
 
+attribute [-instance] IsLocalRing.ResidueField.instAlgebra in
 /-- If `R → S` is a local homomorphism of local rings, `R` is strictly henselian and `S` is
 weakly-étale over `R`, then `R → S` is an isomorphism. -/
 lemma bijective_of_henselianLocalRing [HenselianLocalRing R]

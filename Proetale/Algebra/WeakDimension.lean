@@ -256,3 +256,15 @@ theorem of_flat_lmul' [AbsolutelyFlat R] : AbsolutelyFlat S :=
   ⟨fun _ ↦ Module.Flat.of_flat_lmul'_of_flat R S _ h⟩
 
 end Ring.AbsolutelyFlat
+
+open TensorProduct in
+/-- Let `A` be a domain and `B` a weakly étale `A`-algebra. If `L` is an algebraic field
+extension of the fraction field of `A` and `A` is integrally closed in `L`, then `B` is
+integrally closed in `B ⊗[A] L`. -/
+@[stacks 092W]
+theorem Algebra.WeaklyEtale.isIntegrallyClosedIn_tensorProduct
+    (A B L : Type*) [CommRing A] [IsDomain A] [CommRing B] [Algebra A B]
+    [Algebra.WeaklyEtale A B] [Field L] [Algebra A L] [FaithfulSMul A L]
+    [Algebra.IsAlgebraic A L] [IsIntegrallyClosedIn A L] :
+    IsIntegrallyClosedIn B (B ⊗[A] L) :=
+  sorry

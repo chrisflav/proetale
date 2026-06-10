@@ -559,6 +559,8 @@ suffices for our purposes.
     in $B \otimes_{A} L$.
     \uses{def:weakly-etale-algebra}
     \label{lemma:weakly-etale-integrally-closed}
+    \lean{Algebra.WeaklyEtale.isIntegrallyClosedIn_tensorProduct}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -814,7 +816,9 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable, lemma:henselian-local-integral-local}
+    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable,
+    lemma:henselian-local-integral-local, lemma:weakly-etale-integrally-closed}
+    \leanok
     Let $R'$ be the integral closure of $R / \mathfrak{p}$ in $L$. Since $R \to R / \mathfrak{p} \to R'$
     is integral, $R'$ is local by \Cref{lemma:henselian-local-integral-local}. Moreover,
     the residue field $\kappa(R')$ is an algebraic extension of $\kappa(R)$
