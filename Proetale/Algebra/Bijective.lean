@@ -33,8 +33,21 @@ lemma bijective_comap_lmul'_of_bijective_of_bijective
 lemma bijective_of_bijective_of_flat [Module.Flat R S]
     (hf : Function.Bijective (PrimeSpectrum.comap (algebraMap R S)))
     (hf' : Function.Surjective (algebraMap R S)) :
-    Function.Bijective (algebraMap R S) :=
-  sorry
+    Function.Bijective (algebraMap R S) := by
+  refine ⟨?_, hf'⟩
+  rw [RingHom.injective_iff_ker_eq_bot]
+  have e : (R ⧸ RingHom.ker (algebraMap R S)) ≃ₐ[R] S :=
+    AlgEquiv.ofRingEquiv (f := (algebraMap R S).quotientKerEquivOfSurjective hf') fun _ ↦ rfl
+  have : (RingHom.ker (algebraMap R S)).Pure := Module.Flat.of_linearEquiv e.toLinearEquiv
+  have : (⊥ : Ideal R).Pure := Module.Flat.of_linearEquiv (Submodule.quotEquivOfEqBot ⊥ rfl)
+  rw [← Ideal.zeroLocus_inj_of_pure, PrimeSpectrum.zeroLocus_bot, Set.eq_univ_iff_forall]
+  intro p
+  obtain ⟨q, rfl⟩ := hf.surjective p
+  rw [PrimeSpectrum.mem_zeroLocus]
+  intro x hx
+  rw [SetLike.mem_coe, PrimeSpectrum.comap_asIdeal, Ideal.mem_comap,
+    RingHom.mem_ker.mp hx]
+  exact q.asIdeal.zero_mem
 
 /-- A faithfully flat epimorphism `R → S` is an isomorphism. -/
 lemma bijective_of_faithfullyFlat_of_isEpi [Module.FaithfullyFlat R S] [Algebra.IsEpi R S] :
