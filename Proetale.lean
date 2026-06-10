@@ -5,6 +5,7 @@ import Proetale.Algebra.Etale
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.HenselianLocalRing
+import Proetale.Algebra.IdentifiesLocalRings
 import Proetale.Algebra.Ind
 import Proetale.Algebra.IndBijectiveOnStalks
 import Proetale.Algebra.IndEtale

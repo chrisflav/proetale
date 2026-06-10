@@ -499,7 +499,9 @@ The second functor is fully faithful because \(f^\#\) is always an isomorphism, 
 \begin{definition}
   \label{def:identifies-local-ring-hom-set-bijection}
   \uses{def:identify-local-rings,thm:identifies-local-ring-to-top-fully-faithful}
-  Let \(A\) be a ring and \(X = \Spec(A)\). Let \(A \to B\) and \(A \to C\) be two \(A\)-algebras that identifies local rings. As a consequence of \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we have a bijective map 
+  \lean{Algebra.BijectiveOnStalks.HomOver, Algebra.BijectiveOnStalks.continuousMap_of_algHom, Algebra.BijectiveOnStalks.continuousMap_of_algHom_bijective, Algebra.BijectiveOnStalks.algHomEquivContinuousMap, Algebra.BijectiveOnStalks.algHom_of_continuousMap}
+  \leanok
+  Let \(A\) be a ring and \(X = \Spec(A)\). Let \(A \to B\) and \(A \to C\) be two \(A\)-algebras that identifies local rings. As a consequence of \Cref{thm:identifies-local-ring-to-top-fully-faithful}, we have a bijective map
   \[F : \Hom_{A\textnormal{-alg}}(B, C) \to \Hom_{\textnormal{-Top}_X}(\Spec(C), \Spec(B)).\]
   sending \(f : B \to C\) to the continuous map \(\Spec(f) : \Spec(C) \to \Spec(B)\) induced by \(f\).
 \end{definition}
