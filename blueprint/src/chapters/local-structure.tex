@@ -2180,6 +2180,8 @@ In the following series of constructions, we will modify the connected component
 \begin{definition}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
   \label{def:modify-pi0-profinite}
   \uses{def:modify-pi0-finite,def:modify-pi0-transition-map,thm:modify-pi0-transition-map-compatible}
+  \lean{WContractification.PullbackProfinite}
+  \leanok
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. Write $T = \lim T_i$ as the limit of an inverse system of finite discrete spaces over a directed set. Define the ring \(A^f_{\pi_0}\) as follows:
   \[
     A^f_{\pi_0} := \colim_{(T \to T_i)} A^f_{q_i},
@@ -2187,9 +2189,26 @@ In the following series of constructions, we will modify the connected component
   where \(q_i : T \to T_i\) are the quotient maps and \(A^f_{q_i}\) are the rings defined in \Cref{def:modify-pi0-finite} and the transition maps are those defined in \Cref{def:modify-pi0-transition-map}. By \Cref{thm:modify-pi0-transition-map-compatible} the transition maps are compatible thus the colimit is well-defined.
 \end{definition}
 
+\begin{remark}
+  The Lean formalization realizes \(A^f_{\pi_0}\) in a single step, avoiding the explicit
+  transition maps: the two colimits (over finite quotients \(T \to T_i\), and over clopens
+  in \Cref{def:colim-open-closed-localizations}) are interchanged. Concretely, the ring
+  \(A^T\) of locally constant functions \(T \to A\) is the filtered colimit
+  \(\colim_i A^{T_i}\) (with the evident transition maps given by precomposition), it is
+  ind-Zariski over \(A\) (\texttt{LocallyConstant.instIndZariski}), and
+  \(\Spec(A^T) \cong T \times X\) by an elementary direct argument
+  (\texttt{LocallyConstant.homeomorphPrimeSpectrum}). Then \(A^f_{\pi_0}\) is defined as
+  the algebra \((A^T)_Z\) of \Cref{def:colim-open-closed-localizations}, where
+  \(Z \subseteq \pi_0(\Spec (A^T)) = T \times \pi_0(X)\) is the (closed) graph of \(f\).
+  This computes the same ring as the colimit above, since each \(A^f_{q_i}\) is
+  \((A^{T_i})_{Z_i}\).
+\end{remark}
+
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/097D}{Tag 097D}]{stacks-project}}]
   \label{thm:modify-pi0-profinite-properties}
   \uses{def:modify-pi0-profinite,def:ind-Zariski}
+  \lean{WContractification.PullbackProfinite.indZariski, WContractification.PullbackProfinite.isPullback}
+  \leanok
   Let $A$ be a ring and let $X = \Spec (A)$. Let $T$ be a profinite space and let $T \to \pi_0(X)$ be a continuous map. Then the $A$-algebra $A^f_{\pi_0}$ defined in \Cref{def:modify-pi0-profinite} is ind-Zariski. Let $Y = \Spec (A^f_{\pi_0})$. Then $\pi_0(Y) \cong T$ and the diagram
   \[
   \begin{tikzcd}
@@ -2201,6 +2220,7 @@ In the following series of constructions, we will modify the connected component
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{thm:modify-pi0-finite-properties,lemma:ind-ind-Zariski,thm:cartesian-profinite}
   By \Cref{thm:modify-pi0-finite-properties} we see that each \(A \to A^f_{q_i}\) is ind-Zariski, thus $A^f_{\pi_0}$ is ind-Zariski by \Cref{lemma:ind-ind-Zariski}. We have the following canonical cartesian diagram
   \[
@@ -2314,6 +2334,7 @@ this we will perform a series of reductions.
 
 \begin{proof}
   % The proof goes as in https://stacks.math.columbia.edu/tag/0983, starting from the second sentence.
+  \leanok
   \uses{thm:extremally-disconnected-cover,def:modify-pi0-profinite,thm:modify-pi0-profinite-properties,thm:cartesian-profinite-w-local,thm:ind-Zariski-identifies-local-rings}
   Choose an extremally disconnected space $T$ and a surjective continuous map $T \to \pi_0(\operatorname{Spec}(C))$ by \Cref{thm:extremally-disconnected-cover}. (\(T\) can be chosen as \(\beta((\pi_0(\operatorname{Spec}(C)))^{\textnormal{disc}})\).) Note that $T$ is profinite.
   By \Cref{thm:modify-pi0-profinite-properties}, \Cref{def:modify-pi0-profinite} gives an ind-Zariski ring map

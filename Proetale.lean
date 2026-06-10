@@ -14,6 +14,7 @@ import Proetale.Algebra.IndZariski
 import Proetale.Algebra.IntegralLocal
 import Proetale.Algebra.LocalIso
 import Proetale.Algebra.Preliminaries.Ideal
+import Proetale.Algebra.PullbackProfinite
 import Proetale.Algebra.ProEtaleContraction
 import Proetale.Algebra.StalkAlgebraic
 import Proetale.Algebra.StalkIso
