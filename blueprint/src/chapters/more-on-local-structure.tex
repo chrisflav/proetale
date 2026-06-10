@@ -545,6 +545,8 @@ suffices for our purposes.
     \end{tikzcd}
     \] with $S$ of weak dimension $\le 1$ and $S \to T$ a flat, injective epimorphism of rings.
     \label{lemma:integrally-closed-cartesian-weak-dim}
+    \lean{IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -566,7 +568,17 @@ suffices for our purposes.
 \begin{proof}
     \uses{lemma:weak-dim-integrally-closed, lemma:weakly-etale-preserve-weak-dim,
       lemma:integrally-closed-cartesian-weak-dim}
-    % TODO
+    \leanok
+    Choose a cartesian diagram as in \Cref{lemma:integrally-closed-cartesian-weak-dim} and
+    tensor it with the flat $A$-algebra $B$. The resulting diagram with vertices $B$,
+    $B \otimes_A L$, $B \otimes_A S$ and $B \otimes_A T$ is again cartesian. The ring
+    $B \otimes_A S$ is weakly étale over $S$, hence of weak dimension $\le 1$ by
+    \Cref{lemma:weakly-etale-preserve-weak-dim}, and $B \otimes_A S \to B \otimes_A T$ is a
+    flat, injective ring epimorphism, since all three properties are stable under (flat) base
+    change. By \Cref{lemma:weak-dim-integrally-closed}, $B \otimes_A S$ is integrally closed
+    in $B \otimes_A T$. An element of $B \otimes_A L$ integral over $B$ maps to an element of
+    $B \otimes_A T$ integral over $B \otimes_A S$, hence lying in $B \otimes_A S$; by
+    cartesianness it lies in $B$.
 \end{proof}
 
 \section{Fields}
