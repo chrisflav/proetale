@@ -141,15 +141,28 @@ lemma le_pro : P ≤ pro.{w} P := by
 instance [P.ContainsIdentities] : (pro.{w} P).ContainsIdentities where
   id_mem X := le_pro _ _ (P.id_mem X)
 
-lemma op_isFinitelyPresentable :
-    (isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ :=
-  sorry
+attribute [local instance] Cardinal.fact_isRegular_aleph0 in
+/-- If every morphism in `P` is finitely presentable, then every morphism in `P.op.op`
+is finitely presentable in `Cᵒᵖᵒᵖ`.
 
-lemma pro_pro [LocallySmall.{w} C] (H : P ≤ isFinitelyPresentable.{w} C) :
+Note that the naive equality `(isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ`
+is false in general categories, hence hypotheses about pro-properties are stated in the form
+`P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ` and transported along `Cᵒᵖᵒᵖ ≌ C` with this lemma. -/
+lemma le_isFinitelyPresentable_op_op {P : MorphismProperty C}
+    (H : P ≤ isFinitelyPresentable.{w} C) :
+    P.op.op ≤ isFinitelyPresentable.{w} Cᵒᵖᵒᵖ := by
+  intro X Y f hf
+  haveI h : IsCardinalPresentable (CategoryTheory.Under.mk f.unop.unop)
+      (Cardinal.aleph0.{w}) := H _ hf
+  haveI h2 := isCardinalPresentable_of_isEquivalence (CategoryTheory.Under.mk f.unop.unop)
+    Cardinal.aleph0 (CategoryTheory.Under.post (opOp C))
+  exact isCardinalPresentable_of_iso
+    (X := (CategoryTheory.Under.post (opOp C)).obj (CategoryTheory.Under.mk f.unop.unop))
+    (CategoryTheory.Under.isoMk (Iso.refl _) (by simp)) Cardinal.aleph0
+
+lemma pro_pro [LocallySmall.{w} C] (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ) :
     pro.{w} (pro.{w} P) = pro.{w} P := by
-  rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind]
-  rw [← op_isFinitelyPresentable]
-  exact P.op_mono H
+  rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind H]
 
 lemma pro_of_univLE [UnivLE.{w', w}] :
     pro.{w'} P ≤ pro.{w} P := by

@@ -7,6 +7,7 @@ import Proetale.Algebra.WLocalization.Ideal
 import Proetale.Topology.SpectralSpace.WLocal.Pullback
 import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.IndEtale
+import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.PullbackProfinite
 import Mathlib.Topology.Category.Stonean.Basic
@@ -506,6 +507,182 @@ end WContractification
 
 end
 
+section Retraction
+
+open WContractification Topology
+
+variable {R : Type u} [CommRing R]
+
+/-- Auxiliary step for `exists_retraction_of_bijectiveOnStalks`: if `R → S` is a map of
+w-local rings that is bijective on stalks, maps closed points of `Spec S` to closed points of
+`Spec R`, and if there is a closed subset `T ⊆ π₀(Spec S)` mapping bijectively onto
+`π₀(Spec R)`, then `R → S` has a retraction. The retraction is obtained by restricting `S` to
+the components in `T` (via `WContractification.Restriction`) and showing that the resulting
+map `R → Restriction T` is bijective. -/
+private theorem exists_retraction_of_isClosed_of_bijOn [IsWLocalRing R]
+    {S : Type u} [CommRing S] [Algebra R S] [IsWLocalRing S]
+    (hbos : (algebraMap R S).BijectiveOnStalks)
+    (hcl : ∀ y ∈ closedPoints (PrimeSpectrum S),
+      PrimeSpectrum.comap (algebraMap R S) y ∈ closedPoints (PrimeSpectrum R))
+    (T : Set (ConnectedComponents (PrimeSpectrum S))) (hT : IsClosed T)
+    (hsurjT : ∀ c : ConnectedComponents (PrimeSpectrum R), ∃ t ∈ T,
+      (PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap t = c)
+    (hinjT : ∀ t₁ ∈ T, ∀ t₂ ∈ T,
+      (PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap t₁ =
+        (PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap t₂ →
+      t₁ = t₂) :
+    ∃ f : S →+* R, f.comp (algebraMap R S) = RingHom.id R := by
+  letI : Algebra R (Restriction T) := Algebra.compHom _ (algebraMap R S)
+  haveI : IsScalarTower R S (Restriction T) := .of_algebraMap_eq' rfl
+  haveI : IsWLocalRing (Restriction T) :=
+    .of_surjective (Restriction.algebraMap_surjective T)
+  -- The triangle of spectra commutes.
+  have htower : ∀ w : PrimeSpectrum (Restriction T),
+      PrimeSpectrum.comap (algebraMap R (Restriction T)) w =
+        PrimeSpectrum.comap (algebraMap R S)
+          (PrimeSpectrum.comap (algebraMap S (Restriction T)) w) := fun w => by
+    rw [← PrimeSpectrum.comap_comp_apply, ← IsScalarTower.algebraMap_eq]
+  -- `Spec (Restriction T) → Spec S` is a closed embedding with range `mk ⁻¹' T`.
+  have hε : IsClosedEmbedding (PrimeSpectrum.comap (algebraMap S (Restriction T))) :=
+    Restriction.isClosedEmbedding_algebraMap_specComap
+  have hrange : Set.range (PrimeSpectrum.comap (algebraMap S (Restriction T))) =
+      ConnectedComponents.mk ⁻¹' T :=
+    Restriction.range_algebraMap_specComap hT
+  -- The range is stable under specialization, being a union of connected components.
+  have hstable : StableUnderSpecialization
+      (Set.range (PrimeSpectrum.comap (algebraMap S (Restriction T)))) := by
+    rw [hrange]
+    intro x y hxy hx
+    rw [Set.mem_preimage] at hx ⊢
+    rwa [← hxy.connectedComponents_mk_eq]
+  -- Hence `Spec (Restriction T) → Spec S` maps closed points to closed points.
+  have hεcl : ∀ w ∈ closedPoints (PrimeSpectrum (Restriction T)),
+      PrimeSpectrum.comap (algebraMap S (Restriction T)) w ∈
+        closedPoints (PrimeSpectrum S) := fun w hw =>
+    mem_closedPoints_iff.mpr
+      (hε.isEmbedding.isClosed_singleton hstable (mem_closedPoints_iff.mp hw))
+  -- Points of `Spec (Restriction T)` lie in components belonging to `T`.
+  have hmkT : ∀ w : PrimeSpectrum (Restriction T),
+      ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap S (Restriction T)) w) ∈ T := by
+    intro w
+    have hmem : PrimeSpectrum.comap (algebraMap S (Restriction T)) w ∈
+        Set.range (PrimeSpectrum.comap (algebraMap S (Restriction T))) :=
+      Set.mem_range_self w
+    rwa [hrange] at hmem
+  -- Compatibility of the two `π₀`-maps.
+  have hπcomm : ∀ w : PrimeSpectrum (Restriction T),
+      (PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap
+        (ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap S (Restriction T)) w)) =
+      ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap R (Restriction T)) w) := by
+    intro w
+    rw [Continuous.connectedComponentsMap_mk, htower]
+  -- The algebra map `R → Restriction T` is a w-local ring map.
+  have hwlocal : (algebraMap R (Restriction T)).IsWLocal := by
+    refine ⟨PrimeSpectrum.isSpectralMap_comap _, fun w hw => ?_⟩
+    rw [Set.mem_preimage, htower]
+    exact hcl _ (hεcl w hw)
+  -- It is bijective on stalks.
+  have hbosB : (algebraMap R (Restriction T)).BijectiveOnStalks := by
+    rw [IsScalarTower.algebraMap_eq R S (Restriction T)]
+    exact hbos.comp (Algebra.IndZariski.bijectiveOnStalks_algebraMap S (Restriction T))
+  -- It is bijective on connected components.
+  have hbijπ₀ : Function.Bijective
+      (PrimeSpectrum.continuous_comap (algebraMap R (Restriction T))).connectedComponentsMap := by
+    constructor
+    · -- Injectivity: every component of the w-local `Spec (Restriction T)` contains a
+      -- unique closed point; images of these closed points in `π₀(Spec S)` lie in `T`,
+      -- where the comparison with `π₀(Spec R)` is injective by assumption.
+      intro c₁ c₂ heq
+      obtain ⟨⟨w₁, hw₁⟩, hc₁⟩ :=
+        (WLocalSpace.isHomeomorph_connectedComponents_closedPoints
+          (PrimeSpectrum (Restriction T))).bijective.2 c₁
+      obtain ⟨⟨w₂, hw₂⟩, hc₂⟩ :=
+        (WLocalSpace.isHomeomorph_connectedComponents_closedPoints
+          (PrimeSpectrum (Restriction T))).bijective.2 c₂
+      rw [← hc₁, ← hc₂] at heq ⊢
+      have heq' : ConnectedComponents.mk
+            (PrimeSpectrum.comap (algebraMap R (Restriction T)) w₁) =
+          ConnectedComponents.mk
+            (PrimeSpectrum.comap (algebraMap R (Restriction T)) w₂) := heq
+      have hkey : PrimeSpectrum.comap (algebraMap S (Restriction T)) w₁ =
+          PrimeSpectrum.comap (algebraMap S (Restriction T)) w₂ :=
+        WLocalSpace.closedPoints_eq_of_mk_eq (hεcl w₁ hw₁) (hεcl w₂ hw₂)
+          (hinjT _ (hmkT w₁) _ (hmkT w₂) (by rw [hπcomm w₁, hπcomm w₂, heq']))
+      have hw : w₁ = w₂ := hε.injective hkey
+      subst hw
+      rfl
+    · -- Surjectivity: a component of `Spec R` is hit by some `t ∈ T`, and `mk ⁻¹' T` is
+      -- the range of `Spec (Restriction T) → Spec S`.
+      intro c
+      obtain ⟨t, htT, hπt⟩ := hsurjT c
+      obtain ⟨x₀, hx₀⟩ := ConnectedComponents.surjective_coe t
+      have hx₀mem : x₀ ∈ Set.range (PrimeSpectrum.comap (algebraMap S (Restriction T))) := by
+        rw [hrange, Set.mem_preimage, hx₀]
+        exact htT
+      obtain ⟨w, hw⟩ := hx₀mem
+      refine ⟨ConnectedComponents.mk w, ?_⟩
+      calc (PrimeSpectrum.continuous_comap
+            (algebraMap R (Restriction T))).connectedComponentsMap (ConnectedComponents.mk w)
+          = ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap R (Restriction T)) w) :=
+            Continuous.connectedComponentsMap_mk _ w
+        _ = (PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap
+            (ConnectedComponents.mk (PrimeSpectrum.comap (algebraMap S (Restriction T)) w)) :=
+            (hπcomm w).symm
+        _ = c := by rw [hw, hx₀]; exact hπt
+  -- Conclude: `R → Restriction T` is bijective, and inverting it gives the retraction.
+  have hbij : Function.Bijective (algebraMap R (Restriction T)) :=
+    hwlocal.bijective_of_bijective hbosB hbijπ₀
+  let e : R ≃+* Restriction T := RingEquiv.ofBijective _ hbij
+  refine ⟨(e.symm : Restriction T →+* R).comp (algebraMap S (Restriction T)), ?_⟩
+  refine RingHom.ext fun r => ?_
+  change e.symm (algebraMap S (Restriction T) (algebraMap R S r)) = r
+  rw [← IsScalarTower.algebraMap_apply R S (Restriction T)]
+  exact e.symm_apply_apply r
+
+/-- Stacks 09AZ (second part of the proof of (3) => (1)), blueprint
+`thm:ff-identifies-local-rings-plus-c-has-retraction-if`: a faithfully flat map identifying
+local rings from a w-local ring with extremally disconnected π₀ to a w-local ring whose
+closed points are cut out by the pulled-back ideal has a retraction. -/
+theorem exists_retraction_of_bijectiveOnStalks [IsWLocalRing R]
+    [ExtremallyDisconnected (ConnectedComponents (PrimeSpectrum R))]
+    {I : Ideal R} (hI : zeroLocus (I : Set R) = closedPoints (PrimeSpectrum R))
+    {S : Type u} [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S]
+    [Algebra.BijectiveOnStalks R S] [IsWLocalRing S]
+    (hS : zeroLocus ((I.map (algebraMap R S) : Ideal S) : Set S) =
+      closedPoints (PrimeSpectrum S)) :
+    ∃ f : S →+* R, f.comp (algebraMap R S) = RingHom.id R := by
+  -- Closed points of `Spec S` lie over closed points of `Spec R`.
+  have hcl : ∀ y ∈ closedPoints (PrimeSpectrum S),
+      PrimeSpectrum.comap (algebraMap R S) y ∈ closedPoints (PrimeSpectrum R) := by
+    intro y hy
+    rw [← hS, mem_zeroLocus] at hy
+    rw [← hI, mem_zeroLocus]
+    intro a ha
+    exact Ideal.mem_comap.mpr (hy (Ideal.mem_map_of_mem _ ha))
+  -- `π₀(Spec S) → π₀(Spec R)` admits a continuous section by Gleason's theorem, since the
+  -- target is extremally disconnected and the map is surjective by faithful flatness.
+  obtain ⟨ρ, hρcont, hρ⟩ :=
+    (CompactT2.ExtremallyDisconnected.projective
+        (A := ConnectedComponents (PrimeSpectrum R)))
+      continuous_id
+      (PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap_continuous
+      ((PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap_surjective
+        PrimeSpectrum.comap_surjective_of_faithfullyFlat)
+  -- The range of the section is a closed set of components mapping bijectively onto
+  -- `π₀(Spec R)`.
+  refine exists_retraction_of_isClosed_of_bijOn
+    (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›) hcl (Set.range ρ)
+    (isCompact_range hρcont).isClosed
+    (fun c => ⟨ρ c, Set.mem_range_self c, congrFun hρ c⟩) ?_
+  rintro _ ⟨c₁, rfl⟩ _ ⟨c₂, rfl⟩ h
+  have h₁ := congrFun hρ c₁
+  have h₂ := congrFun hρ c₂
+  simp only [Function.comp_apply, id_eq] at h₁ h₂
+  rw [h₁, h₂] at h
+  rw [h]
+
+end Retraction
+
 variable {R : Type u} [CommRing R]
 
 /--
@@ -519,7 +696,30 @@ theorem IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints
     [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S]
     (hS : zeroLocus (I.map (algebraMap R S)) = closedPoints (PrimeSpectrum S)) :
     ∃ (f : S →+* R), f.comp (algebraMap R S) = RingHom.id R := by
-  sorry -- thm:ind-etale-plus-c-has-retraction-if-w-contractible
+  -- thm:ind-etale-plus-c-has-retraction-if-w-contractible
+  haveI : ExtremallyDisconnected (ConnectedComponents (PrimeSpectrum R)) :=
+    IsWContractibleRing.extremallyDisconnected_connectedComponents
+  -- `R → S` identifies local rings: it is weakly étale (being ind-étale) and every prime of
+  -- `S` is contained in a maximal ideal lying over a maximal ideal of `R`, at which the local
+  -- ring of the w-strictly local ring `R` is strictly henselian.
+  haveI : Algebra.BijectiveOnStalks R S := by
+    refine Algebra.WeaklyEtale.bijectiveOnStalks fun q hq => ?_
+    obtain ⟨n, hnmax, hqn⟩ := q.exists_le_maximal hq.ne_top
+    haveI hnp : n.IsPrime := hnmax.isPrime
+    have hncl : (⟨n, hnp⟩ : PrimeSpectrum S) ∈ closedPoints (PrimeSpectrum S) :=
+      mem_closedPoints_iff.mpr
+        ((PrimeSpectrum.isClosed_singleton_iff_isMaximal _).mpr hnmax)
+    rw [← hS, mem_zeroLocus] at hncl
+    have hm : (⟨n.comap (algebraMap R S), hnp.comap _⟩ : PrimeSpectrum R) ∈
+        closedPoints (PrimeSpectrum R) := by
+      rw [← hI, mem_zeroLocus]
+      intro a ha
+      exact Ideal.mem_comap.mpr (hncl (Ideal.mem_map_of_mem _ ha))
+    haveI : (n.comap (algebraMap R S)).IsMaximal :=
+      (PrimeSpectrum.isClosed_singleton_iff_isMaximal _).mp (mem_closedPoints_iff.mp hm)
+    exact ⟨n, hnp, hqn,
+      IsWStrictlyLocalRing.isStrictlyHenselianLocalRing_localization (n.comap (algebraMap R S))⟩
+  exact exists_retraction_of_bijectiveOnStalks hI hS
 
 variable (R)
 

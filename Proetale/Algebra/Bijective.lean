@@ -26,8 +26,89 @@ lemma bijective_comap_lmul'_of_bijective_of_bijective
       Function.Bijective
         (IsLocalRing.ResidueField.map (Localization.localRingHom p q (algebraMap R S)
           ‹q.LiesOver p›.over))) :
-    Function.Bijective (PrimeSpectrum.comap <| (TensorProduct.lmul' (S := S) R).toRingHom) :=
-  sorry
+    Function.Bijective (PrimeSpectrum.comap <| (TensorProduct.lmul' (S := S) R).toRingHom) := by
+  set μ : S ⊗[R] S →+* S := (TensorProduct.lmul' (S := S) R).toRingHom with hμdef
+  set ι₁ : S →+* S ⊗[R] S :=
+    (Algebra.TensorProduct.includeLeft : S →ₐ[R] S ⊗[R] S).toRingHom with hι₁def
+  set ι₂ : S →+* S ⊗[R] S :=
+    (Algebra.TensorProduct.includeRight : S →ₐ[R] S ⊗[R] S).toRingHom with hι₂def
+  have hμι : μ.comp ι₁ = RingHom.id S := by
+    ext s
+    simp [hμdef, hι₁def]
+  have hcommfun : ∀ r : R, ι₁ (algebraMap R S r) = ι₂ (algebraMap R S r) := fun r ↦
+    ((Algebra.TensorProduct.includeLeft : S →ₐ[R] S ⊗[R] S).commutes r).trans
+      ((Algebra.TensorProduct.includeRight : S →ₐ[R] S ⊗[R] S).commutes r).symm
+  have hcomm : ι₁.comp (algebraMap R S) = ι₂.comp (algebraMap R S) :=
+    RingHom.ext fun r ↦ hcommfun r
+  -- `Spec (lmul')` has the section `Spec (includeLeft)`, hence is injective.
+  have hsec : ∀ z : PrimeSpectrum S,
+      PrimeSpectrum.comap ι₁ (PrimeSpectrum.comap μ z) = z := by
+    intro z
+    apply PrimeSpectrum.ext
+    rw [PrimeSpectrum.comap_asIdeal, PrimeSpectrum.comap_asIdeal, Ideal.comap_comap, hμι,
+      Ideal.comap_id]
+  refine ⟨fun x y hxy ↦ by rw [← hsec x, ← hsec y, hxy], fun P ↦ ?_⟩
+  -- For surjectivity, let `P` be a prime of `S ⊗[R] S`. Its two pullbacks to `S` agree,
+  -- since `Spec S → Spec R` is injective.
+  set q : Ideal S := P.asIdeal.comap ι₁ with hq₁
+  have hq₂ : q = P.asIdeal.comap ι₂ := by
+    have heq : PrimeSpectrum.comap (algebraMap R S) (PrimeSpectrum.comap ι₁ P) =
+        PrimeSpectrum.comap (algebraMap R S) (PrimeSpectrum.comap ι₂ P) := by
+      apply PrimeSpectrum.ext
+      simp only [PrimeSpectrum.comap_asIdeal, Ideal.comap_comap, hcomm]
+    exact hq₁.trans (congrArg PrimeSpectrum.asIdeal (hf.injective heq))
+  haveI hqprime : q.IsPrime := by rw [hq₁]; infer_instance
+  set p : Ideal R := q.comap (algebraMap R S) with hp
+  haveI : q.LiesOver p := ⟨hp⟩
+  -- The two induced maps `κ(q) → κ(P)` agree, since both restrict to the same map on
+  -- `κ(p)` and `κ(p) → κ(q)` is surjective.
+  have hρ : Function.Bijective (Ideal.ResidueField.map p q (algebraMap R S) hp) := h p q
+  have hcomp : (Ideal.ResidueField.map q P.asIdeal ι₁ hq₁).comp
+        (Ideal.ResidueField.map p q (algebraMap R S) hp) =
+      (Ideal.ResidueField.map q P.asIdeal ι₂ hq₂).comp
+        (Ideal.ResidueField.map p q (algebraMap R S) hp) := by
+    apply IsLocalization.ringHom_ext (nonZeroDivisors (R ⧸ p))
+    rw [← RingHom.cancel_right (Ideal.Quotient.mk_surjective (I := p))]
+    ext r
+    simp only [RingHom.coe_comp, Function.comp_apply,
+      Ideal.algebraMap_quotient_residueField_mk, Ideal.ResidueField.map_algebraMap]
+    rw [hcommfun r]
+  have hψ : Ideal.ResidueField.map q P.asIdeal ι₁ hq₁ =
+      Ideal.ResidueField.map q P.asIdeal ι₂ hq₂ := by
+    refine RingHom.ext fun x ↦ ?_
+    obtain ⟨y, rfl⟩ := hρ.surjective x
+    exact congr($hcomp y)
+  have hkey : ∀ s : S, algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ s) =
+      algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₂ s) := by
+    intro s
+    rw [← Ideal.ResidueField.map_algebraMap q P.asIdeal ι₁ hq₁ s,
+      ← Ideal.ResidueField.map_algebraMap q P.asIdeal ι₂ hq₂ s, hψ]
+  -- Hence every element of `S ⊗[R] S` has the same image in `κ(P)` as the image of its
+  -- product under `includeLeft`.
+  have hχ : ∀ x : S ⊗[R] S, algebraMap (S ⊗[R] S) P.asIdeal.ResidueField x =
+      algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ (μ x)) := by
+    intro x
+    induction x with
+    | zero => simp only [map_zero]
+    | tmul s t =>
+      calc algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (s ⊗ₜ[R] t)
+          = algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ s) *
+            algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₂ t) := by
+            rw [← map_mul]
+            congr 1
+            simp [hι₁def, hι₂def]
+        _ = algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ s) *
+            algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ t) := by rw [hkey t]
+        _ = algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ (μ (s ⊗ₜ[R] t))) := by
+            rw [← map_mul, ← map_mul]
+            congr 2
+    | add x y hx hy => simp only [map_add, hx, hy]
+  -- Conclude that `P` is the pullback of `q` along `lmul'`.
+  refine ⟨PrimeSpectrum.comap ι₁ P, PrimeSpectrum.ext ?_⟩
+  ext x
+  simp only [PrimeSpectrum.comap_asIdeal, Ideal.mem_comap]
+  rw [← Ideal.algebraMap_residueField_eq_zero (I := P.asIdeal) (x := ι₁ (μ x)),
+    ← Ideal.algebraMap_residueField_eq_zero (I := P.asIdeal) (x := x), ← hχ x]
 
 /-- A flat surjective map `R → S` that is bijective on prime spectra is an isomorphism. -/
 lemma bijective_of_bijective_of_flat [Module.Flat R S]
@@ -73,7 +154,41 @@ lemma WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap
       Function.Bijective
         (IsLocalRing.ResidueField.map (Localization.localRingHom p q (algebraMap R S)
           ‹q.LiesOver p›.over))) :
-    Function.Bijective (algebraMap R S) :=
-  sorry
+    Function.Bijective (algebraMap R S) := by
+  have hff : Module.FaithfullyFlat R S := .of_flat_of_isLocalHom
+  -- The multiplication map `S ⊗[R] S → S` is flat, surjective and bijective on prime
+  -- spectra, hence bijective.
+  have hμ : Function.Bijective (TensorProduct.lmul' (S := S) R) := by
+    letI : Algebra (S ⊗[R] S) S := (TensorProduct.lmul' (S := S) R).toRingHom.toAlgebra
+    haveI : Module.Flat (S ⊗[R] S) S := WeaklyEtale.flat_lmul' R S
+    have halg : algebraMap (S ⊗[R] S) S = (TensorProduct.lmul' (S := S) R).toRingHom :=
+      RingHom.algebraMap_toAlgebra _
+    have hsurj : Function.Surjective (algebraMap (S ⊗[R] S) S) := by
+      rw [halg]
+      exact fun s ↦ ⟨s ⊗ₜ 1, by simp [TensorProduct.lmul'_apply_tmul]⟩
+    have := bijective_of_bijective_of_flat (R := S ⊗[R] S) (S := S)
+      (by rw [halg]; exact bijective_comap_lmul'_of_bijective_of_bijective h hres) hsurj
+    rwa [halg] at this
+  -- Hence `includeLeft : S → S ⊗[R] S` is bijective, being a section of `lmul'`.
+  have hone : ∀ s : S, TensorProduct.lmul' (S := S) R (s ⊗ₜ[R] 1) = s := fun s ↦ by
+    rw [TensorProduct.lmul'_apply_tmul, mul_one]
+  have hinc : Function.Bijective fun s : S ↦ (s ⊗ₜ[R] 1 : S ⊗[R] S) := by
+    constructor
+    · intro a b hab
+      rw [← hone a, ← hone b]
+      exact congrArg _ hab
+    · intro x
+      refine ⟨TensorProduct.lmul' (S := S) R x, hμ.injective ?_⟩
+      rw [hone]
+  -- Faithfully flat descent of surjectivity: `S ⊗[R] R → S ⊗[R] S` is surjective, hence
+  -- so is `R → S`.
+  have hsurj : Function.Surjective (algebraMap R S) := by
+    have hT : Function.Surjective ⇑(LinearMap.lTensor S (Algebra.linearMap R S)) := by
+      intro y
+      obtain ⟨s, rfl⟩ := hinc.surjective y
+      exact ⟨s ⊗ₜ 1, by simp⟩
+    exact (Module.FaithfullyFlat.lTensor_surjective_iff_surjective R S
+      (Algebra.linearMap R S)).mp hT
+  exact bijective_of_bijective_of_flat h hsurj
 
 end Algebra
