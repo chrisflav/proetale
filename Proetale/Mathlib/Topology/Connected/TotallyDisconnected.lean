@@ -110,8 +110,34 @@ theorem ConnectedComponents.isHomeomorph_connectedComponentsLift_prod :
     IsHomeomorph (Continuous.connectedComponentsLift
     (f := fun x : S × T ↦ (mk x.1, mk x.2)) (by continuity)) where
   continuous := Continuous.connectedComponentsLift_continuous (by continuity)
-  isOpenMap := sorry
-  bijective := sorry
+  bijective := by
+    constructor
+    · apply Continuous.connectedComponentsLift_injective
+      intro y
+      rcases y with ⟨cs, ct⟩
+      obtain ⟨s, rfl⟩ := ConnectedComponents.surjective_coe cs
+      obtain ⟨t, rfl⟩ := ConnectedComponents.surjective_coe ct
+      have h :
+        (fun x : S × T ↦ (mk x.1, mk x.2)) ⁻¹' {⟨mk s, mk t⟩} = connectedComponent s ×ˢ connectedComponent t := by
+        ext x
+        simp
+        refine and_congr ?_ ?_
+        · apply connectedComponent_eq_iff_mem
+        · apply connectedComponent_eq_iff_mem
+      have hs : IsConnected (connectedComponent s) :=
+        isConnected_connectedComponent
+      have ht : IsConnected (connectedComponent t) :=
+        isConnected_connectedComponent
+      rw [h]
+      exact IsConnected.isPreconnected (hs.prod ht)
+    · intro ⟨cs, ct⟩
+      obtain ⟨s, rfl⟩ := ConnectedComponents.surjective_coe cs
+      obtain ⟨t, rfl⟩ := ConnectedComponents.surjective_coe ct
+      exact ⟨mk (s, t), rfl⟩
+  isOpenMap := by
+    sorry
+    -- I doubt if this is even true. -Haowen
+
 
 variable {S T} in
 noncomputable def ConnectedComponents.prodMap :
