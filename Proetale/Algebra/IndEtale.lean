@@ -67,6 +67,33 @@ theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (CommAlgCat.finitePresentation_le_isFinitelyPresentable R))]
   exact ⟨ι, ‹_›, ‹_›, P, fun i => (iff_ind_etale R _).mp (h i)⟩
 
+instance : (CommAlgCat.etale R).IsClosedUnderIsomorphisms := by
+  rw [CommAlgCat.etale_eq]
+  exact RingHom.Etale.respectsIso.isClosedUnderIsomorphisms_toObjectProperty R
+
+/-- Étale algebras are closed under finite products. -/
+instance (I : Type u) [Finite I] :
+    (CommAlgCat.etale R).IsClosedUnderLimitsOfShape (Discrete I) where
+  limitsOfShape_le := by
+    rintro X ⟨h⟩
+    have (i : I) : Algebra.Etale R (h.diag.obj ⟨i⟩) := h.prop_diag_obj _
+    have hpi : (CommAlgCat.etale R) (CommAlgCat.of R (∀ i, h.diag.obj ⟨i⟩)) :=
+      inferInstanceAs (Algebra.Etale R _)
+    exact (CommAlgCat.etale R).prop_of_iso
+      (h.isLimit.conePointsIsoOfNatIso
+        (CommAlgCat.isLimitPiFan fun i ↦ h.diag.obj ⟨i⟩) Discrete.natIsoFunctor).symm hpi
+
+/-- Finite products of ind-étale algebras are ind-étale. -/
+instance pi {I : Type u} [Finite I] (A : I → Type u) [∀ i, CommRing (A i)]
+    [∀ i, Algebra R (A i)] [∀ i, IndEtale R (A i)] :
+    IndEtale R (∀ i, A i) := by
+  rw [iff_ind_etale]
+  have hprop (i : I) : ObjectProperty.ind.{u} (CommAlgCat.etale R) (.of R (A i)) :=
+    (iff_ind_etale R (A i)).mp inferInstance
+  exact ObjectProperty.prop_of_isLimit
+    (P := ObjectProperty.ind.{u} (CommAlgCat.etale R))
+    (CommAlgCat.isLimitPiFan fun i ↦ CommAlgCat.of R (A i)) (fun ⟨i⟩ ↦ hprop i)
+
 lemma isLocalIso_le_etale (R : Type u) [CommRing R] :
     CommAlgCat.isLocalIso R ≤ CommAlgCat.etale R := fun X hX ↦
   have : Algebra.IsLocalIso R X := hX

@@ -296,7 +296,7 @@ morphisms between affine schemes. Both of these are ind-presentable wrt. to the
 inclusion of the affine étale site into the affine pro-étale site.
 -/
 theorem isSheaf_of_generates_of_isRelativelyPresentable (P : Dᵒᵖ ⥤ A) (h : IsSheaf J (F.op ⋙ P))
-    [PreservesFilteredColimitsOfSize.{w, w} P] [HasFilteredColimitsOfSize.{w, w} A]
+    [Functor.PreservesRelativeFilteredColimits.{w} F P] [HasFilteredColimitsOfSize.{w, w} A]
     [AB5OfSize.{w} A] (H : B.Generates K)
     (h₁ : B ≤ Precoverage.relativelyPresentable.{w} F J)
     (h₂ : B ≤ Precoverage.finite _) :
