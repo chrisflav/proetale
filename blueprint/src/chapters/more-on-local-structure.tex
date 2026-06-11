@@ -923,7 +923,18 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
-    TBA.
+    \leanok
+    \uses{thm:modify-pi0-profinite-properties, thm:identifies-local-ring-to-top-fully-faithful,
+    thm:isom-of-identifies-local-rings-w-local-isom-pi0}
+    Let $T = \pi_0(\Spec B)$ with its continuous map to $\pi_0(\Spec A)$. By
+    \Cref{thm:modify-pi0-profinite-properties}, there is an ind-Zariski $A$-algebra $A'$
+    with $\Spec A' = \Spec A \times_{\pi_0(\Spec A)} T$. The universal property of the
+    pullback gives a continuous map $\Spec B \to \Spec A'$ over $\Spec A$, which by
+    fully faithfulness (\Cref{thm:identifies-local-ring-to-top-fully-faithful}) comes
+    from an $A$-algebra map $A' \to B$. This map is a w-local map of w-local rings that
+    identifies local rings and induces a bijection on connected components, hence is an
+    isomorphism by \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}. Thus
+    $B \cong A'$ is ind-Zariski over $A$.
 \end{proof}
 
 \begin{proposition}[\stacksproject{097G}]
@@ -953,6 +964,20 @@ suffices for our purposes.
 \end{theorem}
 
 \begin{proof}
-    \uses{thm:weakly-etale-over-sh, prop:bijective-on-stalks-ind-zariski}
-    TBA.
+    \leanok
+    \uses{thm:weakly-etale-over-sh, lemma:w-local-bijective-on-stalks-ind-zariski,
+    thm:ind-etale-w-strictly-local-cover}
+    Let $C$ be a faithfully flat, ind-étale, w-strictly local $R$-algebra
+    (\Cref{thm:ind-etale-w-strictly-local-cover}) and let $J \subseteq C$ be the ideal
+    cutting out the closed points of $\spec{C}$. Set $D' = C \otimes_R S$, which is
+    weakly étale over $C$ and faithfully flat ind-étale over $S$, and let $D$ be the
+    w-localization of $D'$ along $J D'$ (\stacksproject{097A}). Then $D$ is w-local,
+    ind-Zariski over $D'$, and the closed points of $\spec{D}$ lie over closed points of
+    $\spec{C}$. Since the local rings of $C$ at closed points are strictly henselian,
+    the weakly étale map $C \to D$ identifies local rings by
+    \Cref{thm:weakly-etale-over-sh}, hence is ind-Zariski by
+    \Cref{lemma:w-local-bijective-on-stalks-ind-zariski}. Thus $T = D$ works:
+    $S \to D' \to D$ is faithfully flat and ind-étale (faithful flatness of the
+    composition uses that the closed points of $\spec{C}$ surject onto $\spec{R}$), and
+    $R \to C \to D$ is ind-étale.
 \end{proof}

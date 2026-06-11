@@ -18,7 +18,7 @@ import Proetale.Pro.PresheafColimit
 import Proetale.Pro.Generating
 import Proetale.Morphisms.ProAffineEtale
 import Proetale.Topology.LocalProperties
-import Proetale.Algebra.IndWeaklyEtale
+import Proetale.Algebra.WeaklyEtaleIndEtale
 import Proetale.Mathlib.CategoryTheory.Sites.Grothendieck
 import Proetale.Mathlib.CategoryTheory.Sites.Hypercover.Zero
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit

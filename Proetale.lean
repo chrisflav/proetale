@@ -27,6 +27,7 @@ import Proetale.Algebra.WStrictLocalization
 import Proetale.Algebra.WeakDimension
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Algebra.WeaklyEtaleField
+import Proetale.Algebra.WeaklyEtaleIndEtale
 import Proetale.Basic
 import Proetale.FromPi1.Etale
 import Proetale.Mathlib.Algebra.Algebra.Pi
