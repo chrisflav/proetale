@@ -44,7 +44,7 @@ lemma generate_singleton_mem_topology {X Y : S.AffineEtale} (f : X ⟶ Y)
       ((AffineEtale.Spec S).obj Y).hom ((AffineEtale.Spec S).obj Y).prop ?_
     have w := MorphismProperty.Over.w ((AffineEtale.Spec S).map f)
     dsimp at w
-    show Etale (Spec.map f.left.unop ≫ Y.hom)
+    change Etale (Spec.map f.left.unop ≫ Y.hom)
     rw [w]
     exact X.prop
   have : Sieve.generate ((Presieve.singleton f).map (toScheme S)) ∈

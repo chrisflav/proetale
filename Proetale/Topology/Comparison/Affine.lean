@@ -390,7 +390,7 @@ lemma zariskiTopology_eq_toGrothendieck_zariskiPrecoverage :
       ProEt.forget_map, Over.forget_map, toProEt_map,
       Scheme.ofArrows_mem_precoverage_iff] at hR
     obtain ⟨hsurj, hoi⟩ := hR
-    show (Sieve.generate _).functorPushforward (toProEt S) ∈ ProEt.zariskiTopology S _
+    change (Sieve.generate _).functorPushforward (toProEt S) ∈ ProEt.zariskiTopology S _
     simp only [ProEt.zariskiTopology,
       Scheme.smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology]
     apply (Scheme.mem_toGrothendieck_smallPretopology _ _).mpr
@@ -477,7 +477,7 @@ lemma _root_.RingHom.IndEtale.pi {R : Type u} [CommRing R] {I : Type u} [Finite 
     apply Algebra.algebra_ext
     intro r
     rfl
-  show @Algebra.IndEtale R (∀ i, A i) _ _ (Pi.ringHom f).toAlgebra
+  change @Algebra.IndEtale R (∀ i, A i) _ _ (Pi.ringHom f).toAlgebra
   rw [h]
   infer_instance
 
@@ -552,12 +552,12 @@ lemma exists_surjective_factorization {X : S.AffineProEt} {ι : Type u} [Finite 
     have h1 : φ ≫ CommRingCat.ofHom (Pi.evalRingHom _ i) = (f i).left.appTop := by
       ext x
       rfl
-    show ((V i).left.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i))) ≫
+    change ((V i).left.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i))) ≫
       Spec.map φ ≫ X.left.isoSpec.inv = (f i).left
     rw [Category.assoc, ← Spec.map_comp_assoc, h1, Scheme.isoSpec_hom_naturality_assoc,
       Iso.hom_inv_id, Category.comp_id]
   have hw : ∀ i, e i ≫ W.hom = (V i).hom := fun i ↦ by
-    show e i ≫ q₀ ≫ X.hom = (V i).hom
+    change e i ≫ q₀ ≫ X.hom = (V i).hom
     rw [← Category.assoc, he i, MorphismProperty.Over.w (f i)]
   let j : ∀ i, V i ⟶ W := fun i ↦ MorphismProperty.Over.homMk (e i) (hw i) trivial
   have hcomp : ∀ i, j i ≫ q = f i := by
@@ -585,7 +585,7 @@ lemma exists_surjective_factorization {X : S.AffineProEt} {ι : Type u} [Finite 
     have h2 : (V i).left.isoSpec.inv ≫ e i =
         Spec.map (CommRingCat.ofHom
           (Pi.evalRingHom (fun k ↦ (Γ((V k).left, ⊤) : Type u)) i)) := by
-      show (V i).left.isoSpec.inv ≫ (V i).left.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom
+      change (V i).left.isoSpec.inv ≫ (V i).left.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom
         (Pi.evalRingHom (fun k ↦ (Γ((V k).left, ⊤) : Type u)) i)) = _
       rw [Iso.inv_hom_id_assoc]
     have hmor : (V i).left.isoSpec.inv ≫ (j i).left =
@@ -652,7 +652,7 @@ lemma isSheafFor_ofArrows_of_finite {F : (AffineProEt S)ᵒᵖ ⥤ Type*}
     have hroi : ∀ p : ι × ι, IsOpenImmersion (r p).left := fun p ↦ by
       haveI := hAoi p.1
       haveI := hBoi p.1 p.2
-      show IsOpenImmersion
+      change IsOpenImmersion
         (pullback.fst (pullback.fst g₁ (j p.1) ≫ g₂) (j p.2) ≫ pullback.fst g₁ (j p.1)).left
       rw [MorphismProperty.Comma.comp_left]
       infer_instance
@@ -692,9 +692,9 @@ lemma isSheafFor_ofArrows_of_finite {F : (AffineProEt S)ᵒᵖ ⥤ Type*}
       rw [← hcomp a, ← hcomp b, ← Category.assoc, ← Category.assoc, ← e₁, ← e₂,
         Category.assoc, Category.assoc, hg]
       simp only [r, Category.assoc]
-    rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp,
+    rw [← Functor.map_comp_apply, ← Functor.map_comp_apply, ← op_comp, ← op_comp,
       e₁, e₂]
-    simp only [op_comp, FunctorToTypes.map_comp_apply, hz]
+    simp only [op_comp, Functor.map_comp_apply, hz]
     simpa using hx a b _ _ _ key
   -- Step 3: amalgamate `z` along the single surjection `q` using `h₂`.
   haveI : Surjective q.left := hq
@@ -702,10 +702,10 @@ lemma isSheafFor_ofArrows_of_finite {F : (AffineProEt S)ᵒᵖ ⥤ Type*}
   rw [← Presieve.ofArrows_pUnit.{_, _, 0}, Presieve.isSheafFor_arrows_iff] at hqsheaf
   obtain ⟨t, ht, htuniq⟩ := hqsheaf (fun _ ↦ z) fun _ _ Q g₁ g₂ hgq ↦ hsep g₁ g₂ hgq
   refine ⟨t, fun i ↦ ?_, fun t' ht' ↦ ?_⟩
-  · rw [← hcomp i, op_comp, FunctorToTypes.map_comp_apply, ht PUnit.unit, hz i]
+  · rw [← hcomp i, op_comp, Functor.map_comp_apply, ht PUnit.unit, hz i]
   · refine htuniq t' fun _ ↦ ?_
     refine hzuniq (F.map q.op t') fun i ↦ ?_
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, hcomp i]
+    rw [← Functor.map_comp_apply, ← op_comp, hcomp i]
     exact ht' i
 
 variable {S} in
