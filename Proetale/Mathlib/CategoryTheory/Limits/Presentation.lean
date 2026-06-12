@@ -101,6 +101,7 @@ lemma diagPushout_inr_app_eq (s : Cocone P.diagPushout) (i j : ι) :
 
 /-- The cocone over `P.diag` with point `s.pt` induced by a cocone `s` over the diagonal
 pushout diagram, via the left pushout inclusion. -/
+@[simps]
 noncomputable def diagPushoutCoconeDescAux (s : Cocone P.diagPushout) : Cocone P.diag where
   pt := s.pt
   ι :=
@@ -118,30 +119,19 @@ noncomputable def isColimitDiagPushout :
   desc s := P.isColimit.desc (P.diagPushoutCoconeDescAux s)
   fac s i := by
     apply pushout.hom_ext
-    · simp only [diagPushoutCocone_app]
-      rw [pushout.inl_desc_assoc]
-      erw [Category.id_comp]
+    · rw [diagPushoutCocone_app, pushout.inl_desc_assoc,
+        Category.id_comp (P.isColimit.desc (P.diagPushoutCoconeDescAux s))]
       refine P.isColimit.hom_ext fun k ↦ ?_
-      rw [P.isColimit.fac]
-      change P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k = _
-      rw [P.diagPushout_inl_app_eq s k i]
-    · simp only [diagPushoutCocone_app]
-      rw [pushout.inr_desc_assoc]
-      erw [Category.id_comp]
+      rw [P.isColimit.fac, diagPushoutCoconeDescAux_ι_app, P.diagPushout_inl_app_eq s k i]
+    · rw [diagPushoutCocone_app, pushout.inr_desc_assoc,
+        Category.id_comp (P.isColimit.desc (P.diagPushoutCoconeDescAux s))]
       refine P.isColimit.hom_ext fun k ↦ ?_
-      rw [P.isColimit.fac]
-      change P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k =
-        P.ι.app k ≫ pushout.inr (P.ι.app i) (P.ι.app i) ≫ s.ι.app i
-      rw [P.diagPushout_inr_app_eq s i k]
+      rw [P.isColimit.fac, diagPushoutCoconeDescAux_ι_app, P.diagPushout_inr_app_eq s i k]
       simp only [← Category.assoc, pushout.condition]
   uniq s m hm := by
-    have hm' : ∀ i, pushout.desc (𝟙 X) (𝟙 X) rfl ≫ m = s.ι.app i := hm
     refine P.isColimit.hom_ext fun i ↦ ?_
-    rw [P.isColimit.fac]
-    change P.ι.app i ≫ m = P.ι.app i ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i
-    rw [← hm' i, pushout.inl_desc_assoc]
-    congr 1
-    exact (Category.id_comp m).symm
+    rw [P.isColimit.fac, diagPushoutCoconeDescAux_ι_app, ← hm i, diagPushoutCocone_app,
+      pushout.inl_desc_assoc, Category.id_comp m]
 
 end ColimitPresentation
 
