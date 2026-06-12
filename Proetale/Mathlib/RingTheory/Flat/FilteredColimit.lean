@@ -76,25 +76,9 @@ theorem of_filteredColim_lmul'
   have htRaw_nat : ∀ {i j : ι} (h : i ⟶ j), tRaw i ≫ D.map h = tRaw j := by
     intro i j h
     apply pushout.hom_ext
-    · change pushout.inl (CommRingCat.ofHom (algebraMap R S))
-           (CommRingCat.ofHom (algebraMap R S)) ≫
-         pushout.desc (pushout.inl (Q.ι.app i) (Q.ι.app i))
-           (pushout.inr (Q.ι.app i) (Q.ι.app i)) _ ≫ Q.diagPushout.map h =
-       pushout.inl (CommRingCat.ofHom (algebraMap R S))
-         (CommRingCat.ofHom (algebraMap R S)) ≫
-       pushout.desc (pushout.inl (Q.ι.app j) (Q.ι.app j))
-         (pushout.inr (Q.ι.app j) (Q.ι.app j)) _
-      simp only [pushout.inl_desc_assoc, pushout.inl_desc]
+    · simp only [tRaw, D, pushout.inl_desc_assoc, pushout.inl_desc]
       exact Q.diagPushout_inl_map h
-    · change pushout.inr (CommRingCat.ofHom (algebraMap R S))
-           (CommRingCat.ofHom (algebraMap R S)) ≫
-         pushout.desc (pushout.inl (Q.ι.app i) (Q.ι.app i))
-           (pushout.inr (Q.ι.app i) (Q.ι.app i)) _ ≫ Q.diagPushout.map h =
-       pushout.inr (CommRingCat.ofHom (algebraMap R S))
-         (CommRingCat.ofHom (algebraMap R S)) ≫
-       pushout.desc (pushout.inl (Q.ι.app j) (Q.ι.app j))
-         (pushout.inr (Q.ι.app j) (Q.ι.app j)) _
-      simp only [pushout.inr_desc_assoc, pushout.inr_desc]
+    · simp only [tRaw, D, pushout.inr_desc_assoc, pushout.inr_desc]
       exact Q.diagPushout_inr_map h
   let t : (Functor.const ι).obj SS ⟶ D :=
     { app := fun i ↦ isoSS.inv ≫ tRaw i
@@ -104,19 +88,13 @@ theorem of_filteredColim_lmul'
   -- The composition `t.app i ≫ c.app i = lmulMap`.
   have htc_eq : ∀ i, t.app i ≫ c.app i = lmulMap := by
     intro i
-    change isoSS.inv ≫ tRaw i ≫ c.app i = lmulMap
+    simp only [t, c, Category.assoc]
     -- tRaw i ≫ c.app i is the codiagonal pushout map on pushout(R → S, R → S).
-    have hraw_codiag : tRaw i ≫ c.app i =
+    have hraw_codiag : tRaw i ≫ Q.diagPushoutCocone.app i =
         pushout.desc (𝟙 SR) (𝟙 SR) rfl := by
       apply pushout.hom_ext
-      · change pushout.inl _ _ ≫ pushout.desc _ _ _ ≫ Q.diagPushoutCocone.app i =
-          pushout.inl _ _ ≫ pushout.desc (𝟙 SR) (𝟙 SR) rfl
-        rw [pushout.inl_desc_assoc, Q.diagPushoutCocone_app]
-        exact (pushout.inl_desc _ _ _).trans (pushout.inl_desc _ _ _).symm
-      · change pushout.inr _ _ ≫ pushout.desc _ _ _ ≫ Q.diagPushoutCocone.app i =
-          pushout.inr _ _ ≫ pushout.desc (𝟙 SR) (𝟙 SR) rfl
-        rw [pushout.inr_desc_assoc, Q.diagPushoutCocone_app]
-        exact (pushout.inr_desc _ _ _).trans (pushout.inr_desc _ _ _).symm
+      · simp only [tRaw, SR, pushout.inl_desc_assoc, Q.diagPushoutCocone_app, pushout.inl_desc]
+      · simp only [tRaw, SR, pushout.inr_desc_assoc, Q.diagPushoutCocone_app, pushout.inr_desc]
     rw [hraw_codiag]
     -- isoSS.inv ≫ (codiagonal of pushout(R→S, R→S)) = lmulMap.
     -- Verify via IsPushout.hom_ext for the includeLeft/includeRight presentation of SS.
@@ -181,8 +159,7 @@ theorem of_filteredColim_lmul'
         have ht_inl : CommRingCat.ofHom (Algebra.TensorProduct.includeLeftRingHom
               (R := R) (A := S) (B := S)) ≫ t.app i =
             pushout.inl (Q.ι.app i) (Q.ι.app i) := by
-          change CommRingCat.ofHom Algebra.TensorProduct.includeLeftRingHom ≫
-            isoSS.inv ≫ tRaw i = pushout.inl (Q.ι.app i) (Q.ι.app i)
+          simp only [t, tRaw]
           have hinl : CommRingCat.ofHom (Algebra.TensorProduct.includeLeftRingHom
                 (R := R) (A := S) (B := S)) ≫ isoSS.inv =
               pushout.inl (CommRingCat.ofHom (algebraMap R S))
@@ -209,9 +186,7 @@ theorem of_filteredColim_lmul'
         have ht_inr : CommRingCat.ofHom (Algebra.TensorProduct.includeRight
               (R := R) (A := S) (B := S)).toRingHom ≫ t.app i =
             pushout.inr (Q.ι.app i) (Q.ι.app i) := by
-          change CommRingCat.ofHom (Algebra.TensorProduct.includeRight
-            (R := R) (A := S) (B := S)).toRingHom ≫
-            isoSS.inv ≫ tRaw i = pushout.inr (Q.ι.app i) (Q.ι.app i)
+          simp only [t, tRaw]
           have hinr : CommRingCat.ofHom (Algebra.TensorProduct.includeRight
                 (R := R) (A := S) (B := S)).toRingHom ≫ isoSS.inv =
               pushout.inr (CommRingCat.ofHom (algebraMap R S))
