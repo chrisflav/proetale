@@ -148,6 +148,25 @@ of this property.
 \end{proof}
 
 \begin{lemma}
+    Every ind-étale algebra is weakly étale.
+    \label{lemma:ind-etale-weakly-etale-algebra}
+    \lean{RingHom.IndEtale.weaklyEtale}
+    \leanok
+    \uses{def:ind-etale, def:weakly-etale-algebra, lemma:etale-weakly-etale-algebra}
+\end{lemma}
+
+\begin{proof}
+    \leanok
+    Write the ind-étale $R$-algebra $S$ as a filtered colimit $S = \colim_{i} S_{i}$ of étale
+    $R$-algebras. Each $S_{i}$ is weakly étale by \Cref{lemma:etale-weakly-etale-algebra}, so each
+    $S_{i}$ is $R$-flat and each multiplication map $S_{i} \otimes_{R} S_{i} \to S_{i}$ is flat.
+    Flatness of $S$ over $R$ follows since flat modules are closed under filtered colimits. For the
+    multiplication map, $S \otimes_{R} S \to S$ is the filtered colimit of the maps
+    $S \otimes_{S_{i}} S \to S$ over $i$, each of which is flat because it is the base change of the
+    flat map $S_{i} \otimes_{R} S_{i} \to S_{i}$ along $S_{i} \to S$; hence it is flat as well.
+\end{proof}
+
+\begin{lemma}
     \label{lem:field-absolutely-flat}
     A field is absolutely flat.
     \uses{def:absolutely-flat}
