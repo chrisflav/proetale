@@ -3,6 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.MorphismProperty.Ind
@@ -169,7 +170,51 @@ lemma pro_coneπ {J : Type w} [SmallCategory J] [IsCofiltered J]
   exact ind_coconeι P.op hc.op _ (fun _ ↦ H _)
 
 instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [P.IsStableUnderBaseChangeAlong f] :
-    (pro.{w} P).IsStableUnderBaseChangeAlong f :=
-  sorry
+    (pro.{w} P).IsStableUnderBaseChangeAlong f where
+  of_isPullback {Z W f' g' g} pb hg := by
+    obtain ⟨J, _, _, D, t, s, hs, hts⟩ := hg
+    -- `J` is connected, so `Over.forget` reflects `J`-indexed limits
+    have : IsConnected J := IsCofiltered.isConnected J
+    -- the diagram `D` as a diagram in `Over Y` via the structure maps `t`
+    let DY : J ⥤ CategoryTheory.Over Y := D.toOver Y (fun j ↦ t.app j)
+      (fun {i j} u ↦ (t.naturality u).trans (by simp))
+    -- the limit cone `(Z, s)` lifted to a limit cone in `Over Y` with apex `Over.mk g`
+    let cY : Cone DY :=
+      { pt := CategoryTheory.Over.mk g
+        π :=
+          { app j := CategoryTheory.Over.homMk (s.app j) (hts j).2
+            naturality i j u := by
+              ext
+              simpa using s.naturality u } }
+    have hcY : IsLimit cY := by
+      apply isLimitOfReflects (CategoryTheory.Over.forget Y)
+      exact hs.ofIsoLimit (Cone.ext (Iso.refl _) (fun j ↦ by simp [cY]))
+    -- `Over.pullback f` preserves all limits, being a right adjoint
+    have : PreservesLimitsOfSize.{w, w} (CategoryTheory.Over.pullback f) :=
+      (CategoryTheory.Over.mapPullbackAdj f).rightAdjoint_preservesLimits
+    -- push the limit cone to `Over X` along `Over.pullback f` and forget back to `C`
+    let cX : Cone ((DY ⋙ CategoryTheory.Over.pullback f) ⋙ CategoryTheory.Over.forget X) :=
+      (CategoryTheory.Over.forget X).mapCone ((CategoryTheory.Over.pullback f).mapCone cY)
+    have hcX : IsLimit cX :=
+      isLimitOfPreserves (CategoryTheory.Over.forget X)
+        (isLimitOfPreserves (CategoryTheory.Over.pullback f) hcY)
+    refine ⟨J, inferInstance, inferInstance,
+      DY ⋙ CategoryTheory.Over.pullback f ⋙ CategoryTheory.Over.forget X,
+      { app j := ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom
+        naturality i j u :=
+          (CategoryTheory.Over.w ((DY ⋙ CategoryTheory.Over.pullback f).map u)).trans
+            (by simp) },
+      (Functor.const J).map pb.isoPullback.hom ≫ cX.π, ?_, fun j ↦ ⟨?_, ?_⟩⟩
+    · refine hcX.ofIsoLimit (Cone.ext pb.isoPullback.symm (fun j ↦ ?_))
+      simp only [NatTrans.comp_app, Functor.const_map_app, Iso.symm_hom]
+      exact (Iso.inv_hom_id_assoc _ _).symm
+    · exact P.pullback_snd _ f (hts j).1
+    · have h1 : cX.π.app j ≫ ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom =
+          pullback.snd g f :=
+        CategoryTheory.Over.w (((CategoryTheory.Over.pullback f).mapCone cY).π.app j)
+      change (pb.isoPullback.hom ≫ cX.π.app j) ≫
+        ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom = g'
+      rw [Category.assoc]
+      exact (congrArg (pb.isoPullback.hom ≫ ·) h1).trans pb.isoPullback_hom_snd
 
 end CategoryTheory.MorphismProperty
