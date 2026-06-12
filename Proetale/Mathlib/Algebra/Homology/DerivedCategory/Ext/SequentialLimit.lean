@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.Product
 import Proetale.Mathlib.CategoryTheory.Abelian.SequentialSystem
+import Proetale.Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.Algebra.Category.Grp.Limits
@@ -19,16 +20,20 @@ Let `A` be an abelian category with enough injectives and countable products, an
 levelwise `Ext`-groups `Ext Z Fₙ i`.
 
 In general the two differ by a `lim¹`-term (Jannsen). We prove the comparison
-isomorphism in degree `0` unconditionally, and in degree `i + 1` under the
-Mittag-Leffler-type hypothesis that the transition maps of the degree-`i` levelwise
-`Ext`-system are surjective (which forces the relevant `lim¹` to vanish):
+isomorphism in degree `0` unconditionally, and in degree `i + 1` under the hypothesis
+that the degree-`i` levelwise `Ext`-system satisfies the Mittag-Leffler condition
+(`CategoryTheory.Functor.IsMittagLeffler`, which forces the relevant `lim¹` to
+vanish); the latter holds in particular when the transition maps of that system are
+surjective, or when its groups are finite:
 
 - `CategoryTheory.Abelian.Ext.zeroAddEquivLimitLevelSystem`
 - `CategoryTheory.Abelian.Ext.nonempty_addEquiv_limit_levelSystem`
+- `CategoryTheory.Abelian.Ext.nonempty_addEquiv_limit_levelSystem_of_surjective`
 
 The proof is by dimension shifting along `0 → F → I → Q → 0` with `I` injective: the
-degree-one case is an explicit Mittag-Leffler correction argument for the four-term
-exact sequences of systems `0 → Hom(Z,F•) → Hom(Z,I•) → Hom(Z,Q•) → Ext¹(Z,F•) → 0`
+degree-one case is an explicit Mittag-Leffler eventual-image argument for the
+four-term exact sequences of systems
+`0 → Hom(Z,F•) → Hom(Z,I•) → Hom(Z,Q•) → Ext¹(Z,F•) → 0`
 (using that the transition maps of `Hom(Z,I•)` are split surjections), and the
 inductive step uses the connecting isomorphisms on both sides, with naturality in the
 system direction provided by `ShortComplex.ShortExact.extClass_naturality`.
@@ -251,70 +256,162 @@ private lemma limMap_apply_eq {F G : ℕᵒᵖ ⥤ AddCommGrpCat.{w}} (τ : F �
         ConcreteCategory.comp_apply _ _ _
     _ = ConcreteCategory.hom (limit.π G k) t := hst k
 
-/-- **Surjectivity of transitions of a quotient-like term.** Suppose `B ⟶ C ⟶ D` are
-maps of inverse systems of abelian groups which are levelwise exact at `C`
-(`range g = ker h`), `h` is levelwise surjective, and the transition maps of `B` and of
-`D` are surjective. Then the transition maps of `C` are surjective. -/
-lemma surjective_transition_of_exact
+/-! #### The Mittag-Leffler condition for systems of abelian groups -/
+
+/-- If the successive transition maps of a system of abelian groups are surjective,
+then so are all the maps `F.obj (op n) ⟶ F.obj (op m)` for `m ≤ n`. -/
+lemma surjective_map_of_surjective_transition {F : ℕᵒᵖ ⥤ AddCommGrpCat.{w}}
+    (hF : ∀ n, Function.Surjective
+      (ConcreteCategory.hom (SequentialSystem.transition F n)))
+    {m n : ℕ} (hmn : m ≤ n) :
+    Function.Surjective (ConcreteCategory.hom (F.map (homOfLE hmn).op)) := by
+  have hepi : ∀ n', Epi (SequentialSystem.transition F n') := fun n' ↦
+    (AddCommGrpCat.epi_iff_surjective _).mpr (hF n')
+  exact (AddCommGrpCat.epi_iff_surjective _).mp
+    (SequentialSystem.epi_map_of_epi_transition F hepi hmn)
+
+/-- The Mittag-Leffler condition for an `ℕᵒᵖ`-indexed system of abelian groups,
+elementwise: for every level `n` there is an `m ≥ n` such that the image of any
+element of level `m` in level `n` is also in the image of every level `k ≥ n`. -/
+lemma isMittagLeffler_forget_iff (C : ℕᵒᵖ ⥤ AddCommGrpCat.{w}) :
+    (C ⋙ CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler ↔
+      ∀ n : ℕ, ∃ (m : ℕ) (hm : n ≤ m), ∀ (k : ℕ) (hk : n ≤ k),
+        ∀ x : ToType (C.obj (op m)), ∃ y : ToType (C.obj (op k)),
+          ConcreteCategory.hom (C.map (homOfLE hk).op) y =
+            ConcreteCategory.hom (C.map (homOfLE hm).op) x := by
+  rw [Functor.isMittagLeffler_nat_iff]
+  refine forall_congr' fun n ↦ exists_congr fun m ↦ exists_congr fun hm ↦
+    forall_congr' fun k ↦ forall_congr' fun hk ↦ ?_
+  constructor
+  · intro hsub x
+    obtain ⟨y, hy⟩ := hsub (Set.mem_range_self x)
+    exact ⟨y, hy⟩
+  · rintro hx _ ⟨x, rfl⟩
+    obtain ⟨y, hy⟩ := hx x
+    exact ⟨y, hy⟩
+
+/-- A system of abelian groups whose successive transition maps are surjective
+satisfies the Mittag-Leffler condition. -/
+lemma isMittagLeffler_forget_of_surjective_transition (C : ℕᵒᵖ ⥤ AddCommGrpCat.{w})
+    (hC : ∀ n, Function.Surjective
+      (ConcreteCategory.hom (SequentialSystem.transition C n))) :
+    (C ⋙ CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler := by
+  rw [isMittagLeffler_forget_iff]
+  intro n
+  refine ⟨n, le_rfl, fun k hk x ↦ ?_⟩
+  exact surjective_map_of_surjective_transition hC hk
+    (ConcreteCategory.hom (C.map (homOfLE (le_refl n)).op) x)
+
+/-- A system of finite abelian groups satisfies the Mittag-Leffler condition. -/
+lemma isMittagLeffler_forget_of_finite (C : ℕᵒᵖ ⥤ AddCommGrpCat.{w})
+    (hC : ∀ n : ℕ, Finite (ToType (C.obj (op n)))) :
+    (C ⋙ CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler :=
+  haveI : ∀ j : ℕᵒᵖ, Finite ((C ⋙ CategoryTheory.forget AddCommGrpCat.{w}).obj j) :=
+    fun j ↦ hC j.unop
+  Functor.isMittagLeffler_of_finite _
+
+/-- The Mittag-Leffler condition descends along a levelwise bijective morphism of
+systems of abelian groups. -/
+lemma isMittagLeffler_forget_of_app_bijective {C D : ℕᵒᵖ ⥤ AddCommGrpCat.{w}}
+    (φ : C ⟶ D) (hφ : ∀ k, Function.Bijective (ConcreteCategory.hom (φ.app k)))
+    (hD : (D ⋙ CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler) :
+    (C ⋙ CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler := by
+  rw [isMittagLeffler_forget_iff] at hD ⊢
+  intro n
+  obtain ⟨m, hm, hstab⟩ := hD n
+  refine ⟨m, hm, fun k hk x ↦ ?_⟩
+  obtain ⟨yD, hyD⟩ := hstab k hk (ConcreteCategory.hom (φ.app (op m)) x)
+  obtain ⟨y, rfl⟩ := (hφ (op k)).2 yD
+  refine ⟨y, (hφ (op n)).1 ?_⟩
+  have h1 : ConcreteCategory.hom (φ.app (op n))
+      (ConcreteCategory.hom (C.map (homOfLE hk).op) y) =
+      ConcreteCategory.hom (D.map (homOfLE hk).op)
+        (ConcreteCategory.hom (φ.app (op k)) y) :=
+    (ConcreteCategory.comp_apply _ _ _).symm.trans
+      ((ConcreteCategory.congr_hom (φ.naturality (homOfLE hk).op) y).trans
+        (ConcreteCategory.comp_apply _ _ _))
+  have h2 : ConcreteCategory.hom (φ.app (op n))
+      (ConcreteCategory.hom (C.map (homOfLE hm).op) x) =
+      ConcreteCategory.hom (D.map (homOfLE hm).op)
+        (ConcreteCategory.hom (φ.app (op m)) x) :=
+    (ConcreteCategory.comp_apply _ _ _).symm.trans
+      ((ConcreteCategory.congr_hom (φ.naturality (homOfLE hm).op) x).trans
+        (ConcreteCategory.comp_apply _ _ _))
+  exact h1.trans (hyD.trans h2.symm)
+
+/-- **Mittag-Leffler for a quotient-like term.** Suppose `B ⟶ C ⟶ D` are maps of
+inverse systems of abelian groups which are levelwise exact at `C` (`range g = ker h`),
+`h` is levelwise surjective, the transition maps of `B` are surjective, and `D`
+satisfies the Mittag-Leffler condition. Then `C` satisfies the Mittag-Leffler
+condition. -/
+lemma isMittagLeffler_of_exact
     (hexact : ∀ (k : ℕᵒᵖ) (c : C.obj k), ConcreteCategory.hom (h.app k) c = 0 →
       ∃ b : B.obj k, ConcreteCategory.hom (g.app k) b = c)
     (hsurj : ∀ k, Function.Surjective (ConcreteCategory.hom (h.app k)))
     (hB : ∀ n, Function.Surjective
       (ConcreteCategory.hom (SequentialSystem.transition B n)))
-    (hD : ∀ n, Function.Surjective
-      (ConcreteCategory.hom (SequentialSystem.transition D n)))
-    (n : ℕ) :
-    Function.Surjective (ConcreteCategory.hom (SequentialSystem.transition C n)) := by
-  intro c
-  obtain ⟨d', hd'⟩ := hD n (ConcreteCategory.hom (h.app (op n)) c)
-  obtain ⟨c', hc'⟩ := hsurj (op (n + 1)) d'
-  have hnat : ConcreteCategory.hom (h.app (op n))
-      (ConcreteCategory.hom (SequentialSystem.transition C n) c') =
-      ConcreteCategory.hom (h.app (op n)) c := by
+    (hD : (D ⋙ CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler) :
+    (C ⋙ CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler := by
+  rw [isMittagLeffler_forget_iff] at hD ⊢
+  intro n
+  obtain ⟨m, hm, hstab⟩ := hD n
+  refine ⟨m, hm, fun k hk c ↦ ?_⟩
+  obtain ⟨d', hd'⟩ := hstab k hk (ConcreteCategory.hom (h.app (op m)) c)
+  obtain ⟨c', hc'⟩ := hsurj (op k) d'
+  have hnat1 : ConcreteCategory.hom (h.app (op n))
+      (ConcreteCategory.hom (C.map (homOfLE hk).op) c') =
+      ConcreteCategory.hom (D.map (homOfLE hk).op) d' := by
     calc ConcreteCategory.hom (h.app (op n))
-          (ConcreteCategory.hom (SequentialSystem.transition C n) c')
-        = ConcreteCategory.hom (SequentialSystem.transition C n ≫ h.app (op n)) c' :=
+          (ConcreteCategory.hom (C.map (homOfLE hk).op) c')
+        = ConcreteCategory.hom (C.map (homOfLE hk).op ≫ h.app (op n)) c' :=
           (ConcreteCategory.comp_apply _ _ _).symm
-      _ = ConcreteCategory.hom (h.app (op (n + 1)) ≫ SequentialSystem.transition D n)
-            c' :=
-          ConcreteCategory.congr_hom (h.naturality (homOfLE (Nat.le_succ n)).op) c'
-      _ = ConcreteCategory.hom (SequentialSystem.transition D n)
-            (ConcreteCategory.hom (h.app (op (n + 1))) c') :=
+      _ = ConcreteCategory.hom (h.app (op k) ≫ D.map (homOfLE hk).op) c' :=
+          ConcreteCategory.congr_hom (h.naturality (homOfLE hk).op) c'
+      _ = ConcreteCategory.hom (D.map (homOfLE hk).op)
+            (ConcreteCategory.hom (h.app (op k)) c') :=
           ConcreteCategory.comp_apply _ _ _
-      _ = ConcreteCategory.hom (SequentialSystem.transition D n) d' := by rw [hc']
-      _ = ConcreteCategory.hom (h.app (op n)) c := hd'
+      _ = ConcreteCategory.hom (D.map (homOfLE hk).op) d' := by rw [hc']
+  have hnat2 : ConcreteCategory.hom (h.app (op n))
+      (ConcreteCategory.hom (C.map (homOfLE hm).op) c) =
+      ConcreteCategory.hom (D.map (homOfLE hm).op)
+        (ConcreteCategory.hom (h.app (op m)) c) :=
+    (ConcreteCategory.comp_apply _ _ _).symm.trans
+      ((ConcreteCategory.congr_hom (h.naturality (homOfLE hm).op) c).trans
+        (ConcreteCategory.comp_apply _ _ _))
   have hzero : ConcreteCategory.hom (h.app (op n))
-      (ConcreteCategory.hom (SequentialSystem.transition C n) c' - c) = 0 := by
-    rw [map_sub, hnat, sub_self]
+      (ConcreteCategory.hom (C.map (homOfLE hk).op) c' -
+        ConcreteCategory.hom (C.map (homOfLE hm).op) c) = 0 := by
+    rw [map_sub, hnat1, hnat2, hd', sub_self]
   obtain ⟨b, hb⟩ := hexact (op n) _ hzero
-  obtain ⟨b', hb'⟩ := hB n b
-  refine ⟨c' - ConcreteCategory.hom (g.app (op (n + 1))) b', ?_⟩
-  have hgnat : ConcreteCategory.hom (SequentialSystem.transition C n)
-      (ConcreteCategory.hom (g.app (op (n + 1))) b') =
-      ConcreteCategory.hom (SequentialSystem.transition C n) c' - c := by
-    calc ConcreteCategory.hom (SequentialSystem.transition C n)
-          (ConcreteCategory.hom (g.app (op (n + 1))) b')
-        = ConcreteCategory.hom (g.app (op (n + 1)) ≫ SequentialSystem.transition C n)
-            b' :=
+  obtain ⟨b', hb'⟩ := surjective_map_of_surjective_transition hB hk b
+  refine ⟨c' - ConcreteCategory.hom (g.app (op k)) b', ?_⟩
+  have hgnat : ConcreteCategory.hom (C.map (homOfLE hk).op)
+      (ConcreteCategory.hom (g.app (op k)) b') =
+      ConcreteCategory.hom (C.map (homOfLE hk).op) c' -
+        ConcreteCategory.hom (C.map (homOfLE hm).op) c := by
+    calc ConcreteCategory.hom (C.map (homOfLE hk).op)
+          (ConcreteCategory.hom (g.app (op k)) b')
+        = ConcreteCategory.hom (g.app (op k) ≫ C.map (homOfLE hk).op) b' :=
           (ConcreteCategory.comp_apply _ _ _).symm
-      _ = ConcreteCategory.hom (SequentialSystem.transition B n ≫ g.app (op n)) b' :=
-          (ConcreteCategory.congr_hom (g.naturality (homOfLE (Nat.le_succ n)).op)
-            b').symm
+      _ = ConcreteCategory.hom (B.map (homOfLE hk).op ≫ g.app (op n)) b' :=
+          (ConcreteCategory.congr_hom (g.naturality (homOfLE hk).op) b').symm
       _ = ConcreteCategory.hom (g.app (op n))
-            (ConcreteCategory.hom (SequentialSystem.transition B n) b') :=
+            (ConcreteCategory.hom (B.map (homOfLE hk).op) b') :=
           ConcreteCategory.comp_apply _ _ _
       _ = ConcreteCategory.hom (g.app (op n)) b := by rw [hb']
-      _ = ConcreteCategory.hom (SequentialSystem.transition C n) c' - c := hb
+      _ = _ := hb
   rw [map_sub, hgnat]
   abel
 
 /-- **Exchange of limit and cokernel under Mittag-Leffler hypotheses.** Suppose
 `B ⟶ C ⟶ D` are maps of inverse systems of abelian groups which are levelwise exact at
 `C`, `h` is levelwise surjective, the transition maps of `B` are surjective, and the
-transition maps of `B` are surjective on the kernels of `g` (a relative Mittag-Leffler
-condition). Then `limMap h` induces an isomorphism from the cokernel of `limMap g`:
-every element of `limit D` lifts to `limit C`, and elements of `limit C` killed by
-`limMap h` come from `limit B`. -/
+kernels of `g` satisfy the Mittag-Leffler condition (in the stabilized elementwise
+form: for each `n` there is `m ≥ n` such that the image in level `n` of any element of
+the kernel at level `m` is the image of a kernel element from every level `k ≥ n`).
+Then `limMap h` induces an isomorphism from the cokernel of `limMap g`: every element
+of `limit D` lifts to `limit C`, and elements of `limit C` killed by `limMap h` come
+from `limit B`. -/
 lemma surjective_limMap_and_exact
     (hcomp : ∀ (k : ℕᵒᵖ) (b : B.obj k), ConcreteCategory.hom (h.app k)
       (ConcreteCategory.hom (g.app k) b) = 0)
@@ -323,9 +420,11 @@ lemma surjective_limMap_and_exact
     (hsurj : ∀ k, Function.Surjective (ConcreteCategory.hom (h.app k)))
     (hB : ∀ n, Function.Surjective
       (ConcreteCategory.hom (SequentialSystem.transition B n)))
-    (hker : ∀ (n : ℕ) (b : B.obj (op n)), ConcreteCategory.hom (g.app (op n)) b = 0 →
-      ∃ b' : B.obj (op (n + 1)), ConcreteCategory.hom (g.app (op (n + 1))) b' = 0 ∧
-        ConcreteCategory.hom (SequentialSystem.transition B n) b' = b) :
+    (hker : ∀ n : ℕ, ∃ (m : ℕ) (hm : n ≤ m), ∀ (k : ℕ) (hk : n ≤ k),
+      ∀ b : B.obj (op m), ConcreteCategory.hom (g.app (op m)) b = 0 →
+        ∃ b' : B.obj (op k), ConcreteCategory.hom (g.app (op k)) b' = 0 ∧
+          ConcreteCategory.hom (B.map (homOfLE hk).op) b' =
+            ConcreteCategory.hom (B.map (homOfLE hm).op) b) :
     Function.Surjective (ConcreteCategory.hom (limMap h)) ∧
       ∀ c : (limit C : AddCommGrpCat.{w}), ConcreteCategory.hom (limMap h) c = 0 →
         ∃ b : (limit B : AddCommGrpCat.{w}), ConcreteCategory.hom (limMap g) b = c := by
@@ -395,7 +494,8 @@ lemma surjective_limMap_and_exact
     calc ConcreteCategory.hom (h.app k) (ConcreteCategory.hom (limit.π C k) s)
         = ConcreteCategory.hom (h.app k) (c k.unop).1 := by rw [hs k]
       _ = ConcreteCategory.hom (limit.π D k) t := (c k.unop).2
-  · -- Exactness: elements of `limit C` killed by `limMap h` come from `limit B`.
+  · -- Exactness: elements of `limit C` killed by `limMap h` come from `limit B`, by
+    -- a Mittag-Leffler eventual-image argument.
     intro t ht
     have hc0 : ∀ n : ℕ, ConcreteCategory.hom (h.app (op n))
         (ConcreteCategory.hom (limit.π C (op n)) t) = 0 := by
@@ -411,54 +511,113 @@ lemma surjective_limMap_and_exact
             ConcreteCategory.comp_apply _ _ _
         _ = ConcreteCategory.hom (limit.π D (op n)) 0 := by rw [ht]
         _ = 0 := map_zero _
-    have step : ∀ (n : ℕ) (bn : ToType (B.obj (op n))),
-        ConcreteCategory.hom (g.app (op n)) bn =
-          ConcreteCategory.hom (limit.π C (op n)) t →
-        ∃ bs : ToType (B.obj (op (n + 1))),
-          ConcreteCategory.hom (g.app (op (n + 1))) bs =
-            ConcreteCategory.hom (limit.π C (op (n + 1))) t ∧
-          ConcreteCategory.hom (SequentialSystem.transition B n) bs = bn := by
-      intro n bn hbn
-      obtain ⟨b', hb'⟩ := hexact (op (n + 1)) _ (hc0 (n + 1))
-      have hw : ConcreteCategory.hom (g.app (op n))
-          (ConcreteCategory.hom (SequentialSystem.transition B n) b' - bn) = 0 := by
-        have h1 : ConcreteCategory.hom (g.app (op n))
-            (ConcreteCategory.hom (SequentialSystem.transition B n) b') =
-            ConcreteCategory.hom (limit.π C (op n)) t := by
-          calc ConcreteCategory.hom (g.app (op n))
-                (ConcreteCategory.hom (SequentialSystem.transition B n) b')
-              = ConcreteCategory.hom (SequentialSystem.transition B n ≫ g.app (op n))
-                  b' :=
-                (ConcreteCategory.comp_apply _ _ _).symm
-            _ = ConcreteCategory.hom
-                  (g.app (op (n + 1)) ≫ SequentialSystem.transition C n) b' :=
-                ConcreteCategory.congr_hom
-                  (g.naturality (homOfLE (Nat.le_succ n)).op) b'
-            _ = ConcreteCategory.hom (SequentialSystem.transition C n)
-                  (ConcreteCategory.hom (g.app (op (n + 1))) b') :=
-                ConcreteCategory.comp_apply _ _ _
-            _ = ConcreteCategory.hom (SequentialSystem.transition C n)
-                  (ConcreteCategory.hom (limit.π C (op (n + 1))) t) := by rw [hb']
-            _ = ConcreteCategory.hom (limit.π C (op n)) t := transition_π_apply t n
-        rw [map_sub, h1, hbn, sub_self]
-      obtain ⟨b'', hb''0, hb''t⟩ := hker n _ hw
-      refine ⟨b' - b'', ?_, ?_⟩
-      · rw [map_sub, hb', hb''0, sub_zero]
-      · rw [map_sub, hb''t]
+    -- the components of `t` are compatible under all transition maps
+    have htcomp : ∀ (a b : ℕ) (hab : a ≤ b),
+        ConcreteCategory.hom (C.map (homOfLE hab).op)
+          (ConcreteCategory.hom (limit.π C (op b)) t) =
+          ConcreteCategory.hom (limit.π C (op a)) t := fun a b hab ↦
+      (ConcreteCategory.comp_apply _ _ _).symm.trans
+        (ConcreteCategory.congr_hom (limit.w C (homOfLE hab).op) t)
+    -- every component of `t` admits a preimage at its own level
+    have hfib : ∀ n : ℕ, ∃ b : ToType (B.obj (op n)),
+        ConcreteCategory.hom (g.app (op n)) b =
+          ConcreteCategory.hom (limit.π C (op n)) t :=
+      fun n ↦ hexact (op n) _ (hc0 n)
+    -- pushing a preimage of a component of `t` down a transition map yields a
+    -- preimage of the corresponding component
+    have hpush : ∀ (a b' : ℕ) (hab : a ≤ b') (c : ToType (B.obj (op b'))),
+        ConcreteCategory.hom (g.app (op b')) c =
+          ConcreteCategory.hom (limit.π C (op b')) t →
+        ConcreteCategory.hom (g.app (op a))
+          (ConcreteCategory.hom (B.map (homOfLE hab).op) c) =
+          ConcreteCategory.hom (limit.π C (op a)) t := by
+      intro a b' hab c hc
+      calc ConcreteCategory.hom (g.app (op a))
+            (ConcreteCategory.hom (B.map (homOfLE hab).op) c)
+          = ConcreteCategory.hom (B.map (homOfLE hab).op ≫ g.app (op a)) c :=
+            (ConcreteCategory.comp_apply _ _ _).symm
+        _ = ConcreteCategory.hom (g.app (op b') ≫ C.map (homOfLE hab).op) c :=
+            ConcreteCategory.congr_hom (g.naturality (homOfLE hab).op) c
+        _ = ConcreteCategory.hom (C.map (homOfLE hab).op)
+              (ConcreteCategory.hom (g.app (op b')) c) :=
+            ConcreteCategory.comp_apply _ _ _
+        _ = ConcreteCategory.hom (limit.π C (op a)) t := by
+            rw [hc]; exact htcomp a b' hab
+    -- pushing down in two stages agrees with pushing down at once
+    have hfac : ∀ (a b' c' : ℕ) (h1 : a ≤ b') (h2 : b' ≤ c')
+        (x : ToType (B.obj (op c'))),
+        ConcreteCategory.hom (B.map (homOfLE (h1.trans h2)).op) x =
+          ConcreteCategory.hom (B.map (homOfLE h1).op)
+            (ConcreteCategory.hom (B.map (homOfLE h2).op) x) := by
+      intro a b' c' h1 h2 x
+      have hsplit : (homOfLE (h1.trans h2)).op =
+          (homOfLE h2).op ≫ (homOfLE h1).op := rfl
+      calc ConcreteCategory.hom (B.map (homOfLE (h1.trans h2)).op) x
+          = ConcreteCategory.hom (B.map ((homOfLE h2).op ≫ (homOfLE h1).op)) x := by
+            rw [hsplit]
+        _ = ConcreteCategory.hom
+              (B.map (homOfLE h2).op ≫ B.map (homOfLE h1).op) x := by
+            rw [Functor.map_comp]
+        _ = _ := ConcreteCategory.comp_apply _ _ _
+    -- stabilization levels of the kernel system
+    choose μ hμ hstab using hker
+    -- the "eventual fiber" at level `n`: preimages of the component of `t` which come
+    -- from a preimage at the stabilization level `μ n`
+    set P : ∀ n : ℕ, ToType (B.obj (op n)) → Prop := fun n b ↦
+      ∃ b₀ : ToType (B.obj (op (μ n))),
+        ConcreteCategory.hom (g.app (op (μ n))) b₀ =
+          ConcreteCategory.hom (limit.π C (op (μ n))) t ∧
+        ConcreteCategory.hom (B.map (homOfLE (hμ n)).op) b₀ = b with hPdef
+    -- elements of the eventual fiber are preimages of the components of `t`
+    have hPfib : ∀ (n : ℕ) (b : ToType (B.obj (op n))), P n b →
+        ConcreteCategory.hom (g.app (op n)) b =
+          ConcreteCategory.hom (limit.π C (op n)) t := by
+      rintro n b ⟨b₀, hb₀, rfl⟩
+      exact hpush n (μ n) (hμ n) b₀ hb₀
+    -- key step: an element of the eventual fiber at `n` is the image of an element of
+    -- the fiber at any level `k ≥ μ n`
+    have stepA : ∀ (n k : ℕ) (hk : μ n ≤ k) (b : ToType (B.obj (op n))), P n b →
+        ∃ c : ToType (B.obj (op k)),
+          ConcreteCategory.hom (g.app (op k)) c =
+            ConcreteCategory.hom (limit.π C (op k)) t ∧
+          ConcreteCategory.hom (B.map (homOfLE ((hμ n).trans hk)).op) c = b := by
+      rintro n k hk b ⟨b₀, hb₀, rfl⟩
+      obtain ⟨c₀, hc₀⟩ := hfib k
+      -- the discrepancy at level `μ n` lies in the kernel of `g`
+      have hdis : ConcreteCategory.hom (g.app (op (μ n)))
+          (ConcreteCategory.hom (B.map (homOfLE hk).op) c₀ - b₀) = 0 := by
+        rw [map_sub, hpush (μ n) k hk c₀ hc₀, hb₀, sub_self]
+      obtain ⟨κ, hκ0, hκτ⟩ := hstab n k ((hμ n).trans hk) _ hdis
+      refine ⟨c₀ - κ, ?_, ?_⟩
+      · rw [map_sub, hκ0, sub_zero, hc₀]
+      · rw [map_sub, hκτ, map_sub, ← hfac n (μ n) k (hμ n) hk c₀]
         abel
-    obtain ⟨b0, hb0⟩ := hexact (op 0) _ (hc0 0)
-    let b : ∀ n, {v : ToType (B.obj (op n)) //
-        ConcreteCategory.hom (g.app (op n)) v =
-          ConcreteCategory.hom (limit.π C (op n)) t} :=
-      fun n ↦ Nat.rec ⟨b0, hb0⟩
-        (fun m ih ↦ ⟨(step m ih.1 ih.2).choose, (step m ih.1 ih.2).choose_spec.1⟩) n
+    -- the eventual fibers are nonempty and map onto each other under the transitions
+    have stepB : ∀ (n : ℕ) (b : ToType (B.obj (op n))), P n b →
+        ∃ b' : ToType (B.obj (op (n + 1))), P (n + 1) b' ∧
+          ConcreteCategory.hom (SequentialSystem.transition B n) b' = b := by
+      intro n b hb
+      obtain ⟨c, hcfib, hcτ⟩ := stepA n (max (μ n) (μ (n + 1))) (le_max_left _ _) b hb
+      have h1 : n + 1 ≤ max (μ n) (μ (n + 1)) := (hμ (n + 1)).trans (le_max_right _ _)
+      refine ⟨ConcreteCategory.hom (B.map (homOfLE h1).op) c,
+        ⟨ConcreteCategory.hom (B.map (homOfLE (le_max_right (μ n) (μ (n + 1)))).op) c,
+          hpush (μ (n + 1)) _ (le_max_right _ _) c hcfib,
+          (hfac (n + 1) (μ (n + 1)) _ (hμ (n + 1)) (le_max_right _ _) c).symm⟩, ?_⟩
+      exact (hfac n (n + 1) _ (Nat.le_succ n) h1 c).symm.trans hcτ
+    -- choose a compatible family of preimages through the eventual fibers
+    obtain ⟨binit, hbinit⟩ := hfib (μ 0)
+    have hP0 : P 0 (ConcreteCategory.hom (B.map (homOfLE (hμ 0)).op) binit) :=
+      ⟨binit, hbinit, rfl⟩
+    let b : ∀ n, {v : ToType (B.obj (op n)) // P n v} :=
+      fun n ↦ Nat.rec ⟨_, hP0⟩
+        (fun m ih ↦ ⟨(stepB m ih.1 ih.2).choose, (stepB m ih.1 ih.2).choose_spec.1⟩) n
     have hbc : ∀ n, ConcreteCategory.hom (SequentialSystem.transition B n)
-        (b (n + 1)).1 = (b n).1 := fun n ↦ (step n (b n).1 (b n).2).choose_spec.2
+        (b (n + 1)).1 = (b n).1 := fun n ↦ (stepB n (b n).1 (b n).2).choose_spec.2
     obtain ⟨s, hs⟩ := exists_limit_elem (fun n ↦ (b n).1) hbc
     refine ⟨s, limMap_apply_eq g s t fun k ↦ ?_⟩
     calc ConcreteCategory.hom (g.app k) (ConcreteCategory.hom (limit.π B k) s)
         = ConcreteCategory.hom (g.app k) (b k.unop).1 := by rw [hs k]
-      _ = ConcreteCategory.hom (limit.π C k) t := (b k.unop).2
+      _ = ConcreteCategory.hom (limit.π C k) t := hPfib k.unop _ (b k.unop).2
 
 end AbChase
 
@@ -588,52 +747,75 @@ private lemma surjective_transition_levelSystem_of_injective
 
 omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ A] in
 /-- Relative Mittag-Leffler input for `surjective_limMap_and_exact`: under the
-Mittag-Leffler hypothesis on `Hom(Z, SC.X₁•)`, the transition maps of the level system
-of the middle object surject onto the kernels of the level maps to the third object. -/
+Mittag-Leffler hypothesis on `Hom(Z, SC.X₁•)`, the kernels of the level maps from the
+level system of the middle object to that of the third object satisfy the stabilized
+elementwise Mittag-Leffler condition. -/
 private lemma exists_transition_preimage_ker
     (hSCk : ∀ k : ℕᵒᵖ, (SC.map ((evaluation ℕᵒᵖ A).obj k)).ShortExact)
-    (hML : ∀ n, Function.Surjective (ConcreteCategory.hom
-      ((levelSystem Z SC.X₁ 0).map (homOfLE (Nat.le_succ n)).op)))
-    (n : ℕ) (b : Ext Z (SC.X₂.obj (op n)) 0)
-    (hb : ConcreteCategory.hom
-      ((Functor.whiskerRight SC.g (extFunctorObj Z 0)).app (op n)) b = 0) :
-    ∃ b' : Ext Z (SC.X₂.obj (op (n + 1))) 0,
-      ConcreteCategory.hom
-        ((Functor.whiskerRight SC.g (extFunctorObj Z 0)).app (op (n + 1))) b' = 0 ∧
-      ConcreteCategory.hom
-        (SequentialSystem.transition (levelSystem Z SC.X₂ 0) n) b' = b := by
-  obtain ⟨w, hw⟩ := covariant_sequence_exact₂ Z (hSCk (op n)) b
-    ((whiskerRight_extFunctorObj_app_apply Z 0 (op n) b).symm.trans hb)
-  obtain ⟨w', hw'⟩ := hML n w
-  refine ⟨w'.comp (Ext.mk₀ (SC.f.app (op (n + 1)))) (add_zero 0), ?_, ?_⟩
-  · have h2 : SC.f.app (op (n + 1)) ≫ SC.g.app (op (n + 1)) = 0 := by
+    (hML : (levelSystem Z SC.X₁ 0 ⋙
+      CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler) :
+    ∀ n : ℕ, ∃ (m : ℕ) (hm : n ≤ m), ∀ (k : ℕ) (hk : n ≤ k),
+      ∀ b : Ext Z (SC.X₂.obj (op m)) 0,
+        ConcreteCategory.hom
+          ((Functor.whiskerRight SC.g (extFunctorObj Z 0)).app (op m)) b = 0 →
+        ∃ b' : Ext Z (SC.X₂.obj (op k)) 0,
+          ConcreteCategory.hom
+            ((Functor.whiskerRight SC.g (extFunctorObj Z 0)).app (op k)) b' = 0 ∧
+          ConcreteCategory.hom ((levelSystem Z SC.X₂ 0).map (homOfLE hk).op) b' =
+            ConcreteCategory.hom ((levelSystem Z SC.X₂ 0).map (homOfLE hm).op) b := by
+  rw [isMittagLeffler_forget_iff] at hML
+  intro n
+  obtain ⟨m, hm, hstab⟩ := hML n
+  refine ⟨m, hm, fun k hk b hb ↦ ?_⟩
+  obtain ⟨w, hw⟩ := covariant_sequence_exact₂ Z (hSCk (op m)) b
+    ((whiskerRight_extFunctorObj_app_apply Z 0 (op m) b).symm.trans hb)
+  obtain ⟨w', hw'⟩ := hstab k hk w
+  have hw'' : w'.comp (Ext.mk₀ (SC.X₁.map (homOfLE hk).op)) (add_zero 0) =
+      w.comp (Ext.mk₀ (SC.X₁.map (homOfLE hm).op)) (add_zero 0) :=
+    (levelSystem_map_apply 0 _ _).symm.trans
+      (hw'.trans (levelSystem_map_apply 0 _ _))
+  refine ⟨w'.comp (Ext.mk₀ (SC.f.app (op k))) (add_zero 0), ?_, ?_⟩
+  · have h2 : SC.f.app (op k) ≫ SC.g.app (op k) = 0 := by
       rw [← NatTrans.comp_app, SC.zero, zero_app]
     calc ConcreteCategory.hom
-          ((Functor.whiskerRight SC.g (extFunctorObj Z 0)).app (op (n + 1)))
-          (w'.comp (Ext.mk₀ (SC.f.app (op (n + 1)))) (add_zero 0))
-        = (w'.comp (Ext.mk₀ (SC.f.app (op (n + 1)))) (add_zero 0)).comp
-            (Ext.mk₀ (SC.g.app (op (n + 1)))) (add_zero 0) := rfl
-      _ = w'.comp ((Ext.mk₀ (SC.f.app (op (n + 1)))).comp
-            (Ext.mk₀ (SC.g.app (op (n + 1)))) (zero_add 0)) (add_zero 0) :=
+          ((Functor.whiskerRight SC.g (extFunctorObj Z 0)).app (op k))
+          (w'.comp (Ext.mk₀ (SC.f.app (op k))) (add_zero 0))
+        = (w'.comp (Ext.mk₀ (SC.f.app (op k))) (add_zero 0)).comp
+            (Ext.mk₀ (SC.g.app (op k))) (add_zero 0) := rfl
+      _ = w'.comp ((Ext.mk₀ (SC.f.app (op k))).comp
+            (Ext.mk₀ (SC.g.app (op k))) (zero_add 0)) (add_zero 0) :=
           Ext.comp_assoc_of_second_deg_zero _ _ _ _
       _ = 0 := by rw [Ext.mk₀_comp_mk₀, h2, Ext.mk₀_zero, Ext.comp_zero]
-  · calc ConcreteCategory.hom (SequentialSystem.transition (levelSystem Z SC.X₂ 0) n)
-          (w'.comp (Ext.mk₀ (SC.f.app (op (n + 1)))) (add_zero 0))
-        = (w'.comp (Ext.mk₀ (SC.f.app (op (n + 1)))) (add_zero 0)).comp
-            (Ext.mk₀ (SC.X₂.map (homOfLE (Nat.le_succ n)).op)) (add_zero 0) := rfl
-      _ = w'.comp ((Ext.mk₀ (SC.f.app (op (n + 1)))).comp
-            (Ext.mk₀ (SC.X₂.map (homOfLE (Nat.le_succ n)).op)) (zero_add 0))
+  · calc ConcreteCategory.hom ((levelSystem Z SC.X₂ 0).map (homOfLE hk).op)
+          (w'.comp (Ext.mk₀ (SC.f.app (op k))) (add_zero 0))
+        = (w'.comp (Ext.mk₀ (SC.f.app (op k))) (add_zero 0)).comp
+            (Ext.mk₀ (SC.X₂.map (homOfLE hk).op)) (add_zero 0) := rfl
+      _ = w'.comp ((Ext.mk₀ (SC.f.app (op k))).comp
+            (Ext.mk₀ (SC.X₂.map (homOfLE hk).op)) (zero_add 0))
             (add_zero 0) := Ext.comp_assoc_of_second_deg_zero _ _ _ _
-      _ = w'.comp ((Ext.mk₀ (SC.X₁.map (homOfLE (Nat.le_succ n)).op)).comp
+      _ = w'.comp ((Ext.mk₀ (SC.X₁.map (homOfLE hk).op)).comp
             (Ext.mk₀ (SC.f.app (op n))) (zero_add 0)) (add_zero 0) := by
           rw [Ext.mk₀_comp_mk₀, Ext.mk₀_comp_mk₀, SC.f.naturality]
-      _ = (w'.comp (Ext.mk₀ (SC.X₁.map (homOfLE (Nat.le_succ n)).op)) (add_zero 0)).comp
+      _ = (w'.comp (Ext.mk₀ (SC.X₁.map (homOfLE hk).op)) (add_zero 0)).comp
             (Ext.mk₀ (SC.f.app (op n))) (add_zero 0) :=
           (Ext.comp_assoc_of_second_deg_zero _ _ _ _).symm
-      _ = w.comp (Ext.mk₀ (SC.f.app (op n))) (add_zero 0) :=
+      _ = (w.comp (Ext.mk₀ (SC.X₁.map (homOfLE hm).op)) (add_zero 0)).comp
+            (Ext.mk₀ (SC.f.app (op n))) (add_zero 0) :=
           congrArg (fun t : Ext Z (SC.X₁.obj (op n)) 0 ↦
-            t.comp (Ext.mk₀ (SC.f.app (op n))) (add_zero 0)) hw'
-      _ = b := hw
+            t.comp (Ext.mk₀ (SC.f.app (op n))) (add_zero 0)) hw''
+      _ = w.comp ((Ext.mk₀ (SC.X₁.map (homOfLE hm).op)).comp
+            (Ext.mk₀ (SC.f.app (op n))) (zero_add 0)) (add_zero 0) :=
+          Ext.comp_assoc_of_second_deg_zero _ _ _ _
+      _ = w.comp ((Ext.mk₀ (SC.f.app (op m))).comp
+            (Ext.mk₀ (SC.X₂.map (homOfLE hm).op)) (zero_add 0)) (add_zero 0) := by
+          rw [Ext.mk₀_comp_mk₀, Ext.mk₀_comp_mk₀, SC.f.naturality]
+      _ = (w.comp (Ext.mk₀ (SC.f.app (op m))) (add_zero 0)).comp
+            (Ext.mk₀ (SC.X₂.map (homOfLE hm).op)) (add_zero 0) :=
+          (Ext.comp_assoc_of_second_deg_zero _ _ _ _).symm
+      _ = b.comp (Ext.mk₀ (SC.X₂.map (homOfLE hm).op)) (add_zero 0) :=
+          congrArg (fun t : Ext Z (SC.X₂.obj (op m)) 0 ↦
+            t.comp (Ext.mk₀ (SC.X₂.map (homOfLE hm).op)) (add_zero 0)) hw
+      _ = ConcreteCategory.hom ((levelSystem Z SC.X₂ 0).map (homOfLE hm).op) b := rfl
 
 /-- The composite identification `(Δ Z ⟶ G) ≃+ limit (levelSystem Z G 0)`. -/
 private noncomputable def homAddEquivLimit (G : ℕᵒᵖ ⥤ A) :
@@ -652,12 +834,15 @@ private lemma π_homAddEquivLimit (G : ℕᵒᵖ ⥤ A)
 
 /-- **Comparison of `Ext` from a constant system with the limit of levelwise `Ext`,
 under a Mittag-Leffler hypothesis** (the `lim¹`-free case of Jannsen's exact sequence):
-if the transition maps of the degree-`i` levelwise `Ext`-system are surjective, then
+if the degree-`i` levelwise `Ext`-system satisfies the Mittag-Leffler condition, then
 `Ext (Δ Z) F (i + 1)` is the inverse limit of the levelwise `Ext`-groups in degree
-`i + 1`. -/
+`i + 1`. The hypothesis holds e.g. when the transition maps of the degree-`i` system
+are surjective (`isMittagLeffler_forget_of_surjective_transition`, see
+`nonempty_addEquiv_limit_levelSystem_of_surjective`) or when its groups are finite
+(`isMittagLeffler_forget_of_finite`). -/
 theorem nonempty_addEquiv_limit_levelSystem (F : ℕᵒᵖ ⥤ A) (i : ℕ)
-    (hML : ∀ n, Function.Surjective (ConcreteCategory.hom
-      ((levelSystem Z F i).map (homOfLE (Nat.le_succ n)).op))) :
+    (hML : (levelSystem Z F i ⋙
+      CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler) :
     Nonempty (Ext ((Functor.const ℕᵒᵖ).obj Z) F (i + 1) ≃+
       ↥(limit (levelSystem Z F (i + 1)))) := by
   -- Induction on `i`, generalizing `F` (as in
@@ -694,7 +879,7 @@ theorem nonempty_addEquiv_limit_levelSystem (F : ℕᵒᵖ ⥤ A) (i : ℕ)
   --     epimorphisms `transition I n`;
   --   - `hker`: the kernel of `g` at level `n` is the image of `Hom(Z, Fₙ)` (LES
   --     exactness in degree 0: `Ext.covariant_sequence_exact₂` at `n = 0` through
-  --     `mk₀`); surjectivity of the transitions on these kernels is exactly the
+  --     `mk₀`); the Mittag-Leffler stabilization on these kernels is exactly the
   --     hypothesis `hML` (transport through the identification, using naturality of
   --     `mk₀`-postcomposition and injectivity of `mk₀`).
   --   Conclude: `limMap h` identifies `limit (levelSystem Z F 1)` with
@@ -705,15 +890,14 @@ theorem nonempty_addEquiv_limit_levelSystem (F : ℕᵒᵖ ⥤ A) (i : ℕ)
   -- **Inductive step `i + 1` (target degree `i + 2`).**
   -- * `Q` satisfies the hypothesis at degree `i`: for `i ≥ 1`,
   --   `levelSystem Z Q i ≅ levelSystem Z F (i + 1)` via the levelwise connecting
-  --   isomorphisms (`Ext.connectingEquiv` levelwise, assembled into a natural
-  --   isomorphism using `levelDelta`-naturality — note `levelDelta Z hSCk i` is an
-  --   isomorphism in each component when `i ≥ 1` since the adjacent `Ext`-groups of
-  --   the injective levels vanish), so `hML` transports. For `i = 0`, the hypothesis
-  --   `transitions of levelSystem Z Q 0 surjective` follows from
-  --   `surjective_transition_of_exact` applied to
+  --   isomorphisms (`levelDelta Z hSCk i` is bijective in each component when `i ≥ 1`
+  --   since the adjacent `Ext`-groups of the injective levels vanish), so `hML`
+  --   transports along it (`isMittagLeffler_forget_of_app_bijective`). For `i = 0`,
+  --   the Mittag-Leffler condition for `levelSystem Z Q 0` follows from
+  --   `isMittagLeffler_of_exact` applied to
   --   `levelSystem Z I 0 ⟶ levelSystem Z Q 0 ⟶ levelSystem Z F 1`
-  --   (with `hML` providing the `D`-surjectivity and split transitions of `I` the
-  --   `B`-surjectivity).
+  --   (with `hML` providing the Mittag-Leffler condition of `D` and split transitions
+  --   of `I` the `B`-surjectivity).
   -- * Conclude:
   --   `Ext (Δ Z) F (i+2) ≃+ Ext (Δ Z) Q (i+1)` by `(Ext.connectingEquiv hSC _ i _ _).symm`
   --   (vanishing of `Ext (Δ Z) I` in degrees `i+1`, `i+2`),
@@ -829,40 +1013,19 @@ theorem nonempty_addEquiv_limit_levelSystem (F : ℕᵒᵖ ⥤ A) (i : ℕ)
         SequentialSystem.injective_obj_of_injective SC.X₂ k.unop
       exact subsingleton_of_injective Z _ q
     -- Transport the Mittag-Leffler hypothesis to the cokernel system at degree `i`.
-    have hMLQ : ∀ n, Function.Surjective (ConcreteCategory.hom
-        ((levelSystem Z SC.X₃ i).map (homOfLE (Nat.le_succ n)).op)) := by
+    have hMLQ : (levelSystem Z SC.X₃ i ⋙
+        CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler := by
       obtain _ | j := i
-      · exact fun n ↦ surjective_transition_of_exact
+      · exact isMittagLeffler_of_exact
           (Functor.whiskerRight SC.g (extFunctorObj Z 0)) (levelDelta Z hSCk 0)
           (exists_of_levelDelta_app_eq_zero Z hSCk 0)
           (fun k ↦ surjective_levelDelta_app Z hSCk 0 k (hsubk k 0))
           (surjective_transition_levelSystem_of_injective Z SC.X₂)
-          hML n
-      · intro n c
-        obtain ⟨d', hd'⟩ := hML n (ConcreteCategory.hom
-          ((levelDelta Z hSCk (j + 1)).app (op n)) c)
-        obtain ⟨c', hc'⟩ := surjective_levelDelta_app Z hSCk (j + 1) (op (n + 1))
-          (hsubk (op (n + 1)) (j + 1)) d'
-        refine ⟨c', injective_levelDelta_app Z hSCk j (op n) (hsubk (op n) j) ?_⟩
-        calc ConcreteCategory.hom ((levelDelta Z hSCk (j + 1)).app (op n))
-              (ConcreteCategory.hom ((levelSystem Z SC.X₃ (j + 1)).map
-                (homOfLE (Nat.le_succ n)).op) c')
-            = ConcreteCategory.hom
-                ((levelSystem Z SC.X₃ (j + 1)).map (homOfLE (Nat.le_succ n)).op ≫
-                  (levelDelta Z hSCk (j + 1)).app (op n)) c' :=
-              (ConcreteCategory.comp_apply _ _ _).symm
-          _ = ConcreteCategory.hom ((levelDelta Z hSCk (j + 1)).app (op (n + 1)) ≫
-                (levelSystem Z SC.X₁ (j + 2)).map (homOfLE (Nat.le_succ n)).op) c' :=
-              ConcreteCategory.congr_hom
-                ((levelDelta Z hSCk (j + 1)).naturality (homOfLE (Nat.le_succ n)).op) c'
-          _ = ConcreteCategory.hom
-                ((levelSystem Z SC.X₁ (j + 2)).map (homOfLE (Nat.le_succ n)).op)
-                (ConcreteCategory.hom ((levelDelta Z hSCk (j + 1)).app (op (n + 1)))
-                  c') := ConcreteCategory.comp_apply _ _ _
-          _ = ConcreteCategory.hom
-                ((levelSystem Z SC.X₁ (j + 2)).map (homOfLE (Nat.le_succ n)).op) d' := by
-              rw [hc']
-          _ = ConcreteCategory.hom ((levelDelta Z hSCk (j + 1)).app (op n)) c := hd'
+          hML
+      · exact isMittagLeffler_forget_of_app_bijective (levelDelta Z hSCk (j + 1))
+          (fun k ↦ ⟨injective_levelDelta_app Z hSCk j k (hsubk k j),
+            surjective_levelDelta_app Z hSCk (j + 1) k (hsubk k (j + 1))⟩)
+          hML
     obtain ⟨eQ⟩ := IH SC.X₃ hMLQ
     have h₂ : Subsingleton (Ext ((Functor.const ℕᵒᵖ).obj Z) SC.X₂ (i + 1)) :=
       subsingleton_of_injective _ _ i
@@ -877,6 +1040,16 @@ theorem nonempty_addEquiv_limit_levelSystem (F : ℕᵒᵖ ⥤ A) (i : ℕ)
     exact ⟨((connectingEquiv hSC ((Functor.const ℕᵒᵖ).obj Z) i h₂ h₂').symm.trans
         eQ).trans
       (asIso (limMap (levelDelta Z hSCk (i + 1)))).addCommGroupIsoToAddEquiv⟩
+
+/-- Variant of `nonempty_addEquiv_limit_levelSystem` with the stronger hypothesis that
+the transition maps of the degree-`i` levelwise `Ext`-system are surjective. -/
+theorem nonempty_addEquiv_limit_levelSystem_of_surjective (F : ℕᵒᵖ ⥤ A) (i : ℕ)
+    (hML : ∀ n, Function.Surjective (ConcreteCategory.hom
+      ((levelSystem Z F i).map (homOfLE (Nat.le_succ n)).op))) :
+    Nonempty (Ext ((Functor.const ℕᵒᵖ).obj Z) F (i + 1) ≃+
+      ↥(limit (levelSystem Z F (i + 1)))) :=
+  nonempty_addEquiv_limit_levelSystem Z F i
+    (isMittagLeffler_forget_of_surjective_transition _ hML)
 
 end Main
 

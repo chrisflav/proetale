@@ -23,10 +23,16 @@ cohomology of the finite coefficients `ℤ/ℓⁿℤ`:
   `AlgebraicGeometry.Scheme.ProEt.nonempty_ellAdicCohomology_addEquiv_limit`:
   **`ℓ`-adic cohomology is the inverse limit of the étale cohomology groups of
   `ℤ/ℓⁿℤ`** — in degree `0` unconditionally, and in degree `i + 1` under the
-  Mittag-Leffler-type hypothesis that the transition maps of the degree-`i` étale
-  cohomology system are surjective. Some such hypothesis is necessary: in general the
-  two sides differ by a `lim¹`-term (Jannsen); the hypothesis holds e.g. whenever the
-  étale cohomology groups `H^i(X_ét, ℤ/ℓⁿℤ)` are finite.
+  hypothesis that the degree-`i` étale cohomology system satisfies the Mittag-Leffler
+  condition (`CategoryTheory.Functor.IsMittagLeffler`). Some such hypothesis is
+  necessary: in general the two sides differ by a `lim¹`-term (Jannsen). The
+  hypothesis holds when the transition maps of the degree-`i` system are surjective
+  (`nonempty_ellAdicCohomology_addEquiv_limit_of_surjective`), and in particular
+  whenever the étale cohomology groups `Hⁱ(X_ét, ℤ/ℓⁿℤ)` are finite
+  (`nonempty_ellAdicCohomology_addEquiv_limit_of_finite`). Note that finiteness does
+  *not* imply surjectivity of the transition maps — for `X = Spec ℝ`, `ℓ = 2`,
+  `i = 1` the system is `ℤ/2 ← ℤ/2 ← ⋯` with zero transition maps — so the genuine
+  Mittag-Leffler hypothesis is essential for the finite case.
 
 These results are deduced from the comparison of continuous étale cohomology with
 pro-étale cohomology (`nonempty_continuousH_addEquiv_H_limit`,
@@ -102,13 +108,16 @@ theorem nonempty_ellAdicCohomology_zero_addEquiv_limit :
   exact ⟨e1.trans e2⟩
 
 /-- **`ℓ`-adic cohomology is the inverse limit of the étale cohomology groups of
-`ℤ/ℓⁿℤ`** in positive degrees, under the Mittag-Leffler-type hypothesis that the
-transition maps of the étale cohomology system one degree lower are surjective (e.g.
-because the groups `Hⁱ(X_ét, ℤ/ℓⁿℤ)` are finite). In general the two sides differ by a
-`lim¹`-term. -/
+`ℤ/ℓⁿℤ`** in positive degrees, under the hypothesis that the étale cohomology system
+one degree lower satisfies the Mittag-Leffler condition. In general the two sides
+differ by a `lim¹`-term (Jannsen). The hypothesis holds e.g. when the transition maps
+of that system are surjective
+(`nonempty_ellAdicCohomology_addEquiv_limit_of_surjective`) or when its groups
+`Hⁱ(X_ét, ℤ/ℓⁿℤ)` are finite
+(`nonempty_ellAdicCohomology_addEquiv_limit_of_finite`). -/
 theorem nonempty_ellAdicCohomology_addEquiv_limit (i : ℕ)
-    (hML : ∀ n, Function.Surjective (ConcreteCategory.hom
-      ((zmodCohomologySystem X ℓ i).map (homOfLE (Nat.le_succ n)).op))) :
+    (hML : (zmodCohomologySystem X ℓ i ⋙
+      CategoryTheory.forget AddCommGrpCat.{u + 1}).IsMittagLeffler) :
     Nonempty (X.EllAdicCohomology ℓ (i + 1) ≃+
       ↥(limit (zmodCohomologySystem X ℓ (i + 1)))) := by
   -- Combine `nonempty_ellAdicCohomology_addEquiv_continuousH` in degree `i + 1` with
@@ -123,6 +132,32 @@ theorem nonempty_ellAdicCohomology_addEquiv_limit (i : ℕ)
     (Ext.nonempty_addEquiv_limit_levelSystem (etaleConstantUnit X)
       (zmodSystem X ℓ) i hML).some
   exact ⟨e1.trans e2⟩
+
+/-- **`ℓ`-adic cohomology is the inverse limit of the étale cohomology groups of
+`ℤ/ℓⁿℤ`** in positive degrees, when the transition maps of the étale cohomology system
+one degree lower are surjective. Surjectivity of the transition maps is *strictly
+stronger* than the Mittag-Leffler hypothesis of
+`nonempty_ellAdicCohomology_addEquiv_limit`: for `X = Spec ℝ`, `ℓ = 2`, `i = 1` the
+system consists of finite groups `ℤ/2` with zero transition maps, so it is
+Mittag-Leffler but has no surjective transition map. -/
+theorem nonempty_ellAdicCohomology_addEquiv_limit_of_surjective (i : ℕ)
+    (hML : ∀ n, Function.Surjective (ConcreteCategory.hom
+      ((zmodCohomologySystem X ℓ i).map (homOfLE (Nat.le_succ n)).op))) :
+    Nonempty (X.EllAdicCohomology ℓ (i + 1) ≃+
+      ↥(limit (zmodCohomologySystem X ℓ (i + 1)))) :=
+  nonempty_ellAdicCohomology_addEquiv_limit X ℓ i
+    (Ext.isMittagLeffler_forget_of_surjective_transition _ hML)
+
+/-- **`ℓ`-adic cohomology is the inverse limit of the étale cohomology groups of
+`ℤ/ℓⁿℤ`** in positive degrees, when the étale cohomology groups `Hⁱ(X_ét, ℤ/ℓⁿℤ)` one
+degree lower are finite: finiteness forces the Mittag-Leffler condition, since the
+decreasing chain of images in a finite group stabilizes. -/
+theorem nonempty_ellAdicCohomology_addEquiv_limit_of_finite (i : ℕ)
+    (hfin : ∀ n : ℕ, Finite (ToType ((zmodCohomologySystem X ℓ i).obj (op n)))) :
+    Nonempty (X.EllAdicCohomology ℓ (i + 1) ≃+
+      ↥(limit (zmodCohomologySystem X ℓ (i + 1)))) :=
+  nonempty_ellAdicCohomology_addEquiv_limit X ℓ i
+    (Ext.isMittagLeffler_forget_of_finite _ hfin)
 
 end ProEt
 
