@@ -48,6 +48,25 @@ lemma exists_eq_mul_of_surjective_flat' {R S ι : Type*} [CommRing R] [CommRing 
     obtain ⟨z, hz, hz'⟩ := exists_eq_mul_of_surjective_flat f hf hsurj (x .none) (by grind)
     refine ⟨y * z, by simp [hy, hz], fun | some i => by grind | none => by grind⟩
 
+/-- A finitely generated `Π i, A i`-submodule `N` of a product `Π i, M i` is the product of its
+componentwise images: if every component `y i` of `y` lies in the image of `N` under the `i`-th
+projection, then `y ∈ N`. -/
+theorem Submodule.FG.mem_pi {ι : Type*} {A : ι → Type*} [∀ i, Semiring (A i)]
+    {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module (A i) (M i)]
+    {N : Submodule (Π i, A i) (Π i, M i)} (hN : N.FG)
+    {y : Π i, M i} (hy : ∀ i, ∃ z ∈ N, z i = y i) : y ∈ N := by
+  classical
+  obtain ⟨s, hs⟩ := hN
+  choose z hzN hzy using hy
+  rw [← hs] at hzN ⊢
+  choose c _hcs hc using fun i ↦ Submodule.mem_span_finset.mp (hzN i)
+  have hy_eq : y = ∑ a ∈ s, (fun j ↦ c j a j) • a := by
+    ext i
+    rw [← hzy i, ← hc i]
+    simp [Finset.sum_apply]
+  rw [hy_eq]
+  exact Submodule.sum_mem _ fun a ha ↦ Submodule.smul_mem _ _ (Submodule.subset_span ha)
+
 namespace Ring.WeakDimensionLEOne
 
 variable (R : Type*) [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
@@ -77,22 +96,7 @@ lemma pi_of_isValuationRing {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R 
     [∀ i, IsDomain (R i)] [∀ i, ValuationRing (R i)] :
     WeakDimensionLEOne (Π i, R i) := by
   classical
-  constructor
-  intro I hI
-  -- Membership in a finitely generated ideal of a product ring is componentwise.
-  have hmem : ∀ y : Π i, R i, (∀ i, y i ∈ I.map (Pi.evalRingHom R i)) → y ∈ I := by
-    obtain ⟨s, hs⟩ := hI
-    intro y hy
-    choose x hxI hxy using fun i ↦
-      (Ideal.mem_map_iff_of_surjective _ (Function.surjective_eval i)).mp (hy i)
-    rw [← hs] at hxI ⊢
-    choose c _hcs hc using fun i ↦ Submodule.mem_span_finset.mp (hxI i)
-    have hy_eq : y = ∑ a ∈ s, (fun j ↦ c j a j) * a := by
-      funext i
-      rw [← hxy i, ← hc i]
-      simp [Finset.sum_apply]
-    rw [hy_eq]
-    exact Submodule.sum_mem _ fun a ha ↦ Ideal.mul_mem_left _ _ (Ideal.subset_span ha)
+  refine .mk fun I hI ↦ ?_
   -- Each image ideal is finitely generated over a Bézout ring, hence principal.
   choose f hf using fun i ↦
     (IsBezout.isPrincipal_of_FG _ (hI.map (Pi.evalRingHom R i))).principal
@@ -104,22 +108,22 @@ lemma pi_of_isValuationRing {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R 
       choose c hc using fun i ↦ Submodule.mem_span_singleton.mp (h1 i)
       exact Ideal.mem_span_singleton'.mpr ⟨fun i ↦ c i, funext fun i ↦ hc i⟩
     · rw [Ideal.span_le, Set.singleton_subset_iff]
-      refine hmem _ fun i ↦ ?_
-      rw [hf i]
-      exact Submodule.mem_span_singleton_self _
+      refine Submodule.FG.mem_pi hI fun i ↦ ?_
+      have hfi : f i ∈ I.map (Pi.evalRingHom R i) := hf i ▸ Submodule.mem_span_singleton_self (f i)
+      exact (Ideal.mem_map_iff_of_surjective _ (Function.surjective_eval i)).mp hfi
   rw [hfI]
   -- Decompose `f = g * e` with `e` idempotent and `g` a non-zerodivisor.
   set e : Π i, R i := fun i ↦ if f i = 0 then 0 else 1 with hedef
   set g : Π i, R i := fun i ↦ if f i = 0 then 1 else f i with hgdef
   have hge : (fun i ↦ f i : Π i, R i) = g * e := by
-    funext i
+    ext i
     by_cases h : f i = 0 <;> simp [hedef, hgdef, h]
   have hee : e * e = e := by
-    funext i
+    ext i
     by_cases h : f i = 0 <;> simp [hedef, h]
   have hgreg : ∀ x : Π i, R i, x * g = 0 → x = 0 := by
     intro x hx
-    funext i
+    ext i
     have h1 := congrFun hx i
     by_cases h : f i = 0
     · simpa [hgdef, h] using h1
@@ -131,8 +135,8 @@ lemma pi_of_isValuationRing {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R 
       (LinearMap.toSpanSingleton _ _ ⟨e, Ideal.mem_span_singleton_self e⟩) ?_
     refine LinearMap.ext fun ⟨y, hy⟩ ↦ Subtype.ext ?_
     obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp hy
-    change (c * e) • e = c * e
-    rw [smul_eq_mul, mul_assoc, hee]
+    simp only [LinearMap.comp_apply, Submodule.subtype_apply, LinearMap.toSpanSingleton_apply,
+      LinearMap.id_coe, id_eq, SetLike.val_smul, smul_eq_mul, mul_assoc, hee]
   -- Multiplication by the non-zerodivisor `g` identifies the spans of `e` and `f = g * e`.
   rw [hge]
   have hsub : ∀ x ∈ Ideal.span {e},
@@ -140,8 +144,7 @@ lemma pi_of_isValuationRing {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R 
     intro x hx
     obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp hx
     refine Ideal.mem_span_singleton'.mpr ⟨c, ?_⟩
-    change c * (g * e) = (c * e) • g
-    rw [smul_eq_mul]
+    simp only [LinearMap.toSpanSingleton_apply, smul_eq_mul]
     ring
   have hφ : Function.Bijective
       ((LinearMap.toSpanSingleton (Π i, R i) (Π i, R i) g).restrict hsub) := by
@@ -153,8 +156,7 @@ lemma pi_of_isValuationRing {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R 
     · rintro ⟨y, hy⟩
       obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp hy
       refine ⟨⟨c * e, Ideal.mem_span_singleton'.mpr ⟨c, rfl⟩⟩, Subtype.ext ?_⟩
-      change (c * e) • g = c * (g * e)
-      rw [smul_eq_mul]
+      simp only [LinearMap.coe_restrict_apply, LinearMap.toSpanSingleton_apply, smul_eq_mul]
       ring
   exact Module.Flat.of_linearEquiv (LinearEquiv.ofBijective _ hφ).symm
 
@@ -165,7 +167,7 @@ lemma isIntegrallyClosedIn_of_isEpi [WeakDimensionLEOne R] [Module.Flat R S] [Fa
     IsIntegrallyClosedIn R S := by
   rw [isIntegrallyClosedIn_iff]
   refine ⟨FaithfulSMul.algebraMap_injective R S, fun {x} hx ↦ ?_⟩
-  let A : Subalgebra R S := Algebra.adjoin R {x}
+  let A := Algebra.adjoin R {x}
   have : Module.Finite R A := Algebra.finite_adjoin_simple_of_isIntegral hx
   have : Module.Flat R A := flat_submodule R (Subalgebra.toSubmodule A)
   have : Algebra.IsEpi R A := by
@@ -317,9 +319,8 @@ variable (R : Type*) [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
 `S`. -/
 lemma of_weaklyEtale [Ring.WeakDimensionLEOne R] [Algebra.WeaklyEtale R S] :
     Ring.WeakDimensionLEOne S := by
-  constructor
-  intro I _
-  haveI : Module.Flat R I := flat_submodule R (I.restrictScalars R)
+  refine .mk fun I _ ↦ ?_
+  have : Module.Flat R I := flat_submodule R (I.restrictScalars R)
   exact Module.Flat.of_flat_lmul'_of_flat R S I (Algebra.WeaklyEtale.flat_lmul' R S)
 
 end Ring.WeakDimensionLEOne
