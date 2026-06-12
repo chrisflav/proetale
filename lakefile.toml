@@ -29,3 +29,13 @@ rev = "main"
 
 [[lean_lib]]
 name = "Proetale"
+
+# Comparator (leanprover/comparator) challenge/solution pair for the comparison of
+# ell-adic and etale cohomology, see Comparator/config.json.
+[[lean_lib]]
+name = "Challenge"
+srcDir = "Comparator"
+
+[[lean_lib]]
+name = "Solution"
+srcDir = "Comparator"
