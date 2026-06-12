@@ -1,0 +1,33 @@
+# The Verso blueprint is a self-contained Lake package nested in the proetale
+# repository. It deliberately does not touch the top-level `lakefile.toml`.
+
+name = "ProetaleBlueprint"
+precompileModules = false
+defaultTargets = ["ProetaleBlueprint"]
+
+[leanOptions]
+experimental.module = true
+verso.blueprint.foldCodeBlocks = true
+
+# Dependency resolution note: VersoBlueprint and Mathlib pin different
+# versions of ProofWidgets and plausible. A later `require` wins, so
+# `proetale` is listed after `VersoBlueprint`, and consequently dependency
+# versions pinned by `proetale`'s Mathlib are used. This keeps
+# `lake exe cache get` able to find Mathlib's prebuilt cache instead of
+# triggering a full Mathlib rebuild.
+
+[[require]]
+name = "VersoBlueprint"
+git = "https://github.com/leanprover/verso-blueprint"
+rev = "v4.30.0"
+
+[[require]]
+name = "proetale"
+path = ".."
+
+[[lean_lib]]
+name = "ProetaleBlueprint"
+
+[[lean_exe]]
+name = "blueprint-gen"
+root = "ProetaleBlueprintMain"
