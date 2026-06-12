@@ -1537,6 +1537,9 @@ By the following lemma, we see $V(I_w)$ is the inverse limit of the closed subse
     in different components of the disjoint union decomposition above. But
     since $\spec{A_w} \to \spec{A}$ is continuous, $y_E$ specializes to both $x_E$ and $x'_E$
     which is not possible.
+    (In the formalization this WLOG step is phrased symmetrically: the above argument shows
+    $x \le x'$ as ideals of $A$, so swapping $z, z'$ gives the reverse inclusion as well, and
+    $x = x'$ follows by antisymmetry; injectivity of $V(I_w) \to \spec{A}$ then yields $z = z'$.)
 
     Finally, every closed point specializes to itself and is hence contained in $V(I_{w})$. Conversely,
     every point in $V(I_{w})$ specializes only to itself, so it is closed.
