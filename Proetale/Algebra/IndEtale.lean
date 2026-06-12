@@ -12,6 +12,7 @@ import Mathlib.RingTheory.RingHom.Etale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.Etale
 import Proetale.Mathlib.RingTheory.Etale.Field
+import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # Ind-étale algebras
@@ -105,100 +106,45 @@ instance isSeparable (k : Type u) [Field k] [Algebra k R] [IndEtale k R] [IsLoca
     Algebra.IsSeparable k R :=
   ⟨fun x ↦ isSeparable_of_algHom_to_isLocalRing k R (AlgHom.id k R) x⟩
 
+/-- If every element of `S` has separable image in `κ(q)` over a field `F`, then the residue
+field `κ(q)` is separable over `F`. A general element of `κ(q)` is a ratio of images of two
+elements of `S`, so the conclusion follows from `separableClosure` being closed under
+division. -/
+private lemma isSeparable_residueField_of_forall_isSeparable {F : Type u} [Field F]
+    {T : Type u} [CommRing T] (q : Ideal T) [q.IsPrime] [Algebra F q.ResidueField]
+    (key : ∀ s : T, IsSeparable F (algebraMap T q.ResidueField s)) :
+    Algebra.IsSeparable F q.ResidueField := by
+  refine ⟨fun y ↦ ?_⟩
+  rw [← mem_separableClosure_iff (F := F) (E := q.ResidueField)]
+  obtain ⟨x', m', -, hxm⟩ := IsFractionRing.div_surjective (A := T ⧸ q) y
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x'
+  obtain ⟨m, rfl⟩ := Ideal.Quotient.mk_surjective m'
+  rw [← hxm, Ideal.algebraMap_quotient_residueField_mk,
+    Ideal.algebraMap_quotient_residueField_mk]
+  exact div_mem (mem_separableClosure_iff.mpr (key x))
+    (mem_separableClosure_iff.mpr (key m))
+
 /-- An ind-étale ring extension `R → S` induces a separable extension `κ(p) → κ(q)` on
 residue fields, for any pair of primes `q ∈ Spec S` lying over `p ∈ Spec R`. -/
 instance isSeparable_residueField [IndEtale R S] (p : Ideal R) (q : Ideal S)
     [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra p q] :
-    Algebra.IsSeparable p.ResidueField q.ResidueField := by
+    Algebra.IsSeparable p.ResidueField q.ResidueField :=
   -- Every image in `q.ResidueField` of an element of `S` factors through a finite étale
   -- `p.ResidueField`-subalgebra, hence is separable over `p.ResidueField`.
-  have key (s : S) : IsSeparable p.ResidueField (algebraMap S q.ResidueField s) :=
+  isSeparable_residueField_of_forall_isSeparable q fun s ↦
     isSeparable_of_algHom_to_isLocalRing p.ResidueField q.ResidueField
       (IsScalarTower.toAlgHom R S q.ResidueField) s
-  refine ⟨fun y ↦ ?_⟩
-  -- A general element of `q.ResidueField` is a ratio of images of two elements of `S`;
-  -- we conclude via `separableClosure`, which is closed under division.
-  rw [← mem_separableClosure_iff (F := p.ResidueField) (E := q.ResidueField)]
-  obtain ⟨x', m', _, hxm⟩ := IsFractionRing.div_surjective (A := S ⧸ q) y
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x'
-  obtain ⟨m, rfl⟩ := Ideal.Quotient.mk_surjective m'
-  rw [← hxm, Ideal.algebraMap_quotient_residueField_mk,
-    Ideal.algebraMap_quotient_residueField_mk]
-  exact div_mem (mem_separableClosure_iff.mpr (key x))
-    (mem_separableClosure_iff.mpr (key m))
 
 /-- If `B` is an ind-étale algebra over a field `K`, then the residue field of any prime of
 `B` is separable over `K`. -/
 theorem isSeparable_residueField_of_field {K B : Type u} [Field K] [CommRing B]
     [Algebra K B] [IndEtale K B] (q : Ideal B) [q.IsPrime] :
-    Algebra.IsSeparable K q.ResidueField := by
-  have key (s : B) : IsSeparable K (algebraMap B q.ResidueField s) :=
+    Algebra.IsSeparable K q.ResidueField :=
+  isSeparable_residueField_of_forall_isSeparable q fun s ↦
     isSeparable_of_algHom_to_isLocalRing K q.ResidueField
       (IsScalarTower.toAlgHom K B q.ResidueField) s
-  refine ⟨fun y ↦ ?_⟩
-  rw [← mem_separableClosure_iff (F := K) (E := q.ResidueField)]
-  obtain ⟨x', m', -, hxm⟩ := IsFractionRing.div_surjective (A := B ⧸ q) y
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x'
-  obtain ⟨m, rfl⟩ := Ideal.Quotient.mk_surjective m'
-  rw [← hxm, Ideal.algebraMap_quotient_residueField_mk,
-    Ideal.algebraMap_quotient_residueField_mk]
-  exact div_mem (mem_separableClosure_iff.mpr (key x))
-    (mem_separableClosure_iff.mpr (key m))
-
-/-- A prime ideal of a finite product of fields is the kernel of one of the evaluation
-maps. -/
-private lemma exists_eq_ker_evalRingHom {I : Type u} [Finite I] {A : I → Type u}
-    [∀ i, Field (A i)] (p : Ideal (∀ i, A i)) [p.IsPrime] :
-    ∃ j, p = RingHom.ker (Pi.evalRingHom A j) := by
-  classical
-  cases nonempty_fintype I
-  have hp : p.IsPrime := inferInstance
-  obtain ⟨j, hj⟩ : ∃ j, Pi.single j (1 : A j) ∉ p := not_forall.mp fun hall ↦ by
-    have h1 : (1 : ∀ i, A i) ∈ p := by
-      have hsum : (∑ j, Pi.single j ((1 : ∀ i, A i) j)) ∈ p :=
-        Ideal.sum_mem p fun j _ ↦ hall j
-      rwa [Finset.univ_sum_single] at hsum
-    exact hp.ne_top ((Ideal.eq_top_iff_one p).mpr h1)
-  have hidem : Pi.single j (1 : A j) * Pi.single j 1 = Pi.single j 1 := by
-    funext k
-    by_cases hk : k = j
-    · subst hk; simp
-    · simp [Pi.single_eq_of_ne hk]
-  refine ⟨j, le_antisymm ?_ ?_⟩
-  · intro x hx
-    rw [RingHom.mem_ker]
-    change x j = 0
-    by_contra hxj
-    refine hj ?_
-    have hmem : x * Pi.single j (x j)⁻¹ ∈ p := Ideal.mul_mem_right _ p hx
-    have heq : x * Pi.single j (x j)⁻¹ = Pi.single j 1 := by
-      funext k
-      by_cases hk : k = j
-      · subst hk; simp [mul_inv_cancel₀ hxj]
-      · simp [Pi.single_eq_of_ne hk]
-    rwa [heq] at hmem
-  · intro x hx
-    rw [RingHom.mem_ker] at hx
-    have hxj : x j = 0 := hx
-    have hcompl : (1 : ∀ i, A i) - Pi.single j 1 ∈ p := by
-      have h0 : Pi.single j (1 : A j) * ((1 : ∀ i, A i) - Pi.single j 1) ∈ p := by
-        rw [mul_sub, mul_one, hidem, sub_self]
-        exact p.zero_mem
-      rcases hp.mem_or_mem h0 with h | h
-      · exact absurd h hj
-      · exact h
-    have hxe : x = x * ((1 : ∀ i, A i) - Pi.single j 1) := by
-      rw [mul_sub, mul_one]
-      have hx0 : x * Pi.single j 1 = 0 := by
-        funext k
-        by_cases hk : k = j
-        · subst hk; simp [hxj]
-        · simp [Pi.single_eq_of_ne hk]
-      rw [hx0, sub_zero]
-    rw [hxe]
-    exact Ideal.mul_mem_left p x hcompl
 
 /-- An étale algebra over a field with two distinct primes `p₁ ≠ p₂` contains an idempotent
 separating `p₁` from `p₂`. -/
@@ -209,39 +155,31 @@ private lemma exists_isIdempotentElem_mem_of_ne {K C : Type u} [Field K] [CommRi
   classical
   obtain ⟨I, hfin, Ai, hfield, halg, eqv, -⟩ :=
     (Algebra.Etale.iff_exists_algEquiv_prod (K := K) (A := C)).mp inferInstance
-  haveI : Finite I := hfin
-  letI : ∀ i, Field (Ai i) := hfield
-  letI : ∀ i, Algebra K (Ai i) := halg
-  set f : (∀ i, Ai i) →ₐ[K] C := eqv.symm.toAlgHom
+  have : Finite I := hfin
+  let _ : ∀ i, Field (Ai i) := hfield
+  let _ : ∀ i, Algebra K (Ai i) := halg
+  let f : (∀ i, Ai i) →ₐ[K] C := eqv.symm.toAlgHom
   have hfx : ∀ x : C, f (eqv x) = x := fun x ↦ eqv.symm_apply_apply x
-  haveI : (p₁.comap f).IsPrime := inferInstance
-  haveI : (p₂.comap f).IsPrime := inferInstance
-  obtain ⟨j₁, hj₁⟩ := exists_eq_ker_evalRingHom (p₁.comap f)
-  obtain ⟨j₂, hj₂⟩ := exists_eq_ker_evalRingHom (p₂.comap f)
+  obtain ⟨j₁, hj₁⟩ := Ideal.exists_eq_ker_evalRingHom (p₁.comap f)
+  obtain ⟨j₂, hj₂⟩ := Ideal.exists_eq_ker_evalRingHom (p₂.comap f)
   have hj : j₁ ≠ j₂ := by
     rintro rfl
     refine h (SetLike.ext fun x ↦ ?_)
     have h₁ : x ∈ p₁ ↔ eqv x ∈ p₁.comap f := by rw [Ideal.mem_comap, hfx]
     have h₂ : x ∈ p₂ ↔ eqv x ∈ p₂.comap f := by rw [Ideal.mem_comap, hfx]
     rw [h₁, h₂, hj₁, hj₂]
-  have hsingle : Pi.single j₁ (1 : Ai j₁) * Pi.single j₁ 1 = Pi.single j₁ 1 := by
-    funext k
-    by_cases hk : k = j₁
-    · subst hk; simp
-    · simp [Pi.single_eq_of_ne hk]
-  refine ⟨f ((1 : ∀ i, Ai i) - Pi.single j₁ 1),
-    (IsIdempotentElem.one_sub hsingle).map f, ?_, ?_⟩
+  have hidem : IsIdempotentElem (Pi.single j₁ (1 : Ai j₁)) := by
+    rw [IsIdempotentElem, ← Pi.single_mul, mul_one]
+  refine ⟨f ((1 : ∀ i, Ai i) - Pi.single j₁ 1), hidem.one_sub.map f, ?_, ?_⟩
   · have hz : ((1 : ∀ i, Ai i) - Pi.single j₁ 1) ∈ p₁.comap f := by
       rw [hj₁, RingHom.mem_ker]
-      change (1 : ∀ i, Ai i) j₁ - Pi.single j₁ (1 : Ai j₁) j₁ = 0
       simp
     exact Ideal.mem_comap.mp hz
   · have h1f : (1 : C) - f ((1 : ∀ i, Ai i) - Pi.single j₁ 1) = f (Pi.single j₁ 1) := by
       rw [map_sub, map_one, sub_sub_cancel]
     rw [h1f]
     have hz : (Pi.single j₁ (1 : Ai j₁) : ∀ i, Ai i) ∈ p₂.comap f := by
-      rw [hj₂, RingHom.mem_ker]
-      change Pi.single j₁ (1 : Ai j₁) j₂ = 0
+      rw [hj₂, RingHom.mem_ker, Pi.evalRingHom_apply]
       exact Pi.single_eq_of_ne (Ne.symm hj) 1
     exact Ideal.mem_comap.mp hz
 
@@ -253,31 +191,17 @@ theorem exists_isIdempotentElem_of_two_primes {K B : Type u} [Field K] [CommRing
     ∃ e : B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 := by
   -- Pick an element distinguishing `q₁` from `q₂`.
   obtain ⟨x, hx⟩ : ∃ x : B, ¬ (x ∈ q₁ ↔ x ∈ q₂) :=
-    not_forall.mp fun hc ↦ h (SetLike.ext fun x ↦ hc x)
+    not_forall.mp fun hc ↦ h (SetLike.ext hc)
   -- Lift `x` to a stage of a filtered colimit presentation by étale algebras.
   obtain ⟨ι, _, _, P, hP⟩ := exists_colimitPresentation (R := K) (S := B)
   have hc' := isColimitOfPreserves (forget (CommAlgCat K)) P.isColimit
   obtain ⟨i, x₀, hx'⟩ := Types.jointly_surjective_of_isColimit hc' x
   let φ : P.diag.obj i →ₐ[K] B := (P.ι.app i).hom
-  let x' : P.diag.obj i := x₀
-  replace hx' : φ x' = x := by simpa using hx'
-  haveI : Algebra.Etale K (P.diag.obj i) := hP i
+  replace hx' : φ x₀ = x := by simpa using hx'
+  have : Algebra.Etale K (P.diag.obj i) := hP i
   -- The contractions of `q₁` and `q₂` to the étale stage are distinct primes.
-  haveI : (q₁.comap φ).IsPrime := inferInstance
-  haveI : (q₂.comap φ).IsPrime := inferInstance
-  have hne : q₁.comap φ ≠ q₂.comap φ := by
-    intro he
-    apply hx
-    rw [← hx']
-    constructor
-    · intro h1
-      have hm : x' ∈ q₁.comap φ := Ideal.mem_comap.mpr h1
-      rw [he] at hm
-      exact Ideal.mem_comap.mp hm
-    · intro h2
-      have hm : x' ∈ q₂.comap φ := Ideal.mem_comap.mpr h2
-      rw [← he] at hm
-      exact Ideal.mem_comap.mp hm
+  have hne : q₁.comap φ ≠ q₂.comap φ := fun he ↦
+    hx (by rw [← hx', ← Ideal.mem_comap, ← Ideal.mem_comap, he])
   obtain ⟨e', he', hm₁, hm₂⟩ := exists_isIdempotentElem_mem_of_ne (K := K) hne
   refine ⟨φ e', he'.map φ, ?_, ?_⟩
   · intro h0
@@ -391,9 +315,9 @@ theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
     (h : ¬ Function.Bijective (algebraMap K q.ResidueField)) :
     ∃ e : q.ResidueField ⊗[K] B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 := by
   classical
-  haveI : Algebra.IsSeparable K q.ResidueField := isSeparable_residueField_of_field q
+  have : Algebra.IsSeparable K q.ResidueField := isSeparable_residueField_of_field q
   -- `κ(q) ⊗[K] B` is ind-étale over `κ(q)` by base change.
-  haveI : Algebra.IndEtale q.ResidueField (q.ResidueField ⊗[K] B) := by
+  have : Algebra.IndEtale q.ResidueField (q.ResidueField ⊗[K] B) := by
     have hbc := RingHom.IsStableUnderBaseChange.tensorProduct
       RingHom.IndEtale.isStableUnderBaseChange (R := K) (S := B) q.ResidueField
       ((RingHom.IndEtale.algebraMap_iff (R := K) (S := B)).mpr inferInstance)
@@ -403,8 +327,8 @@ theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
   suffices hp : ∃ P₁ P₂ : Ideal (q.ResidueField ⊗[K] B),
       P₁.IsPrime ∧ P₂.IsPrime ∧ P₁ ≠ P₂ by
     obtain ⟨P₁, P₂, hP₁, hP₂, hPne⟩ := hp
-    haveI := hP₁
-    haveI := hP₂
+    have := hP₁
+    have := hP₂
     exact exists_isIdempotentElem_of_two_primes (K := q.ResidueField) hPne
   -- An element `y` of the residue field not in the image of `K`.
   obtain ⟨y, hy⟩ : ∃ y : q.ResidueField, y ∉ (algebraMap K q.ResidueField).range :=
@@ -443,21 +367,25 @@ theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
   have hyb : algebraMap B q.ResidueField b₁ = y * algebraMap B q.ResidueField b₂ :=
     (div_eq_iff hb₂).mp hxm
   -- The two maps to the algebraic closure, differing only on the left tensor factor.
-  set ψ : B →ₐ[K] AlgebraicClosure q.ResidueField :=
+  let ψ : B →ₐ[K] AlgebraicClosure q.ResidueField :=
     (IsScalarTower.toAlgHom K q.ResidueField (AlgebraicClosure q.ResidueField)).comp
       (IsScalarTower.toAlgHom K B q.ResidueField)
-  set Φ₁ : q.ResidueField ⊗[K] B →ₐ[K] AlgebraicClosure q.ResidueField :=
+  let Φ₁ : q.ResidueField ⊗[K] B →ₐ[K] AlgebraicClosure q.ResidueField :=
     Algebra.TensorProduct.productMap
       (IsScalarTower.toAlgHom K q.ResidueField (AlgebraicClosure q.ResidueField)) ψ
-  set Φ₂ : q.ResidueField ⊗[K] B →ₐ[K] AlgebraicClosure q.ResidueField :=
+  let Φ₂ : q.ResidueField ⊗[K] B →ₐ[K] AlgebraicClosure q.ResidueField :=
     Algebra.TensorProduct.productMap σ ψ
-  have hΦ₁tmul : ∀ (l : q.ResidueField) (b : B), Φ₁ (l ⊗ₜ[K] b) =
+  have hΦ₁tmul (l : q.ResidueField) (b : B) : Φ₁ (l ⊗ₜ[K] b) =
       algebraMap q.ResidueField (AlgebraicClosure q.ResidueField) l *
       algebraMap q.ResidueField (AlgebraicClosure q.ResidueField)
-        (algebraMap B q.ResidueField b) := fun l b ↦ rfl
-  have hΦ₂tmul : ∀ (l : q.ResidueField) (b : B), Φ₂ (l ⊗ₜ[K] b) =
+        (algebraMap B q.ResidueField b) := by
+    simp only [Φ₁, ψ, Algebra.TensorProduct.productMap_apply_tmul, AlgHom.comp_apply,
+      IsScalarTower.coe_toAlgHom']
+  have hΦ₂tmul (l : q.ResidueField) (b : B) : Φ₂ (l ⊗ₜ[K] b) =
       σ l * algebraMap q.ResidueField (AlgebraicClosure q.ResidueField)
-        (algebraMap B q.ResidueField b) := fun l b ↦ rfl
+        (algebraMap B q.ResidueField b) := by
+    simp only [Φ₂, ψ, Algebra.TensorProduct.productMap_apply_tmul, AlgHom.comp_apply,
+      IsScalarTower.coe_toAlgHom']
   -- The element `y ⊗ b₂ - 1 ⊗ b₁` lies in `ker Φ₁` but not in `ker Φ₂`.
   have hw₁ : Φ₁ (y ⊗ₜ[K] b₂ - 1 ⊗ₜ[K] b₁) = 0 := by
     rw [map_sub, hΦ₁tmul y b₂, hΦ₁tmul 1 b₁, map_one, one_mul, ← map_mul, ← hyb,
@@ -473,7 +401,7 @@ theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
           (algebraMap B q.ResidueField b₂) := by
       rw [map_sub, hΦ₂tmul y b₂, hΦ₂tmul 1 b₁, map_one, one_mul, hyb, map_mul, sub_mul]
     rw [hcalc]
-    exact mul_ne_zero (sub_ne_zero_of_ne (by rw [hσ]; exact hyne)) hβ₂Ω
+    exact mul_ne_zero (sub_ne_zero_of_ne (by rwa [hσ])) hβ₂Ω
   refine ⟨RingHom.ker Φ₁, RingHom.ker Φ₂, RingHom.ker_isPrime _, RingHom.ker_isPrime _, ?_⟩
   intro hk
   apply hw₂

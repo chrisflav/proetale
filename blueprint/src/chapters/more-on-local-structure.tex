@@ -776,12 +776,15 @@ suffices for our purposes.
 
 \begin{proof}
     \leanok
-    \uses{lem:totally-disconnected-inverse-limit}
-    Writing $B$ as a filtered colimit $\colim B_i$ of \'etale algebra over $K$. Each $B_i$ is a
-    product of separable field extensions of $K$. In particular, the spectrum of $B_i$'s are totally
-    disconnected. By \Cref{lem:totally-disconnected-inverse-limit}, the spectrum of $B$ is again
-    totally disconnected. Thus different prime ideals $q_1$ and $q_2$ livs in
-    different connected components. This giving the desire nontrivial idempotent element.
+    \uses{def:ind-etale}
+    Write $B = \colim_i B_i$ as a filtered colimit of \'etale $K$-algebras and pick an element
+    $x \in B$ lying in exactly one of $q_1$ and $q_2$. Since $B$ is the filtered colimit of the
+    $B_i$, the element $x$ is the image of some $x_i$ in an \'etale stage $B_i$. The contractions of
+    $q_1$ and $q_2$ to $B_i$ are then two distinct prime ideals, as they are separated by $x_i$. Now
+    $B_i$ is \'etale over the field $K$, hence a finite product of separable field extensions of $K$;
+    in particular every prime ideal of $B_i$ is the kernel of one of the projections onto a factor.
+    The idempotent of $B_i$ projecting onto the factor corresponding to the contraction of $q_1$
+    separates the two primes, and its image in $B$ is the desired nontrivial idempotent.
 \end{proof}
 
 \begin{lemma}
@@ -797,11 +800,18 @@ suffices for our purposes.
 
 \begin{proof}
     \leanok
-    Writing $B$ as a filtered colimit $\colim B_i$ of \'etale algebra over $K$. (Each $B_i$ is a
-    product of separable field extensions of $K$.) Let $q_i$ be the inverse image of $q$ in $B_i$,
-    $\kappa(q_i)$ be the residue field of $q_i$, then $K_i$ is a separable field extensions of $K$.
-    Now $\kappa(q) = \colim \kappa(q_i)$ is again a separable extension of $K$. Then
-    $\kappa(q) \otimes_A B = \kappa(q) \otimes_K \kappa(q)$ splits. The conclusion follows.
+    \uses{lem:idempotent-in-ind-etale-of-primes, prop:ind-etale-residue-fields}
+    Since $\kappa(q) \neq K$, choose an element $y \in \kappa(q)$ not in the image of $K$. The
+    residue field $\kappa(q)$ is separable over $K$ by \Cref{prop:ind-etale-residue-fields}, so the
+    minimal polynomial of $y$ over $K$ is separable of degree $\geq 2$ and thus has a second root
+    $y'$ in an algebraic closure $\Omega$ of $\kappa(q)$. This produces a $K$-embedding
+    $\sigma \colon \kappa(q) \to \Omega$ with $\sigma(y) = y' \neq y$, different from the canonical
+    inclusion $\kappa(q) \hookrightarrow \Omega$. Composing each of these two embeddings with the map
+    $B \to \kappa(q) \to \Omega$ yields two $K$-algebra homomorphisms
+    $\Phi_1, \Phi_2 \colon \kappa(q) \otimes_K B \to \Omega$ that differ on the left tensor factor;
+    in particular their kernels are two distinct prime ideals of $\kappa(q) \otimes_K B$. Since
+    $\kappa(q) \otimes_K B$ is ind-\'etale over $\kappa(q)$ by base change, it has a nontrivial
+    idempotent by \Cref{lem:idempotent-in-ind-etale-of-primes}.
 \end{proof}
 
 \begin{lemma}
