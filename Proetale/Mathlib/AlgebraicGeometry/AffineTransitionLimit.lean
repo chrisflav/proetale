@@ -352,23 +352,26 @@ morphism by base change. (Counterexample: `I = ℕᵒᵖ`, `D k = 𝔸¹ ∖ {0,
 `D' k = 𝔸¹ ∖ {0, …, k - 1}` with `f.app k` the open immersion; no `f.app k` is surjective,
 but the limit map is an isomorphism.) -/
 lemma exists_range_map_subset_range_app_of_surjective_isLimitMap (f : D ⟶ D') (i : I)
-    (hopen : IsOpenMap (f.app i).base)
+    (hopen : IsOpen (Set.range (f.app i).base))
     (hf : Surjective (IsLimit.map c hc' f)) :
     ∃ (k : I) (fki : k ⟶ i), Set.range (D'.map fki).base ⊆ Set.range (f.app i).base := by
-  let U : (D'.obj i).Opens := ⟨Set.range (f.app i).base, hopen.isOpen_range⟩
+  let U : (D'.obj i).Opens := ⟨Set.range (f.app i).base, hopen⟩
   obtain ⟨k, fki, hk⟩ := exists_map_eq_top D' c' hc' (i := i) U <| by
     rw [TopologicalSpace.Opens.ext_iff]
     refine Set.eq_univ_of_forall fun y ↦ ?_
     obtain ⟨x, rfl⟩ := hf.surj y
-    refine ⟨(c.π.app i) x, ?_⟩
-    calc (f.app i) ((c.π.app i) x)
+    refine ⟨c.π.app i x, ?_⟩
+    calc f.app i (c.π.app i x)
         = (c.π.app i ≫ f.app i) x := (Scheme.Hom.comp_apply _ _ _).symm
       _ = (IsLimit.map c hc' f ≫ c'.π.app i) x :=
         (congrArg (fun g : c.pt ⟶ D'.obj i ↦ g x) (IsLimit.map_π c hc' f i)).symm
-      _ = (c'.π.app i) ((IsLimit.map c hc' f) x) := Scheme.Hom.comp_apply _ _ _
-  refine ⟨k, fki, fun y ⟨z, hz⟩ ↦ ?_⟩
-  have : z ∈ (D'.map fki ⁻¹ᵁ U : Set (D'.obj k)) := by rw [hk]; trivial
-  rwa [← hz]
+      _ = c'.π.app i (IsLimit.map c hc' f x) := Scheme.Hom.comp_apply _ _ _
+  refine ⟨k, fki, ?_⟩
+  rintro _ ⟨z, rfl⟩
+  have : z ∈ (D'.map fki ⁻¹ᵁ U : Set (D'.obj k)) := by
+    rw [hk]
+    trivial
+  exact this
 
 end
 
