@@ -15,12 +15,6 @@ abbrev toScheme : S.AffineEtale ⥤ Scheme :=
   AffineEtale.Spec _ ⋙ Etale.forget _ ⋙ Over.forget _
 
 variable {S} in
-/-- A sieve is a covering for the affine étale topology on `S` if and only if its image under the
-forgetful functor `toScheme S` to schemes is a covering for the étale topology.
-
-This unfolds the iterated `inducedTopology`/`over` construction defining `topology S` into a single
-condition along the composite `toScheme S`, avoiding the brittle definitional unfolding of the
-nested topologies. -/
 lemma mem_topology_iff {X : S.AffineEtale} (R : Sieve X) :
     R ∈ topology S X ↔
       Sieve.functorPushforward (toScheme S) R ∈ etaleTopology ((toScheme S).obj X) := by
