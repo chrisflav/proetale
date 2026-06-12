@@ -19,10 +19,6 @@ scope = "leanprover-community"
 rev = "9a568f0b75d28670664e6d6862d6e01c4625e380"
 
 [[require]]
-name = "checkdecls"
-git = "https://github.com/PatrickMassot/checkdecls.git"
-
-[[require]]
 name = "upstreamer"
 git = "https://github.com/chrisflav/upstreamer"
 rev = "main"
@@ -39,3 +35,13 @@ srcDir = "Comparator"
 [[lean_lib]]
 name = "Solution"
 srcDir = "Comparator"
+
+# Local replacement for PatrickMassot/checkdecls, run by the blueprint CI step as
+# `lake exe checkdecls blueprint/lean_decls`. The upstream version imports every
+# lean_lib into one environment, which fails because Challenge and Solution
+# intentionally declare the same names. See CheckDecls.lean.
+[[lean_exe]]
+name = "checkdecls"
+root = "CheckDecls"
+supportInterpreter = true
+weakLinkArgs = ["-lLake"]
