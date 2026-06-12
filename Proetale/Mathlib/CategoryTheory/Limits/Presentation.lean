@@ -118,15 +118,19 @@ noncomputable def isColimitDiagPushout :
   desc s := P.isColimit.desc (P.diagPushoutCoconeDescAux s)
   fac s i := by
     apply pushout.hom_ext
-    · simp only [diagPushoutCocone_app, pushout.inl_desc_assoc]
+    · simp only [diagPushoutCocone_app]
+      rw [pushout.inl_desc_assoc]
+      erw [Category.id_comp]
       refine P.isColimit.hom_ext fun k ↦ ?_
       rw [P.isColimit.fac]
-      show P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k = _
+      change P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k = _
       rw [P.diagPushout_inl_app_eq s k i]
-    · simp only [diagPushoutCocone_app, pushout.inr_desc_assoc]
+    · simp only [diagPushoutCocone_app]
+      rw [pushout.inr_desc_assoc]
+      erw [Category.id_comp]
       refine P.isColimit.hom_ext fun k ↦ ?_
       rw [P.isColimit.fac]
-      show P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k =
+      change P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k =
         P.ι.app k ≫ pushout.inr (P.ι.app i) (P.ι.app i) ≫ s.ι.app i
       rw [P.diagPushout_inr_app_eq s i k]
       simp only [← Category.assoc, pushout.condition]
@@ -134,9 +138,10 @@ noncomputable def isColimitDiagPushout :
     have hm' : ∀ i, pushout.desc (𝟙 X) (𝟙 X) rfl ≫ m = s.ι.app i := hm
     refine P.isColimit.hom_ext fun i ↦ ?_
     rw [P.isColimit.fac]
-    show P.ι.app i ≫ m = P.ι.app i ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i
+    change P.ι.app i ≫ m = P.ι.app i ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i
     rw [← hm' i, pushout.inl_desc_assoc]
-    simp
+    congr 1
+    exact (Category.id_comp m).symm
 
 end ColimitPresentation
 

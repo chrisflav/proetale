@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.RingTheory.Flat.CategoryTheory
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Filtered.Connected
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Mathlib.CategoryTheory.Limits.Presentation
@@ -17,197 +18,11 @@ If `R → S` is a filtered colimit of `R`-algebras `Sᵢ` (in `CommAlgCat R`) an
 `lmul'_{Sᵢ/R} : Sᵢ ⊗[R] Sᵢ → Sᵢ` is flat, then `lmul'_{S/R} : S ⊗[R] S → S` is flat.
 
 This is used to prove the instance `Algebra.IndEtale R S → Algebra.WeaklyEtale R S`.
-
-## Strategy
-
-Apply `RingHom.Flat.of_isColimit` with the diagram
-`D : ι ⥤ CommRingCat`, `D.obj i = pushout(pi.app i, pi.app i) = S ⊗[Sᵢ] S`,
-and the cocone `(S, c)` where each `c.app i : S ⊗[Sᵢ] S → S` is the codiagonal.
-The cocone `(S, c)` is a colimit cocone (this is the "filtered colim of `S ⊗[Sᵢ] S`
-via codiagonals identifies with `S`" identity), which follows from filtered colim
-commuting with pushouts.
 -/
 
 universe u
 
 open CategoryTheory Limits TensorProduct
-
-namespace CategoryTheory.Limits
-
-variable {C : Type*} [Category C]
-
-namespace ColimitPresentation
-
-variable [HasPushouts C]
-variable {ι : Type*} [Category ι] {X : C} (P : ColimitPresentation ι X)
-
-/-- The codiagonal cocone: `app i = pushout.desc (𝟙 X) (𝟙 X) rfl`. -/
-@[simps]
-noncomputable def diagPushoutCocone : P.diagPushout ⟶ (Functor.const ι).obj X where
-  app i := pushout.desc (𝟙 X) (𝟙 X) rfl
-  naturality {i j} h := by
-    dsimp [diagPushout]
-    apply pushout.hom_ext
-    all_goals
-      simp only [← Category.assoc, pushout.inl_desc, pushout.inr_desc,
-        Category.id_comp, Category.comp_id]
-
-/-- The descent cocone over `P.diag` induced by a cocone over `P.diagPushout`. -/
-noncomputable def diagPushoutCoconeDescAux (s : Cocone P.diagPushout) :
-    Cocone P.diag where
-  pt := s.pt
-  ι :=
-    { app := fun i => P.ι.app i ≫ pushout.inl _ _ ≫ s.ι.app i
-      naturality := fun {i j} h => by
-        dsimp
-        rw [Category.comp_id]
-        have hpi : P.diag.map h ≫ P.ι.app j = P.ι.app i := P.w h
-        have hs : P.diagPushout.map h ≫ s.ι.app j = s.ι.app i := by
-          have := s.ι.naturality h
-          simpa using this
-        have hinl_a : pushout.inl (P.ι.app i) (P.ι.app i) ≫ P.diagPushout.map h ≫ s.ι.app j =
-            pushout.inl (P.ι.app j) (P.ι.app j) ≫ s.ι.app j :=
-          P.diagPushout_inl_map_assoc h _
-        -- Build the trans chain as a pure term to avoid `rw` motive/assoc issues.
-        have step1 : P.diag.map h ≫ P.ι.app j ≫ pushout.inl (P.ι.app j) (P.ι.app j) ≫ s.ι.app j =
-            P.ι.app i ≫ pushout.inl (P.ι.app j) (P.ι.app j) ≫ s.ι.app j :=
-          (Category.assoc _ _ _).symm.trans
-            (congrArg (· ≫ pushout.inl (P.ι.app j) (P.ι.app j) ≫ s.ι.app j) hpi)
-        have step2 : P.ι.app i ≫ pushout.inl (P.ι.app j) (P.ι.app j) ≫ s.ι.app j =
-            P.ι.app i ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i :=
-          (congrArg (P.ι.app i ≫ ·) hinl_a.symm).trans
-            (congrArg (fun X => P.ι.app i ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ X) hs)
-        exact step1.trans step2 }
-
-variable [IsFiltered ι]
-
-/-- The codiagonal cocone over the diagonal pushout diagram is a colimit. -/
-noncomputable def isColimitDiagPushout :
-    IsColimit (Cocone.mk X P.diagPushoutCocone) where
-  desc s := P.isColimit.desc (P.diagPushoutCoconeDescAux s)
-  fac s i := by
-    change pushout.desc (𝟙 X) (𝟙 X) rfl ≫ P.isColimit.desc (P.diagPushoutCoconeDescAux s) =
-      s.ι.app i
-    apply pushout.hom_ext
-    · rw [← Category.assoc, pushout.inl_desc, Category.id_comp]
-      -- Goal: P.isColimit.desc (P.diagPushoutCoconeDescAux s) =
-      --       pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i.
-      -- By hom_ext: precompose with P.ι.app k.
-      apply P.isColimit.hom_ext
-      intro k
-      have := P.isColimit.fac (P.diagPushoutCoconeDescAux s) k
-      -- this : P.ι.app k ≫ P.isColimit.desc (P.diagPushoutCoconeDescAux s) =
-      --        (P.diagPushoutCoconeDescAux s).ι.app k = P.ι.app k ≫ pushout.inl _ _ ≫ s.ι.app k.
-      rw [this]
-      -- Goal: P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k =
-      --       P.ι.app k ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i.
-      -- Bridge through `m := max i k`.
-      let m := IsFiltered.max i k
-      let ai : i ⟶ m := IsFiltered.leftToMax i k
-      let ak : k ⟶ m := IsFiltered.rightToMax i k
-      have hs_i : P.diagPushout.map ai ≫ s.ι.app m = s.ι.app i := by
-        have := s.ι.naturality ai
-        simpa using this
-      have hs_k : P.diagPushout.map ak ≫ s.ι.app m = s.ι.app k := by
-        have := s.ι.naturality ak
-        simpa using this
-      have hinl_i : pushout.inl (P.ι.app i) (P.ι.app i) ≫ P.diagPushout.map ai ≫ s.ι.app m =
-          pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-        P.diagPushout_inl_map_assoc ai _
-      have hinl_k : pushout.inl (P.ι.app k) (P.ι.app k) ≫ P.diagPushout.map ak ≫ s.ι.app m =
-          pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-        P.diagPushout_inl_map_assoc ak _
-      have eq_i : P.ι.app k ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i =
-          P.ι.app k ≫ pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-        (congrArg (fun X => P.ι.app k ≫ pushout.inl (P.ι.app i) (P.ι.app i) ≫ X) hs_i.symm).trans
-          (congrArg (P.ι.app k ≫ ·) hinl_i)
-      have eq_k : P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k =
-          P.ι.app k ≫ pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-        (congrArg (fun X => P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ X) hs_k.symm).trans
-          (congrArg (P.ι.app k ≫ ·) hinl_k)
-      exact eq_k.trans eq_i.symm
-    · rw [← Category.assoc, pushout.inr_desc, Category.id_comp]
-      apply P.isColimit.hom_ext
-      intro k
-      have := P.isColimit.fac (P.diagPushoutCoconeDescAux s) k
-      rw [this]
-      let m := IsFiltered.max i k
-      let ai : i ⟶ m := IsFiltered.leftToMax i k
-      let ak : k ⟶ m := IsFiltered.rightToMax i k
-      have hs_i : P.diagPushout.map ai ≫ s.ι.app m = s.ι.app i := by
-        have := s.ι.naturality ai
-        simpa using this
-      have hs_k : P.diagPushout.map ak ≫ s.ι.app m = s.ι.app k := by
-        have := s.ι.naturality ak
-        simpa using this
-      have hinr_i : pushout.inr (P.ι.app i) (P.ι.app i) ≫ P.diagPushout.map ai ≫ s.ι.app m =
-          pushout.inr (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-        P.diagPushout_inr_map_assoc ai _
-      have hinl_k : pushout.inl (P.ι.app k) (P.ι.app k) ≫ P.diagPushout.map ak ≫ s.ι.app m =
-          pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-        P.diagPushout_inl_map_assoc ak _
-      -- Now we need pushout.inl ≫ s = pushout.inr ≫ s at the same index `m`,
-      -- which holds because `s.ι.app m : pushout(_, _) → s.pt` is one map and
-      -- by pushout.condition, inl and inr agree after composing with s.
-      -- Actually no — we need to bridge differently for the `inr` case.
-      -- For the `inr` case, the goal after `rw [this]` is:
-      --   P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k =
-      --   P.ι.app k ≫ pushout.inr (P.ι.app i) (P.ι.app i) ≫ s.ι.app i.
-      -- Use that pushout.inl m ≫ s_m = pushout.inr m ≫ s_m via:
-      --   pi.app m ≫ pushout.inl m = pi.app m ≫ pushout.inr m  (pushout condition)
-      --   so pi.app m ≫ pushout.inl m ≫ s_m = pi.app m ≫ pushout.inr m ≫ s_m.
-      -- But we don't have pi.app m on the LHS of `eq_k`; we have P.ι.app k.
-      -- Bridge using filteredness: pick `m` and use functoriality.
-      -- Actually, the LHS goes via inl_k and the RHS via inr_i. These should bridge
-      -- through inl_m vs inr_m, which agree after composing with s.ι.app m (since
-      -- the cocone's inl/inr identification at m is the multiplication factor).
-      -- Specifically, the codiagonal s.ι.app m satisfies pushout.inl _ _ ≫ s.ι.app m
-      -- = pushout.inr _ _ ≫ s.ι.app m? No, that's not generally true.
-      -- BUT in our diagram, P.ι.app m ≫ inl_m = P.ι.app m ≫ inr_m (pushout.condition).
-      -- And P.ι.app k = P.diag.map ak ≫ P.ι.app m (by P.w).
-      -- So we can move P.ι.app k inside and use the pushout condition there.
-      have hpi : P.diag.map ak ≫ P.ι.app m = P.ι.app k := P.w ak
-      have pcond : P.ι.app m ≫ pushout.inl (P.ι.app m) (P.ι.app m) =
-          P.ι.app m ≫ pushout.inr (P.ι.app m) (P.ι.app m) := pushout.condition
-      have eq_k_via_m : P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k =
-          P.diag.map ak ≫ P.ι.app m ≫ pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m := by
-        have c1 := congrArg (fun X => P.ι.app k ≫ pushout.inl (P.ι.app k) (P.ι.app k) ≫ X)
-          hs_k.symm
-        have c2 := congrArg (P.ι.app k ≫ ·) hinl_k
-        have c3 : P.ι.app k ≫ pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m =
-            P.diag.map ak ≫ P.ι.app m ≫ pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-          (congrArg (· ≫ pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m) hpi.symm).trans
-            (Category.assoc _ _ _)
-        exact (c1.trans c2).trans c3
-      have eq_i_via_m : P.ι.app k ≫ pushout.inr (P.ι.app i) (P.ι.app i) ≫ s.ι.app i =
-          P.diag.map ak ≫ P.ι.app m ≫ pushout.inr (P.ι.app m) (P.ι.app m) ≫ s.ι.app m := by
-        have c1 := congrArg (fun X => P.ι.app k ≫ pushout.inr (P.ι.app i) (P.ι.app i) ≫ X)
-          hs_i.symm
-        have c2 := congrArg (P.ι.app k ≫ ·) hinr_i
-        have c3 : P.ι.app k ≫ pushout.inr (P.ι.app m) (P.ι.app m) ≫ s.ι.app m =
-            P.diag.map ak ≫ P.ι.app m ≫ pushout.inr (P.ι.app m) (P.ι.app m) ≫ s.ι.app m :=
-          (congrArg (· ≫ pushout.inr (P.ι.app m) (P.ι.app m) ≫ s.ι.app m) hpi.symm).trans
-            (Category.assoc _ _ _)
-        exact (c1.trans c2).trans c3
-      have pcond_s : P.diag.map ak ≫ P.ι.app m ≫ pushout.inl (P.ι.app m) (P.ι.app m) ≫ s.ι.app m =
-          P.diag.map ak ≫ P.ι.app m ≫ pushout.inr (P.ι.app m) (P.ι.app m) ≫ s.ι.app m := by
-        congr 1
-        rw [← Category.assoc, pcond, Category.assoc]
-      exact (eq_k_via_m.trans pcond_s).trans eq_i_via_m.symm
-  uniq s m hm := by
-    apply P.isColimit.hom_ext
-    intro i
-    change P.ι.app i ≫ m = P.ι.app i ≫ P.isColimit.desc (P.diagPushoutCoconeDescAux s)
-    rw [P.isColimit.fac]
-    change P.ι.app i ≫ m = P.ι.app i ≫ pushout.inl _ _ ≫ s.ι.app i
-    have hi := hm i
-    -- hi : pushout.desc (𝟙 X) (𝟙 X) rfl ≫ m = s.ι.app i
-    have h : m = pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i := by
-      have := congrArg (pushout.inl (P.ι.app i) (P.ι.app i) ≫ ·) hi
-      simpa [P.diagPushoutCocone_app, pushout.inl_desc_assoc] using this
-    rw [h]
-
-end CategoryTheory.Limits.ColimitPresentation
 
 namespace RingHom.Flat
 
@@ -220,14 +35,12 @@ variable {S : Type u} [CommRing S] [Algebra R S]
 `lmul' R : S ⊗[R] S → S` is also flat.
 
 This is the key colimit-stability lemma used to prove that ind-étale algebras are weakly
-étale (since étale implies weakly étale).
-
-The proof reduces to constructing an `IsColimit` witness for the diagonal pushout diagram
-`i ↦ pushout (pi.app i) (pi.app i)` in `CommRingCat`, with cocone given by the codiagonals. -/
+étale (since étale implies weakly étale). -/
 theorem of_filteredColim_lmul'
     (P : ColimitPresentation ι (CommAlgCat.of R S))
     (h : ∀ i, (Algebra.TensorProduct.lmul' R (S := P.diag.obj i)).Flat) :
     (Algebra.TensorProduct.lmul' R (S := S)).Flat := by
+  have : IsConnected ι := IsFiltered.isConnected ι
   -- 1. Project P to a colim presentation Q in CommRingCat.
   let Q : ColimitPresentation ι (CommRingCat.of S) :=
     P.map (forget₂ (CommAlgCat R) CommRingCat)
@@ -236,8 +49,6 @@ theorem of_filteredColim_lmul'
   let SR : CommRingCat.{u} := CommRingCat.of S
   let lmulMap : SS ⟶ SR :=
     CommRingCat.ofHom (Algebra.TensorProduct.lmul' R (S := S)).toRingHom
-  -- Reduce: it suffices to show lmulMap.hom.Flat.
-  suffices hgoal : lmulMap.hom.Flat by exact hgoal
   -- Apply `RingHom.Flat.of_isColimit` to lmulMap.
   let D : ι ⥤ CommRingCat.{u} := Q.diagPushout
   let c : D ⟶ (Functor.const ι).obj SR := Q.diagPushoutCocone
@@ -248,7 +59,7 @@ theorem of_filteredColim_lmul'
     (CommRingCat.isPushout_tensorProduct R S S).isoPushout.symm
   -- For each i, the natural map pushout(R → S, R → S) → pushout(Q.ι.app i, Q.ι.app i).
   let tRaw : (i : ι) → pushout (CommRingCat.ofHom (algebraMap R S))
-      (CommRingCat.ofHom (algebraMap R S)) ⟶ D.obj i := fun i =>
+      (CommRingCat.ofHom (algebraMap R S)) ⟶ D.obj i := fun i ↦
     pushout.desc (pushout.inl (Q.ι.app i) (Q.ι.app i))
       (pushout.inr (Q.ι.app i) (Q.ι.app i))
       (by
@@ -286,8 +97,8 @@ theorem of_filteredColim_lmul'
       simp only [pushout.inr_desc_assoc, pushout.inr_desc]
       exact Q.diagPushout_inr_map h
   let t : (Functor.const ι).obj SS ⟶ D :=
-    { app := fun i => isoSS.inv ≫ tRaw i
-      naturality := fun {i j} h => by
+    { app := fun i ↦ isoSS.inv ≫ tRaw i
+      naturality := fun {i j} h ↦ by
         dsimp
         rw [Category.id_comp, Category.assoc, htRaw_nat h] }
   -- The composition `t.app i ≫ c.app i = lmulMap`.
@@ -351,13 +162,13 @@ theorem of_filteredColim_lmul'
     intro i
     -- Setup algebra structures via `Q.ι.app i`.
     letI : Algebra (P.diag.obj i) S := ((P.ι.app i).hom).toAlgebra
-    haveI : IsScalarTower R (P.diag.obj i) S :=
-      IsScalarTower.of_algebraMap_eq fun r => ((P.ι.app i).hom.commutes r).symm
+    have : IsScalarTower R (P.diag.obj i) S :=
+      IsScalarTower.of_algebraMap_eq fun r ↦ ((P.ι.app i).hom.commutes r).symm
     -- The lift map α : S ⊗[R] S → S ⊗[P.diag.obj i] S as an algebra hom.
     let α : S ⊗[R] S →ₐ[S] S ⊗[P.diag.obj i] S := Algebra.TensorProduct.lift
       Algebra.TensorProduct.includeLeft
       (Algebra.TensorProduct.includeRight.restrictScalars R)
-      (fun _ _ => mul_comm _ _)
+      (fun _ _ ↦ mul_comm _ _)
     have hα : α.toRingHom.Flat :=
       RingHom.Flat.lift_includeLeft_includeRight (R := R) (S := P.diag.obj i) S S (h i)
     -- The iso S ⊗[P.diag.obj i] S ≅ D.obj i (defeq via letI).
@@ -429,6 +240,6 @@ theorem of_filteredColim_lmul'
       (ConcreteCategory.bijective_of_isIso γ.hom))
   -- Apply of_isColimit.
   exact RingHom.Flat.of_isColimit lmulMap ι D hc
-    (fun i => ⟨htflat i, htc_eq i⟩)
+    (fun i ↦ ⟨htflat i, htc_eq i⟩)
 
 end RingHom.Flat

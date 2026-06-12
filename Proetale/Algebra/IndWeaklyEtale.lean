@@ -7,17 +7,18 @@ universe u
 
 open CategoryTheory Limits
 
-/-- Every ind-étale algebra is weakly étale: étale algebras are weakly étale and weak étaleness
-is stable under filtered colimits. -/
-instance {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+/-- Every ind-étale algebra is weakly étale. -/
+instance Algebra.IndEtale.weaklyEtale {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.IndEtale R S] :
     Algebra.WeaklyEtale R S := by
+  -- Write `S` as a filtered colimit of étale (hence weakly étale) `R`-algebras and use that
+  -- weak étaleness is stable under filtered colimits.
   obtain ⟨ι, _, _, P, hP⟩ := Algebra.IndEtale.exists_colimitPresentation (R := R) (S := S)
   have hflat (i : ι) : Module.Flat R (P.diag.obj i) := by
-    haveI : Algebra.Etale R (P.diag.obj i) := hP i
+    have : Algebra.Etale R (P.diag.obj i) := hP i
     exact (inferInstance : Algebra.WeaklyEtale R (P.diag.obj i)).flat
   have hlmul (i : ι) : (Algebra.TensorProduct.lmul' R (S := P.diag.obj i)).Flat := by
-    haveI : Algebra.Etale R (P.diag.obj i) := hP i
+    have : Algebra.Etale R (P.diag.obj i) := hP i
     exact Algebra.WeaklyEtale.flat_lmul' R (P.diag.obj i)
   refine ⟨?_, ?_⟩
   · -- `Module.Flat R S`: transfer the `CommAlgCat`-level presentation to `ModuleCat`.
