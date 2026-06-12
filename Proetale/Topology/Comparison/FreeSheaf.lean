@@ -47,7 +47,7 @@ underlying presheaf, functorially. -/
 def sheafPushforwardContinuousCompSheafToPresheafIso :
     G.sheafPushforwardContinuous A J K ⋙ sheafToPresheaf J A ≅
       sheafToPresheaf K A ⋙ (Functor.whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- Sheafification commutes with pullback of (pre)sheaves: sheafifying and then pulling
 back is the same as left Kan extending and then sheafifying. -/
@@ -72,7 +72,7 @@ noncomputable def whiskeringFreeCompLanIso :
   ((conjugateIsoEquiv
       ((Adjunction.whiskerRight Cᵒᵖ AddCommGrpCat.adj).comp (G.op.lanAdjunction _))
       ((G.op.lanAdjunction _).comp (Adjunction.whiskerRight Dᵒᵖ AddCommGrpCat.adj))).symm
-    (NatIso.ofComponents fun _ => Iso.refl _)).symm
+    (NatIso.ofComponents fun _ ↦ Iso.refl _)).symm
 
 variable [HasWeakSheafify J AddCommGrpCat.{u + 1}] [HasWeakSheafify K AddCommGrpCat.{u + 1}]
   [(G.sheafPushforwardContinuous AddCommGrpCat.{u + 1} J K).IsRightAdjoint]
@@ -104,7 +104,7 @@ noncomputable def constantSheafCompSheafPullbackIso :
   ((conjugateIsoEquiv
       ((constantSheafAdj J A hT).comp (G.sheafAdjunctionContinuous A J K))
       (constantSheafAdj K A hT')).symm
-    (NatIso.ofComponents fun _ => Iso.refl _)).symm
+    (NatIso.ofComponents fun _ ↦ Iso.refl _)).symm
 
 end Constant
 

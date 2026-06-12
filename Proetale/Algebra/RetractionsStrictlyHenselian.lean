@@ -133,15 +133,15 @@ theorem Algebra.Etale.exists_algHom_localization_atPrime_comap_eq
     refine Set.mem_iUnion.mpr ⟨⟨a, ham⟩, ?_⟩
     simpa [PrimeSpectrum.basicOpen] using hap
   obtain ⟨t, ht⟩ := (hU_open.isClosed_compl.isCompact).elim_finite_subcover
-    (fun a : m => (PrimeSpectrum.basicOpen (a : A) : Set (PrimeSpectrum A)))
-    (fun a => (PrimeSpectrum.basicOpen _).isOpen) hZ_sub
+    (fun a : m ↦ (PrimeSpectrum.basicOpen (a : A) : Set (PrimeSpectrum A)))
+    (fun a ↦ (PrimeSpectrum.basicOpen _).isOpen) hZ_sub
   -- Step 3: the étale `A`-algebra `C' = Cg × ∏ A_a` with surjective spectrum map.
   set D : Type u := Π a : t, Localization.Away ((a : m) : A) with hDdef
   haveI : ∀ a : t, Algebra.Etale A (Localization.Away ((a : m) : A)) :=
-    fun a => Algebra.Etale.of_isLocalizationAway ((a : m) : A)
+    fun a ↦ Algebra.Etale.of_isLocalizationAway ((a : m) : A)
   set C' : Type u := Cg × D with hC'def
   have hfst_alg : algebraMap A Cg = (RingHom.fst Cg D).comp (algebraMap A C') :=
-    RingHom.ext fun r => rfl
+    RingHom.ext fun r ↦ rfl
   have hsurj : Function.Surjective (PrimeSpectrum.comap (algebraMap A C')) := by
     intro x
     by_cases hx : x ∈ U
@@ -158,11 +158,11 @@ theorem Algebra.Etale.exists_algHom_localization_atPrime_comap_eq
         ((Pi.evalRingHom _ (⟨a, hat⟩ : t)).comp (RingHom.snd Cg D)) y, ?_⟩
       rw [show algebraMap A (Localization.Away ((a : A))) =
         ((Pi.evalRingHom _ (⟨a, hat⟩ : t)).comp (RingHom.snd Cg D)).comp (algebraMap A C')
-        from RingHom.ext fun r => rfl]
+        from RingHom.ext fun r ↦ rfl]
       simp only [PrimeSpectrum.comap_comp_apply]
   obtain ⟨σ, hσ⟩ := H C' inferInstance hsurj
   -- Step 4: `σ⁻¹(m)` avoids the idempotent `(1, 0)`.
-  set e : t → C' := fun a => (0, Pi.single a 1) with hedef
+  set e : t → C' := fun a ↦ (0, Pi.single a 1) with hedef
   have he_mem : ∀ a : t, σ (e a) ∈ m := by
     intro a
     have hu : IsUnit (algebraMap A (Localization.Away ((a : m) : A)) ((a : m) : A)) :=
@@ -194,7 +194,7 @@ theorem Algebra.Etale.exists_algHom_localization_atPrime_comap_eq
       rw [← map_sum, ← map_add, hsum, map_one]
     have : (1 : A) ∈ m := by
       rw [← hone]
-      exact Ideal.add_mem m h (Ideal.sum_mem m fun a _ => he_mem a)
+      exact Ideal.add_mem m h (Ideal.sum_mem m fun a _ ↦ he_mem a)
     exact (Ideal.IsMaximal.ne_top ‹_›) ((Ideal.eq_top_iff_one m).mpr this)
   set P : Ideal C' := Ideal.comap σ m with hPdef
   haveI hP_prime : P.IsPrime := Ideal.IsPrime.comap σ
@@ -234,9 +234,9 @@ theorem Algebra.Etale.exists_algHom_localization_atPrime_comap_eq
     have hunit : IsUnit (algebraMap C' L ((1, 0) : C')) :=
       IsLocalization.map_units L (⟨(1, 0), h10⟩ : P.primeCompl)
     exact (hunit.mul_left_eq_zero).mp h0
-  set ψ : Cg →+* L := RingHom.liftOfRightInverse (RingHom.fst Cg D) (fun x => (x, 0))
-    (fun x => rfl) ⟨algebraMap C' L, hℓ_ker⟩ with hψdef
-  have hψ : ∀ x : C', ψ x.1 = algebraMap C' L x := fun x =>
+  set ψ : Cg →+* L := RingHom.liftOfRightInverse (RingHom.fst Cg D) (fun x ↦ (x, 0))
+    (fun x ↦ rfl) ⟨algebraMap C' L, hℓ_ker⟩ with hψdef
+  have hψ : ∀ x : C', ψ x.1 = algebraMap C' L x := fun x ↦
     RingHom.liftOfRightInverse_comp_apply _ _ _ _ x
   have hψ_comp : ψ.comp (RingHom.fst Cg D) = algebraMap C' L :=
     RingHom.liftOfRightInverse_comp _ _ _ _
@@ -312,7 +312,7 @@ theorem IsSepClosed.residueField_localization_atPrime_of_forall_retraction :
   intro p hpm hpirr hpsep
   -- lift `p` to a monic polynomial over `A`
   have hlift : p ∈ Polynomial.lifts (algebraMap A m.ResidueField) :=
-    (Polynomial.lifts_iff_coeff_lifts _).mpr fun n =>
+    (Polynomial.lifts_iff_coeff_lifts _).mpr fun n ↦
       Ideal.algebraMap_residueField_surjective m _
   obtain ⟨F, hF_map, -, hF_monic⟩ := Polynomial.lifts_and_degree_eq_and_monic hlift hpm
   set Q : StandardEtalePair A := hF_monic.standardEtalePair with hQdef
@@ -358,7 +358,7 @@ theorem HenselianLocalRing.localization_atPrime_of_forall_retraction :
   intro f hf a₀ h₁ h₂
   have hres0 : ∀ z : Localization.AtPrime m,
       algebraMap (Localization.AtPrime m) m.ResidueField z = 0 ↔
-        z ∈ maximalIdeal (Localization.AtPrime m) := fun z => by
+        z ∈ maximalIdeal (Localization.AtPrime m) := fun z ↦ by
     rw [IsLocalRing.ResidueField.algebraMap_eq, IsLocalRing.residue_eq_zero_iff]
   -- clear denominators using `scaleRoots`
   obtain ⟨s, hs⟩ := IsLocalization.exist_integer_multiples m.primeCompl
@@ -489,6 +489,6 @@ theorem IsStrictlyHenselianLocalRing.localization_atPrime_indEtaleContraction
     (R : Type u) [CommRing R] (m : Ideal (IndEtaleContraction R)) [m.IsMaximal] :
     IsStrictlyHenselianLocalRing (Localization.AtPrime m) :=
   IsStrictlyHenselianLocalRing.localization_atPrime_of_forall_retraction
-    (fun B _ _ hB hsurj =>
+    (fun B _ _ hB hsurj ↦
       RingHom.Etale.exists_comp_eq_id_indContraction (algebraMap _ B)
         (RingHom.etale_algebraMap.mpr hB) hsurj) m

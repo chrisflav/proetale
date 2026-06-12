@@ -74,7 +74,7 @@ theorem exists_hasMap_of_hasMap_residueField (P : StandardEtalePair R)
   obtain ⟨a₀, rfl⟩ := Ideal.algebraMap_residueField_surjective (IsLocalRing.maximalIdeal R) x
   have key : ∀ q : R[X],
       Polynomial.aeval (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField a₀) q
-        = algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (q.eval a₀) := fun q =>
+        = algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (q.eval a₀) := fun q ↦
     Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval a₀ q
   have hf0 : P.f.eval a₀ ∈ IsLocalRing.maximalIdeal R := by
     rw [← Ideal.algebraMap_residueField_eq_zero (I := IsLocalRing.maximalIdeal R), ← key]
@@ -129,10 +129,10 @@ theorem exists_algHom_section {R' : Type u} [CommRing R'] [Algebra R R'] [Algebr
     rw [map_pow]
     refine IsUnit.pow _ ?_
     rw [isUnit_iff_ne_zero]
-    exact fun e => hhQ (RingHom.mem_ker.mpr e)
+    exact fun e ↦ hhQ (RingHom.mem_ker.mpr e)
   let χₗ : Localization.Away h →ₐ[R] (IsLocalRing.maximalIdeal R).ResidueField :=
     IsLocalization.liftAlgHom (M := Submonoid.powers h) (f := χ) hu
-  have hχₗ : ∀ y : R', χₗ (algebraMap R' (Localization.Away h) y) = χ y := fun y =>
+  have hχₗ : ∀ y : R', χₗ (algebraMap R' (Localization.Away h) y) = χ y := fun y ↦
     IsLocalization.lift_eq hu y
   obtain ⟨Pres⟩ := hstd.nonempty_standardEtalePresentation
   obtain ⟨a, ha, hares⟩ := exists_hasMap_of_hasMap_residueField Pres.P (Pres.hasMap.map χₗ)
@@ -145,7 +145,7 @@ theorem exists_algHom_section {R' : Type u} [CommRing R'] [Algebra R R'] [Algebr
       change (Pres.P.lift a ha) (Pres.equivRing Pres.x) = a
       rw [Pres.equivRing_x, Pres.P.lift_X]
     rw [hx, hares]
-  refine ⟨σ₀.comp (IsScalarTower.toAlgHom R R' (Localization.Away h)), fun y => ?_⟩
+  refine ⟨σ₀.comp (IsScalarTower.toAlgHom R R' (Localization.Away h)), fun y ↦ ?_⟩
   calc algebraMap R (IsLocalRing.maximalIdeal R).ResidueField
         (σ₀ (algebraMap R' (Localization.Away h) y))
       = ((IsScalarTower.toAlgHom R R (IsLocalRing.maximalIdeal R).ResidueField).comp σ₀)
@@ -211,7 +211,7 @@ theorem of_henselianLocalRing_of_isIntegral_of_isDomain
     [Algebra R S] [Algebra.IsIntegral R S] [IsDomain S] :
     IsLocalRing S := by
   classical
-  refine IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a => ?_
+  refine IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ ?_
   by_contra hcon
   obtain ⟨ha, ha1⟩ := not_or.mp hcon
   -- There exists a monic annihilator of `a`; consider one of minimal degree.
@@ -220,7 +220,7 @@ theorem of_henselianLocalRing_of_isIntegral_of_isDomain
     exact ⟨F.natDegree, F, hFm, by rwa [Polynomial.aeval_def], rfl⟩
   obtain ⟨F, hFm, hFa, hFd⟩ := Nat.find_spec hex
   have hmin : ∀ m, m < Nat.find hex →
-      ¬∃ F : R[X], F.Monic ∧ Polynomial.aeval a F = 0 ∧ F.natDegree = m := fun m hm =>
+      ¬∃ F : R[X], F.Monic ∧ Polynomial.aeval a F = 0 ∧ F.natDegree = m := fun m hm ↦
     Nat.find_min hex hm
   have hn0 : Nat.find hex ≠ 0 := by
     intro h0
@@ -325,7 +325,7 @@ variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 algebraic. -/
 theorem IsAlgebraic.residueField_of_isIntegral [Algebra.IsIntegral R S] :
     Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) := by
-  refine ⟨fun x => ?_⟩
+  refine ⟨fun x ↦ ?_⟩
   obtain ⟨s, rfl⟩ := IsLocalRing.residue_surjective (R := S) x
   rw [isAlgebraic_iff_isIntegral]
   obtain ⟨F, hFm, hFe⟩ := Algebra.IsIntegral.isIntegral (R := R) s
@@ -346,9 +346,9 @@ private theorem isLocalRing_of_primeSpectrum {A : Type*} [CommRing A]
     IsLocalRing A := by
   obtain ⟨p⟩ := h₁
   have : Nontrivial A :=
-    ⟨0, 1, fun e => p.isPrime.ne_top ((Ideal.eq_top_iff_one _).mpr (e ▸ p.asIdeal.zero_mem))⟩
+    ⟨0, 1, fun e ↦ p.isPrime.ne_top ((Ideal.eq_top_iff_one _).mpr (e ▸ p.asIdeal.zero_mem))⟩
   obtain ⟨m, hm⟩ := Ideal.exists_maximal A
-  refine IsLocalRing.of_unique_max_ideal ⟨m, hm, fun J hJ => ?_⟩
+  refine IsLocalRing.of_unique_max_ideal ⟨m, hm, fun J hJ ↦ ?_⟩
   exact congrArg PrimeSpectrum.asIdeal (h₂.elim ⟨J, hJ.isPrime⟩ ⟨m, hm.isPrime⟩)
 
 /-- If `L` is a purely inseparable extension of the residue field of a local ring `R` and
@@ -505,7 +505,7 @@ private theorem isLocalRing_tensorProduct_aux
       le_trans Ideal.le_comap_map (Ideal.comap_mono (IsLocalRing.le_maximalIdeal hmapne))
     exact hQ.eq_of_le (Ideal.comap_ne_top _ (IsLocalRing.maximalIdeal.isMaximal _).ne_top) hQle
   obtain ⟨M, hM⟩ := Ideal.exists_maximal A
-  refine IsLocalRing.of_unique_max_ideal ⟨M, hM, fun J hJ => ?_⟩
+  refine IsLocalRing.of_unique_max_ideal ⟨M, hM, fun J hJ ↦ ?_⟩
   rw [key J hJ, key M hM]
 
 variable (R S) in

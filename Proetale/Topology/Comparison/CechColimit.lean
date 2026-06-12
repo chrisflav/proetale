@@ -110,10 +110,10 @@ lemma cechFreeD_eq {U V : C} (f : V ⟶ U) (n : ℕ) :
       ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) •
         freeAbelianPresheafFunctor.map ((Arrow.mk f).cechNerve.δ i) := by
     refine (AlternatingFaceMapComplex.obj_d_eq _ n).trans ?_
-    exact Finset.sum_congr rfl fun i _ => by
+    exact Finset.sum_congr rfl fun i _ ↦ by
       rw [SimplicialObject.whiskering_obj_obj_δ]
   rw [h1, h2, Functor.map_sum]
-  exact Finset.sum_congr rfl fun i _ => by rw [Functor.map_zsmul]; rfl
+  exact Finset.sum_congr rfl fun i _ ↦ by rw [Functor.map_zsmul]; rfl
 
 end SectionsTranslation
 
@@ -121,7 +121,7 @@ end SectionsTranslation
 face maps of the Čech nerve. -/
 noncomputable def cechPresheafD {D : Type w₂} [Category.{w₁} D] {V U : D} (g : V ⟶ U)
     [∀ k : ℕ, HasWidePullback (Arrow.mk g).right
-      (fun _ : Fin (k + 1) => (Arrow.mk g).left) fun _ => (Arrow.mk g).hom]
+      (fun _ : Fin (k + 1) ↦ (Arrow.mk g).left) fun _ ↦ (Arrow.mk g).hom]
     (F : Dᵒᵖ ⥤ AddCommGrpCat.{u + 1}) (n : ℕ) :
     F.obj (op ((Arrow.mk g).cechNerve.obj (op ⦋n⦌))) ⟶
       F.obj (op ((Arrow.mk g).cechNerve.obj (op ⦋n + 1⦌))) :=
@@ -144,8 +144,8 @@ lemma freeAbelianSheafHomEquiv_cechFreeD_comp {U V : C} (f : V ⟶ U)
       ((-1 : ℤ) ^ (i : ℕ) • (freeAbelianSheafFunctor J).map ((Arrow.mk f).cechNerve.δ i)) ≫ ψ =
         (-1 : ℤ) ^ (i : ℕ) •
           ((freeAbelianSheafFunctor J).map ((Arrow.mk f).cechNerve.δ i) ≫ ψ) :=
-    fun i => Preadditive.zsmul_comp _ _ _
-  rw [Finset.sum_congr rfl fun i _ => h1 i, freeAbelianSheafHomEquiv_sum]
+    fun i ↦ Preadditive.zsmul_comp _ _ _
+  rw [Finset.sum_congr rfl fun i _ ↦ h1 i, freeAbelianSheafHomEquiv_sum]
   have h2 : ∀ i : Fin (n + 2),
       freeAbelianSheafHomEquiv ((-1 : ℤ) ^ (i : ℕ) •
           ((freeAbelianSheafFunctor J).map ((Arrow.mk f).cechNerve.δ i) ≫ ψ)) =
@@ -154,14 +154,14 @@ lemma freeAbelianSheafHomEquiv_cechFreeD_comp {U V : C} (f : V ⟶ U)
     intro i
     rw [freeAbelianSheafHomEquiv_zsmul, freeAbelianSheafHomEquiv_naturality_left]
     rfl
-  rw [Finset.sum_congr rfl fun i _ => h2 i]
+  rw [Finset.sum_congr rfl fun i _ ↦ h2 i]
   have h3 : cechPresheafD f F.obj n (freeAbelianSheafHomEquiv ψ) =
       ∑ i : Fin (n + 2), ((-1 : ℤ) ^ (i : ℕ) • F.obj.map ((Arrow.mk f).cechNerve.δ i).op)
         (freeAbelianSheafHomEquiv ψ) := by
     rw [cechPresheafD]
     exact AddCommGrpCat.hom_sum_apply _ _ _
   rw [h3]
-  refine Finset.sum_congr rfl fun i _ => ?_
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
   exact (AddCommGrpCat.hom_zsmul_apply _ _ _).symm
 
 /-- The Čech complex of free abelian sheaves is exact in positive degrees; this holds
@@ -215,7 +215,7 @@ section CechIter
 variable {D : Type w₂} [Category.{w₁} D] {V U : D}
 
 variable (g : V ⟶ U) [∀ k : ℕ, HasWidePullback (Arrow.mk g).right
-    (fun _ : Fin (k + 1) => (Arrow.mk g).left) fun _ => (Arrow.mk g).hom]
+    (fun _ : Fin (k + 1) ↦ (Arrow.mk g).left) fun _ ↦ (Arrow.mk g).hom]
 
 /-- Data exhibiting `P` as the `n`-th object of the Čech nerve of `g`. -/
 structure IsCechNerveAt (n : ℕ) (P : D) where
@@ -226,26 +226,26 @@ structure IsCechNerveAt (n : ℕ) (P : D) where
   wπ : ∀ j, π j ≫ g = base
   /-- The comparison isomorphism with the wide pullback. -/
   iso : P ≅ (Arrow.mk g).cechNerve.obj (op ⦋n⦌)
-  iso_π : ∀ j, iso.hom ≫ WidePullback.π (fun _ : Fin (n + 1) => (Arrow.mk g).hom) j = π j
-  iso_base : iso.hom ≫ WidePullback.base (fun _ : Fin (n + 1) => (Arrow.mk g).hom) = base
+  iso_π : ∀ j, iso.hom ≫ WidePullback.π (fun _ : Fin (n + 1) ↦ (Arrow.mk g).hom) j = π j
+  iso_base : iso.hom ≫ WidePullback.base (fun _ : Fin (n + 1) ↦ (Arrow.mk g).hom) = base
 
 /-- Forgetting the last projection of a Čech nerve object. -/
 noncomputable def cechNerveForgetLast (k : ℕ) :
     (Arrow.mk g).cechNerve.obj (op ⦋k + 1⦌) ⟶ (Arrow.mk g).cechNerve.obj (op ⦋k⦌) :=
   WidePullback.lift (WidePullback.base _)
-    (fun j : Fin (k + 1) => WidePullback.π (fun _ : Fin (k + 2) => (Arrow.mk g).hom) j.castSucc)
-    (fun _ => WidePullback.π_arrow _ _)
+    (fun j : Fin (k + 1) ↦ WidePullback.π (fun _ : Fin (k + 2) ↦ (Arrow.mk g).hom) j.castSucc)
+    (fun _ ↦ WidePullback.π_arrow _ _)
 
 @[reassoc (attr := simp)]
 lemma cechNerveForgetLast_π (k : ℕ) (j : Fin (k + 1)) :
-    cechNerveForgetLast g k ≫ WidePullback.π (fun _ : Fin (k + 1) => (Arrow.mk g).hom) j =
-      WidePullback.π (fun _ : Fin (k + 2) => (Arrow.mk g).hom) j.castSucc :=
+    cechNerveForgetLast g k ≫ WidePullback.π (fun _ : Fin (k + 1) ↦ (Arrow.mk g).hom) j =
+      WidePullback.π (fun _ : Fin (k + 2) ↦ (Arrow.mk g).hom) j.castSucc :=
   WidePullback.lift_π _ _ _ _ j
 
 @[reassoc (attr := simp)]
 lemma cechNerveForgetLast_base (k : ℕ) :
-    cechNerveForgetLast g k ≫ WidePullback.base (fun _ : Fin (k + 1) => (Arrow.mk g).hom) =
-      WidePullback.base (fun _ : Fin (k + 2) => (Arrow.mk g).hom) :=
+    cechNerveForgetLast g k ≫ WidePullback.base (fun _ : Fin (k + 1) ↦ (Arrow.mk g).hom) =
+      WidePullback.base (fun _ : Fin (k + 2) ↦ (Arrow.mk g).hom) :=
   WidePullback.lift_base _ _ _ _
 
 namespace IsCechNerveAt
@@ -254,12 +254,12 @@ variable {g} {n : ℕ} {P : D}
 
 @[reassoc]
 lemma inv_π (h : IsCechNerveAt g n P) (j : Fin (n + 1)) :
-    h.iso.inv ≫ h.π j = WidePullback.π (fun _ : Fin (n + 1) => (Arrow.mk g).hom) j := by
+    h.iso.inv ≫ h.π j = WidePullback.π (fun _ : Fin (n + 1) ↦ (Arrow.mk g).hom) j := by
   rw [← h.iso_π, Iso.inv_hom_id_assoc]
 
 @[reassoc]
 lemma inv_base (h : IsCechNerveAt g n P) :
-    h.iso.inv ≫ h.base = WidePullback.base (fun _ : Fin (n + 1) => (Arrow.mk g).hom) := by
+    h.iso.inv ≫ h.base = WidePullback.base (fun _ : Fin (n + 1) ↦ (Arrow.mk g).hom) := by
   rw [← h.iso_base, Iso.inv_hom_id_assoc]
 
 lemma hom_ext (h : IsCechNerveAt g n P) {Z : D} {t₁ t₂ : Z ⟶ P}
@@ -278,14 +278,14 @@ noncomputable def zero : IsCechNerveAt g 0 V where
   base := g
   wπ _ := Category.id_comp g
   iso :=
-    { hom := WidePullback.lift g (fun _ : Fin 1 => 𝟙 V) (fun _ => Category.id_comp g)
-      inv := WidePullback.π (fun _ : Fin 1 => (Arrow.mk g).hom) 0
+    { hom := WidePullback.lift g (fun _ : Fin 1 ↦ 𝟙 V) (fun _ ↦ Category.id_comp g)
+      inv := WidePullback.π (fun _ : Fin 1 ↦ (Arrow.mk g).hom) 0
       hom_inv_id := WidePullback.lift_π _ _ _ _ 0
       inv_hom_id := by
         apply WidePullback.hom_ext
         · intro j
           rw [Category.assoc, WidePullback.lift_π, Category.comp_id, Category.id_comp]
-          exact congrArg (WidePullback.π fun _ : Fin 1 => (Arrow.mk g).hom)
+          exact congrArg (WidePullback.π fun _ : Fin 1 ↦ (Arrow.mk g).hom)
             (Subsingleton.elim (0 : Fin 1) j)
         · rw [Category.assoc, WidePullback.lift_base, Category.id_comp]
           exact WidePullback.π_arrow _ 0 }
@@ -312,10 +312,10 @@ noncomputable def succ (h : IsCechNerveAt g n P) {P' : D} {fst : P' ⟶ P} {snd 
     | last => rw [hlast, hbase]
     | cast j => rw [hπ, hbase, Category.assoc, h.wπ, sq.w]
   have hcomm : (cechNerveForgetLast g n ≫ h.iso.inv) ≫ h.base =
-      WidePullback.π (fun _ : Fin (n + 2) => (Arrow.mk g).hom) (Fin.last (n + 1)) ≫ g := by
+      WidePullback.π (fun _ : Fin (n + 2) ↦ (Arrow.mk g).hom) (Fin.last (n + 1)) ≫ g := by
     rw [Category.assoc, h.inv_base, cechNerveForgetLast_base]
     exact (WidePullback.π_arrow _ _).symm
-  have hfst : WidePullback.lift (arrows := fun _ : Fin (n + 2) => (Arrow.mk g).hom)
+  have hfst : WidePullback.lift (arrows := fun _ : Fin (n + 2) ↦ (Arrow.mk g).hom)
       base' π' wπ' ≫ cechNerveForgetLast g n = fst ≫ h.iso.hom := by
     apply WidePullback.hom_ext
     · intro j
@@ -328,14 +328,14 @@ noncomputable def succ (h : IsCechNerveAt g n P) {P' : D} {fst : P' ⟶ P} {snd 
       base := base'
       wπ := wπ'
       iso :=
-        { hom := WidePullback.lift (arrows := fun _ : Fin (n + 2) => (Arrow.mk g).hom)
+        { hom := WidePullback.lift (arrows := fun _ : Fin (n + 2) ↦ (Arrow.mk g).hom)
             base' π' wπ'
           inv := sq.lift (cechNerveForgetLast g n ≫ h.iso.inv)
-            (WidePullback.π (fun _ : Fin (n + 2) => (Arrow.mk g).hom) (Fin.last (n + 1)))
+            (WidePullback.π (fun _ : Fin (n + 2) ↦ (Arrow.mk g).hom) (Fin.last (n + 1)))
             hcomm
           hom_inv_id := ?_
           inv_hom_id := ?_ }
-      iso_π := fun j => WidePullback.lift_π _ _ _ _ j
+      iso_π := fun j ↦ WidePullback.lift_π _ _ _ _ j
       iso_base := WidePullback.lift_base _ _ _ _ }
   · apply sq.hom_ext
     · rw [Category.assoc, IsPullback.lift_fst, ← Category.assoc, hfst, Category.assoc,
@@ -377,8 +377,8 @@ lemma face_π {P' P : D} (h' : IsCechNerveAt g (n + 1) P') (h : IsCechNerveAt g 
     (i : Fin (n + 2)) (j : Fin (n + 1)) :
     h'.face h i ≫ h.π j = h'.π ((SimplexCategory.δ i).toOrderHom j) := by
   have hδ : (Arrow.mk g).cechNerve.δ i ≫
-      WidePullback.π (fun _ : Fin (n + 1) => (Arrow.mk g).hom) j =
-        WidePullback.π (fun _ : Fin (n + 2) => (Arrow.mk g).hom)
+      WidePullback.π (fun _ : Fin (n + 1) ↦ (Arrow.mk g).hom) j =
+        WidePullback.π (fun _ : Fin (n + 2) ↦ (Arrow.mk g).hom)
           ((SimplexCategory.δ i).toOrderHom j) :=
     cechNerve_map_comp_π g ((SimplexCategory.δ i).op) j
   rw [face, Category.assoc, Category.assoc, h.inv_π, hδ, h'.iso_π]
@@ -388,8 +388,8 @@ lemma face_base {P' P : D} (h' : IsCechNerveAt g (n + 1) P') (h : IsCechNerveAt 
     (i : Fin (n + 2)) :
     h'.face h i ≫ h.base = h'.base := by
   have hδ : (Arrow.mk g).cechNerve.δ i ≫
-      WidePullback.base (fun _ : Fin (n + 1) => (Arrow.mk g).hom) =
-        WidePullback.base (fun _ : Fin (n + 2) => (Arrow.mk g).hom) :=
+      WidePullback.base (fun _ : Fin (n + 1) ↦ (Arrow.mk g).hom) =
+        WidePullback.base (fun _ : Fin (n + 2) ↦ (Arrow.mk g).hom) :=
     cechNerve_map_comp_base g ((SimplexCategory.δ i).op)
   rw [face, Category.assoc, Category.assoc, h.inv_base, hδ, h'.iso_base]
 
@@ -400,7 +400,7 @@ lemma eq_face {P' P : D} (h' : IsCechNerveAt g (n + 1) P') (h : IsCechNerveAt g 
     (htπ : ∀ j, t ≫ h.π j = h'.π ((SimplexCategory.δ i).toOrderHom j))
     (htbase : t ≫ h.base = h'.base) :
     t = h'.face h i :=
-  h.hom_ext (fun j => by rw [htπ, face_π]) (by rw [htbase, face_base])
+  h.hom_ext (fun j ↦ by rw [htπ, face_π]) (by rw [htbase, face_base])
 
 /-- The alternating sum of the face maps, on sections of an abelian presheaf. -/
 noncomputable def faceD {P' P : D} (h' : IsCechNerveAt g (n + 1) P')
@@ -415,7 +415,7 @@ lemma faceD_eq {P' P : D} (h' : IsCechNerveAt g (n + 1) P') (h : IsCechNerveAt g
     h'.faceD h F =
       F.map (h.iso.inv.op) ≫ cechPresheafD g F n ≫ F.map (h'.iso.hom.op) := by
   rw [faceD, cechPresheafD, Preadditive.sum_comp, Preadditive.comp_sum]
-  refine Finset.sum_congr rfl fun i _ => ?_
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
   rw [Preadditive.zsmul_comp, Preadditive.comp_zsmul]
   congr 1
   rw [face, op_comp, op_comp, Functor.map_comp, Functor.map_comp, Category.assoc]
@@ -568,12 +568,12 @@ lemma bMNext_map : (T.bMNext hfW).map = pullback.snd T.bM.map q ≫ q := by
 
 /-- The projections of the next level of the tower. -/
 noncomputable def πMNext : Fin (n + 2) → (pullback T.bM.map q ⟶ W) :=
-  Fin.snoc (fun j => pullback.fst T.bM.map q ≫ T.πM j) (pullback.snd T.bM.map q)
+  Fin.snoc (fun j ↦ pullback.fst T.bM.map q ≫ T.πM j) (pullback.snd T.bM.map q)
 
 /-- The stage-wise projections of the next level of the tower. -/
 noncomputable def πStNext (a : A) :
     Fin (n + 2) → ((T.presNext hfW).diag.obj a ⟶ presW.diag.obj a) :=
-  Fin.snoc (fun j => pullback.fst (T.bM.natTrans.app a) (fW.natTrans.app a) ≫ T.πSt a j)
+  Fin.snoc (fun j ↦ pullback.fst (T.bM.natTrans.app a) (fW.natTrans.app a) ≫ T.πSt a j)
     (pullback.snd (T.bM.natTrans.app a) (fW.natTrans.app a))
 
 lemma πMNext_π (j : Fin (n + 2)) (a : A) :
@@ -610,7 +610,7 @@ noncomputable def étNext (a : A) :
     rw [T.ét_base a]
     exact (IsPullback.of_hasPullback (T.bM.natTrans.app a) (fW.natTrans.app a)).map
       (AffineEtale.Spec S)
-  refine (T.ét a).succ sq (fun j => (AffineEtale.Spec S).map (T.πStNext hfW a j))
+  refine (T.ét a).succ sq (fun j ↦ (AffineEtale.Spec S).map (T.πStNext hfW a j))
     ((AffineEtale.Spec S).map ((T.bMNext hfW).natTrans.app a)) ?_ ?_ ?_
   · intro j
     simp only [πStNext, Fin.snoc_castSucc, CategoryTheory.Functor.map_comp, T.ét_π a j]
@@ -627,7 +627,7 @@ noncomputable def proNext :
       (T.pro.base) ((AffineProEt.toProEt S).map q) := by
     rw [T.pro_base]
     exact (IsPullback.of_hasPullback T.bM.map q).map (AffineProEt.toProEt S)
-  refine T.pro.succ sq (fun j => (AffineProEt.toProEt S).map (T.πMNext j))
+  refine T.pro.succ sq (fun j ↦ (AffineProEt.toProEt S).map (T.πMNext j))
     ((AffineProEt.toProEt S).map ((T.bMNext hfW).map)) ?_ ?_ ?_
   · intro j
     simp only [πMNext, Fin.snoc_castSucc, CategoryTheory.Functor.map_comp, T.pro_π j]
@@ -769,7 +769,7 @@ lemma stageD_comp_ι (a : A) :
       ProEt.sheafPullbackSectionsι I T.presM a ≫ T'.proD T I := by
   rw [stageD, proD, IsCechNerveAt.faceD, IsCechNerveAt.faceD, Preadditive.sum_comp,
     Preadditive.comp_sum]
-  refine Finset.sum_congr rfl fun i _ => ?_
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
   rw [Preadditive.zsmul_comp, Preadditive.comp_zsmul]
   congr 1
   rw [← faceHom_app, ← map_faceHom_map]
@@ -783,13 +783,13 @@ lemma map_comp_stageD {a a' : A} (u : a ⟶ a') :
         I.obj.map ((AffineEtale.Spec S).map (T'.presM.diag.map u)).op := by
   rw [stageD, stageD, IsCechNerveAt.faceD, IsCechNerveAt.faceD, Preadditive.comp_sum,
     Preadditive.sum_comp]
-  refine Finset.sum_congr rfl fun i _ => ?_
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
   rw [Preadditive.comp_zsmul, Preadditive.zsmul_comp]
   congr 1
   rw [← faceHom_app T' T i a, ← faceHom_app T' T i a', ← CategoryTheory.Functor.map_comp,
     ← CategoryTheory.Functor.map_comp, ← op_comp, ← op_comp,
     ← CategoryTheory.Functor.map_comp, ← CategoryTheory.Functor.map_comp]
-  exact congrArg (fun t => I.obj.map ((AffineEtale.Spec S).map t).op)
+  exact congrArg (fun t ↦ I.obj.map ((AffineEtale.Spec S).map t).op)
     ((T'.faceHom T i).natTrans.naturality u).symm
 
 lemma stageD_eq (a : A) :
@@ -813,7 +813,7 @@ end CechTower
 variable {q presU presW fW} in
 /-- The tower of iterated fibre products of `q`. -/
 noncomputable def cechTower (hfW : fW.map = q) : ∀ n, CechTower q presU presW fW n :=
-  fun n => Nat.rec (CechTower.zero hfW) (fun _ T => T.succ hfW) n
+  fun n ↦ Nat.rec (CechTower.zero hfW) (fun _ T ↦ T.succ hfW) n
 
 end Tower
 
@@ -868,10 +868,10 @@ lemma exists_coboundary {W U₀ : S.AffineProEt} (q : W ⟶ U₀) (hq : Surjecti
     rw [h1, h2, hxa', hx']
     have hcancel := map_op_hom_inv_apply (F := ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj)
       ((T (m + 1)).pro.iso) x
-    refine (congrArg (fun t => ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj.map
+    refine (congrArg (fun t ↦ ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj.map
         ((T (m + 2)).pro.iso.hom.op) (cechPresheafD ((AffineProEt.toProEt S).map q)
           ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj (m + 1) t)) hcancel).trans
-      ((congrArg (fun t => ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj.map
+      ((congrArg (fun t ↦ ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj.map
         ((T (m + 2)).pro.iso.hom.op) t) hcoc).trans (map_zero _))
   -- Step 4: the cocycle condition holds at a later stage.
   obtain ⟨kop, w, hw⟩ := (Types.FilteredColimit.isColimit_eq_iff'
@@ -944,7 +944,7 @@ lemma exists_coboundary {W U₀ : S.AffineProEt} (q : W ⟶ U₀) (hq : Surjecti
   rw [h10, hxy, h11]
   refine (map_op_hom_inv_apply (F := ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj)
       ((T (m + 1)).pro.iso) _).trans ?_
-  exact congrArg (fun t => cechPresheafD ((AffineProEt.toProEt S).map q)
+  exact congrArg (fun t ↦ cechPresheafD ((AffineProEt.toProEt S).map q)
     ((ProEt.sheafPullback S Ab.{u + 1}).obj I).obj m t) hy.symm
 
 end AlgebraicGeometry.Scheme.AffineProEt

@@ -410,7 +410,7 @@ lemma range_comap_algebraMap :
 
 /-- The projection `Spec D → T`. -/
 noncomputable def projT : C(PrimeSpectrum (PullbackProfinite R T i), T) :=
-  ⟨fun y => ((homeomorphPrimeSpectrum (T := T) (R := R)).symm
+  ⟨fun y ↦ ((homeomorphPrimeSpectrum (T := T) (R := R)).symm
       (PrimeSpectrum.comap (algebraMap (LocallyConstant T R) (PullbackProfinite R T i)) y)).1,
     continuous_fst.comp ((homeomorphPrimeSpectrum (T := T) (R := R)).symm.continuous.comp
       (PrimeSpectrum.continuous_comap _))⟩
@@ -481,7 +481,7 @@ theorem isPullback :
     exact fst_fiberHomeo R T i y
   · rw [CategoryTheory.Iso.trans_hom, CategoryTheory.Category.assoc, CategoryTheory.Iso.symm_hom,
       pullbackIsoProdSubtype_inv_snd]
-    refine TopCat.hom_ext (ContinuousMap.ext fun y => ?_)
+    refine TopCat.hom_ext (ContinuousMap.ext fun y ↦ ?_)
     exact snd_fiberHomeo R T i y
 
 lemma projSpec_surjective (hi : Function.Surjective i) :
@@ -540,7 +540,7 @@ private theorem exists_retraction_of_isClosed_of_bijOn [IsWLocalRing R]
   have htower : ∀ w : PrimeSpectrum (Restriction T),
       PrimeSpectrum.comap (algebraMap R (Restriction T)) w =
         PrimeSpectrum.comap (algebraMap R S)
-          (PrimeSpectrum.comap (algebraMap S (Restriction T)) w) := fun w => by
+          (PrimeSpectrum.comap (algebraMap S (Restriction T)) w) := fun w ↦ by
     rw [← PrimeSpectrum.comap_comp_apply, ← IsScalarTower.algebraMap_eq]
   -- `Spec (Restriction T) → Spec S` is a closed embedding with range `mk ⁻¹' T`.
   have hε : IsClosedEmbedding (PrimeSpectrum.comap (algebraMap S (Restriction T))) :=
@@ -558,7 +558,7 @@ private theorem exists_retraction_of_isClosed_of_bijOn [IsWLocalRing R]
   -- Hence `Spec (Restriction T) → Spec S` maps closed points to closed points.
   have hεcl : ∀ w ∈ closedPoints (PrimeSpectrum (Restriction T)),
       PrimeSpectrum.comap (algebraMap S (Restriction T)) w ∈
-        closedPoints (PrimeSpectrum S) := fun w hw =>
+        closedPoints (PrimeSpectrum S) := fun w hw ↦
     mem_closedPoints_iff.mpr
       (hε.isEmbedding.isClosed_singleton hstable (mem_closedPoints_iff.mp hw))
   -- Points of `Spec (Restriction T)` lie in components belonging to `T`.
@@ -578,7 +578,7 @@ private theorem exists_retraction_of_isClosed_of_bijOn [IsWLocalRing R]
     rw [Continuous.connectedComponentsMap_mk, htower]
   -- The algebra map `R → Restriction T` is a w-local ring map.
   have hwlocal : (algebraMap R (Restriction T)).IsWLocal := by
-    refine ⟨PrimeSpectrum.isSpectralMap_comap _, fun w hw => ?_⟩
+    refine ⟨PrimeSpectrum.isSpectralMap_comap _, fun w hw ↦ ?_⟩
     rw [Set.mem_preimage, htower]
     exact hcl _ (hεcl w hw)
   -- It is bijective on stalks.
@@ -634,7 +634,7 @@ private theorem exists_retraction_of_isClosed_of_bijOn [IsWLocalRing R]
     hwlocal.bijective_of_bijective hbosB hbijπ₀
   let e : R ≃+* Restriction T := RingEquiv.ofBijective _ hbij
   refine ⟨(e.symm : Restriction T →+* R).comp (algebraMap S (Restriction T)), ?_⟩
-  refine RingHom.ext fun r => ?_
+  refine RingHom.ext fun r ↦ ?_
   change e.symm (algebraMap S (Restriction T) (algebraMap R S r)) = r
   rw [← IsScalarTower.algebraMap_apply R S (Restriction T)]
   exact e.symm_apply_apply r
@@ -673,7 +673,7 @@ theorem exists_retraction_of_bijectiveOnStalks [IsWLocalRing R]
   refine exists_retraction_of_isClosed_of_bijOn
     (RingHom.bijectiveOnStalks_algebraMap.mpr ‹_›) hcl (Set.range ρ)
     (isCompact_range hρcont).isClosed
-    (fun c => ⟨ρ c, Set.mem_range_self c, congrFun hρ c⟩) ?_
+    (fun c ↦ ⟨ρ c, Set.mem_range_self c, congrFun hρ c⟩) ?_
   rintro _ ⟨c₁, rfl⟩ _ ⟨c₂, rfl⟩ h
   have h₁ := congrFun hρ c₁
   have h₂ := congrFun hρ c₂
@@ -703,7 +703,7 @@ theorem IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints
   -- `S` is contained in a maximal ideal lying over a maximal ideal of `R`, at which the local
   -- ring of the w-strictly local ring `R` is strictly henselian.
   haveI : Algebra.BijectiveOnStalks R S := by
-    refine Algebra.WeaklyEtale.bijectiveOnStalks fun q hq => ?_
+    refine Algebra.WeaklyEtale.bijectiveOnStalks fun q hq ↦ ?_
     obtain ⟨n, hnmax, hqn⟩ := q.exists_le_maximal hq.ne_top
     haveI hnp : n.IsPrime := hnmax.isPrime
     have hncl : (⟨n, hnp⟩ : PrimeSpectrum S) ∈ closedPoints (PrimeSpectrum S) :=
@@ -782,7 +782,7 @@ lemma exists_isWContractibleRing_of_isWStrictlyLocal
   -- The local rings of `D` at maximal ideals are strictly henselian: maximal ideals
   -- of `D` lie over maximal ideals of `R` and `R → D` identifies local rings.
   haveI : IsWStrictlyLocalRing D := by
-    refine ⟨fun m hm => ?_⟩
+    refine ⟨fun m hm ↦ ?_⟩
     haveI : m.IsPrime := hm.isPrime
     set y : PrimeSpectrum D := ⟨m, inferInstance⟩
     have hy : y ∈ closedPoints (PrimeSpectrum D) :=

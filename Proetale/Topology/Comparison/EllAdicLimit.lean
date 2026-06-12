@@ -48,8 +48,8 @@ lemma continuous_toZModPow (n : ℕ) : Continuous (PadicInt.toZModPow (p := ℓ)
   -- preimages of singletons are open).
   have hℓ : (0 : ℝ) < (ℓ : ℝ) := by
     exact_mod_cast (Fact.out (p := ℓ.Prime)).pos
-  refine continuous_def.mpr fun s _ => Metric.isOpen_iff.mpr fun x hx => ?_
-  refine ⟨(ℓ : ℝ) ^ (-(n : ℤ) + 1), zpow_pos hℓ _, fun y hy => ?_⟩
+  refine continuous_def.mpr fun s _ ↦ Metric.isOpen_iff.mpr fun x hx ↦ ?_
+  refine ⟨(ℓ : ℝ) ^ (-(n : ℤ) + 1), zpow_pos hℓ _, fun y hy ↦ ?_⟩
   have h1 : ‖y - x‖ < (ℓ : ℝ) ^ (-(n : ℤ) + 1) := by
     rw [← dist_eq_norm]
     exact hy
@@ -69,7 +69,7 @@ lemma continuous_toZModPow (n : ℕ) : Continuous (PadicInt.toZModPow (p := ℓ)
 projections `toZModPow n` are continuous: the topology of `ℤ_[ℓ]` is the inverse limit
 topology. -/
 lemma continuous_of_forall_continuous_toZModPow {U : Type*} [TopologicalSpace U]
-    (f : U → ℤ_[ℓ]) (hf : ∀ n, Continuous fun x => PadicInt.toZModPow n (f x)) :
+    (f : U → ℤ_[ℓ]) (hf : ∀ n, Continuous fun x ↦ PadicInt.toZModPow n (f x)) :
     Continuous f := by
   -- Use the metric characterization: for `x₀` and `ε > 0` pick `n` with
   -- `(ℓ : ℝ)⁻¹ ^ n < ε`; on the open set
@@ -87,7 +87,7 @@ lemma continuous_of_forall_continuous_toZModPow {U : Type*} [TopologicalSpace U]
     (isOpen_discrete {PadicInt.toZModPow n (f x₀)}).preimage (hf n)
   have hmem : {x : U | PadicInt.toZModPow n (f x) = PadicInt.toZModPow n (f x₀)} ∈
       nhds x₀ := hopen.mem_nhds rfl
-  refine Filter.eventually_of_mem hmem fun x hx => ?_
+  refine Filter.eventually_of_mem hmem fun x hx ↦ ?_
   have h1 : PadicInt.toZModPow (p := ℓ) n (f x - f x₀) = 0 := by
     rw [map_sub, sub_eq_zero]
     exact hx
@@ -112,7 +112,7 @@ theorem existsUnique_continuousMap_padicInt {U : Type*} [TopologicalSpace U]
   -- (s n) = s m}`; closure under the ring operations is componentwise), with the
   -- projections `R →+* ZMod (ℓ ^ n)`; `PadicInt.lift` (with
   -- `PadicInt.lift_spec`) produces `R →+* ℤ_[ℓ]`. The map
-  -- `f := fun x => lift ⟨fun n => g n x, _⟩` satisfies `toZModPow n ∘ f = g n`
+  -- `f := fun x ↦ lift ⟨fun n ↦ g n x, _⟩` satisfies `toZModPow n ∘ f = g n`
   -- (`lift_spec` applied pointwise), and is continuous by
   -- `continuous_of_forall_continuous_toZModPow` since
   -- `toZModPow n ∘ f = g n` is continuous.
@@ -149,41 +149,41 @@ theorem existsUnique_continuousMap_padicInt {U : Type*} [TopologicalSpace U]
   let R : Subring (∀ n, ZMod (ℓ ^ n)) :=
     { carrier := {s | ∀ (m n : ℕ) (h : m ≤ n),
         ZMod.castHom (pow_dvd_pow ℓ h) (ZMod (ℓ ^ m)) (s n) = s m}
-      one_mem' := fun m n h => by
+      one_mem' := fun m n h ↦ by
         change ZMod.castHom (pow_dvd_pow ℓ h) (ZMod (ℓ ^ m)) 1 = 1
         rw [map_one]
-      mul_mem' := fun {a b} ha hb m n h => by
+      mul_mem' := fun {a b} ha hb m n h ↦ by
         change ZMod.castHom (pow_dvd_pow ℓ h) (ZMod (ℓ ^ m)) (a n * b n) = a m * b m
         rw [map_mul, ha m n h, hb m n h]
-      zero_mem' := fun m n h => by
+      zero_mem' := fun m n h ↦ by
         change ZMod.castHom (pow_dvd_pow ℓ h) (ZMod (ℓ ^ m)) 0 = 0
         rw [map_zero]
-      add_mem' := fun {a b} ha hb m n h => by
+      add_mem' := fun {a b} ha hb m n h ↦ by
         change ZMod.castHom (pow_dvd_pow ℓ h) (ZMod (ℓ ^ m)) (a n + b n) = a m + b m
         rw [map_add, ha m n h, hb m n h]
-      neg_mem' := fun {a} ha m n h => by
+      neg_mem' := fun {a} ha m n h ↦ by
         change ZMod.castHom (pow_dvd_pow ℓ h) (ZMod (ℓ ^ m)) (-(a n)) = -(a m)
         rw [map_neg, ha m n h] }
   -- The compatible projections out of `R`, in the shape required by `PadicInt.lift`.
   have compat : ∀ (k1 k2 : ℕ) (hk : k1 ≤ k2),
       (ZMod.castHom (pow_dvd_pow ℓ hk) (ZMod (ℓ ^ k1))).comp
-        ((Pi.evalRingHom (fun k => ZMod (ℓ ^ k)) k2).comp R.subtype) =
-      (Pi.evalRingHom (fun k => ZMod (ℓ ^ k)) k1).comp R.subtype := by
+        ((Pi.evalRingHom (fun k ↦ ZMod (ℓ ^ k)) k2).comp R.subtype) =
+      (Pi.evalRingHom (fun k ↦ ZMod (ℓ ^ k)) k1).comp R.subtype := by
     intro k1 k2 hk
-    refine RingHom.ext fun s => ?_
+    refine RingHom.ext fun s ↦ ?_
     exact s.2 k1 k2 hk
-  have hmem : ∀ x : U, (fun n => g n x) ∈ R := fun x m n h => hg' x m n h
+  have hmem : ∀ x : U, (fun n ↦ g n x) ∈ R := fun x m n h ↦ hg' x m n h
   -- The candidate map, via the universal property of `ℤ_[ℓ]`.
   have hφ : ∀ (n : ℕ) (x : U),
-      PadicInt.toZModPow n (PadicInt.lift compat ⟨fun k => g k x, hmem x⟩) = g n x :=
-    fun n x => RingHom.congr_fun (PadicInt.lift_spec compat n) ⟨fun k => g k x, hmem x⟩
-  have hcont : Continuous fun x => PadicInt.lift compat ⟨fun k => g k x, hmem x⟩ :=
-    continuous_of_forall_continuous_toZModPow ℓ _ fun n =>
-      (g n).continuous.congr fun x => (hφ n x).symm
-  refine ⟨⟨fun x => PadicInt.lift compat ⟨fun k => g k x, hmem x⟩, hcont⟩, hφ, ?_⟩
+      PadicInt.toZModPow n (PadicInt.lift compat ⟨fun k ↦ g k x, hmem x⟩) = g n x :=
+    fun n x ↦ RingHom.congr_fun (PadicInt.lift_spec compat n) ⟨fun k ↦ g k x, hmem x⟩
+  have hcont : Continuous fun x ↦ PadicInt.lift compat ⟨fun k ↦ g k x, hmem x⟩ :=
+    continuous_of_forall_continuous_toZModPow ℓ _ fun n ↦
+      (g n).continuous.congr fun x ↦ (hφ n x).symm
+  refine ⟨⟨fun x ↦ PadicInt.lift compat ⟨fun k ↦ g k x, hmem x⟩, hcont⟩, hφ, ?_⟩
   intro f' hf'
   ext x
-  exact PadicInt.ext_of_toZModPow.mp fun n => (hf' n x).trans (hφ n x).symm
+  exact PadicInt.ext_of_toZModPow.mp fun n ↦ (hf' n x).trans (hφ n x).symm
 
 end Padic
 
@@ -193,8 +193,8 @@ variable (X : Scheme.{u}) (ℓ : ℕ) [Fact ℓ.Prime]
 transition maps. -/
 noncomputable def zmodAbSystem : ℕᵒᵖ ⥤ AddCommGrpCat.{u + 1} :=
   (Functor.ofSequence
-    (X := fun n => op (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ n)))))
-    (fun n => (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom
+    (X := fun n ↦ op (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ n)))))
+    (fun n ↦ (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom
       (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom)).op)).leftOp
 
 set_option linter.unusedSectionVars false in
@@ -212,8 +212,8 @@ lemma zmodAbSystem_transition (n : ℕ) :
   -- `leftOp`/`op` unfolding; morphisms in `ℕ` are subsingletons.
   exact congrArg Quiver.Hom.unop
     (Functor.ofSequence_map_homOfLE_succ
-      (X := fun n => op (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ n)))))
-      (f := fun n => (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom
+      (X := fun n ↦ op (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ n)))))
+      (f := fun n ↦ (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom
         (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom)).op)
       n)
 
@@ -294,7 +294,7 @@ private lemma ellAdicIso_inv_naturality (n : ℕ) :
         ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).map
           (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom
             (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom))) :=
-    congrArg (fun f => (ProEt.sheafPullback X Ab.{u + 1}).map
+    congrArg (fun f ↦ (ProEt.sheafPullback X Ab.{u + 1}).map
       ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).map f)) (zmodAbSystem_transition ℓ n)
   -- Naturality of the pullback-constant comparison in the coefficient group.
   have hnat1 : (ProEt.sheafPullback X Ab.{u + 1}).map
@@ -353,7 +353,7 @@ private lemma ellAdicIso_inv_naturality (n : ℕ) :
                 (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n))
                   (ZMod (ℓ ^ n))).toAddMonoidHom))) ≫
             constantToTopologicalSheafLifted X (ZMod (ℓ ^ n)) :=
-          congrArg (fun h => h ≫ constantToTopologicalSheafLifted X (ZMod (ℓ ^ n))) hnat1
+          congrArg (fun h ↦ h ≫ constantToTopologicalSheafLifted X (ZMod (ℓ ^ n))) hnat1
       _ = (sheafPullbackConstantIso X
               (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ (n + 1)))))).hom ≫
             (constantSheaf (ProEt.topology X) Ab.{u + 1}).map
@@ -368,7 +368,7 @@ private lemma ellAdicIso_inv_naturality (n : ℕ) :
             topologicalSheafLiftedMap X (ZMod (ℓ ^ (n + 1)))
               (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
               continuous_of_discreteTopology :=
-          congrArg (fun h => (sheafPullbackConstantIso X
+          congrArg (fun h ↦ (sheafPullbackConstantIso X
             (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ (n + 1)))))).hom ≫ h) hnat2.symm
       _ = (ellAdicIso X ℓ (n + 1)).hom ≫
             topologicalSheafLiftedMap X (ZMod (ℓ ^ (n + 1)))
@@ -399,7 +399,7 @@ private lemma ellAdicLeg_succ (n : ℕ) :
         (continuous_toZModPow ℓ n) := by
     refine (topologicalSheafLiftedMap_comp X _ _ _ _ _ _ _).trans
       (topologicalSheafLiftedMap_congr X _ _ ?_)
-    refine AddMonoidHom.ext fun z => ?_
+    refine AddMonoidHom.ext fun z ↦ ?_
     exact RingHom.congr_fun (PadicInt.zmod_cast_comp_toZModPow n (n + 1) (Nat.le_succ n)) z
   calc ellAdicLeg X ℓ (n + 1) ≫
         SequentialSystem.transition (zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}) n
@@ -414,7 +414,7 @@ private lemma ellAdicLeg_succ (n : ℕ) :
         (topologicalSheafLiftedMap X (ZMod (ℓ ^ (n + 1)))
             (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
             continuous_of_discreteTopology ≫ (ellAdicIso X ℓ n).inv) :=
-        congrArg (fun h => topologicalSheafLiftedMap X ℤ_[ℓ]
+        congrArg (fun h ↦ topologicalSheafLiftedMap X ℤ_[ℓ]
           (PadicInt.toZModPow (n + 1)).toAddMonoidHom (continuous_toZModPow ℓ (n + 1)) ≫ h)
           (ellAdicIso_inv_naturality X ℓ n)
     _ = (topologicalSheafLiftedMap X ℤ_[ℓ] (PadicInt.toZModPow (n + 1)).toAddMonoidHom
@@ -425,21 +425,21 @@ private lemma ellAdicLeg_succ (n : ℕ) :
         (Category.assoc _ _ _).symm
     _ = topologicalSheafLiftedMap X ℤ_[ℓ] (PadicInt.toZModPow n).toAddMonoidHom
           (continuous_toZModPow ℓ n) ≫ (ellAdicIso X ℓ n).inv :=
-        congrArg (fun h => h ≫ (ellAdicIso X ℓ n).inv) hcomp
+        congrArg (fun h ↦ h ≫ (ellAdicIso X ℓ n).inv) hcomp
     _ = ellAdicLeg X ℓ n := rfl
 
 /-- The cone over the pulled-back system with apex the lifted `ℓ`-adic sheaf. -/
 private noncomputable def ellAdicCone :
     Cone (zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}) where
   pt := topologicalSheafLifted X ℤ_[ℓ]
-  π := SequentialSystem.natTransOfSucc (fun n => ellAdicLeg X ℓ n) (ellAdicLeg_succ X ℓ)
+  π := SequentialSystem.natTransOfSucc (fun n ↦ ellAdicLeg X ℓ n) (ellAdicLeg_succ X ℓ)
 
 /-- The cone `ellAdicCone` is a limit cone: sectionwise this is the statement that a
 continuous map to `ℤ_[ℓ]` is the same as a compatible family of continuous maps to the
 `ℤ/ℓⁿℤ`. -/
 private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
   apply isLimitOfReflects (sheafToPresheaf (ProEt.topology X) Ab.{u + 1})
-  refine evaluationJointlyReflectsLimits _ fun U => ?_
+  refine evaluationJointlyReflectsLimits _ fun U ↦ ?_
   apply isLimitOfReflects (CategoryTheory.forget Ab.{u + 1})
   refine ((Types.isLimit_iff _).mpr ?_).some
   intro s hs
@@ -452,7 +452,7 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
     intro n t
     have h1 : (ellAdicIso X ℓ n).hom.hom.app U ≫ (ellAdicIso X ℓ n).inv.hom.app U =
         𝟙 (((zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}).obj (op n)).obj.obj U) :=
-      congrArg (fun f => f.hom.app U) (ellAdicIso X ℓ n).hom_inv_id
+      congrArg (fun f ↦ f.hom.app U) (ellAdicIso X ℓ n).hom_inv_id
     exact ((ConcreteCategory.comp_apply _ _ _).symm.trans
       (ConcreteCategory.congr_hom h1 t)).trans (ConcreteCategory.id_apply t)
   have cancel2 : ∀ (n : ℕ) (t : ULift.{u + 1} C((unop U).left, ZMod (ℓ ^ n))),
@@ -461,7 +461,7 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
     intro n t
     have h1 : (ellAdicIso X ℓ n).inv.hom.app U ≫ (ellAdicIso X ℓ n).hom.hom.app U =
         𝟙 ((topologicalSheafLifted X (ZMod (ℓ ^ n))).obj.obj U) :=
-      congrArg (fun f => f.hom.app U) (ellAdicIso X ℓ n).inv_hom_id
+      congrArg (fun f ↦ f.hom.app U) (ellAdicIso X ℓ n).inv_hom_id
     have h2 := ConcreteCategory.congr_hom h1 t
     have h3 := (ConcreteCategory.comp_apply ((ellAdicIso X ℓ n).inv.hom.app U)
       ((ellAdicIso X ℓ n).hom.hom.app U) t).symm
@@ -486,7 +486,7 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
             (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
             continuous_of_discreteTopology).hom.app U ≫
           (ellAdicIso X ℓ n).inv.hom.app U :=
-      congrArg (fun f => f.hom.app U) (ellAdicIso_inv_naturality X ℓ n)
+      congrArg (fun f ↦ f.hom.app U) (ellAdicIso_inv_naturality X ℓ n)
     have h2 := ConcreteCategory.congr_hom h1 a
     have h3 := (ConcreteCategory.comp_apply ((ellAdicIso X ℓ (n + 1)).inv.hom.app U)
       ((SequentialSystem.transition
@@ -496,14 +496,14 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
       continuous_of_discreteTopology).hom.app U) ((ellAdicIso X ℓ n).inv.hom.app U) a
     exact (h3.trans h2).trans h4
   -- The compatible family of continuous maps obtained from the section `s`.
-  let g' : ∀ n : ℕ, ULift.{u + 1} C((unop U).left, ZMod (ℓ ^ n)) := fun n =>
+  let g' : ∀ n : ℕ, ULift.{u + 1} C((unop U).left, ZMod (ℓ ^ n)) := fun n ↦
     ConcreteCategory.hom ((ellAdicIso X ℓ n).hom.hom.app U) (s (op n))
-  let g : ∀ n : ℕ, C((unop U).left, ZMod (ℓ ^ n)) := fun n => (g' n).down
+  let g : ∀ n : ℕ, C((unop U).left, ZMod (ℓ ^ n)) := fun n ↦ (g' n).down
   have htrans : ∀ n : ℕ,
       ConcreteCategory.hom
         ((SequentialSystem.transition
           (zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}) n).hom.app U)
-        (s (op (n + 1))) = s (op n) := fun n => hs ((homOfLE (Nat.le_succ n)).op)
+        (s (op (n + 1))) = s (op n) := fun n ↦ hs ((homOfLE (Nat.le_succ n)).op)
   have hgc : ∀ n : ℕ, ConcreteCategory.hom ((topologicalSheafLiftedMap X (ZMod (ℓ ^ (n + 1)))
       (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
       continuous_of_discreteTopology).hom.app U) (g' (n + 1)) = g' n := by
@@ -515,7 +515,7 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
           (zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}) n).hom.app U)
         (ConcreteCategory.hom ((ellAdicIso X ℓ (n + 1)).inv.hom.app U) (g' (n + 1))) =
         s (op n) :=
-      (congrArg (fun z => ConcreteCategory.hom
+      (congrArg (fun z ↦ ConcreteCategory.hom
         ((SequentialSystem.transition
           (zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}) n).hom.app U) z) e1).trans
         (htrans n)
@@ -530,7 +530,7 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
             (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
             continuous_of_discreteTopology).hom.app U) (g' (n + 1)))) =
         ConcreteCategory.hom ((ellAdicIso X ℓ n).hom.hom.app U) (s (op n)) :=
-      congrArg (fun z => ConcreteCategory.hom ((ellAdicIso X ℓ n).hom.hom.app U) z) e3
+      congrArg (fun z ↦ ConcreteCategory.hom ((ellAdicIso X ℓ n).hom.hom.app U) z) e3
     have e6 := cancel2 n (ConcreteCategory.hom ((topologicalSheafLiftedMap X (ZMod (ℓ ^ (n + 1)))
       (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
       continuous_of_discreteTopology).hom.app U) (g' (n + 1)))
@@ -544,20 +544,20 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
     funext x
     exact ContinuousMap.congr_fun (congrArg ULift.down e5) x
   obtain ⟨f, hf, huniq⟩ := existsUnique_continuousMap_padicInt ℓ g hgfun
-  refine ⟨ULift.up f, fun k => ?_, fun y hy => ?_⟩
+  refine ⟨ULift.up f, fun k ↦ ?_, fun y hy ↦ ?_⟩
   · -- The element `ULift.up f` maps to the given section.
     obtain ⟨n⟩ := k
     have p2 : ConcreteCategory.hom ((topologicalSheafLiftedMap X ℤ_[ℓ]
         (PadicInt.toZModPow n).toAddMonoidHom (continuous_toZModPow ℓ n)).hom.app U)
         (ULift.up f) = g' n := by
       have p2a : (ContinuousMap.mk ((PadicInt.toZModPow (p := ℓ) n)).toAddMonoidHom
-          (continuous_toZModPow ℓ n)).comp f = g n := ContinuousMap.ext fun x => hf n x
+          (continuous_toZModPow ℓ n)).comp f = g n := ContinuousMap.ext fun x ↦ hf n x
       exact congrArg ULift.up.{u + 1} p2a
     have p1 := ConcreteCategory.comp_apply ((topologicalSheafLiftedMap X ℤ_[ℓ]
       (PadicInt.toZModPow n).toAddMonoidHom (continuous_toZModPow ℓ n)).hom.app U)
       ((ellAdicIso X ℓ n).inv.hom.app U) (ULift.up f)
     have p3 := congrArg
-      (fun z => ConcreteCategory.hom ((ellAdicIso X ℓ n).inv.hom.app U) z) p2
+      (fun z ↦ ConcreteCategory.hom ((ellAdicIso X ℓ n).inv.hom.app U) z) p2
     have p4 := cancel1 n (s (op n))
     exact p1.trans (p3.trans p4)
   · -- Uniqueness.
@@ -576,7 +576,7 @@ private noncomputable def isLimitEllAdicCone : IsLimit (ellAdicCone X ℓ) := by
         g' n := by
       intro n
       have qb := congrArg
-        (fun z => ConcreteCategory.hom ((ellAdicIso X ℓ n).hom.hom.app U) z) (q1 n)
+        (fun z ↦ ConcreteCategory.hom ((ellAdicIso X ℓ n).hom.hom.app U) z) (q1 n)
       have qc := cancel2 n (ConcreteCategory.hom ((topologicalSheafLiftedMap X ℤ_[ℓ]
         (PadicInt.toZModPow n).toAddMonoidHom (continuous_toZModPow ℓ n)).hom.app U) y')
       exact qc.symm.trans qb

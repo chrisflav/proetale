@@ -52,7 +52,7 @@ theorem Algebra.WeaklyEtale.isSeparable_residueField [Algebra.WeaklyEtale A B]
   -- The `κ(m)`-algebra map `κ(m) ⊗[A] B → κ(q)`.
   let χ : m.Fiber B →ₐ[m.ResidueField] q.ResidueField :=
     Algebra.TensorProduct.lift (Algebra.ofId _ _)
-      (IsScalarTower.toAlgHom A B q.ResidueField) fun _ _ => Commute.all _ _
+      (IsScalarTower.toAlgHom A B q.ResidueField) fun _ _ ↦ Commute.all _ _
   have key (b : B) : IsSeparable m.ResidueField (algebraMap B q.ResidueField b) := by
     have h := Algebra.IndEtale.isSeparable_of_algHom_to_isLocalRing
       m.ResidueField q.ResidueField χ ((1 : m.ResidueField) ⊗ₜ[A] b)
@@ -265,7 +265,7 @@ theorem Algebra.WeaklyEtale.exists_indEtale [Algebra.WeaklyEtale R S] :
   letI : Algebra S D := Algebra.compHom D (algebraMap S D')
   haveI : IsScalarTower S D' D := IsScalarTower.of_algebraMap_eq' rfl
   haveI : Algebra.IndEtale S D := Algebra.IndEtale.trans S (S := D') D
-  haveI : IsScalarTower R S D := IsScalarTower.of_algebraMap_eq fun r => by
+  haveI : IsScalarTower R S D := IsScalarTower.of_algebraMap_eq fun r ↦ by
     change algebraMap C D (algebraMap R C r) = algebraMap D' D (algebraMap S D' (algebraMap R S r))
     rw [show algebraMap C D (algebraMap R C r) =
         algebraMap D' D (algebraMap C D' (algebraMap R C r)) from rfl,
@@ -310,7 +310,7 @@ theorem Algebra.WeaklyEtale.exists_indEtale [Algebra.WeaklyEtale R S] :
       exact zero_mem _
     have hQq : PrimeSpectrum.comap (algebraMap S D') Q = q := by
       have hcomp : π.toRingHom.comp (algebraMap S D') = algebraMap S (S ⊗[R] (C ⧸ J)) := by
-        refine RingHom.ext fun s => ?_
+        refine RingHom.ext fun s ↦ ?_
         change (Algebra.TensorProduct.comm R (C ⧸ J) S)
             ((Algebra.TensorProduct.map (Ideal.Quotient.mkₐ R J) (AlgHom.id R S))
               ((1 : C) ⊗ₜ[R] s)) = s ⊗ₜ[R] (1 : C ⧸ J)

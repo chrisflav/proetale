@@ -738,7 +738,6 @@ private lemma coconeι_w_apply (c : Cocone D) {j j' : J} (f : j ⟶ j') (x : D.o
   calc (coconeι c j').hom ((D.map f).hom x) = (D.map f ≫ coconeι c j').hom x := rfl
     _ = (coconeι c j).hom x := congrArg (fun q ↦ q.hom x) (coconeι_w c f)
 
-
 private lemma coconeι_exists_rep (c : Cocone D) (hc : IsColimit c) (x : c.pt) :
     ∃ (j : J) (y : D.obj j), (coconeι c j).hom y = x := by
   obtain ⟨j, y, hy⟩ := Concrete.isColimit_exists_rep _ hc x
@@ -748,14 +747,12 @@ private lemma coconeι_exists_rep (c : Cocone D) (hc : IsColimit c) (x : c.pt) :
 private def rAt (j₀ : J) (r : D.obj j₀) (k : Under j₀) : D.obj k.right :=
   (D.map k.hom).hom r
 
-
 omit [IsFiltered J] in
 private lemma rAt_map (j₀ : J) (r : D.obj j₀) {k l : Under j₀} (t : k ⟶ l) :
     (D.map t.right).hom (rAt j₀ r k) = rAt j₀ r l := by
   have h : k.hom ≫ t.right = l.hom := Under.w t
   calc (D.map t.right).hom (rAt j₀ r k) = (D.map k.hom ≫ D.map t.right).hom r := rfl
     _ = rAt j₀ r l := by rw [← D.map_comp, h]; rfl
-
 
 omit [IsFiltered J] in
 private lemma rAt_cocone {c : Cocone D} (j₀ : J) (r : D.obj j₀) (k : Under j₀) :
@@ -1391,7 +1388,6 @@ private noncomputable def PieceAt.push {j₀ : J} {A₀ : CommRingCat.{u}} {f₀
       map_pow] at h1
     exact h1
 
-
 section Descent
 
 variable {S A : CommRingCat.{u}} {s : D ⟶ (Functor.const J).obj S} {g : S ⟶ A}
@@ -1524,7 +1520,6 @@ private lemma exists_e2c (hs : IsColimit (Cocone.mk S s)) {j₀ : J}
     rfl
   rw [hcompg, hcomps]
   exact h1
-
 
 /-- The witness condition for invertibility of the base element. -/
 private def U1C (j₀ : J) {A₀ : CommRingCat.{u}} (f₀ : D.obj j₀ ⟶ A₀) (k : Under j₀)
@@ -1775,7 +1770,6 @@ private lemma exists_e2c_batch (hs : IsColimit (Cocone.mk S s)) {j₀ : J}
       · subst hxa
         exact h₂
       · exact (h₁ x hxG).push t₂
-
 
 omit [IsFiltered J] in
 private lemma awaySystemCocone_w_apply (c : Cocone D) (j' : J) (r : D.obj j')
@@ -2129,7 +2123,6 @@ private lemma exists_pieceAt (hs : IsColimit (Cocone.mk S s)) {j₀ : J}
   refine ⟨k₆, t₁ ≫ t₂ ≫ t₃ ≫ t₄ ≫ t₅ ≫ t₆, ?_⟩
   exact ⟨heq.symm ▸ P6⟩
 
-
 end Descent
 
 section Assemble
@@ -2289,7 +2282,6 @@ private lemma exists_isPushout_isLocalIso (hs : IsColimit (Cocone.mk S s)) {g : 
   refine ⟨kf.right, (pushSystem j₀ f₀).obj kf, pushInl j₀ f₀ kf,
     (pushCocone hs hpo).ι.app kf, pushSquare_stage hs hpo kf, hLIf⟩
 
-
 /-- Assemble: given a pushout presentation of `g` at a stage by a local isomorphism, the
 composition of an ind-Zariski morphism with `g` is a filtered colimit of local
 isomorphisms. -/
@@ -2324,8 +2316,6 @@ private lemma ind_isLocalIso_of_isPushout {R : CommRingCat.{u}} {f : R ⟶ S}
     rw [pushInl_cocone hs hpo k]
     refine (Category.assoc _ _ _).symm.trans ?_
     rw [(hts k.right).2]
-
-
 
 end Assemble
 

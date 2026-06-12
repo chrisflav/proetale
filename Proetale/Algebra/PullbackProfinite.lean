@@ -115,7 +115,7 @@ lemma toPrimeSpectrum_mem_basicOpen {tp : T × PrimeSpectrum R} {f : LocallyCons
 
 lemma continuous_toPrimeSpectrum :
     Continuous (toPrimeSpectrum : T × PrimeSpectrum R → _) := by
-  refine isTopologicalBasis_basic_opens.continuous_iff.mpr fun s hs => ?_
+  refine isTopologicalBasis_basic_opens.continuous_iff.mpr fun s hs ↦ ?_
   obtain ⟨f, rfl⟩ := hs
   rw [isOpen_iff_forall_mem_open]
   rintro ⟨t, p⟩ (htp : toPrimeSpectrum (t, p) ∈ basicOpen f)
@@ -155,7 +155,7 @@ lemma toPrimeSpectrum_surjective :
       exact P.isPrime.one_notMem⟩
   have hinter : ∀ U ∈ C, ∀ V ∈ C, U ∩ V ∈ C := by
     rintro U ⟨hU, hU'⟩ V ⟨hV, hV'⟩
-    refine ⟨hU.inter hV, fun hmem => ?_⟩
+    refine ⟨hU.inter hV, fun hmem ↦ ?_⟩
     rw [← charFn_mul_charFn hU hV] at hmem
     exact (P.isPrime.mem_or_mem hmem).elim hU' hV'
   have hne : ∀ U ∈ C, U.Nonempty := by
@@ -172,17 +172,17 @@ lemma toPrimeSpectrum_surjective :
     exact hU.isClosed
   haveI : Nonempty C := ⟨⟨Set.univ, hUniv⟩⟩
   obtain ⟨t₀, ht₀⟩ := IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-    (fun U : C => (U.1 : Set T))
-    (fun U V => ⟨⟨U.1 ∩ V.1, hinter _ U.2 _ V.2⟩, Set.inter_subset_left,
+    (fun U : C ↦ (U.1 : Set T))
+    (fun U V ↦ ⟨⟨U.1 ∩ V.1, hinter _ U.2 _ V.2⟩, Set.inter_subset_left,
       Set.inter_subset_right⟩)
-    (fun U => hne _ U.2)
-    (fun U => (hclosed _ U.2).isCompact)
-    (fun U => hclosed _ U.2)
-  have ht₀' : ∀ U ∈ C, t₀ ∈ U := fun U hU => Set.mem_iInter.mp ht₀ ⟨U, hU⟩
+    (fun U ↦ hne _ U.2)
+    (fun U ↦ (hclosed _ U.2).isCompact)
+    (fun U ↦ hclosed _ U.2)
+  have ht₀' : ∀ U ∈ C, t₀ ∈ U := fun U hU ↦ Set.mem_iInter.mp ht₀ ⟨U, hU⟩
   -- Key: the characteristic function of any clopen containing `t₀` is not in `P`.
   have hkey : ∀ (U : Set T) (hU : IsClopen U), t₀ ∈ U → charFn R hU ∉ P.asIdeal := by
     intro U hU htU hmem
-    have hcompl : charFn R hU.compl ∉ P.asIdeal := fun hc => by
+    have hcompl : charFn R hU.compl ∉ P.asIdeal := fun hc ↦ by
       have h1 : (1 : LocallyConstant T R) ∈ P.asIdeal := by
         rw [← charFn_add_charFn_compl (R := R) hU]
         exact add_mem hmem hc
@@ -356,7 +356,7 @@ noncomputable def discreteQuotientCocone : Cocone (discreteQuotientDiag R T) whe
         intro f
         apply LocallyConstant.ext
         intro t
-        exact congrArg (fun x => f x) (DiscreteQuotient.ofLE_proj h.unop.le t) }
+        exact congrArg (fun x ↦ f x) (DiscreteQuotient.ofLE_proj h.unop.le t) }
 
 /-- The cocone `discreteQuotientCocone` is colimiting: every locally constant function
 factors through a discrete quotient, and two functions on quotients agreeing on `T`
@@ -396,7 +396,7 @@ the algebra `A^S` of Stacks 097D (for `S = T` profinite), obtained as the filter
 colimit of the finite products `S → R` over the discrete quotients `S` of `T`. -/
 instance instIndZariski : Algebra.IndZariski R (LocallyConstant T R) :=
   Algebra.IndZariski.of_colimitPresentation (R := R) (S := LocallyConstant T R)
-    (discreteQuotientColimitPresentation R T) fun S =>
+    (discreteQuotientColimitPresentation R T) fun S ↦
     inferInstanceAs (Algebra.IndZariski R (LocallyConstant S.unop R))
 
 end IndZariski

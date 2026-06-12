@@ -71,10 +71,10 @@ noncomputable def topologicalSheafLiftedMap {M' : Type} [TopologicalSpace M']
     [AddCommGroup M'] [IsTopologicalAddGroup M'] (f : M →+ M') (hf : Continuous f) :
     topologicalSheafLifted X M ⟶ topologicalSheafLifted X M' where
   hom :=
-    { app := fun U => AddCommGrpCat.uliftFunctor.{u + 1}.map
+    { app := fun U ↦ AddCommGrpCat.uliftFunctor.{u + 1}.map
         (AddCommGrpCat.ofHom
-          (AddMonoidHom.mk' (fun g => (ContinuousMap.mk f hf).comp g)
-            (fun g₁ g₂ => by ext x; exact map_add f _ _)))
+          (AddMonoidHom.mk' (fun g ↦ (ContinuousMap.mk f hf).comp g)
+            (fun g₁ g₂ ↦ by ext x; exact map_add f _ _)))
       naturality := by
         -- Componentwise both composites send a continuous map `g : U.left → M` to
         -- `f ∘ g ∘ (restriction)`; this is associativity of composition.
@@ -100,9 +100,9 @@ noncomputable def constantToTopologicalSheafLifted :
   ((constantSheafAdj (ProEt.topology X) Ab.{u + 1}
     (isTerminalMkIdProEt X)).homEquiv _ _).symm
     (AddCommGrpCat.ofHom
-      { toFun := fun m => ULift.up ⟨fun _ => m.down, continuous_const⟩
+      { toFun := fun m ↦ ULift.up ⟨fun _ ↦ m.down, continuous_const⟩
         map_zero' := rfl
-        map_add' := fun _ _ => rfl })
+        map_add' := fun _ _ ↦ rfl })
 
 /-- The presheaf-level constant-functions morphism: the transpose under the
 constant-presheaf adjunction of the map sending `m` to the constant function with
@@ -113,9 +113,9 @@ private noncomputable def constantToTopologicalPresheaf :
       (topologicalSheafLifted X M).obj :=
   ((constantPresheafAdj Ab.{u + 1} (isTerminalMkIdProEt X)).homEquiv _ _).symm
     (AddCommGrpCat.ofHom
-      { toFun := fun m => ULift.up ⟨fun _ => m.down, continuous_const⟩
+      { toFun := fun m ↦ ULift.up ⟨fun _ ↦ m.down, continuous_const⟩
         map_zero' := rfl
-        map_add' := fun _ _ => rfl })
+        map_add' := fun _ _ ↦ rfl })
 
 omit [DiscreteTopology M] in
 /-- The component of `constantToTopologicalPresheaf` at `V` sends `m` to the constant
@@ -123,7 +123,7 @@ function with value `m` on `V.left`: restricting a constant function along the u
 map to the terminal object yields a constant function, definitionally. -/
 private lemma constantToTopologicalPresheaf_app (V : (X.ProEt)ᵒᵖ) (m : ULift.{u + 1} M) :
     (constantToTopologicalPresheaf X M).app V m =
-      ULift.up (⟨fun _ => m.down, continuous_const⟩ : C(V.unop.left, M)) :=
+      ULift.up (⟨fun _ ↦ m.down, continuous_const⟩ : C(V.unop.left, M)) :=
   rfl
 
 omit [DiscreteTopology M] in
@@ -177,34 +177,34 @@ private lemma isLocallySurjective_constantToTopologicalPresheaf :
   intro V s
   let g : C(V.left, M) := s.down
   -- The fibers of `g` are open (even clopen) since `M` is discrete.
-  let O : M → V.left.Opens := fun m =>
+  let O : M → V.left.Opens := fun m ↦
     ⟨g ⁻¹' {m}, (isOpen_discrete _).preimage g.continuous⟩
   -- The fibers as pro-étale objects over `X`: open immersions are étale, hence weakly
   -- étale, and weakly étale morphisms are stable under composition.
-  let W : M → X.ProEt := fun m => ProEt.mk ((O m).ι ≫ V.hom)
-  let j : ∀ m : M, W m ⟶ V := fun m =>
+  let W : M → X.ProEt := fun m ↦ ProEt.mk ((O m).ι ≫ V.hom)
+  let j : ∀ m : M, W m ⟶ V := fun m ↦
     MorphismProperty.Over.homMk (O m).ι rfl trivial
-  have hoi : ∀ i : ULift.{u} M, IsOpenImmersion (j i.down).left := fun i =>
+  have hoi : ∀ i : ULift.{u} M, IsOpenImmersion (j i.down).left := fun i ↦
     inferInstanceAs (IsOpenImmersion (O i.down).ι)
   have hsurj : ∀ x : V.left, ∃ i : ULift.{u} M,
-      x ∈ Set.range ((j i.down).left.base) := fun x =>
+      x ∈ Set.range ((j i.down).left.base) := fun x ↦
     ⟨ULift.up (g x), ⟨x, rfl⟩, rfl⟩
-  have hcov : Sieve.generate (Presieve.ofArrows (fun i : ULift.{u} M => W i.down)
-      (fun i => j i.down)) ∈ ProEt.topology X V :=
+  have hcov : Sieve.generate (Presieve.ofArrows (fun i : ULift.{u} M ↦ W i.down)
+      (fun i ↦ j i.down)) ∈ ProEt.topology X V :=
     ProEt.generate_ofArrows_mem_topology _ hoi hsurj
   refine (ProEt.topology X).superset_covering ?_ hcov
   rintro T f ⟨Z, h', l, ⟨k⟩, rfl⟩
   refine ⟨ULift.up k.down, ?_⟩
   -- On the fiber over `k.down`, the section `g` restricts to the constant `k.down`.
-  have key : ∀ z : T.left, g ((h' ≫ j k.down).left.base z) = k.down := fun z =>
+  have key : ∀ z : T.left, g ((h' ≫ j k.down).left.base z) = k.down := fun z ↦
     ((h'.left.base z).property : g (h'.left.base z).val ∈ ({k.down} : Set M))
   have e1 : (constantToTopologicalPresheaf X M).app (op T) (ULift.up k.down) =
-      ULift.up (⟨fun _ => k.down, continuous_const⟩ : C(T.left, M)) :=
+      ULift.up (⟨fun _ ↦ k.down, continuous_const⟩ : C(T.left, M)) :=
     constantToTopologicalPresheaf_app X M (op T) (ULift.up k.down)
-  have e2 : (ULift.up (⟨fun _ => k.down, continuous_const⟩ : C(T.left, M)) :
+  have e2 : (ULift.up (⟨fun _ ↦ k.down, continuous_const⟩ : C(T.left, M)) :
         ULift.{u + 1} C(T.left, M)) =
       ULift.up (g.comp ((h' ≫ j k.down).left.base.hom)) :=
-    congrArg ULift.up (ContinuousMap.ext fun z => (key z).symm)
+    congrArg ULift.up (ContinuousMap.ext fun z ↦ (key z).symm)
   have e3 : (topologicalSheafLifted X M).obj.map (h' ≫ j k.down).op s =
       ULift.up (g.comp ((h' ≫ j k.down).left.base.hom)) := rfl
   exact e1.trans (e2.trans e3.symm)

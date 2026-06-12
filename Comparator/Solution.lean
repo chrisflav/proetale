@@ -40,8 +40,8 @@ instance (X : Scheme.{u}) :
 transition maps. -/
 noncomputable def zmodAbSystem (ℓ : ℕ) : ℕᵒᵖ ⥤ AddCommGrpCat.{u + 1} :=
   (Functor.ofSequence
-    (X := fun n => op (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ n)))))
-    (fun n => (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom
+    (X := fun n ↦ op (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ n)))))
+    (fun n ↦ (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom
       (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom)).op)).leftOp
 
 /-- The inverse system `n ↦ Hⁱ(X_ét, ℤ/ℓⁿℤ)` of étale cohomology groups of the constant

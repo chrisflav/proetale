@@ -110,7 +110,7 @@ lemma zeroLocus_map_eq_closedPoints :
     (zeroLocus_closedIdeal R) (fun _ _ ↦ inferInstance)
 
 instance isWStrictlyLocalRing : IsWStrictlyLocalRing (WStrictLocalization R) := by
-  refine ⟨fun n hn => ?_⟩
+  refine ⟨fun n hn ↦ ?_⟩
   haveI : n.IsPrime := hn.isPrime
   set B' := IndEtaleContraction (WLocalization R)
   -- `n` is a closed point of the w-strict localization, hence contains the pulled-back ideal.

@@ -9,8 +9,8 @@ open TensorProduct CategoryTheory Limits
 /-- An ideal all of whose elements admit an idempotent multiplier from the ideal is pure. -/
 lemma Ideal.Pure.of_forall_exists_isIdempotentElem_mul_eq {A : Type*} [CommRing A]
     {I : Ideal A} (h : ∀ x ∈ I, ∃ e ∈ I, IsIdempotentElem e ∧ x * e = x) : I.Pure := by
-  refine Ideal.Pure.of_inf_eq_mul _ fun J _ =>
-    le_antisymm (fun x hx => ?_) (Ideal.mul_le_inf)
+  refine Ideal.Pure.of_inf_eq_mul _ fun J _ ↦
+    le_antisymm (fun x hx ↦ ?_) (Ideal.mul_le_inf)
   obtain ⟨e, heI, -, hxe⟩ := h x hx.1
   rw [← hxe, mul_comm x e]
   exact Ideal.mul_mem_mul heI hx.2
@@ -40,11 +40,11 @@ theorem exists_isIdempotentElem_mul_eq_of_mem_kaehlerDifferential_ideal
     ∃ e ∈ KaehlerDifferential.ideal R S, IsIdempotentElem e ∧ x * e = x := by
   classical
   obtain ⟨ι, _, _, P, hP⟩ := Algebra.IndEtale.exists_colimitPresentation (R := R) (S := S)
-  let φ : ∀ i : ι, P.diag.obj i →ₐ[R] S := fun i => (P.ι.app i).hom
-  let Φ : ∀ i : ι, (P.diag.obj i ⊗[R] P.diag.obj i) →ₐ[R] S ⊗[R] S := fun i =>
+  let φ : ∀ i : ι, P.diag.obj i →ₐ[R] S := fun i ↦ (P.ι.app i).hom
+  let Φ : ∀ i : ι, (P.diag.obj i ⊗[R] P.diag.obj i) →ₐ[R] S ⊗[R] S := fun i ↦
     Algebra.TensorProduct.map (φ i) (φ i)
   have hc' := isColimitOfPreserves (CategoryTheory.forget (CommAlgCat R)) P.isColimit
-  have hφcomp : ∀ {i j : ι} (f : i ⟶ j), (φ j).comp (P.diag.map f).hom = φ i := fun f => by
+  have hφcomp : ∀ {i j : ι} (f : i ⟶ j), (φ j).comp (P.diag.map f).hom = φ i := fun f ↦ by
     simp only [φ]
     rw [← CommAlgCat.hom_comp, P.w]
   -- Every element of `S ⊗[R] S` is defined at some stage.
@@ -122,13 +122,13 @@ instance (priority := 100) weaklyEtale : Algebra.WeaklyEtale R S where
   flat := by
     rw [Module.Flat.iff_ind_flat]
     obtain ⟨ι, _, _, P, hP⟩ := Algebra.IndEtale.exists_colimitPresentation (R := R) (S := S)
-    refine ⟨ι, inferInstance, inferInstance, P, fun i => ?_⟩
+    refine ⟨ι, inferInstance, inferInstance, P, fun i ↦ ?_⟩
     rw [CommAlgCat.flat_iff]
     haveI : Algebra.Etale R (P.diag.obj i) := hP i
     infer_instance
   flat_lmul' :=
     Algebra.flat_lmul'_iff_kaehlerDifferential_ideal_pure.mpr <|
-      Ideal.Pure.of_forall_exists_isIdempotentElem_mul_eq fun _ hx =>
+      Ideal.Pure.of_forall_exists_isIdempotentElem_mul_eq fun _ hx ↦
         exists_isIdempotentElem_mul_eq_of_mem_kaehlerDifferential_ideal hx
 
 end Algebra.IndEtale
@@ -150,7 +150,7 @@ theorem Algebra.WeaklyEtale.localization_base (M : Submonoid A) [Algebra A A']
       Algebra.TensorProduct.equivOfCompatibleSMul A A' A' B B
     have key : (Algebra.TensorProduct.lmul' A' (S := B)).toRingHom =
         (Algebra.TensorProduct.lmul' A (S := B)).toRingHom.comp (e : B ⊗[A'] B →+* B ⊗[A] B) := by
-      refine RingHom.ext fun x => ?_
+      refine RingHom.ext fun x ↦ ?_
       induction x with
       | zero => simp
       | tmul a b =>
@@ -188,7 +188,7 @@ theorem Localization.bijective_localRingHom_algebraMap_of_comap_eq (M : Submonoi
   have he : Localization.localRingHom q q₁ (algebraMap B (Localization M)) rfl =
       (e : Localization.AtPrime q →+* Localization.AtPrime q₁) := by
     apply IsLocalization.ringHom_ext q.primeCompl
-    refine RingHom.ext fun b => ?_
+    refine RingHom.ext fun b ↦ ?_
     rw [RingHom.comp_apply, RingHom.comp_apply, Localization.localRingHom_to_map,
       RingHom.coe_coe, IsLocalization.algEquiv_apply, IsLocalization.map_eq,
       ← IsScalarTower.algebraMap_apply]
@@ -237,7 +237,7 @@ theorem Algebra.WeaklyEtale.bijective_localRingHom_of_isStrictlyHenselianLocalRi
   set A' := Localization.AtPrime m with hA'
   set L := Localization.AtPrime n with hLdef
   letI : Algebra A' L := (Localization.localRingHom m n (algebraMap A B) rfl).toAlgebra
-  haveI : IsScalarTower A A' L := .of_algebraMap_eq fun a => by
+  haveI : IsScalarTower A A' L := .of_algebraMap_eq fun a ↦ by
     change algebraMap A L a = Localization.localRingHom m n (algebraMap A B) rfl
       (algebraMap A A' a)
     rw [Localization.localRingHom_to_map, ← IsScalarTower.algebraMap_apply]
@@ -289,7 +289,7 @@ theorem Algebra.WeaklyEtale.bijectiveOnStalks [Algebra.WeaklyEtale A B]
   haveI hp₁prime : p₁.IsPrime := hq₁prime.comap ψ
   -- The two composites `A → L` agree.
   have hcomm : ψ.comp (algebraMap A A') = (algebraMap B L).comp f := by
-    refine RingHom.ext fun a => ?_
+    refine RingHom.ext fun a ↦ ?_
     rw [RingHom.comp_apply, RingHom.comp_apply]
     exact Localization.localRingHom_to_map m n f rfl a
   have hp₁comap : p₁.comap (algebraMap A A') = p := by

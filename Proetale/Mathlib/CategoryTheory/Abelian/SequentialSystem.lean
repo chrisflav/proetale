@@ -154,7 +154,7 @@ variable (n : ℕ) (M : C) (F : ℕᵒᵖ ⥤ C)
 noncomputable def extendSystemHomEquiv : (extendSystem n M ⟶ F) ≃ (M ⟶ F.obj (op n)) where
   toFun φ := eqToHom (if_pos le_rfl).symm ≫ φ.app (op n)
   invFun u :=
-    { app := fun k =>
+    { app := fun k ↦
         if h : k.unop ≤ n then
           eqToHom (if_pos h) ≫ u ≫ F.map (homOfLE h).op
         else 0
@@ -332,7 +332,7 @@ noncomputable def coextendSystemHomEquiv :
     (F ⟶ coextendSystem n M) ≃ (F.obj (op n) ⟶ M) where
   toFun φ := φ.app (op n) ≫ eqToHom (if_pos le_rfl)
   invFun u :=
-    { app := fun k =>
+    { app := fun k ↦
         if h : n ≤ k.unop then
           F.map (homOfLE h).op ≫ u ≫ eqToHom (if_pos h).symm
         else 0

@@ -66,7 +66,7 @@ lemma freeAbelianSheafHomEquiv_naturality_left {U W : C} (g : W ⟶ U)
   have h₃ := (uliftYonedaEquiv_naturality
     ((Adjunction.whiskerRight Cᵒᵖ AddCommGrpCat.adj.{u + 1}).homEquiv _ _
       ((sheafificationAdjunction J AddCommGrpCat.{u + 1}).homEquiv _ _ s)) g.op).symm
-  exact (congrArg (fun x => uliftYonedaEquiv
+  exact (congrArg (fun x ↦ uliftYonedaEquiv
       ((Adjunction.whiskerRight Cᵒᵖ AddCommGrpCat.adj.{u + 1}).homEquiv _ _ x)) h₁).trans
     ((congrArg uliftYonedaEquiv h₂).trans h₃)
 

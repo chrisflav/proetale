@@ -28,7 +28,7 @@ lemma isClosed_singleton_prod_iff {A B : Type*} [TopologicalSpace A] [T1Space A]
     IsClosed ({p} : Set (A × B)) ↔ IsClosed ({p.2} : Set B) := by
   constructor
   · intro h
-    have hx : ({p.2} : Set B) = (fun b => (p.1, b)) ⁻¹' {p} := by
+    have hx : ({p.2} : Set B) = (fun b ↦ (p.1, b)) ⁻¹' {p} := by
       ext b
       simp [Prod.ext_iff]
     rw [hx]
@@ -82,7 +82,7 @@ private lemma exists_homeomorph_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
   let eS : (Limits.pullback (ofHom i) (ofHom mkX) : TopCat) ≃ₜ
       {p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2} :=
     homeoOfIso (TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX))
-  refine ⟨eY.trans eS, fun y => ?_⟩
+  refine ⟨eY.trans eS, fun y ↦ ?_⟩
   have h1 : Limits.pullback.fst (ofHom i) (ofHom mkX) (eY y) = g y :=
     ConcreteCategory.congr_hom pb.isoPullback_hom_fst y
   have h2 : Limits.pullback.snd (ofHom i) (ofHom mkX) (eY y) = f y :=
@@ -117,7 +117,7 @@ theorem preimage_closedPoints_eq_closedPoints_of_isPullback {f : C(Y, X)}
       (Subtype.range_val ▸ hclosed.stableUnderSpecialization)
   have h2 : closedPoints Y = e ⁻¹' closedPoints {p : T × X | i p.1 = mk p.2} :=
     e.isEmbedding.closedPoints_eq_preimage
-      (e.surjective.range_eq ▸ fun _ _ _ _ => Set.mem_univ _)
+      (e.surjective.range_eq ▸ fun _ _ _ _ ↦ Set.mem_univ _)
   have hfeq : (f : Y → X) = Prod.snd ∘ Subtype.val ∘ e := by
     funext y
     exact (congrArg Prod.snd (he y)).symm

@@ -121,7 +121,7 @@ private theorem eq_of_localizationAtPrime_eq {x y : C}
     (h : ∀ p : PrimeSpectrum C,
       algebraMap C (Localization.AtPrime p.asIdeal) x =
         algebraMap C (Localization.AtPrime p.asIdeal) y) : x = y :=
-  PrimeSpectrum.toPiLocalization_injective C <| funext fun p => h p
+  PrimeSpectrum.toPiLocalization_injective C <| funext fun p ↦ h p
 
 section Inverse
 
@@ -187,7 +187,7 @@ structure sheaf of `Spec C`: it is locally a fraction (with numerator and
 denominator in the image of `A`). This is where continuity of `φ` is used. -/
 private theorem isLocallyFraction_localRingHomAt (φ : HomOver A B C) (b : B) :
     (StructureSheaf.isLocallyFraction C C).pred
-      (fun p : (⊤ : Opens (PrimeSpectrum.Top C)) =>
+      (fun p : (⊤ : Opens (PrimeSpectrum.Top C)) ↦
         (localRingHomAt φ p.1 b : StructureSheaf.Localizations C p.1)) := by
   rintro ⟨p, -⟩
   haveI : ((φ p).asIdeal.comap (algebraMap A B)).IsPrime := Ideal.IsPrime.comap _
@@ -220,13 +220,13 @@ private theorem isLocallyFraction_localRingHomAt (φ : HomOver A B C) (b : B) :
     ⟨φ ⁻¹' (PrimeSpectrum.basicOpen g : Set (PrimeSpectrum B)),
       (PrimeSpectrum.basicOpen g).2.preimage φ.continuous⟩
   refine ⟨V, hφp, CategoryTheory.homOfLE le_top, algebraMap A C a, algebraMap A C t,
-    fun q => ?_⟩
+    fun q ↦ ?_⟩
   -- Now check the fraction representation at each `q ∈ V`.
   obtain ⟨q, hq⟩ := q
   haveI : ((φ q).asIdeal.comap (algebraMap A B)).IsPrime := Ideal.IsPrime.comap _
   have hgq : g ∉ (φ q).asIdeal := hq
-  have huq : u.1 ∉ (φ q).asIdeal := fun h => hgq (Ideal.mul_mem_right _ _ h)
-  have htq : algebraMap A B t ∉ (φ q).asIdeal := fun h => hgq (Ideal.mul_mem_left _ _ h)
+  have huq : u.1 ∉ (φ q).asIdeal := fun h ↦ hgq (Ideal.mul_mem_right _ _ h)
+  have htq : algebraMap A B t ∉ (φ q).asIdeal := fun h ↦ hgq (Ideal.mul_mem_left _ _ h)
   have htqA : t.1 ∈ ((φ q).asIdeal.comap (algebraMap A B)).primeCompl := htq
   have htC : algebraMap A C t ∉ q.asIdeal := by
     intro h
@@ -255,11 +255,11 @@ structure sheaf of `Spec C`, given pointwise by `localRingHomAt`. -/
 private noncomputable def toSections (φ : HomOver A B C) :
     B →+* (structureSheafInType C C).1.obj
       (Opposite.op (⊤ : Opens (PrimeSpectrum.Top C))) where
-  toFun b := ⟨fun p => localRingHomAt φ p.1 b, isLocallyFraction_localRingHomAt φ b⟩
-  map_one' := Subtype.ext <| funext fun p => map_one (localRingHomAt φ p.1)
-  map_mul' x y := Subtype.ext <| funext fun p => map_mul (localRingHomAt φ p.1) x y
-  map_zero' := Subtype.ext <| funext fun p => map_zero (localRingHomAt φ p.1)
-  map_add' x y := Subtype.ext <| funext fun p => map_add (localRingHomAt φ p.1) x y
+  toFun b := ⟨fun p ↦ localRingHomAt φ p.1 b, isLocallyFraction_localRingHomAt φ b⟩
+  map_one' := Subtype.ext <| funext fun p ↦ map_one (localRingHomAt φ p.1)
+  map_mul' x y := Subtype.ext <| funext fun p ↦ map_mul (localRingHomAt φ p.1) x y
+  map_zero' := Subtype.ext <| funext fun p ↦ map_zero (localRingHomAt φ p.1)
+  map_add' x y := Subtype.ext <| funext fun p ↦ map_add (localRingHomAt φ p.1) x y
 
 /-- (Implementation) The ring homomorphism `B →+* C` induced by a continuous map
 `Spec C → Spec B` over `Spec A`: glue the per-prime maps `localRingHomAt` via
@@ -285,7 +285,7 @@ private theorem algebraMap_ringHomOfHomOver (φ : HomOver A B C) (b : B)
 /-- (Implementation) `ringHomOfHomOver` is `A`-linear. -/
 private theorem ringHomOfHomOver_algebraMap (φ : HomOver A B C) (a : A) :
     ringHomOfHomOver φ (algebraMap A B a) = algebraMap A C a :=
-  eq_of_localizationAtPrime_eq fun p => by
+  eq_of_localizationAtPrime_eq fun p ↦ by
     rw [algebraMap_ringHomOfHomOver, localRingHomAt_algebraMap]
 
 /-- (Implementation) For a local ring homomorphism, membership in the maximal ideal
@@ -346,7 +346,7 @@ theorem continuousMap_of_algHom_bijective
     apply AlgHom.coe_ringHom_injective
     apply RingHom.ext
     intro b
-    refine eq_of_localizationAtPrime_eq fun p => ?_
+    refine eq_of_localizationAtPrime_eq fun p ↦ ?_
     haveI : (p.asIdeal.comap f₁.toRingHom).IsPrime := Ideal.IsPrime.comap _
     set q := p.asIdeal.comap f₁.toRingHom with hq
     haveI : (q.comap (algebraMap A B)).IsPrime := Ideal.IsPrime.comap _
@@ -358,12 +358,12 @@ theorem continuousMap_of_algHom_bijective
     set M₂ := Localization.localRingHom q p.asIdeal f₂.toRingHom (hcomap p) with hM₂
     have hMcomp : M₁.comp K = M₂.comp K := by
       refine IsLocalization.ringHom_ext (q.comap (algebraMap A B)).primeCompl
-        (RingHom.ext fun a => ?_)
+        (RingHom.ext fun a ↦ ?_)
       simp only [RingHom.coe_comp, Function.comp_apply, hK, hM₁, hM₂,
         Localization.localRingHom_to_map]
       rw [show f₁.toRingHom (algebraMap A B a) = algebraMap A C a from f₁.commutes a,
         show f₂.toRingHom (algebraMap A B a) = algebraMap A C a from f₂.commutes a]
-    have hM : M₁ = M₂ := RingHom.ext fun x => by
+    have hM : M₁ = M₂ := RingHom.ext fun x ↦ by
       obtain ⟨y, rfl⟩ := hKbij.surjective x
       exact RingHom.congr_fun hMcomp y
     change algebraMap C (Localization.AtPrime p.asIdeal) (f₁.toRingHom b) =
@@ -374,7 +374,7 @@ theorem continuousMap_of_algHom_bijective
   · -- Surjectivity: glue the per-prime maps via the structure sheaf of `Spec C`.
     intro φ
     refine ⟨{ ringHomOfHomOver φ with commutes' := ringHomOfHomOver_algebraMap φ }, ?_⟩
-    exact HomOver.ext fun p => comap_ringHomOfHomOver φ p
+    exact HomOver.ext fun p ↦ comap_ringHomOfHomOver φ p
 
 /-- The hom-set bijection `(B →ₐ[A] C) ≃ HomOver A B C` when both `A → B` and
 `A → C` identify local rings. This formalizes Stacks 096L

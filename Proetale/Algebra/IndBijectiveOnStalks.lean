@@ -58,10 +58,10 @@ lemma Algebra.BijectiveOnStalks.indZariski_of_isWLocal [Algebra R S] [IsWLocalRi
     ext y
     exact (PrimeSpectrum.continuous_comap (algebraMap R S)).connectedComponentsMap_mk y
   let φ : TopCat.of (PrimeSpectrum S) ⟶ TopCat.of (PrimeSpectrum A') := pb.lift a b w
-  have hφT : ∀ y, PullbackProfinite.projT R T i (φ y) = _root_.ConnectedComponents.mk y := fun y =>
+  have hφT : ∀ y, PullbackProfinite.projT R T i (φ y) = _root_.ConnectedComponents.mk y := fun y ↦
     ConcreteCategory.congr_hom (pb.lift_fst a b w) y
   have hφR : ∀ y, PullbackProfinite.projSpec R T i (φ y) =
-      PrimeSpectrum.comap (algebraMap R S) y := fun y =>
+      PrimeSpectrum.comap (algebraMap R S) y := fun y ↦
     ConcreteCategory.congr_hom (pb.lift_snd a b w) y
   -- The continuous map `Spec S → Spec A'` over `Spec R` as a `HomOver`.
   haveI : Algebra.BijectiveOnStalks R A' :=
@@ -70,17 +70,17 @@ lemma Algebra.BijectiveOnStalks.indZariski_of_isWLocal [Algebra R S] [IsWLocalRi
         ((RingHom.IndZariski.algebraMap_iff (R := R) (S := A')).mpr inferInstance)
   let Φ : Algebra.BijectiveOnStalks.HomOver R A' S :=
     { toContinuousMap := φ.hom
-      comp_comap_algebraMap := fun p => hφR p }
+      comp_comap_algebraMap := fun p ↦ hφR p }
   -- By fully faithfulness (Stacks 096L), `Φ` comes from an `R`-algebra map `g : A' → S`.
   let g : A' →ₐ[R] S := Algebra.BijectiveOnStalks.algHom_of_continuousMap R A' S Φ
-  have hg : ∀ p, PrimeSpectrum.comap g.toRingHom p = φ p := fun p =>
+  have hg : ∀ p, PrimeSpectrum.comap g.toRingHom p = φ p := fun p ↦
     DFunLike.congr_fun
       (Algebra.BijectiveOnStalks.continuousMap_of_algHom_algHom_of_continuousMap R A' S Φ) p
   -- `Spec A'` is w-local.
   haveI : IsWLocalRing A' := ⟨ConnectedComponents.wlocalSpace_of_isPullback pb⟩
   -- `g` is a w-local map.
   have hgw : RingHom.IsWLocal g.toRingHom := by
-    refine ⟨PrimeSpectrum.isSpectralMap_comap _, fun n hn => ?_⟩
+    refine ⟨PrimeSpectrum.isSpectralMap_comap _, fun n hn ↦ ?_⟩
     rw [Set.mem_preimage, hg n,
       ← ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback pb,
       Set.mem_preimage, hφR n]
@@ -91,7 +91,7 @@ lemma Algebra.BijectiveOnStalks.indZariski_of_isWLocal [Algebra R S] [IsWLocalRi
       RingHom.bijectiveOnStalks_algebraMap.mpr inferInstance
     have h2 : (g.toRingHom.comp (algebraMap R A')).BijectiveOnStalks := by
       have heq : g.toRingHom.comp (algebraMap R A') = algebraMap R S :=
-        RingHom.ext fun x => g.commutes x
+        RingHom.ext fun x ↦ g.commutes x
       rw [heq]
       exact RingHom.bijectiveOnStalks_algebraMap.mpr inferInstance
     exact RingHom.BijectiveOnStalks.of_comp h1 h2

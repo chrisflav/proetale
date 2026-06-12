@@ -20,7 +20,8 @@ def excludedLibs : Array Name := #[`Challenge, `Solution]
 
 unsafe def main (args : List String) : IO UInt32 := do
   unless args.length == 1 do
-    println! "This command takes exactly one argument: the path to a file containing a list of declarations to check."
+    println! "This command takes exactly one argument: \
+      the path to a file containing a list of declarations to check."
     return 1
   let filename : System.FilePath := args[0]!
   unless ← filename.pathExists do
@@ -31,8 +32,8 @@ unsafe def main (args : List String) : IO UInt32 := do
   let (ws?, log) ← (loadWorkspace config).run?
   log.replay (logger := .stderr)
   let some ws := ws? | return 1
-  let libs := ws.root.leanLibs.filter fun lib => !excludedLibs.contains lib.name
-  let imports := libs.flatMap (·.config.roots.map fun module => { module })
+  let libs := ws.root.leanLibs.filter fun lib ↦ !excludedLibs.contains lib.name
+  let imports := libs.flatMap (·.config.roots.map fun module ↦ { module })
   -- see comments in https://github.com/leanprover/lean4/pull/6325
   enableInitializersExecution
   let env ← Lean.importModules imports {}

@@ -182,10 +182,10 @@ private lemma exists_eq_ker_evalRingHom {I : Type u} [Finite I] {A : I → Type 
   classical
   cases nonempty_fintype I
   have hp : p.IsPrime := inferInstance
-  obtain ⟨j, hj⟩ : ∃ j, Pi.single j (1 : A j) ∉ p := not_forall.mp fun hall => by
+  obtain ⟨j, hj⟩ : ∃ j, Pi.single j (1 : A j) ∉ p := not_forall.mp fun hall ↦ by
     have h1 : (1 : ∀ i, A i) ∈ p := by
       have hsum : (∑ j, Pi.single j ((1 : ∀ i, A i) j)) ∈ p :=
-        Ideal.sum_mem p fun j _ => hall j
+        Ideal.sum_mem p fun j _ ↦ hall j
       rwa [Finset.univ_sum_single] at hsum
     exact hp.ne_top ((Ideal.eq_top_iff_one p).mpr h1)
   have hidem : Pi.single j (1 : A j) * Pi.single j 1 = Pi.single j 1 := by
@@ -240,14 +240,14 @@ private lemma exists_isIdempotentElem_mem_of_ne {K C : Type u} [Field K] [CommRi
   letI : ∀ i, Field (Ai i) := hfield
   letI : ∀ i, Algebra K (Ai i) := halg
   set f : (∀ i, Ai i) →ₐ[K] C := eqv.symm.toAlgHom with hf
-  have hfx : ∀ x : C, f (eqv x) = x := fun x => eqv.symm_apply_apply x
+  have hfx : ∀ x : C, f (eqv x) = x := fun x ↦ eqv.symm_apply_apply x
   haveI : (p₁.comap f).IsPrime := inferInstance
   haveI : (p₂.comap f).IsPrime := inferInstance
   obtain ⟨j₁, hj₁⟩ := exists_eq_ker_evalRingHom (p₁.comap f)
   obtain ⟨j₂, hj₂⟩ := exists_eq_ker_evalRingHom (p₂.comap f)
   have hj : j₁ ≠ j₂ := by
     rintro rfl
-    refine h (SetLike.ext fun x => ?_)
+    refine h (SetLike.ext fun x ↦ ?_)
     have h₁ : x ∈ p₁ ↔ eqv x ∈ p₁.comap f := by rw [Ideal.mem_comap, hfx]
     have h₂ : x ∈ p₂ ↔ eqv x ∈ p₂.comap f := by rw [Ideal.mem_comap, hfx]
     rw [h₁, h₂, hj₁, hj₂]
@@ -280,7 +280,7 @@ theorem exists_isIdempotentElem_of_two_primes {K B : Type u} [Field K] [CommRing
     ∃ e : B, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1 := by
   -- Pick an element distinguishing `q₁` from `q₂`.
   obtain ⟨x, hx⟩ : ∃ x : B, ¬ (x ∈ q₁ ↔ x ∈ q₂) :=
-    not_forall.mp fun hc => h (SetLike.ext fun x => hc x)
+    not_forall.mp fun hc ↦ h (SetLike.ext fun x ↦ hc x)
   -- Lift `x` to a stage of a filtered colimit presentation by étale algebras.
   obtain ⟨ι, _, _, P, hP⟩ := exists_colimitPresentation (R := K) (S := B)
   have hc' := isColimitOfPreserves (forget (CommAlgCat K)) P.isColimit
@@ -435,8 +435,8 @@ theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
     exact exists_isIdempotentElem_of_two_primes (K := q.ResidueField) hPne
   -- An element `y` of the residue field not in the image of `K`.
   obtain ⟨y, hy⟩ : ∃ y : q.ResidueField, y ∉ (algebraMap K q.ResidueField).range :=
-    not_forall.mp fun hc => h ⟨(algebraMap K q.ResidueField).injective,
-      fun y => RingHom.mem_range.mp (hc y)⟩
+    not_forall.mp fun hc ↦ h ⟨(algebraMap K q.ResidueField).injective,
+      fun y ↦ RingHom.mem_range.mp (hc y)⟩
   have hyint : IsIntegral K y := (Algebra.IsSeparable.isSeparable K y).isIntegral
   -- The minimal polynomial of `y` has a second root `y'` in the algebraic closure.
   have hcard : 1 < Fintype.card
@@ -451,10 +451,10 @@ theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
       by rw [Polynomial.aeval_algebraMap_apply, minpoly.aeval, map_zero]⟩
   obtain ⟨⟨y', hy'mem⟩, hne'⟩ := Fintype.exists_ne_of_one_lt_card hcard ⟨_, hy₀mem⟩
   have hyne : y' ≠ algebraMap q.ResidueField (AlgebraicClosure q.ResidueField) y :=
-    fun hh => hne' (Subtype.ext hh)
+    fun hh ↦ hne' (Subtype.ext hh)
   -- A second embedding `σ : κ(q) →ₐ[K] Ω` with `σ y = y'`.
   obtain ⟨σ, hσ⟩ := IntermediateField.exists_algHom_of_splits_of_aeval
-    (fun s : q.ResidueField =>
+    (fun s : q.ResidueField ↦
       ⟨(Algebra.IsSeparable.isSeparable K s).isIntegral, IsAlgClosed.splits _⟩)
     ((Polynomial.mem_rootSet.mp hy'mem).2)
   -- Write `y` as a fraction of images of elements of `B`.
@@ -481,16 +481,16 @@ theorem exists_isIdempotentElem_tensorProduct_of_residueField_ne {K B : Type u}
   have hΦ₁tmul : ∀ (l : q.ResidueField) (b : B), Φ₁ (l ⊗ₜ[K] b) =
       algebraMap q.ResidueField (AlgebraicClosure q.ResidueField) l *
       algebraMap q.ResidueField (AlgebraicClosure q.ResidueField)
-        (algebraMap B q.ResidueField b) := fun l b => rfl
+        (algebraMap B q.ResidueField b) := fun l b ↦ rfl
   have hΦ₂tmul : ∀ (l : q.ResidueField) (b : B), Φ₂ (l ⊗ₜ[K] b) =
       σ l * algebraMap q.ResidueField (AlgebraicClosure q.ResidueField)
-        (algebraMap B q.ResidueField b) := fun l b => rfl
+        (algebraMap B q.ResidueField b) := fun l b ↦ rfl
   -- The element `y ⊗ b₂ - 1 ⊗ b₁` lies in `ker Φ₁` but not in `ker Φ₂`.
   have hw₁ : Φ₁ (y ⊗ₜ[K] b₂ - 1 ⊗ₜ[K] b₁) = 0 := by
     rw [map_sub, hΦ₁tmul y b₂, hΦ₁tmul 1 b₁, map_one, one_mul, ← map_mul, ← hyb,
       sub_self]
   have hβ₂Ω : algebraMap q.ResidueField (AlgebraicClosure q.ResidueField)
-      (algebraMap B q.ResidueField b₂) ≠ 0 := fun h0 =>
+      (algebraMap B q.ResidueField b₂) ≠ 0 := fun h0 ↦
     hb₂ (RingHom.injective (algebraMap q.ResidueField (AlgebraicClosure q.ResidueField))
       (by rw [h0, map_zero]))
   have hw₂ : Φ₂ (y ⊗ₜ[K] b₂ - 1 ⊗ₜ[K] b₁) ≠ 0 := by
