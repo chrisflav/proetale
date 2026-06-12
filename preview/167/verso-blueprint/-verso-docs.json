@@ -1,0 +1,82 @@
+{"9":
+ "<code>CategoryTheory.homOfLE.{u} {X : Type u} [Preorder X] {x y : X} (h : x ≤ y) : x ⟶ y</code><span class=\"sep\"></span><code class=\"docstring\">Express an inequality as a morphism in the corresponding preorder category. </code>",
+ "8":
+ "<code>CategoryTheory.Functor.map.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (self : CategoryTheory.Functor C D) {X Y : C} :\n  (X ⟶ Y) → (self.obj X ⟶ self.obj Y)</code><span class=\"sep\"></span><code class=\"docstring\">The action of a functor on morphisms. </code>",
+ "7":
+ "<code>CategoryTheory.Epi.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] {X Y : C} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism `f` is an epimorphism if it can be cancelled when precomposed:\n`f ≫ g = f ≫ h` implies `g = h`. \n\n[Stacks Tag 003B](https://stacks.math.columbia.edu/tag/003B)</code>",
+ "6": "<code>ℕ</code>",
+ "5": "<code>Type u_2</code>",
+ "47":
+ "<code>CategoryTheory.Functor.obj.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (self : CategoryTheory.Functor C D) : C → D</code><span class=\"sep\"></span><code class=\"docstring\">The action of a functor on objects. </code>",
+ "46":
+ "<code>CategoryTheory.coyoneda.{v₁, u₁} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] :\n  CategoryTheory.Functor Cᵒᵖ (CategoryTheory.Functor C (Type v₁))</code><span class=\"sep\"></span><code class=\"docstring\">The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.\n</code>",
+ "45":
+ "<code>CategoryTheory.ConcreteCategory.hom.{w, v, u, u_1} {C : Type u} {inst✝ : CategoryTheory.Category.{v, u} C}\n  {FC : outParam (C → C → Type u_1)} {CC : outParam (C → Type w)}\n  {inst✝¹ : outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))} [self : CategoryTheory.ConcreteCategory C FC]\n  {X Y : C} : (X ⟶ Y) → FC X Y</code><span class=\"sep\"></span><code class=\"docstring\">Convert a morphism of `C` to a bundled function. </code>",
+ "44":
+ "<code>Function.Surjective.{u_1, u_2} {α : Sort u_1} {β : Sort u_2} (f : α → β) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A function `f : α → β` is called surjective if every `b : β` is equal to `f a`\nfor some `a : α`. </code>",
+ "43": "<code>X ⟶ Y</code>",
+ "42":
+ "<code>CategoryTheory.EnoughProjectives.{v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category \"has enough projectives\" if for every object `X` there is a projective object `P` and\nan epimorphism `P ↠ X`. </code>",
+ "41":
+ "<code>CategoryTheory.EnoughProjectives.epi_iff_forall_projective.{u_1, u_2} {C : Type u_1}\n  [CategoryTheory.Category.{u_2, u_1} C] [CategoryTheory.EnoughProjectives C] {X Y : C} (f : X ⟶ Y) :\n  CategoryTheory.Epi f ↔\n    ∀ (P : C),\n      CategoryTheory.Projective P →\n        Function.Surjective ⇑(CategoryTheory.ConcreteCategory.hom ((CategoryTheory.coyoneda.obj (Opposite.op P)).map f))</code><span class=\"sep\"></span><code class=\"docstring\">If `C` has enough projectives, being an epimorphism can be detected on sections over\nprojective objects. </code>",
+ "40":
+ "<code>CategoryTheory.IsSplitEpi.{v₁, u₁} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {X Y : C} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`IsSplitEpi f` is the assertion that `f` admits a section </code>",
+ "4":
+ "<code>Opposite.{u} (α : Sort u) : Sort (max 1 u)</code><span class=\"sep\"></span><code class=\"docstring\">The type of objects of the opposite of `α`; used to define the opposite category.\n\nNow that Lean 4 supports definitional eta equality for records,\nboth `unop (op X) = X` and `op (unop X) = X` are definitional equalities.\n</code>",
+ "39": "<code>X ⟶ P</code>",
+ "38":
+ "<code>Iff (a b : Prop) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">If and only if, or logical bi-implication. `a ↔ b` means that `a` implies `b` and vice versa.\nBy `propext`, this implies that `a` and `b` are equal and hence any expression involving `a`\nis equivalent to the corresponding expression with `b` instead.\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `↔` in identifiers is `iff`.\n\n * The recommended spelling of `&lt;-&gt;` in identifiers is `iff` (prefer `↔` over `&lt;-&gt;`).</code>",
+ "37":
+ "<code>CategoryTheory.Limits.pullback.fst.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] {X Y Z : C} (f : X ⟶ Z)\n  (g : Y ⟶ Z) [CategoryTheory.Limits.HasPullback f g] : CategoryTheory.Limits.pullback f g ⟶ X</code><span class=\"sep\"></span><code class=\"docstring\">The first projection of the pullback of `f` and `g`. </code>",
+ "36": "<code>E ⟶ S</code>",
+ "35": "<code>X ⟶ S</code>",
+ "34":
+ "<code>∀ {X E S : C} (f : X ⟶ S) (e : E ⟶ S),\n  CategoryTheory.Epi e → CategoryTheory.Epi (CategoryTheory.Limits.pullback.fst f e)</code>",
+ "33":
+ "<code>CategoryTheory.Limits.HasPullbacks.{v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category `HasPullbacks` if it has all limits of shape `WalkingCospan`, i.e. if it has a\npullback for every pair of morphisms with the same codomain. </code>",
+ "32":
+ "<code>CategoryTheory.Projective.iff_forall_isSplitEpi_of_hasPullbacks.{u_1, u_2} {C : Type u_1}\n  [CategoryTheory.Category.{u_2, u_1} C] [CategoryTheory.Limits.HasPullbacks C]\n  (H :\n    ∀ {X E S : C} (f : X ⟶ S) (e : E ⟶ S),\n      CategoryTheory.Epi e → CategoryTheory.Epi (CategoryTheory.Limits.pullback.fst f e))\n  (P : C) : CategoryTheory.Projective P ↔ ∀ {X : C} (f : X ⟶ P), CategoryTheory.Epi f → CategoryTheory.IsSplitEpi f</code><span class=\"sep\"></span><code class=\"docstring\">If `C` has pullbacks and epimorphisms are stable under pullbacks, `P` is projective\nif and only if every epimorphism to `P` splits.\nThe conditions hold for example in abelian categories and pretopoi. </code>",
+ "31":
+ "<code>CategoryTheory.WeaklyContractible.{u_1, u_2} {C : Type u_1} [CategoryTheory.Category.{u_2, u_1} C] (P : C) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An object `P` is weakly contractible if it is projective. </code>",
+ "30":
+ "<code>CategoryTheory.Projective.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] (P : C) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An object `P` is called *projective* if every morphism out of `P` factors through every epimorphism.\n</code>",
+ "3":
+ "<code>Nat : Type</code><span class=\"sep\"></span><code class=\"docstring\">The natural numbers, starting at zero.\n\nThis type is special-cased by both the kernel and the compiler, and overridden with an efficient\nimplementation. Both use a fast arbitrary-precision arithmetic library (usually\n[GMP](https://gmplib.org/)); at runtime, `Nat` values that are sufficiently small are unboxed.\n</code>",
+ "29":
+ "<code>Eq.{u_1} {α : Sort u_1} : α → α → Prop</code><span class=\"sep\"></span><code class=\"docstring\">The equality relation. It has one introduction rule, `Eq.refl`.\nWe use `a = b` as notation for `Eq a b`.\nA fundamental property of equality is that it is an equivalence relation.\n```\nvariable (α : Type) (a b c d : α)\nvariable (hab : a = b) (hcb : c = b) (hcd : c = d)\n\nexample : a = d :=\n  Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd\n```\nEquality is much more than an equivalence relation, however. It has the important property that every assertion\nrespects the equivalence, in the sense that we can substitute equal expressions without changing the truth value.\nThat is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`.\nExample:\n```\nexample (α : Type) (a b : α) (p : α → Prop)\n        (h1 : a = b) (h2 : p a) : p b :=\n  Eq.subst h1 h2\n\nexample (α : Type) (a b : α) (p : α → Prop)\n    (h1 : a = b) (h2 : p a) : p b :=\n  h1 ▸ h2\n```\nThe triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\\t`.\nFor more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `=` in identifiers is `eq`.</code>",
+ "28":
+ "<code>CategoryTheory.CategoryStruct.comp.{v, u} {obj : Type u} [self : CategoryTheory.CategoryStruct.{v, u} obj]\n  {X Y Z : obj} : (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)</code><span class=\"sep\"></span><code class=\"docstring\">Composition of morphisms in a category, written `f ≫ g`. </code>",
+ "27": "<code>P ⟶ E</code>",
+ "26": "<code>E ⟶ X</code>",
+ "25":
+ "<code>Quiver.Hom.{v, u} {V : Type u} [self : Quiver V] : V → V → Type v</code><span class=\"sep\"></span><code class=\"docstring\">The type of edges/arrows/morphisms between a given source and target. </code>",
+ "24": "<code>P ⟶ X</code>",
+ "23": "<code>Type u_1</code>",
+ "22": "<code>C</code>",
+ "21":
+ "<code class=\"docstring\">The universe of propositions. `Prop ≡ Sort 0`.\n\nEvery proposition is propositionally equal to either `True` or `False`. </code>",
+ "20":
+ "<code>CategoryTheory.Category.{v, u} (obj : Type u) : Type (max u (v + 1))</code><span class=\"sep\"></span><code class=\"docstring\">The typeclass `Category C` describes morphisms associated to objects of type `C`.\nThe universe levels of the objects and morphisms are unconstrained, and will often need to be\nspecified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) </code>",
+ "2":
+ "<code>CategoryTheory.Functor.{v₁, v₂, u₁, u₂} (C : Type u₁) [CategoryTheory.Category.{v₁, u₁} C] (D : Type u₂)\n  [CategoryTheory.Category.{v₂, u₂} D] : Type (max v₁ v₂ u₁ u₂)</code><span class=\"sep\"></span><code class=\"docstring\">`Functor C D` represents a functor between categories `C` and `D`.\n\nTo apply a functor `F` to an object use `F.obj X`, and to a morphism use `F.map f`.\n\nThe axiom `map_id` expresses preservation of identities, and\n`map_comp` expresses functoriality. </code>",
+ "19":
+ "<code class=\"docstring\">A type universe. `Type ≡ Type 0`, `Type u ≡ Sort (u + 1)`. </code>",
+ "18":
+ "<code>CategoryTheory.IsReplete.{v_2, u_2} (C : Type u_2) [CategoryTheory.Category.{v_2, u_2} C] : Prop</code>",
+ "17":
+ "<code>Opposite.op.{u} {α : Sort u} (unop : α) : αᵒᵖ</code><span class=\"sep\"></span><code class=\"docstring\">The canonical map `α → αᵒᵖ`. </code>",
+ "16":
+ "<code>CategoryTheory.NatTrans.app.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] {F G : CategoryTheory.Functor C D} (self : CategoryTheory.NatTrans F G) (X : C) :\n  F.obj X ⟶ G.obj X</code><span class=\"sep\"></span><code class=\"docstring\">The component of a natural transformation. </code>",
+ "15":
+ "<code>CategoryTheory.Limits.Cone.π.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] {F : CategoryTheory.Functor J C} (self : CategoryTheory.Limits.Cone F) :\n  (CategoryTheory.Functor.const J).obj self.pt ⟶ F</code><span class=\"sep\"></span><code class=\"docstring\">A natural transformation from the constant functor at `X` to `F` </code>",
+ "14":
+ "<code>CategoryTheory.Limits.IsLimit.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] {F : CategoryTheory.Functor J C} (t : CategoryTheory.Limits.Cone F) :\n  Type (max (max u₁ u₃) v₃)</code><span class=\"sep\"></span><code class=\"docstring\">A cone `t` on `F` is a limit cone if each cone on `F` admits a unique\ncone morphism to `t`. </code>",
+ "13": "<code>CategoryTheory.Limits.IsLimit c</code>",
+ "12":
+ "<code>CategoryTheory.Limits.Cone.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] (F : CategoryTheory.Functor J C) : Type (max (max u₁ u₃) v₃)</code><span class=\"sep\"></span><code class=\"docstring\">A `c : Cone F` is:\n* an object `c.pt` and\n* a natural transformation `c.π : c.pt ⟶ F` from the constant `c.pt` functor to `F`.\n\nExample: if `J` is a category coming from a poset then the data required to make\na term of type `Cone F` is morphisms `πⱼ : c.pt ⟶ F j` for all `j : J` and,\nfor all `i ≤ j` in `J`, morphisms `πᵢⱼ : F i ⟶ F j` such that `πᵢ ≫ πᵢⱼ = πⱼ`.\n\n`Cone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cones.obj X`.\n</code>",
+ "11": "<code>CategoryTheory.Limits.Cone F</code>",
+ "10":
+ "<code>Quiver.Hom.op.{u_1, u_2} {V : Type u_1} [Quiver V] {X Y : V} (f : X ⟶ Y) : Opposite.op Y ⟶ Opposite.op X</code><span class=\"sep\"></span><code class=\"docstring\">The opposite of an arrow in `V`. </code>",
+ "1": "<code>CategoryTheory.Functor ℕᵒᵖ C</code>",
+ "0":
+ "<code>∀ (F : CategoryTheory.Functor ℕᵒᵖ C),\n  (∀ (n : ℕ), CategoryTheory.Epi (F.map (CategoryTheory.homOfLE ⋯).op)) →\n    ∀ (c : CategoryTheory.Limits.Cone F) (hc : CategoryTheory.Limits.IsLimit c) (n : ℕ),\n      CategoryTheory.Epi (c.π.app (Opposite.op n))</code>"}
