@@ -255,11 +255,29 @@ variable {R} in
 theorem of_forall_exists_eq_mul_self_mul (h : ∀ a : R, ∃ b, a = a * a * b) :
     AbsolutelyFlat R := by
   refine ⟨fun I ↦ Ideal.Pure.of_inf_eq_mul I fun J _ ↦
-    le_antisymm (fun y hy ↦ ?_) (Ideal.mul_le_inf)⟩
+    le_antisymm (fun y hy ↦ ?_) Ideal.mul_le_inf⟩
   obtain ⟨hyI, hyJ⟩ := Submodule.mem_inf.mp hy
   obtain ⟨b, hb⟩ := h y
   have hy' : y * (b * y) = y := by linear_combination -hb
   exact hy' ▸ Ideal.mul_mem_mul hyI (J.mul_mem_left b hyJ)
+
+/-- Von Neumann regularity descends along a ring map `f : A → B` that admits an additive,
+unital retraction `r : B → A` satisfying `r (f a * z) = a * r z`: if every element `x` of `B`
+can be written as `x = x * x * u`, then every element `a` of `A` can be written as
+`a = a * a * v`. -/
+theorem exists_eq_mul_self_mul_of_retract {A B : Type*} [CommRing A] [CommRing B]
+    (f : A →+* B) (r : B →+ A) (hr : ∀ (a : A) (z : B), r (f a * z) = a * r z) (hr1 : r 1 = 1)
+    (hB : ∀ x : B, ∃ u, x = x * x * u) (a : A) : ∃ v, a = a * a * v := by
+  have hrf : ∀ a, r (f a) = a := fun a ↦ by
+    have := hr a 1
+    rwa [mul_one, hr1, mul_one] at this
+  obtain ⟨u, hu⟩ := hB (f a)
+  refine ⟨r u, ?_⟩
+  calc a = r (f a) := (hrf a).symm
+    _ = r (f a * (f a * u)) := by rw [← mul_assoc, ← hu]
+    _ = a * r (f a * u) := hr _ _
+    _ = a * (a * r u) := by rw [hr]
+    _ = a * a * r u := (mul_assoc _ _ _).symm
 
 theorem tfae : [AbsolutelyFlat R,
     IsReduced R ∧ ∀ P : Ideal R, P.IsPrime → P.IsMaximal,
