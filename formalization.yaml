@@ -6,7 +6,7 @@ version: "v0.3"
 # project - the formalization itself (not the source).
 project:
   name: "Proetale"
-  authors: ["Christian Merten"]
+  authors: ["Jiedong Jiang", "Christian Merten"]
   license: "Apache-2.0"
 
 # sources - what was formalized.
