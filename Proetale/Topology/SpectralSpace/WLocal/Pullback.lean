@@ -20,7 +20,8 @@ variable {X Y T : Type u} [TopologicalSpace X] [WLocalSpace X] [TopologicalSpace
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
 
 @[stacks 096C "second part"]
-theorem ConnectedComponents.wlocalSpace_of_isPullback {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
+theorem ConnectedComponents.wlocalSpace_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
+    {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     WLocalSpace Y where
   __ := pb.spectralSpace
@@ -28,11 +29,13 @@ theorem ConnectedComponents.wlocalSpace_of_isPullback {f : C(Y, X)} {g : C(Y, T)
   isClosed_closedPoints := sorry
 
 @[stacks 096C "second part"]
-theorem ConnectedComponents.isWLocalMap_of_isPullback {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
+theorem ConnectedComponents.isWLocalMap_of_isPullback {f : C(Y, X)} {g : C(Y, T)}
+    {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     IsWLocalMap f := sorry
 
 @[stacks 096C "second part"]
-theorem ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
+theorem ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback {f : C(Y, X)}
+    {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     f ⁻¹' (closedPoints X) = closedPoints Y := sorry

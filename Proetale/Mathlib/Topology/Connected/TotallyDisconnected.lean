@@ -1,15 +1,37 @@
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Inseparable
 
 variable {X : Type*} [TopologicalSpace X]
 
+/-- A specialization induces equality of connected components. -/
+lemma Specializes.connectedComponents_mk_eq {a b : X} (hab : a ⤳ b) :
+    ConnectedComponents.mk a = ConnectedComponents.mk b :=
+  ConnectedComponents.coe_eq_coe.mpr <| connectedComponent_eq <|
+    isConnected_singleton.closure.subset_connectedComponent
+      (subset_closure rfl) hab.mem_closure
+
+/-- Any preimage under `ConnectedComponents.mk` is a union of connected components. -/
+lemma ConnectedComponents.iUnion_connectedComponent_preimage_mk
+    (T : Set (ConnectedComponents X)) :
+    ⋃ x ∈ (ConnectedComponents.mk ⁻¹' T : Set X), connectedComponent x =
+      ConnectedComponents.mk ⁻¹' T := by
+  ext x
+  simp only [Set.mem_iUnion, Set.mem_preimage, exists_prop]
+  refine ⟨?_, fun hx ↦ ⟨x, hx, mem_connectedComponent⟩⟩
+  rintro ⟨y, hy, hxy⟩
+  exact (ConnectedComponents.coe_eq_coe'.mpr hxy) ▸ hy
+
 -- add `@[stacks 0906]` to `ConnectedComponents.totallyDisconnectedSpace`
 
--- after `IsPreconnected.eqOn_const_of_mapsTo` if the proof need some lemma of the form IsPreconnected.foo
+-- after `IsPreconnected.eqOn_const_of_mapsTo` if the proof need some lemma of the form
+-- `IsPreconnected.foo`
 -- `by copilot`
 theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpace X]
     {Y : Type*} [TopologicalSpace Y] [TotallyDisconnectedSpace Y] {f : X → Y} (hf : Continuous f)
-    (h : ∀ y : Y, IsPreconnected (f ⁻¹' {y})) : Function.Injective (hf.connectedComponentsLift) := by
+    (h : ∀ y : Y, IsPreconnected (f ⁻¹' {y})) :
+    Function.Injective (hf.connectedComponentsLift) := by
   intro a b hEq
   set g := hf.connectedComponentsLift
   have hEq' : g a = g b := hEq
@@ -17,7 +39,8 @@ theorem Continuous.connectedComponentsLift_injective {X : Type*} [TopologicalSpa
   have hgb : g b = y := by simpa [y] using hEq'.symm
   -- Consider the fiber t = g ⁻¹' {y}.
   let t : Set (ConnectedComponents X) := g ⁻¹' {y}
-  -- We show t is preconnected by identifying it with the image of a preconnected set under the projection.
+  -- We show t is preconnected by identifying it with the image of a preconnected set under the
+  -- projection.
   have h_apply_coe : ∀ x : X, g (((↑) : X → ConnectedComponents X) x) = f x := by
     intro x'
     simp [g]
@@ -106,11 +129,9 @@ theorem connectedComponent.prod (s : S) (t : T) :
       hconn_prod.subset_connectedComponent hmem
     exact hsub ⟨hs, ht⟩
 
-theorem ConnectedComponents.isHomeomorph_connectedComponentsLift_prod :
-    IsHomeomorph (Continuous.connectedComponentsLift
-    (f := fun x : S × T ↦ (mk x.1, mk x.2)) (by continuity)) where
-  continuous := Continuous.connectedComponentsLift_continuous (by continuity)
-  bijective := by
+theorem ConnectedComponents.bijective_connectedComponentsLift_prod :
+    Function.Bijective (Continuous.connectedComponentsLift
+      (f := fun x : S × T ↦ (mk x.1, mk x.2)) (by continuity)) := by
     constructor
     · apply Continuous.connectedComponentsLift_injective
       intro y
@@ -134,22 +155,25 @@ theorem ConnectedComponents.isHomeomorph_connectedComponentsLift_prod :
       obtain ⟨s, rfl⟩ := ConnectedComponents.surjective_coe cs
       obtain ⟨t, rfl⟩ := ConnectedComponents.surjective_coe ct
       exact ⟨mk (s, t), rfl⟩
-  isOpenMap := by
-    sorry
-    -- I doubt if this is even true. -Haowen
-
-
-variable {S T} in
-noncomputable def ConnectedComponents.prodMap :
-    ConnectedComponents (S × T) ≃ₜ ConnectedComponents S × ConnectedComponents T :=
-  IsHomeomorph.homeomorph (Continuous.connectedComponentsLift
-    (by continuity)) (isHomeomorph_connectedComponentsLift_prod S T)
 
 -- TODO: unbundle this
 def ConnectedComponents.mkHomeomorph [TotallyDisconnectedSpace S] : S ≃ₜ ConnectedComponents S where
   toFun := mk
   invFun := continuous_id.connectedComponentsLift
-  left_inv := sorry
-  right_inv := sorry
+  left_inv := fun _ => rfl
+  right_inv := ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
   continuous_toFun := continuous_coe
   continuous_invFun := continuous_id.connectedComponentsLift_continuous
+
+open CategoryTheory CategoryTheory.Limits
+
+universe v u
+
+/-- The inverse limit of a system of totally disconnected topological spaces is
+totally disconnected. -/
+instance TopCat.limitCone_pt_totallyDisconnectedSpace
+    {J : Type v} [SmallCategory J] (F : J ⥤ TopCat.{max v u})
+    [∀ j, TotallyDisconnectedSpace (F.obj j)] :
+    TotallyDisconnectedSpace (TopCat.limitCone.{v, u} F).pt := by
+  change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
+  exact Subtype.totallyDisconnectedSpace

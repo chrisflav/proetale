@@ -12,9 +12,11 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     The inclusion functor $\affet{X} \to \et{X}$ is cover dense, i.e. for every $Y$ in $\et{X}$
     there exists a cover $\{U_i \to Y\} $ with $U_i$ in $\affet{X}$.
     \label{lemma:affet-gen-et}
+    \mathlibok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This is immediate, because open immersions are étale and étale is stable under composition.
 \end{proof}
 
@@ -34,16 +36,28 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     for every affine open $U$ of $Y$ and every affine open $V$ of $X$ with $f(U) \subset V$,
     the induced ring homomorphism $\Gamma(X, V) \to \Gamma(Y, U)$ is weakly étale.
     \uses{def:weakly-etale-algebra, def:weakly-etale-morphism}
+    \lean{AlgebraicGeometry.WeaklyEtale.hasRingHomProperty}
+    \leanok
     \label{lemma:weakly-etale-hasringhomprop}
 \end{lemma}
+
+\begin{proof}
+    \leanok
+    Weakly étale morphisms of schemes are local on source and on target for the Zariski topology,
+    so the property descends to affine opens. There it matches the ring-theoretic definition
+    via the characterisation of weakly étale algebras (\Cref{def:weakly-etale-algebra}).
+\end{proof}
 
 \begin{lemma}
     Etale morphisms are weakly étale.
     \uses{def:weakly-etale-morphism}
     \label{lemma:etale-weakly-etale}
+    \leanok
+    \mathlibok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Any étale morphism is flat and its diagonal is an open immersion, hence flat.
 \end{proof}
 
@@ -62,6 +76,8 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
 
 \section{The site}
 
+Before we define the pro-étale site, we recall a few standard definitions.
+
 \begin{definition}[Quasi-compact cover]
     A jointly surjective family $(f_i \colon Y_i \to X)_{i \in I}$ of morphisms of schemes is
     \emph{quasi-compact} if for
@@ -77,9 +93,13 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     the family is quasi-compact.
     \uses{def:qc-cover}
     \label{lemma:qc-cover-of-flat-fp}
+    \lean{AlgebraicGeometry.QuasiCompactCover.of_flat_locallyOfFinitePresentation}
+    \leanok
+    \mathlibok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     In this case, every $f_i$ is an open map, from which the claim easily follows.
 \end{proof}
 
@@ -89,33 +109,42 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     structure morphism satisfying $\mathcal{P}$ and with covers given by quasi-compact,
     jointly surjective families of morphisms satisfying $\mathcal{P}$.
     \label{def:small-P-site}
+    \mathlibok
 \end{definition}
+
+If we let $\mathcal{P}$ to be flat morphisms of schemes, we obtain the fpqc site:
 
 \begin{definition}[The fpqc site]
     Let $X$ be a scheme. The \emph{fqpc site of $X$}, denoted by $\fpqc{X}$, is the
     $\mathcal{P}$-site of $X$ with $\mathcal{P} = \text{flat}$.
     \uses{def:small-P-site}
     \label{def:fpqc-site}
+    \mathlibok
 \end{definition}
 
-\begin{proposition}
-    Let $F$ be a presheaf on the category of schemes. Then $F$ is a sheaf in the
-    fpqc topology if and only if it is a sheaf in the Zariski topology and satisfies
-    the sheaf property for $\{V \to U\}$ with $V$, $U$ affine
-    and $V \to U$ faithfully flat.
-    \uses{def:fpqc-site}
-    \label{prop:fpqc-sheaf-iff}
-\end{proposition}
+For us, the main relevant property of the fqpc site is that it is subcanonical:
 
 \begin{theorem}
     The fpqc site is subcanonical, i.e., every representable presheaf is a sheaf.
     \uses{def:fpqc-site}
     \label{thm:fpqc-subcanonical}
+    \mathlibok
 \end{theorem}
 
-\begin{proof}
-    TBA. \uses{prop:fpqc-sheaf-iff}
-\end{proof}
+Analogous to the familiar criterion for fpqc sheaves, we have a generalization
+for the small $\mathcal{P}$-site of a scheme.
+
+\begin{proposition}
+    Let $F$ be a presheaf on the small $\mathcal{P}$-site. Then $F$ is a sheaf in the
+    if and only if it is a sheaf in the Zariski topology and satisfies
+    the sheaf property for $\{V \to U\}$ with $V$, $U$ affine
+    and $V \to U$ satisfying $\mathcal{P}$.
+    \uses{def:small-P-site}
+    \label{prop:fpqc-sheaf-iff}
+    \mathlibok
+\end{proposition}
+
+We can now define the main object of this chapter:
 
 \begin{definition}[The pro-étale site, {\cite[Definition 4.1.1]{proetale}}]
     Let $X$ be a scheme. The \emph{pro-étale site of $X$}, denoted by $\proet{X}$, is the
@@ -123,6 +152,7 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
 
     \uses{def:qc-cover, def:weakly-etale-morphism, def:small-P-site}
     \label{def:proetale-site}
+    \mathlibok
 \end{definition}
 
 \begin{remark}
@@ -133,9 +163,11 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
 \begin{proposition}[{\cite[Lemma 4.2.4]{proetale}}]
     The site $\proet{X}$ is subcanonical.
     \label{prop:proet-subcanonical}
+    \mathlibok
 \end{proposition}
 
 \begin{proof}
+    \mathlibok
     Follows from \ref{thm:fpqc-subcanonical}, since every pro-étale sheaf is an fpqc-sheaf.
     \uses{thm:fpqc-subcanonical}
 \end{proof}
@@ -147,6 +179,8 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     as $U = \lim U_i$ over a small cofiltered diagram $i \mapsto U_i$ of affine schemes étale over $X$.
     The subcategory of pro-étale affines in $\proet{X}$ is denoted by $\affproet{X}$.
     \label{def:affproet}
+    \lean{AlgebraicGeometry.Scheme.AffineProEt}
+    \leanok
 \end{definition}
 
 \begin{lemma}[{\cite[Remark 4.2.3]{proetale}}]
@@ -162,6 +196,8 @@ $\affet{X}$ the affine étale site. $\affet{X}$ consists of affine schemes étal
     The covering families are the quasi-compact covers.
     \uses{lemma:affproet-limits, def:affproet}
     \label{def:affproet-site}
+    \lean{AlgebraicGeometry.Scheme.AffineProEt}
+    \leanok
 \end{definition}
 
 In other words, $\affproet{X}$ carries the topology induced by the inclusion functor
@@ -174,9 +210,12 @@ by objects in $\affproet{X}$:
     there exists a cover $\{U_i \to Y\}_{i \in I}$ with $U_i$ in $\affproet{X}$.
     \uses{def:affproet-site}
     \label{lemma:affproet-gen-proet}
+    \lean{AlgebraicGeometry.Scheme.AffineProEt.isCoverDense_toProEt}
+    \leanok
 \end{proposition}
 
 \begin{proof}
+    \leanok
     \uses{thm:weakly-etale-ind-etale}
     Let $f\colon Y \to X$ be a weakly étale morphism and let $\{U_i \to X\}$ be an affine open cover of $X$.
     If we prove the lemma for each $U_i$ and the weakly étale morphism $f^{-1}(U_i) \to U_i$,
@@ -197,13 +236,43 @@ by objects in $\affproet{X}$:
     $\shv{\proet{X}} \to \shv{\affproet{X}}$.
     \label{cor:affproet-equivalence}
     \uses{def:affproet-site}
+    \lean{AlgebraicGeometry.Scheme.AffineProEt.isEquivalence_sheafPushforwardContinuous_toProEt}
+    \leanok
 \end{corollary}
 
 \begin{proof}
     \uses{lemma:affproet-gen-proet}
+    \leanok
     The functor $\affproet{X} \to \proet{X}$ is fully faithful and makes $\affproet{X}$ a dense
     subsite of $\proet{X}$ by \Cref{lemma:affproet-gen-proet}. Thus the claim follows
     from the comparison lemma for sites.
+\end{proof}
+
+\begin{corollary}
+    Restriction along the inclusion $\affproet{X} \to \proet{X}$ commutes with sheafification.
+    \label{cor:affproet-sheafification-commute}%
+    \uses{def:affproet-site}
+\end{corollary}
+
+\begin{proof}
+    \uses{cor:affproet-equivalence}
+    This follows immediately from \ref{cor:affproet-equivalence}.
+\end{proof}
+
+We can also compare $\affproet{X}$ to $\affet{X}$.
+
+\begin{proposition}
+    The canonical functor $\affet{X} \to \affproet{X}$ induces an equivalence of categories
+    $\pro{\affet{X}} \to \affproet{X}$.
+    \label{prop:pro-affet-equiv-affproet}
+    \uses{def:affproet-site}
+\end{proposition}
+
+\begin{proof}
+    \uses{prop:pro-equiv-pro}
+    By \Cref{prop:pro-equiv-pro}, it suffices to show that for every $U$ in $\affet{X}$, the
+    image of $U$ in $\affproet{X}$ is co-finitely-presentable. This follows from the fact
+    that étale morphisms are finitely presented.
 \end{proof}
 
 \subsection{Repleteness}
@@ -237,15 +306,20 @@ define:
     from $\et{X}$ to $\proet{X}$ given by $(U \to X) \mapsto (U \to X)$.
     \uses{lemma:etale-weakly-etale, def:proetale-site}
     \label{def:forget-proet}
+    \lean{AlgebraicGeometry.Scheme.toProEtale}
+    \leanok
 \end{definition}
 
 \begin{lemma}
     The morphism of sites $\nu$ is continuous.
     \uses{def:forget-proet}
     \label{lemma:forget-proet-continuous}
+    \lean{AlgebraicGeometry.Scheme.isContinuous_toProEtale}
+    \leanok
 \end{lemma}
 
 \begin{proof}
+    \leanok
     This follows from the definitions, because every étale covering is
     a quasi-compact covering by \ref{lemma:qc-cover-of-flat-fp}.
     \uses{lemma:qc-cover-of-flat-fp}
@@ -259,6 +333,8 @@ on the level of presheafs.
     Let $F$ be a presheaf on $\et{X}$. Then $(\nu^p F)|_{\affproet{X}}$ preserves
     filtered colimits.
     \label{lemma:affproet-pushforward-presheaf-filtered-colim}
+    \lean{AlgebraicGeometry.Scheme.ProEt.preservesFilteredColimitsOfSize_lan_toProEtale}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -283,6 +359,7 @@ on the level of presheafs.
 \end{proof}
 
 \begin{lemma}
+    % TODO: this is proven differently now, update this
     The topology on $\affproet{X}$ is generated by relatively pro-representable one-hypercovers
     with respect to the inclusion $\affet{X} \to \affproet{X}$.
     \label{lemma:affproet-relatively-pro-prepresentable}
@@ -290,9 +367,11 @@ on the level of presheafs.
 \end{lemma}
 
 \begin{proof}
+    \uses{prop:finite-diag-pro}
     The topology on $\affproet{X}$ is generated by surjections
     $V \to U$ in $\affproet{X}$ and finite standard Zariski coverings. Both
-    of these can be relatively pro-represented.
+    of these can be relatively pro-represented by
+    \Cref{prop:finite-diag-pro} (see also \Cref{ex:finite-diag-pro}).
 \end{proof}
 
 Further denote by $\nu_{*} \colon \shv{\proet{X}} \to \shv{\et{X}}$ and
@@ -304,20 +383,26 @@ In contrast to \cite{proetale}, we write $R \nu_{*}$ for the derived functor of 
     Let $F$ be a sheaf on $\et{X}$. Then $(\nu^p F)|_{\affproet{X}}$ is a sheaf. In particular,
     $(\nu^*F)|_{\affproet{X}} \cong (\nu^p F)|_{\affproet{X}}$.
     \label{prop:presheaf-pushforward-sheaf-affproet}
+    \lean{AlgebraicGeometry.Scheme.isSheaf_lan_toProEtale,
+      AlgebraicGeometry.Scheme.ProEt.sheafPullbackCompIso}
+    \leanok
 \end{proposition}
 
 \begin{proof}
-    \uses{lemma:affproet-relatively-pro-prepresentable, prop:sheaf-relatively-representable-generated, lemma:affproet-pushforward-presheaf-filtered-colim}
-    By \ref{lemma:affproet-relatively-pro-prepresentable} and
-    \ref{lemma:affproet-pushforward-presheaf-filtered-colim}, this follows from
-    \ref{prop:sheaf-relatively-representable-generated}. The in particular follows
-    because we have a commutative diagram
+    \leanok
+    \uses{lemma:affproet-relatively-pro-prepresentable,
+      prop:sheaf-relatively-representable-generated,
+      lemma:affproet-pushforward-presheaf-filtered-colim,
+      cor:affproet-sheafification-commute}
+    By \Cref{lemma:affproet-relatively-pro-prepresentable} and
+    \Cref{lemma:affproet-pushforward-presheaf-filtered-colim}, this follows from
+    \Cref{prop:sheaf-relatively-representable-generated}.
+    Hence we have the following chain of isomorphisms
     \[
-    \begin{tikzcd}
-        \affet{X} \arrow{r} \arrow{d} & \affproet{X} \arrow{d} \\
-        \et{X} \arrow{r} & \proet{X}.
-    \end{tikzcd}
-    \]
+        (\nu^*F)|_{\affproet{X}} \cong (\nu^pF)^{\#}|_{\affproet{X}}
+        \cong ((\nu^pF)|_{\affproet{X}})^{\#}
+        \cong (\nu^pF)|_{\affproet{X}}
+    .\] The second isomorphism is \Cref{cor:affproet-sheafification-commute} and the last is the first part of this proposition.
 \end{proof}
 
 \begin{corollary}[{\cite[Lemma 5.1.1]{proetale}}]
@@ -337,9 +422,12 @@ In contrast to \cite{proetale}, we write $R \nu_{*}$ for the derived functor of 
 \begin{corollary}
     For any $F \in \shv{\et{X}}$, the unit $F \to \nu_{*} \nu^{*} F$ is an isomorphism.
     \label{lemma:pullback-unit-iso}
+    \lean{AlgebraicGeometry.Scheme.ProEt.isIso_unit_sheafAdjunction}
+    \leanok
 \end{corollary}
 
 \begin{proof}
+    \leanok
     \uses{lemma:affet-gen-et, lemma:pullback-section-affproet}
     By \ref{lemma:affet-gen-et}, we may check this on any affine $U$ étale over $X$. Since
     $U = \lim U$, the formula of \ref{lemma:pullback-section-affproet} shows the desired isomorphism.
@@ -348,9 +436,13 @@ In contrast to \cite{proetale}, we write $R \nu_{*}$ for the derived functor of 
 \begin{corollary}[{\cite[Lemma 5.1.2, fully faithful part]{proetale}}]
     $\nu^*$ is fully faithful.
     \label{lemma:pullback-fully-faithful}
+    \lean{AlgebraicGeometry.Scheme.ProEt.faithful_sheafPullback,
+      AlgebraicGeometry.Scheme.ProEt.full_sheafPullback}
+    \leanok
 \end{corollary}
 
 \begin{proof}
+    \leanok
     \uses{lemma:pullback-unit-iso}
     Follows formally from \ref{lemma:pullback-unit-iso}.
 \end{proof}
@@ -373,21 +465,16 @@ if they preserve affine filtered colimits:
 \end{corollary}
 
 \begin{proof}
-    \uses{lemma:pullback-section-affproet, lemma:affproet-gen-proet}
+    \uses{lemma:pullback-section-affproet, cor:affproet-equivalence}
     The only if part follows directly from \Cref{lemma:pullback-section-affproet}. Conversely, let $F$ be
     in $\shv{\proet{X}}$ and suppose $F$ satisfies the formula in the statement. Then
-    $\nu^* \nu_{*} F \to F$ is an isomorphism. Indeed, by \Cref{lemma:affproet-gen-proet}, we may check this
-    on sections in $\affproet{X}$. Let $U = \lim U_i$ be in $\affproet{X}$. Then again by
-    \Cref{lemma:pullback-section-affproet}
+    $\nu^* \nu_{*} F \to F$ is an isomorphism. Indeed, by \Cref{cor:affproet-equivalence}, it suffices
+    to check this after restricting to $\affproet{X}$. Let $U = \lim U_i$ be in $\affproet{X}$.
+    Then again by \Cref{lemma:pullback-section-affproet}
     \[
         \nu^* \nu_{*} F (U) = \colim \nu_{*} F(U_i) = \colim F(U_i) = F(U) \qedhere
     .\]
 \end{proof}
-
-\begin{remark}
-    Note that the proof of \label{cor:classical-sheaf-iff-preserves} relies on the
-    highly nontrivial \Cref{lemma:affproet-gen-proet}.
-\end{remark}
 
 \begin{lemma}[{\cite[Lemma 5.1.6]{proetale}}]
     Let $K$ be in $D^+(\et{X})$ and $U = \lim_i U_i$ in $\affproet{X}$. Then

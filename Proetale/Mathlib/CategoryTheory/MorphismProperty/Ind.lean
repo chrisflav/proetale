@@ -3,6 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.MorphismProperty.Ind
@@ -43,7 +44,8 @@ namespace ObjectProperty
 
 lemma ind_of_univLE (P : ObjectProperty C) [UnivLE.{w', w}] :
     ind.{w'} P ≤ ind.{w} P := by
-  sorry
+  intro X ⟨J, _, _, pres, H⟩
+  exact of_essentiallySmall_index pres H
 
 @[gcongr]
 lemma ind_mono {P Q : ObjectProperty C} (h : P ≤ Q) :
@@ -59,7 +61,9 @@ instance [P.ContainsIdentities] : (ind.{w} P).ContainsIdentities where
   id_mem X := le_ind _ _ (P.id_mem X)
 
 lemma ind_of_univLE [UnivLE.{w', w}] : ind.{w'} P ≤ ind.{w} P := by
-  sorry
+  intro X Y f hf
+  rw [MorphismProperty.ind_iff_ind_underMk] at hf ⊢
+  exact ObjectProperty.ind_of_univLE P.underObj _ hf
 
 @[gcongr]
 lemma underObj_mono {P Q : MorphismProperty C} (h : P ≤ Q) (X : C) :
@@ -113,7 +117,13 @@ lemma pro_eq_unop_ind_op : pro.{w} P = (ind.{w} P.op).unop := by
       op_injective (hst _).2⟩⟩
 
 lemma ind_eq_unop_pro_op : ind.{w} P = (pro.{w} P.op).unop := by
-  sorry
+  ext X Y f
+  refine ⟨fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_, fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_⟩
+  · exact ⟨Jᵒᵖ, inferInstance, inferInstance, D.op, NatTrans.op t,
+      NatTrans.op s, hs.op, fun j ↦ ⟨(hst j.unop).1, by simp [← (hst j.unop).2]⟩⟩
+  · exact ⟨Jᵒᵖ, inferInstance, inferInstance, D.leftOp, NatTrans.leftOp t,
+      NatTrans.leftOp s, isColimitCoconeLeftOpOfCone D hs, fun j ↦ ⟨(hst j.unop).1,
+      Quiver.Hom.op_inj (hst j.unop).2⟩⟩
 
 @[gcongr]
 lemma unop_mono {P Q : MorphismProperty Cᵒᵖ} (h : P ≤ Q) : P.unop ≤ Q.unop :=
@@ -136,7 +146,7 @@ lemma op_isFinitelyPresentable :
     (isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ :=
   sorry
 
-lemma pro_pro [LocallySmall.{w} C] (H :P ≤ isFinitelyPresentable.{w} C) :
+lemma pro_pro [LocallySmall.{w} C] (H : P ≤ isFinitelyPresentable.{w} C) :
     pro.{w} (pro.{w} P) = pro.{w} P := by
   rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind]
   rw [← op_isFinitelyPresentable]
@@ -144,7 +154,8 @@ lemma pro_pro [LocallySmall.{w} C] (H :P ≤ isFinitelyPresentable.{w} C) :
 
 lemma pro_of_univLE [UnivLE.{w', w}] :
     pro.{w'} P ≤ pro.{w} P := by
-  sorry
+  grw [pro_eq_unop_ind_op, pro_eq_unop_ind_op]
+  exact unop_mono (ind_of_univLE P.op)
 
 @[gcongr]
 lemma pro_mono {P Q : MorphismProperty C} (h : P ≤ Q) : pro.{w} P ≤ pro.{w} Q := by
@@ -157,5 +168,43 @@ lemma pro_coneπ {J : Type w} [SmallCategory J] [IsCofiltered J]
     pro.{w} P (c.π.app j) := by
   rw [pro_eq_unop_ind_op]
   exact ind_coconeι P.op hc.op _ (fun _ ↦ H _)
+
+instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] :
+    (pro.{w} P).IsStableUnderBaseChangeAlong f where
+  of_isPullback {Z W f' g' g} pb hg := by
+    obtain ⟨J, _, _, D, t, s, hs, hts⟩ := hg
+    -- `J` is connected, so `Over.forget` reflects `J`-indexed limits
+    have : IsConnected J := IsCofiltered.isConnected J
+    -- the diagram `D` as a diagram in `Over Y` via the structure maps `t`
+    let DY : J ⥤ CategoryTheory.Over Y := CategoryTheory.Over.lift D t
+    -- the limit cone `(Z, s)` lifted to a limit cone in `Over Y` with apex `Over.mk g`
+    let cY : Cone DY := CategoryTheory.Over.liftCone D t (Cone.mk _ s) g (fun j ↦ (hts j).2)
+    have hcY : IsLimit cY :=
+      CategoryTheory.Over.isLimitLiftCone D t (Cone.mk _ s) g (fun j ↦ (hts j).2) hs
+    -- `Over.pullback f` preserves all limits, being a right adjoint
+    have : PreservesLimitsOfSize.{w, w} (CategoryTheory.Over.pullback f) :=
+      (CategoryTheory.Over.mapPullbackAdj f).rightAdjoint_preservesLimits
+    -- push the limit cone to `Over X` along `Over.pullback f` and forget back to `C`
+    let cX : Cone ((DY ⋙ CategoryTheory.Over.pullback f) ⋙ CategoryTheory.Over.forget X) :=
+      (CategoryTheory.Over.forget X).mapCone ((CategoryTheory.Over.pullback f).mapCone cY)
+    have hcX : IsLimit cX :=
+      isLimitOfPreserves (CategoryTheory.Over.forget X)
+        (isLimitOfPreserves (CategoryTheory.Over.pullback f) hcY)
+    refine ⟨J, inferInstance, inferInstance,
+      DY ⋙ CategoryTheory.Over.pullback f ⋙ CategoryTheory.Over.forget X,
+      { app j := ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom
+        naturality i j u :=
+          (CategoryTheory.Over.w ((DY ⋙ CategoryTheory.Over.pullback f).map u)).trans
+            (by simp) },
+      (Functor.const J).map pb.isoPullback.hom ≫ cX.π, ?_, fun j ↦ ⟨?_, ?_⟩⟩
+    · refine hcX.ofIsoLimit (Cone.ext pb.isoPullback.symm (fun j ↦ ?_))
+      simp only [NatTrans.comp_app, Functor.const_map_app, Iso.symm_hom]
+      exact (Iso.inv_hom_id_assoc _ _).symm
+    · exact P.pullback_snd _ f (hts j).1
+    · have hsnd : cX.π.app j ≫ ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom =
+          pullback.snd g f :=
+        CategoryTheory.Over.w (((CategoryTheory.Over.pullback f).mapCone cY).π.app j)
+      simp only [NatTrans.comp_app, Functor.const_map_app, Category.assoc]
+      exact (congrArg (pb.isoPullback.hom ≫ ·) hsnd).trans pb.isoPullback_hom_snd
 
 end CategoryTheory.MorphismProperty

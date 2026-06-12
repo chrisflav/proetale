@@ -1,0 +1,23 @@
+name: hopscotch
+
+on:
+  schedule:
+    - cron: "0 18 * * *"   # daily at 18:00 UTC
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # push bump branch
+      pull-requests: write  # open / update bump PR
+      issues: write         # open / close tracking issue
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: leanprover-community/hopscotch-action@v1
+        with:
+          dependency: mathlib
+          to: master
+          pr-base: master
+          pr-labels: "dependencies,auto-bump"

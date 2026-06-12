@@ -32,10 +32,28 @@ instance : (toProEtale S).Full :=
 instance : (toProEtale S).Faithful :=
   inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Faithful
 
+instance : HasFiniteLimits S.Etale :=
+  inferInstanceAs <| HasFiniteLimits (MorphismProperty.Over @Etale ⊤ S)
+
+instance : PreservesFiniteLimits (toProEtale S) := by
+  have : PreservesFiniteLimits (toProEtale S ⋙ ProEt.forget S) :=
+    inferInstanceAs <| PreservesFiniteLimits (MorphismProperty.Over.forget @Etale ⊤ S)
+  exact preservesFiniteLimits_of_reflects_of_preserves (toProEtale S) (ProEt.forget S)
+
+instance representablyFlat_toProEtale : RepresentablyFlat (toProEtale S) :=
+  flat_of_preservesFiniteLimits _
+
 /-- The inclusion of the étale site into the pro-étale site is continuous. -/
 instance isContinuous_toProEtale :
     (toProEtale S).IsContinuous (smallEtaleTopology S) (ProEt.topology S) := by
-  sorry
+  refine Functor.isContinuous_of_coverPreserving
+    (compatiblePreservingOfFlat _ (toProEtale S)) ?_
+  refine ⟨fun {X R} hR ↦ ?_⟩
+  rw [ProEt.topology_eq_inducedTopology, Functor.mem_inducedTopology_sieves_iff,
+    ← Sieve.functorPushforward_comp]
+  have hR' : R.functorPushforward (Over.forget @Etale ⊤ S) ∈ etaleTopology.over S _ := hR
+  rw [GrothendieckTopology.mem_over_iff] at hR' ⊢
+  exact etaleTopology_le_proetaleTopology _ hR'
 
 namespace ProEt
 
@@ -64,16 +82,6 @@ noncomputable abbrev sheafPullback :
 noncomputable abbrev sheafAdjunction :
     ProEt.sheafPullback S A ⊣ ProEt.sheafPushforward S A :=
   (toProEtale S).sheafAdjunctionContinuous _ _ _
-
--- needs more assumptions on `A`
-instance isIso_unit_sheafAdjunction : IsIso (sheafAdjunction S A).unit :=
-  sorry
-
-instance faithful_sheafPullback : (sheafPullback S A).Faithful :=
-  (sheafAdjunction S A).faithful_L_of_mono_unit_app
-
-instance full_sheafPullback : (sheafPullback S A).Full :=
-  (sheafAdjunction S A).full_L_of_isSplitEpi_unit_app
 
 end ProEt
 

@@ -125,121 +125,78 @@ theorem sInter_isClopen_and_mem_eq_connectedComponent {x : X} :
   · refine hVSn.elim fun y hy ↦ ?_
     have hS : S ⊆ U ∩ WW := by
       fapply Set.iInter_subset_of_subset
-      exact ⟨_, hUWW, ⟨hxU, ⟨hxW, hxW'⟩⟩⟩
-      rfl
+      · exact ⟨_, hUWW, ⟨hxU, ⟨hxW, hxW'⟩⟩⟩
+      · rfl
     have : y ∈ U ∩ V ∩ S := by grind
     grind
   · refine hUSn.elim fun y hy ↦ ?_
     have hS : S ⊆ V ∩ WW := by
       fapply Set.iInter_subset_of_subset
-      exact ⟨_, hVWW, ⟨hxV, ⟨hxW, hxW'⟩⟩⟩
-      rfl
+      · exact ⟨_, hVWW, ⟨hxV, ⟨hxW, hxW'⟩⟩⟩
+      · rfl
     have : y ∈ U ∩ V ∩ S := by grind
     grind
+
+omit [PrespectralSpace X] [CompactSpace X] [QuasiSeparatedSpace X] in
+lemma connectedComponent_subset_of_iUnion_eq {T : Set X} {I : Set X}
+    (hI : ⋃ x ∈ I, connectedComponent x = T) {z : X} (hz : z ∈ T) :
+    connectedComponent z ⊆ T := by
+  have hz' : z ∈ ⋃ x ∈ I, connectedComponent x := by simpa [hI] using hz
+  rcases Set.mem_iUnion₂.mp hz' with ⟨w, hwI, hzw⟩
+  rw [(connectedComponent_eq hzw).symm]
+  intro u hu
+  simpa [hI] using (Set.mem_iUnion₂.mpr ⟨w, hwI, hu⟩ : u ∈ ⋃ x ∈ I, connectedComponent x)
+
+omit [PrespectralSpace X] [CompactSpace X] [QuasiSeparatedSpace X] in
+lemma disjoint_connectedComponent_of_not_mem {T : Set X} {I : Set X}
+    (hI : ⋃ x ∈ I, connectedComponent x = T) {x : X} (hx : x ∉ T) :
+    Disjoint (connectedComponent x) T :=
+  Set.disjoint_left.2 fun z hz hxz => hx <|
+    (connectedComponent_subset_of_iUnion_eq hI hxz) <| by
+      simpa [(connectedComponent_eq hz).symm] using mem_connectedComponent (x := x)
 
 @[stacks 04PL]
 theorem isClosed_and_iUnion_connectedComponent_eq_iff {T : Set X} :
     (IsClosed T ∧ ∃ I : Set X, ⋃ x ∈ I, connectedComponent x = T) ↔
     ∃ J : Set ({U : Set X // IsClopen U}), ⋂ (U : J), U = T := by
   constructor
-  · intro ⟨h1, h2⟩
-    obtain ⟨J, hJ⟩ := h2
-    let S : Set ({U : Set X // IsClopen U}) := {U | T ⊆ U}
-    use S
-    apply Set.Subset.antisymm
+  · rintro ⟨hT, ⟨I, hI⟩⟩
+    refine ⟨{U | T ⊆ U}, Set.Subset.antisymm ?_ ?_⟩
     · intro x hx
-      by_contra hcontra
-      let CCx := connectedComponent x
-      have hC {p : X} : (p ∈ CCx) ∧ (p ∈ T) → False := by
-        intro htx
-        let CCp := connectedComponent p
-        have heq : CCp = CCx := by
-          apply connectedComponent_eq_iff_mem.mpr
-          exact Set.mem_of_mem_inter_right (id (And.symm htx))
-        have hsub : CCp ⊆ T := by
-          have hp : p ∈ T := htx.2
-          rw [hJ.symm] at hp
-          simp at hp
-          obtain ⟨j, hj⟩ := hp
-          let CCj := connectedComponent j
-          have heq2 : CCp = CCj := by
-            apply connectedComponent_eq_iff_mem.mpr
-            exact hj.2
-          rw [heq2, hJ.symm]
-          simp [CCj]
-          apply Set.subset_biUnion_of_mem hj.1
-        have hx2 : x ∈ T := by
-          apply hsub
-          rw [heq]
-          simp [CCx]
-          exact mem_connectedComponent
-        exact hcontra hx2
-      have lem1 : ⋃ (U : {U : Set X // IsClopen U ∧ x ∈ U}), Uᶜ = (connectedComponent x)ᶜ := by
-        rw [← Set.compl_iInter, sInter_isClopen_and_mem_eq_connectedComponent]
-      have lem2 : T ⊆ (connectedComponent x)ᶜ := by
-        intro t ht htx
-        exact hC ⟨htx, ht⟩
-      rw [lem1.symm] at lem2
-      have lem3 : IsCompact T := by
-        exact IsClosed.isCompact h1
-      have lem4 : ∃ (K: Finset ({U : Set X // IsClopen U ∧ x ∈ U})), T ⊆ ⋃ U ∈ K, Uᶜ := by
-        apply isCompact_iff_finite_subcover.mp
-        · exact lem3
-        · simp
-          exact fun a a_1 a_2 ↦ IsClopen.isClosed a_1
-        · exact lem2
-      obtain ⟨K, hK⟩ := lem4
-      let V := ⋃ U ∈ K, (Uᶜ : Set X)
-      have hV1 : IsClopen V := by
-        apply Set.Finite.isClopen_biUnion
-        · exact K.finite_toSet
-        · simp
-          intro U hU _ _
-          exact hU
-      have hV2 : T ⊆ V := hK
-      have hV3 : x ∉ V := by
-        intro hVx
-        simp [V] at hVx
-        obtain ⟨U, hU1, hU2⟩ := hVx
-        obtain ⟨hU3, _⟩ := hU1
-        exact hU2 hU3.2
-      have hV4 : x ∈ V := by
-        apply hx
-        simp
-        use hV1
-        exact hV2
-      exact hV3 hV4
-    · simp
-      intro U hU1 hU2
-      exact hU2
-  · intro h
-    obtain ⟨J, hJ⟩ := h
-    constructor
-    · rw [hJ.symm]
-      apply isClosed_iInter
-      simp
-      intro a ha
-      exact fun b ↦ IsClopen.isClosed ha
-    · use T
-      apply Set.Subset.antisymm
-      · simp
-        intro t ht1
-        rw [hJ.symm]
-        simp only [Set.iInter_coe_set, Set.subset_iInter_iff, Subtype.forall]
-        intro V hV1 hV2
-        have ht2 : t ∈ ⋂ (U : J), U := by
-          rw [hJ]
-          exact ht1
-        have ht3 : t ∈ V := by
-          simp only [Set.iInter_coe_set, Set.mem_iInter, Subtype.forall] at ht2
-          exact ht2 V hV1 hV2
-        exact IsClopen.connectedComponent_subset hV1 ht3
-      · intro x hx
-        simp only [Set.mem_iUnion, exists_prop]
-        use x
-        constructor
-        · exact hx
-        · exact mem_connectedComponent
+      by_contra hxT
+      have hdis := disjoint_connectedComponent_of_not_mem hI hxT
+      have hcover : T ⊆ ⋃ U : {U : Set X // IsClopen U ∧ x ∈ U}, (U : Set X)ᶜ := by
+        intro z hz
+        have : z ∉ ⋂ U : {U : Set X // IsClopen U ∧ x ∈ U}, (U : Set X) := by
+          rw [sInter_isClopen_and_mem_eq_connectedComponent]
+          exact fun hz' => (Set.disjoint_left.mp hdis) hz' hz
+        simp only [Set.mem_iInter, not_forall] at this
+        exact Set.mem_iUnion.mpr this
+      obtain ⟨s, hs⟩ :=
+        hT.isCompact.elim_finite_subcover _ (fun U => U.2.1.1.isOpen_compl) hcover
+      have hVcl : IsClopen (⋃ U ∈ s, (U : Set X)ᶜ) :=
+        Set.Finite.isClopen_biUnion s.finite_toSet fun U _ => U.2.1.compl
+      have hxV : x ∈ (⋃ U ∈ s, (U : Set X)ᶜ) := by
+        simpa using Set.mem_iInter.1 hx ⟨⟨_, hVcl⟩, hs⟩
+      exact absurd hxV (by
+        simp only [Set.mem_iUnion]
+        rintro ⟨U, hUs, hxU⟩
+        exact hxU U.2.2)
+    · intro x hx
+      simp only [Set.coe_setOf, Set.mem_setOf_eq, Set.mem_iInter, Subtype.forall]
+      intro U hU hTU
+      exact hTU hx
+  · rintro ⟨J, hJ⟩
+    refine ⟨?_, T, Set.Subset.antisymm (fun z hz => ?_) (fun z hz => ?_)⟩
+    · have : IsClosed (⋂ U : J, (U : Set X)) := isClosed_iInter fun U => (U.1.2).1
+      simpa [hJ] using this
+    · rcases Set.mem_iUnion₂.mp hz with ⟨x, hxT, hzx⟩
+      have hxInter : x ∈ ⋂ U : J, (U : Set X) := by simpa [hJ] using hxT
+      have hzInter : z ∈ ⋂ U : J, (U : Set X) :=
+        Set.mem_iInter.2 fun U =>
+          (IsClopen.connectedComponent_subset U.1.2 (Set.mem_iInter.1 hxInter U)) hzx
+      simpa [hJ] using hzInter
+    · exact Set.mem_iUnion₂.mpr ⟨z, hz, mem_connectedComponent⟩
 
   -- uses `ConnectedComponents.injective_lift`
 
@@ -254,7 +211,7 @@ instance compactSpace_connectedComponent {X : Type u} [TopologicalSpace X] [Comp
 
 
 @[stacks 0906]
-instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactSpace X]
+instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X] [CompactSpace X]
     [QuasiSeparatedSpace X] [PrespectralSpace X] : T2Space (ConnectedComponents X) := by
   rw [t2Space_iff]
   intro a b hab
@@ -268,13 +225,16 @@ instance t2Space_connectedComponent {X : Type u} [TopologicalSpace X]  [CompactS
     rw [← sInter_isClopen_and_mem_eq_connectedComponent]
     exact Set.mem_iInter.mpr fun ⟨U, hU1, hU2⟩ => habs U hU1 hU2
   obtain ⟨U, hU, hxU, hyU⟩ := hy'
-  have hU' : IsClopen ((↑) '' U : Set (ConnectedComponents X)) := hU.connectedComponents_image_isClopen
-  refine ⟨(↑) '' U, ((↑) '' U)ᶜ, hU'.2, hU'.1.isOpen_compl, Set.mem_image_of_mem _ hxU, ?_, disjoint_compl_right⟩
+  have hU' : IsClopen ((↑) '' U : Set (ConnectedComponents X)) :=
+    hU.connectedComponents_image_isClopen
+  refine ⟨(↑) '' U, ((↑) '' U)ᶜ, hU'.2, hU'.1.isOpen_compl, Set.mem_image_of_mem _ hxU, ?_,
+    disjoint_compl_right⟩
   simp only [Set.mem_compl_iff, Set.mem_image, not_exists, not_and]
   intro z hzU hzy
   apply hyU
   rw [ConnectedComponents.coe_eq_coe'] at hzy
-  exact hU.connectedComponent_subset hzU (connectedComponent_eq_iff_mem.mp (connectedComponent_eq hzy))
+  exact hU.connectedComponent_subset hzU
+    (connectedComponent_eq_iff_mem.mp (connectedComponent_eq hzy))
 
 end
 
@@ -282,7 +242,7 @@ section Spectral
 
 variable [SpectralSpace X]
 
-open CategoryTheory TopCat Continuous
+open CategoryTheory TopCat Continuous Limits
 
 theorem ConnectedComponents.spectralSpace_of_isPullback {Y T : Type u} [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
@@ -290,11 +250,120 @@ theorem ConnectedComponents.spectralSpace_of_isPullback {Y T : Type u} [Topologi
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     SpectralSpace Y := pb.spectralSpace
 
+omit [SpectralSpace X] in
+/-- The first projection of a pullback along the connected components map is surjective. -/
+theorem ConnectedComponents.surjective_fst_of_isPullback {Y T : Type u} [TopologicalSpace Y]
+    [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
+    {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
+    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
+    Function.Surjective g := by
+  classical
+  let mkX : C(X, ConnectedComponents X) := ⟨mk, continuous_coe⟩
+  intro t
+  rcases ConnectedComponents.surjective_coe (i t) with ⟨x, hx⟩
+  let p : { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+    ⟨⟨t, x⟩, hx.symm⟩
+  let q : (pullback (ofHom i) (ofHom mkX) : TopCat) :=
+    (TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX)).inv p
+  refine ⟨pb.isoPullback.inv q, ?_⟩
+  have hq : g (pb.isoPullback.inv q) = pullback.fst (ofHom i) (ofHom mkX) q :=
+    ConcreteCategory.congr_hom pb.isoPullback_inv_fst q
+  have hfst : pullback.fst (ofHom i) (ofHom mkX) q = t := by
+    simpa [q] using TopCat.pullbackIsoProdSubtype_inv_fst_apply (ofHom i) (ofHom mkX) p
+  simp [hq, hfst]
+
+omit [SpectralSpace X] in
+/-- The fibers of the first projection of a pullback along the connected components map are
+preconnected. -/
+theorem ConnectedComponents.isPreconnected_fiber_of_isPullback {Y T : Type u}
+    [TopologicalSpace Y] [TopologicalSpace T] [CompactSpace T] [T2Space T]
+    [TotallyDisconnectedSpace T] {f : C(Y, X)} {g : C(Y, T)}
+    {i : C(T, ConnectedComponents X)}
+    (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩))
+    (t : T) : IsPreconnected ((g : Y → T) ⁻¹' ({t} : Set T)) := by
+  classical
+  let mkX : C(X, ConnectedComponents X) := ⟨mk, continuous_coe⟩
+  -- Transport to the (concrete) pullback.
+  let eY : Y ≃ₜ (pullback (ofHom i) (ofHom mkX) : TopCat) := homeoOfIso pb.isoPullback
+  let fiberP : Set (pullback (ofHom i) (ofHom mkX) : TopCat) :=
+    (pullback.fst (ofHom i) (ofHom mkX)) ⁻¹' ({t} : Set T)
+  have hsetY : ((g : Y → T) ⁻¹' ({t} : Set T)) = eY.symm '' fiberP := by
+    ext y
+    constructor
+    · intro hy
+      refine ⟨eY y, ?_, by simp⟩
+      have hy' : g y = t := by simpa using hy
+      have heq : pullback.fst (ofHom i) (ofHom mkX) (eY y) = g y :=
+        ConcreteCategory.congr_hom pb.isoPullback_hom_fst y
+      simp [fiberP, heq, hy']
+    · rintro ⟨q, hq, rfl⟩
+      have hgq : g (eY.symm q) = pullback.fst (ofHom i) (ofHom mkX) q :=
+        ConcreteCategory.congr_hom pb.isoPullback_inv_fst q
+      simpa [hgq] using hq
+  -- Work in the explicit subtype pullback `S ⊆ T × X`.
+  let eS :
+      (pullback (ofHom i) (ofHom mkX) : TopCat) ≃ₜ
+        { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+    homeoOfIso (TopCat.pullbackIsoProdSubtype (ofHom i) (ofHom mkX))
+  let FSt : Set { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+    { p | (p : T × X).fst = t }
+  -- Show `FSt` is preconnected: it is the continuous image of a connected component in `X`.
+  have hFSt : IsPreconnected FSt := by
+    rcases ConnectedComponents.surjective_coe (i t) with ⟨x0, hx0⟩
+    let A : Set X := ((↑) : X → ConnectedComponents X) ⁻¹' ({i t} : Set (ConnectedComponents X))
+    have hA : IsPreconnected A := by
+      have hA' : A = connectedComponent x0 := by
+        simpa [A, hx0] using (connectedComponents_preimage_singleton (α := X) (x := x0))
+      simpa [hA'] using (isPreconnected_connectedComponent (x := x0))
+    letI : PreconnectedSpace A := (isPreconnected_iff_preconnectedSpace (s := A)).1 hA
+    let φ : A → { p : T × X // i p.1 = (mkX : X → ConnectedComponents X) p.2 } :=
+      fun ⟨x, hxA⟩ => ⟨⟨t, x⟩, by simpa [mkX, Set.mem_singleton_iff, A] using hxA.symm⟩
+    have hφcont : Continuous φ :=
+      (continuous_const.prodMk continuous_subtype_val).subtype_mk fun ⟨x, hxA⟩ => by
+        simpa [mkX, Set.mem_singleton_iff, A] using hxA.symm
+    have hRange : Set.range φ = FSt := by
+      ext p
+      constructor
+      · rintro ⟨x, rfl⟩
+        simp [FSt, φ]
+      · intro hp
+        have hxmem : p.1.2 ∈ A := by
+          have h : i p.1.1 = (p.1.2 : ConnectedComponents X) := by simpa [mkX] using p.2
+          have hip : i t = i p.1.1 := by simpa using (congrArg i hp).symm
+          simp [A, (hip.trans h).symm]
+        exact ⟨⟨p.1.2, hxmem⟩, Subtype.ext (Prod.ext hp.symm rfl)⟩
+    simpa [hRange, Set.image_univ] using
+      isPreconnected_univ.image (f := φ) (hf := hφcont.continuousOn)
+  have hfiberP : IsPreconnected fiberP := by
+    have hEq : fiberP = eS.symm '' FSt := by
+      ext q
+      constructor
+      · intro hq
+        refine ⟨eS q, ?_, by simp⟩
+        have hqt : pullback.fst (ofHom i) (ofHom mkX) q = t := by simpa using hq
+        have : (eS q : T × X).fst = pullback.fst (ofHom i) (ofHom mkX) q := by
+          simpa using congrArg Prod.fst <| congrArg Subtype.val <|
+            TopCat.pullbackIsoProdSubtype_hom_apply (f := ofHom i) (g := ofHom mkX) (x := q)
+        simp [FSt, this, hqt]
+      · rintro ⟨p, hp, rfl⟩
+        have : pullback.fst (ofHom i) (ofHom mkX) (eS.symm p) = (p : T × X).fst := by
+          simpa [eS] using TopCat.pullbackIsoProdSubtype_inv_fst_apply (ofHom i) (ofHom mkX) p
+        simp [fiberP, this, show (p : T × X).fst = t by simpa [FSt] using hp]
+    simpa [hEq] using hFSt.image (f := eS.symm) (hf := eS.symm.continuous.continuousOn)
+  simpa [hsetY] using hfiberP.image (f := eY.symm) (hf := eY.symm.continuous.continuousOn)
+
+omit [SpectralSpace X] in
 theorem ConnectedComponents.lift_bijective_of_isPullback {Y T : Type u} [TopologicalSpace Y]
     [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]
     {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
-    Function.Bijective (connectedComponentsLift g.2) := sorry
+    Function.Bijective (connectedComponentsLift g.2) := by
+  refine ⟨?_, ?_⟩
+  · exact Continuous.connectedComponentsLift_injective g.2
+      (ConnectedComponents.isPreconnected_fiber_of_isPullback pb)
+  · intro t
+    rcases ConnectedComponents.surjective_fst_of_isPullback pb t with ⟨y, rfl⟩
+    exact ⟨(y : ConnectedComponents Y), by simp⟩
 
 @[stacks 096C "first part"]
 theorem ConnectedComponents.isHomeomorph_lift_of_isPullback {Y T : Type u} [TopologicalSpace Y]
@@ -303,6 +372,7 @@ theorem ConnectedComponents.isHomeomorph_lift_of_isPullback {Y T : Type u} [Topo
     (pb : IsPullback (ofHom g) (ofHom f) (ofHom i) (ofHom ⟨mk, continuous_coe⟩)) :
     IsHomeomorph (connectedComponentsLift g.2) :=
   let _ := IsPullback.compactSpace pb
-  (isHomeomorph_iff_continuous_bijective (X := ConnectedComponents Y) (Y := T)).mpr ⟨connectedComponentsLift_continuous g.2, lift_bijective_of_isPullback pb⟩
+  (isHomeomorph_iff_continuous_bijective (X := ConnectedComponents Y) (Y := T)).mpr
+    ⟨connectedComponentsLift_continuous g.2, lift_bijective_of_isPullback pb⟩
 
 end Spectral

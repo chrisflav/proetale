@@ -9,24 +9,19 @@ theorem Homeomorph.quasiSober {X Y : Type*} [TopologicalSpace X] [TopologicalSpa
   intro S hSirr hSclosed
   -- Pull back `S` along the homeomorphism.
   let T : Set X := f.symm '' S
-
   have hTclosed : IsClosed T := by
     -- `f.symm` is a homeomorphism `Y ≃ₜ X`, so it maps closed sets to closed sets.
     simpa [T] using (Homeomorph.isClosed_image (X := Y) (Y := X) f.symm (s := S)).2 hSclosed
-
   have hTirr : IsIrreducible T := by
     -- Use `IsIrreducible.image` with `ContinuousOn`.
     -- (`Continuous` implies `ContinuousOn`.)
     simpa [T] using hSirr.image (fun y : Y => f.symm y) (f.symm.continuous.continuousOn)
-
   -- Get a generic point of `T` in `X`, then transport it to `Y`.
   have hx : IsGenericPoint hTirr.genericPoint T :=
     hTirr.isGenericPoint_genericPoint hTclosed
-
   -- `hx.image` gives a generic point for `closure (f '' T)`
   have hy : IsGenericPoint (f hTirr.genericPoint) (closure (f '' T)) :=
     hx.image f.continuous
-
   -- Now show `closure (f '' T) = S`, so `f hTirr.genericPoint` is generic for `S`.
   have hclosure : closure (f '' T) = S := by
     -- First compute `f '' T = S`.
@@ -42,11 +37,9 @@ theorem Homeomorph.quasiSober {X Y : Type*} [TopologicalSpace X] [TopologicalSpa
         exact ⟨y, hyS, by simp⟩
     -- Since `S` is closed, `closure S = S`.
     simp [himage]
-
   -- Convert the generic-point target set using `hclosure`.
   have : IsGenericPoint (f hTirr.genericPoint) S := by
     simpa [hclosure] using hy
-
   exact ⟨f hTirr.genericPoint, this⟩
 
 /-- The product of two quasi-sober spaces is quasi-sober. -/
@@ -71,6 +64,8 @@ instance QuasiSober.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   rcases (isPreirreducible_iff_isClosed_union_isClosed.mp hS.isPreirreducible) _ _
     (hU.isClosed_compl.prod isClosed_univ) (isClosed_univ.prod hV.isClosed_compl) this with h | h
   · have : Prod.fst '' S ⊆ Uᶜ := Set.image_subset_iff.mpr fun p hp => (h hp).1
-    exact closure_minimal this hU.isClosed_compl (hx₀.def ▸ subset_closure (Set.mem_singleton _)) hx₀U
+    exact closure_minimal this hU.isClosed_compl
+      (hx₀.def ▸ subset_closure (Set.mem_singleton _)) hx₀U
   · have : Prod.snd '' S ⊆ Vᶜ := Set.image_subset_iff.mpr fun p hp => (h hp).2
-    exact closure_minimal this hV.isClosed_compl (hy₀.def ▸ subset_closure (Set.mem_singleton _)) hy₀V
+    exact closure_minimal this hV.isClosed_compl
+      (hy₀.def ▸ subset_closure (Set.mem_singleton _)) hy₀V

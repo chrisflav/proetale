@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Proetale.Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+import Mathlib.CategoryTheory.Presentable.Finite
 import Proetale.Pro.Basic
 
 /-!
@@ -22,32 +24,6 @@ universe w u
 open CategoryTheory MorphismProperty Limits
 
 namespace CategoryTheory
-
-/-- The assumption on `X` is in particular satisfied if `X` is finitely presentable
-and `J` is a small filtered category. -/
-lemma exists_hom_of_preservesColimit_coyoneda {C : Type*} [Category* C] {J : Type*}
-    [Category* J] {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c) {X : C}
-    [PreservesColimit D (coyoneda.obj (.op X))] (f : X ⟶ c.pt) :
-    ∃ (j : J) (p : X ⟶ D.obj j), p ≫ c.ι.app j = f :=
-  Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f
-
-lemma exists_eq_of_preservesColimit_coyoneda {C : Type*} [Category* C] {J : Type*}
-    [Category* J] [IsFiltered J]
-    {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c) {X : C}
-    [PreservesColimit D (coyoneda.obj (.op X))]
-    {i j : J} (f : X ⟶ D.obj i) (g : X ⟶ D.obj j) (h : f ≫ c.ι.app i = g ≫ c.ι.app j) :
-    ∃ (k : J) (u : i ⟶ k) (v : j ⟶ k), f ≫ D.map u = g ≫ D.map v :=
-  (Types.FilteredColimit.isColimit_eq_iff _ (isColimitOfPreserves (coyoneda.obj (.op X)) hc)).mp h
-
-lemma exists_eq_of_preservesColimit_coyoneda_self {C : Type*} [Category* C] {J : Type*}
-    [Category* J] [IsFiltered J] {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c) {X : C}
-    [PreservesColimit D (coyoneda.obj (.op X))]
-    {i : J} (f g : X ⟶ D.obj i) (h : f ≫ c.ι.app i = g ≫ c.ι.app i) :
-    ∃ (j : J) (a : i ⟶ j), f ≫ D.map a = g ≫ D.map a := by
-  obtain ⟨j, u, v, heq⟩ := exists_eq_of_preservesColimit_coyoneda hc f g h
-  use IsFiltered.coeq u v, u ≫ IsFiltered.coeqHom u v
-  rw [Functor.map_comp, reassoc_of% heq, ← Functor.map_comp, ← IsFiltered.coeq_condition]
-  simp
 
 lemma IsFinitelyPresentable.exists_eq_of_isColimit_self {C : Type*} [Category* C]
     {J : Type w} [SmallCategory J] [IsFiltered J] {D : J ⥤ C} {c : Cocone D}

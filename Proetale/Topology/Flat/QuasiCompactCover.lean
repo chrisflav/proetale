@@ -66,7 +66,8 @@ lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover (precover
       Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.h₀ j) := by
   obtain ⟨n, f, V, hV, h⟩ := QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.1
     (show IsCompact (⊤ : Opens S).carrier from isCompact_univ)
-  simp [← Set.univ_subset_iff, Set.subset_def] at h
+  simp only [coe_top, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_iUnion,
+    Set.mem_image, SetLike.mem_coe, forall_const] at h
   choose idx x hmem hx using h
   refine ⟨?_, ?_, ?_, ?_⟩
   · exact
@@ -88,7 +89,12 @@ lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover (precover
   · infer_instance
 
 instance {S : Scheme.{u}} [IsAffine S] (𝒰 : S.AffineCover P) [Finite 𝒰.I₀] :
-    QuasiCompactCover 𝒰.cover.toPreZeroHypercover :=
-  sorry
+    QuasiCompactCover 𝒰.cover.toPreZeroHypercover where
+  isCompactOpenCovered_of_isAffineOpen {U} hU := by
+    have : Finite 𝒰.cover.I₀ := inferInstanceAs (Finite 𝒰.I₀)
+    have (i : 𝒰.I₀) : IsAffine (𝒰.cover.X i) := isAffine_Spec _
+    have (i : 𝒰.I₀) : QuasiCompact (𝒰.cover.f i) := inferInstance
+    exact .of_finite_of_isSpectralMap (fun i ↦ (𝒰.cover.f i).isSpectralMap)
+      (fun x _ ↦ ⟨𝒰.idx x, 𝒰.covers x⟩) U.2 hU.isCompact
 
 end AlgebraicGeometry.Scheme.Cover.QuasiCompact

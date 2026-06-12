@@ -45,7 +45,8 @@ instance : (forget₂ (CommAlgCat.{v} R) CommRingCat.{v}).ReflectsIsomorphisms :
 
 instance (R : Type u) [CommRing R] :
     PreservesFilteredColimits (forget₂ (CommAlgCat.{u} R) CommRingCat.{u}) := by
-  show PreservesFilteredColimits <| (commAlgCatEquivUnder (.of R)).functor ⋙ Under.forget (CommRingCat.of R)
+  change PreservesFilteredColimits <|
+    (commAlgCatEquivUnder (.of R)).functor ⋙ Under.forget (CommRingCat.of R)
   infer_instance
 
 instance : ReflectsFilteredColimits (forget₂ (CommAlgCat.{u} R) (CommRingCat.{u})) := by

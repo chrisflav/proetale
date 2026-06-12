@@ -6,6 +6,7 @@ Authors: Jiedong Jiang, Christian Merten
 import Proetale.Mathlib.Topology.Inseparable
 import Proetale.Mathlib.Topology.Separation.Basic
 import Proetale.Mathlib.Topology.Spectral.Basic
+import Proetale.Topology.SpectralSpace.Constructible
 import Mathlib.Topology.JacobsonSpace
 
 /-!
@@ -37,6 +38,8 @@ structure IsWLocalMap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f
   closedPoints_subset_preimage_closedPoints : closedPoints X ⊆ f ⁻¹' (closedPoints Y)
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+open Topology
 
 /-- A w-local map sends closed points to closed points. -/
 lemma IsWLocalMap.isClosed_singleton {f : X → Y} (hf : IsWLocalMap f)
@@ -115,18 +118,12 @@ lemma Topology.IsClosedEmbedding.wLocalSpace {f : X → Y} (hf : IsClosedEmbeddi
     hf.isClosedMap.isClosed_range.stableUnderSpecialization
 
 lemma isClosed_generalizationHull_of_wLocalSpace [WLocalSpace X] {s : Set X} (hs : IsClosed s) :
-    IsClosed (generalizationHull s) :=
-  sorry
-
-/-- If `X` is w-local, the composition `closedPoints X → X → ConnectedComponents X` is
-a homeomorphism. -/
-lemma WLocalSpace.isHomeomorph_connectedComponents_closedPoints (X : Type*) [TopologicalSpace X]
-    [WLocalSpace X] :
-    IsHomeomorph (ConnectedComponents.mk ∘ ((↑) : closedPoints X → X)) :=
-  sorry
-
-/-- The closed points of a w-local space are homeomorphic to the connected components. -/
-noncomputable
-def WLocalSpace.closedPointsHomeomorph {X : Type*} [TopologicalSpace X] [WLocalSpace X] :
-    closedPoints X ≃ₜ ConnectedComponents X :=
-  (WLocalSpace.isHomeomorph_connectedComponents_closedPoints X).homeomorph
+    IsClosed (generalizationHull s) := by
+  have ⟨u, hu1, hu2⟩ := generalizationHull.eq_sInter_of_isCompact
+    (isCompact_univ.of_isClosed_subset hs (Set.subset_univ s))
+  have hsg : IsClosed[constructibleTopology X] (generalizationHull s) := by
+    refine hu2 ▸ @isClosed_sInter X (constructibleTopology X) _ fun t ht ↦ ?_
+    obtain ⟨ht1, ht2⟩ := hu1 ht
+    exact ht2.isClosed_constructibleTopology_of_isOpen ht1
+  exact hsg.of_isClosed_constructibleTopology
+    hs.stableUnderSpecialization.generalizationHull_of_wLocalSpace

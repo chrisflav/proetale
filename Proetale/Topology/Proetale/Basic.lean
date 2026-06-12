@@ -24,6 +24,33 @@ variable (X : Scheme.{u})
 def zariskiTopology : GrothendieckTopology X.ProEt :=
   smallGrothendieckTopologyOfLE (P := @IsOpenImmersion) _ fun _ _ _ _ ↦ inferInstance
 
+lemma zariskiTopology_le_topology : zariskiTopology X ≤ topology X :=
+  sorry
+
+lemma zariskiTopology_eq :
+    zariskiTopology X =
+      Precoverage.toGrothendieck
+        (Precoverage.comap (ProEt.forget _ ⋙ Over.forget _) Scheme.zariskiPrecoverage) := by
+  sorry
+
+instance : (precoverage X).HasIsos := by
+  dsimp [precoverage]
+  infer_instance
+
+instance : (precoverage X).IsStableUnderComposition := by
+  dsimp [precoverage]
+  infer_instance
+
+instance : (precoverage X).IsStableUnderBaseChange := by
+  dsimp [precoverage]
+  infer_instance
+
+variable {S : Scheme.{u}}
+
+instance {X Y : S.ProEt} (f : X ⟶ Y) : WeaklyEtale f.left :=
+  have : WeaklyEtale (f.left ≫ Y.hom) := by simp [X.prop]
+  .of_comp _ Y.hom
+
 end ProEt
 
 end AlgebraicGeometry.Scheme

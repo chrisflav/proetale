@@ -18,7 +18,34 @@ of representable functors. This category satisfies the following universal prope
     The left-adjoint is the left Kan extension along the inclusion $\mathcal{C} \to \pro{\mathcal{C}}$.
 \end{proof}
 
-\url{https://ncatlab.org/nlab/show/pro-object#PropositionCategoriesEquivalentToProC}
+Let now $\mathcal{K}$ be a small category. The canonical functor $\mathcal{C} \to \pro{\mathcal{C}}$ induces
+a functor $\mathrm{Fun}(\mathcal{K}, \mathcal{C}) \to \mathrm{Fun}(\mathcal{K}, \mathcal{\pro{\mathcal{C}}})$.
+Since the right hand side admits small cofiltered limits, the universal property
+of $\pro{\mathcal{C}}$ induces a canonical functor
+\[
+    \Phi_{\mathcal{K}}\colon \pro{\mathrm{Fun}(\mathcal{K}, \mathcal{C})} \longrightarrow
+    \mathrm{Fun}(\mathcal{K}, \mathcal{\pro{\mathcal{C}}})
+.\]
+
+\begin{proposition}
+    Suppose $\mathcal{K}$ is a finite category and every object of $\mathcal{K}$ admits no
+    non-trivial automorphisms. Then the natural functor $\Phi_K$ induces
+    an equivalence of categories.
+    \uses{prop:pro-univ-prop}
+    \label{prop:finite-diag-pro}
+\end{proposition}
+
+\begin{proof}
+    See \cite[Theorem 6.4.3]{kashiwara-shapira}.
+\end{proof}
+
+\begin{example}
+    \label{ex:finite-diag-pro}
+    Note that \Cref{prop:finite-diag-pro} in particular implies that if there is a
+    finite family of morphisms $f_i \colon X_i \to X$ in $\pro{C}$, there exists a diagram $\mathcal{J}$ such
+    that $X = \lim_{j \in \mathcal{J}} Y_j$ and $X_i = \lim_{j \in \mathcal{J}} Y_{ij}$
+    and $f_i = \lim_{j \in \mathcal{J}} f_{ij}$ for morphisms $f_{ij}\colon Y_{ij} \to Y_j$.
+\end{example}
 
 \begin{proposition}
     Let $\mathcal{A}$ be a category with cofiltered limits and suppose there exists
@@ -29,6 +56,10 @@ of representable functors. This category satisfies the following universal prope
     \] is fully faithful.
     \label{prop:pro-equiv-pro}
 \end{proposition}
+
+\begin{proof}
+    See \href{https://ncatlab.org/nlab/show/pro-object#PropositionCategoriesEquivalentToProC}{nlab}.
+\end{proof}
 
 \begin{corollary}
     Let $P$ be a property of objects on a category $\mathcal{A}$ that implies finitely presented.

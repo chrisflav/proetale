@@ -1,4 +1,5 @@
 import Mathlib
+import Proetale.Mathlib.FieldTheory.IsSepClosed
 
 -- Rename `HenselianRing` to `IsHenselianRing`, ``HenselianLocalRing` to `IsHenselianLocalRing`.
 
@@ -10,6 +11,54 @@ instance (R : Type*) [CommRing R] [IsStrictlyHenselianLocalRing R] :
     IsSepClosed (IsLocalRing.ResidueField R) :=
   IsStrictlyHenselianLocalRing.isSepClosed_residueField
 
+/-- A local ring is strictly Henselian if and only if it is Henselian and its residue
+field is separably closed. -/
+theorem isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed
+    (R : Type*) [CommRing R] [IsLocalRing R] :
+    IsStrictlyHenselianLocalRing R ↔
+      HenselianLocalRing R ∧ IsSepClosed (IsLocalRing.ResidueField R) :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩,
+    fun h ↦ have := h.1; ⟨h.2⟩⟩
+
+/-- `HenselianLocalRing` transfers along a ring isomorphism. -/
+theorem HenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
+    [HenselianLocalRing R] (e : R ≃+* S) : HenselianLocalRing S := by
+  have : IsLocalRing S := e.isLocalRing
+  refine HenselianLocalRing.mk fun f hf a₀ hmem hunit => ?_
+  let f' : Polynomial R := f.map e.symm.toRingHom
+  have heval : f'.eval (e.symm a₀) = e.symm (f.eval a₀) :=
+    Polynomial.eval_map_apply (p := f) e.symm.toRingHom a₀
+  have hderiv : f'.derivative.eval (e.symm a₀) = e.symm (f.derivative.eval a₀) := by
+    rw [Polynomial.derivative_map (f := e.symm.toRingHom)]
+    exact Polynomial.eval_map_apply (p := f.derivative) e.symm.toRingHom a₀
+  have hmem' : f'.eval (e.symm a₀) ∈ IsLocalRing.maximalIdeal R := by
+    rw [IsLocalRing.mem_maximalIdeal] at hmem
+    rw [heval, IsLocalRing.mem_maximalIdeal]
+    intro hu
+    exact hmem (by simpa using hu.map e)
+  have hunit' : IsUnit (f'.derivative.eval (e.symm a₀)) :=
+    hderiv ▸ hunit.map e.symm.toRingHom
+  obtain ⟨a, ha_root, ha_diff⟩ :=
+    HenselianLocalRing.is_henselian f' (hf.map _) (e.symm a₀) hmem' hunit'
+  refine ⟨e a, ?_, ?_⟩
+  · have hf_eq : f'.map e.toRingHom = f := by
+      simp [f', Polynomial.map_map]
+    have key : f.eval (e a) = e (f'.eval a) := by
+      rw [← hf_eq]; exact Polynomial.eval_map_apply (p := f') e.toRingHom a
+    rw [Polynomial.IsRoot.def, key, Polynomial.IsRoot.def.mp ha_root, map_zero]
+  · rw [IsLocalRing.mem_maximalIdeal] at ha_diff ⊢
+    intro hu
+    apply ha_diff
+    have : a - e.symm a₀ = e.symm (e a - a₀) := by simp
+    rw [this]
+    exact hu.map e.symm.toRingHom
+
+/-- `IsStrictlyHenselianLocalRing` transfers along a ring isomorphism. -/
+theorem IsStrictlyHenselianLocalRing.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S]
+    [IsStrictlyHenselianLocalRing R] (e : R ≃+* S) : IsStrictlyHenselianLocalRing S :=
+  have : HenselianLocalRing S := .of_ringEquiv e
+  ⟨IsSepClosed.of_ringEquiv (IsLocalRing.ResidueField.mapEquiv e)⟩
+
 universe u v
 
 noncomputable section
@@ -20,7 +69,8 @@ variable {R : Type u} [CommRing R] (f : R[X])
 
 -- f(X), f'(X)Y - 1
 private def idealJ (f : R[X]) : Ideal (MvPolynomial (Fin 2) R) :=
-  (span (Set.range ![toMvPolynomial (0 : Fin 2) f, (toMvPolynomial (0 : Fin 2) f.derivative) * X 1 - 1]))
+  (span (Set.range
+    ![toMvPolynomial (0 : Fin 2) f, (toMvPolynomial (0 : Fin 2) f.derivative) * X 1 - 1]))
 
 private def S : Type u := MvPolynomial (Fin 2) R ⧸ (idealJ f)
 
@@ -93,7 +143,7 @@ private def submersivePresentationS (f : R[X]) : SubmersivePresentation R (S f) 
       have (x : (MvPolynomial (Fin 2) R)) :
           (algebraMap (preSubmersivePresentationS f).Ring (S f)) x = mk (idealJ f) x := by rfl
       rw [this]
-      simp
+      simp only [Fin.isValue, map_sub, map_mul]
       rw [preSubmersivePresentationS_jacobiMatrix_00]
       rw [preSubmersivePresentationS_jacobiMatrix_11]
       rw [preSubmersivePresentationS_jacobiMatrix_01]
@@ -108,8 +158,10 @@ private instance : IsStandardSmoothOfRelativeDimension 0 R (S f) := by
   use (Fin 2), (Fin 2), inferInstance, inferInstance, (submersivePresentationS f)
   simp [Presentation.dimension]
 
-private theorem aeval_zero_of_mem_span {I : Ideal R} {f : R[X]} {a₀ : R} (e : Polynomial.eval a₀ f ∈ I)
-    (u : IsUnit ((mk I) ((derivative f).eval a₀))) {a : MvPolynomial (Fin 2) R} (ha : a ∈ idealJ f) :
+private theorem aeval_zero_of_mem_span {I : Ideal R} {f : R[X]} {a₀ : R}
+    (e : Polynomial.eval a₀ f ∈ I)
+    (u : IsUnit ((mk I) ((derivative f).eval a₀))) {a : MvPolynomial (Fin 2) R}
+    (ha : a ∈ idealJ f) :
     (MvPolynomial.aeval
     ![(mk I) a₀, u.unit.inv]) a = 0 := by
   suffices hJ : idealJ f ≤ RingHom.ker (MvPolynomial.aeval ![(mk I) a₀, u.unit.inv]) by
@@ -124,7 +176,8 @@ private theorem aeval_zero_of_mem_span {I : Ideal R} {f : R[X]} {a₀ : R} (e : 
     rw [ha]
     simp only [SetLike.mem_coe, RingHom.mem_ker, aeval_toMvPolynomial,
       Matrix.cons_val_zero]
-    rw [← Ideal.Quotient.algebraMap_eq, Polynomial.aeval_algebraMap_apply, Ideal.Quotient.algebraMap_eq]
+    rw [← Ideal.Quotient.algebraMap_eq, Polynomial.aeval_algebraMap_apply,
+      Ideal.Quotient.algebraMap_eq]
     simp [Ideal.Quotient.eq_zero_iff_mem, e]
   | inr ha =>
     rw [ha]
@@ -133,7 +186,8 @@ private theorem aeval_zero_of_mem_span {I : Ideal R} {f : R[X]} {a₀ : R} (e : 
       Matrix.cons_val_one, Matrix.cons_val_fin_one, map_one]
     conv =>
       enter [1, 1, 1]
-      rw [← Ideal.Quotient.algebraMap_eq, Polynomial.aeval_algebraMap_apply, Ideal.Quotient.algebraMap_eq]
+      rw [← Ideal.Quotient.algebraMap_eq, Polynomial.aeval_algebraMap_apply,
+        Ideal.Quotient.algebraMap_eq]
     simp
 
 private def g {I : Ideal R} {f : R[X]} {a₀ : R} (e : Polynomial.eval a₀ f ∈ I)
@@ -157,12 +211,15 @@ theorem henselian_if_exists_section (R : Type u)
       suffices hs : Polynomial.aeval (mk (idealJ f) (X 0)) f = 0 by
         calc
           _ = aeval (σ ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0))) f := rfl
-          _ = σ (aeval ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0)) f) := Polynomial.aeval_algHom_apply _ _ _
+          _ = σ (aeval ((Ideal.Quotient.mk (idealJ f)) (MvPolynomial.X 0)) f) :=
+                Polynomial.aeval_algHom_apply _ _ _
           _ = 0 := by rw [hs]; simp
       suffices ht : Ideal.Quotient.mk (idealJ f) (Polynomial.aeval (X 0) f) = 0 by
-        rw [← Ideal.Quotient.mkₐ_eq_mk R, Polynomial.aeval_algHom_apply, Ideal.Quotient.mkₐ_eq_mk R, ht]
+        rw [← Ideal.Quotient.mkₐ_eq_mk R, Polynomial.aeval_algHom_apply,
+          Ideal.Quotient.mkₐ_eq_mk R, ht]
       apply Ideal.Quotient.eq_zero_iff_mem.mpr
-      simp [idealJ]
+      simp only [idealJ, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.range_cons,
+        Matrix.range_empty, Set.union_empty, Set.union_singleton]
       suffices this : (Polynomial.aeval (MvPolynomial.X (0 : Fin 2))) f = (toMvPolynomial 0) f by
         rw [this]
         apply Ideal.subset_span
@@ -171,10 +228,15 @@ theorem henselian_if_exists_section (R : Type u)
     · suffices hq : (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0)) - a₀) = 0 by
         apply Ideal.Quotient.eq_zero_iff_mem.mp hq
       calc
-        _ = (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0))) - (Ideal.Quotient.mk I) a₀ := by simp
-        _ = ((Ideal.Quotient.mk I).comp σ.toRingHom) ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp
-        _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0)) - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
-        _ = 0 := sorry
+        _ = (Ideal.Quotient.mk I) (σ ((Ideal.Quotient.mk (idealJ f)) (X 0)))
+              - (Ideal.Quotient.mk I) a₀ := by simp
+        _ = ((Ideal.Quotient.mk I).comp σ.toRingHom) ((Ideal.Quotient.mk (idealJ f)) (X 0))
+              - (Ideal.Quotient.mk I) a₀ := by simp
+        _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0))
+              - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
+        _ = 0 := by
+          rw [sub_eq_zero, g]
+          exact (Ideal.Quotient.lift_mk _ _ _).trans (by simp)
 
 -- Success
 

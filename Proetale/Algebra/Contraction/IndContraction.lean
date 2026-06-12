@@ -3,10 +3,12 @@ Copyright (c) 2025 Jiedong Jiang, Christian Merten, Andrew Yang. All rights rese
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten, Andrew Yang
 -/
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.MorphismProperty.Comma
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
 
 /-!
@@ -37,8 +39,8 @@ lemma isFiltered_costructuredArrow_forget' [HasPushouts C]
     fapply CategoryTheory.CostructuredArrow.mk
     · exact (Under.mk ⊤ (𝟙 X) (P.id_mem X))
     · fapply CategoryTheory.Under.homMk
-      exact S.hom
-      simp
+      · exact S.hom
+      · simp
   have : IsFilteredOrEmpty (CostructuredArrow (Under.forget P ⊤ X) S) := by
     refine ⟨fun u v ↦ ⟨?_, ?_, ?_, trivial⟩, fun u v f g ↦ ?_⟩
     · fapply CategoryTheory.CostructuredArrow.mk
@@ -51,17 +53,17 @@ lemma isFiltered_costructuredArrow_forget' [HasPushouts C]
           · simp
         · simp
     · fapply CategoryTheory.CostructuredArrow.homMk
-      fapply Under.homMk
-      · exact pushout.inl _ _
-      · simp
-      · simp
+      · fapply Under.homMk
+        · exact pushout.inl _ _
+        · simp
+        · simp
       · ext
         simp
     · fapply CategoryTheory.CostructuredArrow.homMk
-      fapply Under.homMk
-      · exact pushout.inr _ _
-      · simp [pushout.condition]
-      · simp
+      · fapply Under.homMk
+        · exact pushout.inr _ _
+        · simp [pushout.condition]
+        · simp
       · ext
         simp
     · refine ⟨?_, ?_, ?_⟩
@@ -83,7 +85,7 @@ lemma isFiltered_costructuredArrow_forget' [HasPushouts C]
           exact hc.desc s
       · fapply CategoryTheory.CostructuredArrow.homMk
         · apply coequalizer.π
-        · show (Under.forget P ⊤ X).map _ ≫ _ = _
+        · change (Under.forget P ⊤ X).map _ ≫ _ = _
           apply
             (isColimitOfPreserves (Under.forget P ⊤ X)
             (colimit.isColimit (parallelPair f.left g.left))).fac
@@ -162,8 +164,19 @@ lemma ι_fromIndContraction (S : Under X)
   (isColimitIndContractionCocone P S).fac _ _
 
 /-- The `P`-ind contraction of `X ⟶ S` is ind-`P` over `X`. -/
-lemma property_indContraction_hom (S : Under X) : P.ind ((indContraction P X).obj S).hom :=
-  sorry
+lemma property_indContraction_hom [HasPushouts C] [P.IsMultiplicative]
+    [P.IsStableUnderCobaseChange] [HasCoequalizers (P.Under ⊤ X)]
+    [PreservesColimitsOfShape WalkingParallelPair (Under.forget P ⊤ X)]
+    [EssentiallySmall.{max u v} (P.Under ⊤ X)] [LocallySmall.{max u v} (Under X)]
+    (S : Under X) :
+    ind.{max u v} P ((indContraction P X).obj S).hom := by
+  rw [ind_iff_ind_underMk]
+  have : IsFiltered (CostructuredArrow (Under.forget P ⊤ X) S) :=
+    isFiltered_costructuredArrow_forget' P X
+  refine ObjectProperty.of_essentiallySmall_index (J := CostructuredArrow (Under.forget P ⊤ X) S)
+    { diag := CostructuredArrow.proj (Under.forget P ⊤ X) S ⋙ Under.forget P ⊤ X
+      ι := (indContractionCocone P S).ι
+      isColimit := isColimitIndContractionCocone P S } fun j ↦ j.left.2
 
 lemma exists_costructuredArrow_aux [HasPushouts C] [IndSpreads P]
     {S : Under X} (hS : ∀ {T : Under X} (g : S ⟶ T), P g.right → Q g.right →
@@ -175,7 +188,8 @@ lemma exists_costructuredArrow_aux [HasPushouts C] [IndSpreads P]
     (hQf : Q f.right)
     (j : CostructuredArrow (Under.forget P ⊤ X) S)
     (T' : C)
-    (f' : ((CostructuredArrow.proj _ _ ⋙ Under.forget P ⊤ X) ⋙ CategoryTheory.Under.forget X).obj j ⟶ T')
+    (f' : ((CostructuredArrow.proj _ _ ⋙ Under.forget P ⊤ X) ⋙
+        CategoryTheory.Under.forget X).obj j ⟶ T')
     (g : T' ⟶ T.right)
     (h : IsPushout ((indContractionCocone P S).ι.app j).right f' f.right g)
     (hf' : P f') :

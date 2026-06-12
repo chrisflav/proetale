@@ -34,12 +34,6 @@ lemma Precoverage.functorPushforward_mem_toGrothendieck {C D : Type*} [Category*
   apply Sieve.functorPushforward_monotone
   rwa [Sieve.generate_le_iff]
 
-@[simp]
-lemma PreOneHypercover.map_toPreZeroHypercover {C D : Type*} [Category* C] [Category* D]
-    (F : C ⥤ D) {X : C} (E : PreOneHypercover X) :
-    (E.map F).toPreZeroHypercover = E.toPreZeroHypercover.map F :=
-  rfl
-
 lemma PreOneHypercover.sieve₀_map {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) {X : C} (E : PreOneHypercover X) :
     (E.map F).sieve₀ = E.sieve₀.functorPushforward F := by
@@ -93,7 +87,8 @@ lemma isPullback_restrictPreimage {X Y : TopCat} (f : X ⟶ Y) (U : Set Y) :
       (ofHom <| ⟨Subtype.val, by fun_prop⟩) := by
   refine ⟨⟨by ext; simp⟩, ⟨Limits.PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
   · intro s
-    refine ⟨fun x ↦ ⟨s.fst x, by simp [show _ = _ by simpa using congr($(s.condition) x)]⟩, by fun_prop⟩
+    refine TopCat.ofHom ⟨fun x ↦ ⟨s.fst x,
+      by simp [show _ = _ by simpa using congr($(s.condition) x)]⟩, by fun_prop⟩
   · intro; rfl
   · intro s
     ext
