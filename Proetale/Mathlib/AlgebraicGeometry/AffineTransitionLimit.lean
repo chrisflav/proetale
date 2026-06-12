@@ -339,13 +339,36 @@ variable (D' : I ⥤ Scheme.{u}) (t' : D' ⟶ (Functor.const I).obj S) (c' : Con
 variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D'.map f)]
   [∀ (i : I), CompactSpace (D'.obj i)] [∀ (i : I), QuasiSeparatedSpace (D'.obj i)]
 
-/-- If `lim fᵢ` is surjective, there exists `i` such that for all `k ≥ i`, `fₖ` is surjective.
-[EGA4.3, Thm. 8.10.5 (vi)] -/
-lemma exists_surjective_app_of_surjective_isLimitMap (f : D ⟶ D')
-    [∀ i, LocallyOfFinitePresentation (t.app i)] [∀ i, LocallyOfFinitePresentation (t'.app i)]
+omit [∀ {i j : I} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ (i : I), CompactSpace ↥(D.obj i)]
+  [∀ (i : I), QuasiSeparatedSpace ↥(D.obj i)] [∀ (i : I), QuasiSeparatedSpace ↥(D'.obj i)] in
+include hc' in
+/-- If `lim fᵢ` is surjective and `fᵢ` has open image (e.g. if `fᵢ` is étale), then the image of
+a deep enough transition map `D'ₖ ⟶ D'ᵢ` is contained in the image of `fᵢ`. In particular, the
+base change of `fᵢ` along `D'ₖ ⟶ D'ᵢ` is surjective. Compare [EGA4.3, Thm. 8.10.5 (vi)].
+
+Note that the naive statement "`fₖ` is surjective for all `k ⟶ i` for `i` deep enough" is false
+for a general natural transformation `f`: EGA 8.10.5 considers systems induced from a single
+morphism by base change. (Counterexample: `I = ℕᵒᵖ`, `D k = 𝔸¹ ∖ {0, …, k}`,
+`D' k = 𝔸¹ ∖ {0, …, k - 1}` with `f.app k` the open immersion; no `f.app k` is surjective,
+but the limit map is an isomorphism.) -/
+lemma exists_range_map_subset_range_app_of_surjective_isLimitMap (f : D ⟶ D') (i : I)
+    (hopen : IsOpenMap (f.app i).base)
     (hf : Surjective (IsLimit.map c hc' f)) :
-    ∃ (i : I), ∀ (k : I) (fki : k ⟶ i), Surjective (f.app k) :=
-  sorry
+    ∃ (k : I) (fki : k ⟶ i), Set.range (D'.map fki).base ⊆ Set.range (f.app i).base := by
+  let U : (D'.obj i).Opens := ⟨Set.range (f.app i).base, hopen.isOpen_range⟩
+  obtain ⟨k, fki, hk⟩ := exists_map_eq_top D' c' hc' (i := i) U <| by
+    rw [TopologicalSpace.Opens.ext_iff]
+    refine Set.eq_univ_of_forall fun y ↦ ?_
+    obtain ⟨x, rfl⟩ := hf.surj y
+    refine ⟨(c.π.app i) x, ?_⟩
+    calc (f.app i) ((c.π.app i) x)
+        = (c.π.app i ≫ f.app i) x := (Scheme.Hom.comp_apply _ _ _).symm
+      _ = (IsLimit.map c hc' f ≫ c'.π.app i) x :=
+        (congrArg (fun g : c.pt ⟶ D'.obj i ↦ g x) (IsLimit.map_π c hc' f i)).symm
+      _ = (c'.π.app i) ((IsLimit.map c hc' f) x) := Scheme.Hom.comp_apply _ _ _
+  refine ⟨k, fki, fun y ⟨z, hz⟩ ↦ ?_⟩
+  have : z ∈ (D'.map fki ⁻¹ᵁ U : Set (D'.obj k)) := by rw [hk]; trivial
+  rwa [← hz]
 
 end
 
