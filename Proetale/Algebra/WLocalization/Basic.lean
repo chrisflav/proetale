@@ -937,11 +937,129 @@ lemma exists_mem_zeroLocus_ideal_specializes (x : PrimeSpectrum (WLocalization A
     (((PrimeSpectrum.comap (ιRingHom A G) x).asIdeal ⊔
       ProdStrata.ideal G).eq_top_iff_one.mpr h_one_mem)
 
-lemma zeroLocus_ideal_eq : zeroLocus (ideal A) = closedPoints (PrimeSpectrum (WLocalization A)) :=
-  sorry
+/-- Comparable primes of a product of rings lie over the same factor. -/
+private lemma eq_of_comap_evalRingHom_le {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)]
+    {i j : ι} {p : PrimeSpectrum (R i)} {q : PrimeSpectrum (R j)}
+    (h : PrimeSpectrum.comap (Pi.evalRingHom R i) p ≤
+      PrimeSpectrum.comap (Pi.evalRingHom R j) q) :
+    i = j := by
+  classical
+  by_contra hne
+  have hmem : (Pi.single j 1 : ∀ k, R k) ∈
+      (PrimeSpectrum.comap (Pi.evalRingHom R i) p).asIdeal := by
+    rw [PrimeSpectrum.comap_asIdeal, Ideal.mem_comap]
+    simp [Pi.single_eq_of_ne hne]
+  have h1 : (1 : R j) ∈ q.asIdeal := by
+    have h2 := (PrimeSpectrum.asIdeal_le_asIdeal _ _).mpr h hmem
+    rw [PrimeSpectrum.comap_asIdeal, Ideal.mem_comap] at h2
+    simpa using h2
+  exact q.isPrime.ne_top ((Ideal.eq_top_iff_one _).mpr h1)
 
-instance isWLocalRing : IsWLocalRing (WLocalization A) :=
-  sorry
+/-- If `x` specializes to both `c` and `c'` and both lie in `V(ideal A)`, the image of `c`
+in `Spec A` is contained in the image of `c'`. This is the key step in proving that every
+point of `Spec (WLocalization A)` specializes to a *unique* point of `V(ideal A)`. -/
+lemma comap_algebraMap_le_of_specializes {x c c' : PrimeSpectrum (WLocalization A)}
+    (hc : c ∈ zeroLocus (ideal A)) (hc' : c' ∈ zeroLocus (ideal A))
+    (hxc : x ⤳ c) (hxc' : x ⤳ c') :
+    (PrimeSpectrum.comap (algebraMap A (WLocalization A)) c).asIdeal ≤
+      (PrimeSpectrum.comap (algebraMap A (WLocalization A)) c').asIdeal := by
+  classical
+  intro f hf
+  -- Work at the finite stage `E = {f}`, whose strata refine the decomposition
+  -- `Spec A = D(f) ⨿ V(f)`.
+  set E : Finset A := {f} with hE
+  obtain ⟨ix, qx, hqx⟩ := PrimeSpectrum.exists_comap_evalRingHom_eq
+    (PrimeSpectrum.comap (ιRingHom A E) x :
+      PrimeSpectrum (∀ i : Stratification.Index E, Generalization i.function i.ideal))
+  obtain ⟨ic, qc, hqc⟩ := PrimeSpectrum.exists_comap_evalRingHom_eq
+    (PrimeSpectrum.comap (ιRingHom A E) c :
+      PrimeSpectrum (∀ i : Stratification.Index E, Generalization i.function i.ideal))
+  obtain ⟨ic', qc', hqc'⟩ := PrimeSpectrum.exists_comap_evalRingHom_eq
+    (PrimeSpectrum.comap (ιRingHom A E) c' :
+      PrimeSpectrum (∀ i : Stratification.Index E, Generalization i.function i.ideal))
+  have hlec : PrimeSpectrum.comap (ιRingHom A E) x ≤ PrimeSpectrum.comap (ιRingHom A E) c :=
+    (PrimeSpectrum.le_iff_specializes _ _).mpr (hxc.map (PrimeSpectrum.continuous_comap _))
+  have hlec' : PrimeSpectrum.comap (ιRingHom A E) x ≤ PrimeSpectrum.comap (ιRingHom A E) c' :=
+    (PrimeSpectrum.le_iff_specializes _ _).mpr (hxc'.map (PrimeSpectrum.continuous_comap _))
+  rw [← hqx, ← hqc] at hlec
+  rw [← hqx, ← hqc'] at hlec'
+  -- Since `x` specializes to both, `c` and `c'` live over the same factor `ix`.
+  obtain rfl : ix = ic := eq_of_comap_evalRingHom_le hlec
+  obtain rfl : ix = ic' := eq_of_comap_evalRingHom_le hlec'
+  have hqc_mem : qc ∈ zeroLocus (Generalization.ideal ix.function ix.ideal : Set _) :=
+    (ProdStrata.comap_evalRingHom_mem_zeroLocus_ideal_iff ix qc).mp
+      (by rw [hqc]; exact (mem_zeroLocus_ideal_iff A c).mp hc E)
+  have hqc'_mem : qc' ∈ zeroLocus (Generalization.ideal ix.function ix.ideal : Set _) :=
+    (ProdStrata.comap_evalRingHom_mem_zeroLocus_ideal_iff ix qc').mp
+      (by rw [hqc']; exact (mem_zeroLocus_ideal_iff A c').mp hc' E)
+  -- Hence the images of `c` and `c'` in `Spec A` lie in the same stratum of `{f}`.
+  have hstr_c : PrimeSpectrum.comap (algebraMap A (WLocalization A)) c ∈
+      stratum ix.left ix.right := by
+    have h1 := (Generalization.bijOn_algebraMap_generalization_specComap_zeroLocus_ideal
+      ix.function ix.ideal).mapsTo hqc_mem
+    rw [locClosedSubset_function_ideal] at h1
+    rwa [comap_algebraMap_apply A E c, ← hqc,
+      ProdStrata.comap_algebraMap_comap_evalRingHom]
+  have hstr_c' : PrimeSpectrum.comap (algebraMap A (WLocalization A)) c' ∈
+      stratum ix.left ix.right := by
+    have h1 := (Generalization.bijOn_algebraMap_generalization_specComap_zeroLocus_ideal
+      ix.function ix.ideal).mapsTo hqc'_mem
+    rw [locClosedSubset_function_ideal] at h1
+    rwa [comap_algebraMap_apply A E c', ← hqc',
+      ProdStrata.comap_algebraMap_comap_evalRingHom]
+  -- The stratum is contained either in `D(f)` or in `V(f)`; conclude in each case.
+  by_cases hfl : f ∈ ix.left
+  · exact absurd hf <| (PrimeSpectrum.mem_basicOpen _ _).mp
+      (Set.mem_iInter₂.mp hstr_c.1 f hfl)
+  · have hfE : f ∈ E := hE ▸ Finset.mem_singleton_self f
+    have hfr : f ∈ ix.right := (Stratification.Index.mem_right_iff ix f).mpr ⟨hfE, hfl⟩
+    exact (PrimeSpectrum.mem_zeroLocus _ _).mp hstr_c'.2
+      (Ideal.subset_span (Finset.mem_coe.mpr hfr))
+
+/-- Every point of `Spec (WLocalization A)` specializes to a *unique* point of `V(ideal A)`. -/
+lemma eq_of_specializes_of_mem_zeroLocus_ideal {x c c' : PrimeSpectrum (WLocalization A)}
+    (hc : c ∈ zeroLocus (ideal A)) (hc' : c' ∈ zeroLocus (ideal A))
+    (hxc : x ⤳ c) (hxc' : x ⤳ c') : c = c' :=
+  (bijOn_algebraMap_specComap_zeroLocus_ideal A).injOn hc hc' <| PrimeSpectrum.ext <|
+    le_antisymm (comap_algebraMap_le_of_specializes A hc hc' hxc hxc')
+      (comap_algebraMap_le_of_specializes A hc' hc hxc' hxc)
+
+/-- Every closed point of `Spec (WLocalization A)` lies in `V(ideal A)`. -/
+lemma mem_zeroLocus_ideal_of_isClosed {x : PrimeSpectrum (WLocalization A)}
+    (hx : IsClosed ({x} : Set (PrimeSpectrum (WLocalization A)))) :
+    x ∈ zeroLocus (ideal A) := by
+  obtain ⟨y, hmem, hy⟩ := exists_mem_zeroLocus_ideal_specializes A x
+  obtain rfl : y = x := Set.mem_singleton_iff.mp (hy.mem_closed hx (Set.mem_singleton x))
+  exact hmem
+
+/-- Every point of `V(ideal A)` is a closed point of `Spec (WLocalization A)`. -/
+lemma isClosed_singleton_of_mem_zeroLocus_ideal {y : PrimeSpectrum (WLocalization A)}
+    (hy : y ∈ zeroLocus (ideal A)) :
+    IsClosed ({y} : Set (PrimeSpectrum (WLocalization A))) := by
+  rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal]
+  obtain ⟨m, hm, hle⟩ := y.asIdeal.exists_le_maximal y.isPrime.ne_top
+  have hM_mem : (⟨m, hm.isPrime⟩ : PrimeSpectrum (WLocalization A)) ∈ zeroLocus (ideal A) :=
+    mem_zeroLocus_ideal_of_isClosed A
+      ((PrimeSpectrum.isClosed_singleton_iff_isMaximal _).mpr hm)
+  obtain rfl : y = ⟨m, hm.isPrime⟩ :=
+    eq_of_specializes_of_mem_zeroLocus_ideal A hy hM_mem specializes_rfl
+      ((PrimeSpectrum.le_iff_specializes y ⟨m, hm.isPrime⟩).mp hle)
+  exact hm
+
+lemma zeroLocus_ideal_eq :
+    zeroLocus (ideal A) = closedPoints (PrimeSpectrum (WLocalization A)) :=
+  Set.eq_of_subset_of_subset
+    (fun _ hy ↦ mem_closedPoints_iff.mpr (isClosed_singleton_of_mem_zeroLocus_ideal A hy))
+    (fun _ hx ↦ mem_zeroLocus_ideal_of_isClosed A (mem_closedPoints_iff.mp hx))
+
+instance isWLocalRing : IsWLocalRing (WLocalization A) where
+  wLocalSpace_primeSepectrum :=
+    { toSpectralSpace := inferInstance
+      eq_of_specializes := fun hc hc' hxc hxc' ↦
+        eq_of_specializes_of_mem_zeroLocus_ideal A
+          (mem_zeroLocus_ideal_of_isClosed A hc)
+          (mem_zeroLocus_ideal_of_isClosed A hc') hxc hxc'
+      isClosed_closedPoints := zeroLocus_ideal_eq A ▸ isClosed_zeroLocus _ }
 
 lemma indZariski_prodStrata {A : Type u} [CommRing A] (E : Finset A) :
     Algebra.IndZariski A (ProdStrata E) :=
