@@ -6138,8 +6138,6 @@ window.onload = () => {
   window.addEventListener("hashchange", openFromHash);
 })();</script>
     <script>
-      window.bpTexPreludeTable = Object.assign({}, window.bpTexPreludeTable || {}, {"default":""});</script>
-    <script>
       (function () {
   const triggerSelector = ".bp_inline_preview_ref[data-bp-preview-id]";
 
@@ -6731,42 +6729,7 @@ window.onload = () => {
   }
 })();</script>
     <script>
-      (function () {
-  function bindCodeSummaryPreview(root) {
-    if (!(root instanceof Element)) return;
-    if (root.getAttribute("data-bp-code-summary-preview-bound") === "1") return;
-    root.setAttribute("data-bp-code-summary-preview-bound", "1");
-
-    const previewUtils = window.bpPreviewUtils;
-    const panel = root.querySelector(".bp_code_summary_preview_panel");
-    if (!panel || !previewUtils || typeof previewUtils.bindTemplatePreview !== "function") return;
-    previewUtils.bindTemplatePreview({
-      root: root,
-      previewRoot: root,
-      triggerRoot: root,
-      panel: panel,
-      templateSelector: "template.bp_code_summary_preview_tpl[data-bp-preview-id]",
-      triggerSelector: ".bp_code_summary_preview_wrap_active[data-bp-preview-id]",
-      keyAttr: "data-bp-preview-id",
-      titleAttr: "data-bp-preview-title",
-      titleSelector: ".bp_code_summary_preview_title",
-      bodySelector: ".bp_code_summary_preview_body",
-      closeSelector: ".bp_code_summary_preview_close",
-      triggerBoundAttr: "data-bp-code-summary-trigger-bound",
-      defaults: { mode: "hover", placement: "anchored" }
-    });
-  }
-
-  function init() {
-    document.querySelectorAll(".bp_code_summary_preview_root").forEach(bindCodeSummaryPreview);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
-  }
-})();</script>
+      window.bpTexPreludeTable = Object.assign({}, window.bpTexPreludeTable || {}, {"default":""});</script>
     <script>
       (function () {
   if (window.bpPreviewUtils) return;
@@ -7557,6 +7520,45 @@ window.onload = () => {
 })();</script>
     <script>
       (function () {
+  function bindCodeSummaryPreview(root) {
+    if (!(root instanceof Element)) return;
+    if (root.getAttribute("data-bp-code-summary-preview-bound") === "1") return;
+    root.setAttribute("data-bp-code-summary-preview-bound", "1");
+
+    const previewUtils = window.bpPreviewUtils;
+    const panel = root.querySelector(".bp_code_summary_preview_panel");
+    if (!panel || !previewUtils || typeof previewUtils.bindTemplatePreview !== "function") return;
+    previewUtils.bindTemplatePreview({
+      root: root,
+      previewRoot: root,
+      triggerRoot: root,
+      panel: panel,
+      templateSelector: "template.bp_code_summary_preview_tpl[data-bp-preview-id]",
+      triggerSelector: ".bp_code_summary_preview_wrap_active[data-bp-preview-id]",
+      keyAttr: "data-bp-preview-id",
+      titleAttr: "data-bp-preview-title",
+      titleSelector: ".bp_code_summary_preview_title",
+      bodySelector: ".bp_code_summary_preview_body",
+      closeSelector: ".bp_code_summary_preview_close",
+      triggerBoundAttr: "data-bp-code-summary-trigger-bound",
+      defaults: { mode: "hover", placement: "anchored" }
+    });
+  }
+
+  function init() {
+    document.querySelectorAll(".bp_code_summary_preview_root").forEach(bindCodeSummaryPreview);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();</script>
+    <script>
+      window.bpTexPreludeTable = Object.assign({}, window.bpTexPreludeTable || {}, {"default":"\\newcommand{\\proet}[1]{#1_{\\text{proét}}}\n\\newcommand{\\affproet}[1]{#1^{\\text{aff}}_{\\text{proét}}}\n\\newcommand{\\et}[1]{#1_{\\text{ét}}}\n\\newcommand{\\affet}[1]{#1^{\\text{aff}}_{\\text{ét}}}\n\\newcommand{\\fpqc}[1]{#1_{\\mathrm{fpqc}}}\n\\newcommand{\\preshv}[1]{\\mathrm{PreShv}(#1)}\n\\newcommand{\\shv}[1]{\\mathrm{Shv}(#1)}\n\\newcommand{\\spec}[1]{\\mathrm{Spec}(#1)}\n\\newcommand{\\Spec}{\\operatorname{Spec}}\n\\newcommand{\\gammacont}{\\Gamma_{\\mathrm{cont}}}\n\\newcommand{\\colim}{\\operatorname{colim}}\n\\newcommand{\\pro}[1]{\\mathrm{Pro}(#1)}\n\\newcommand{\\sep}{\\mathrm{sep}}\n\\newcommand{\\Hom}{\\operatorname{Hom}}\n\\renewcommand{\\N}{\\mathbb{N}}\n\\newcommand{\\m}{\\mathfrak{m}}\n\\newcommand{\\n}{\\mathfrak{n}}\n\\newcommand{\\p}{\\mathfrak{p}}\n\\newcommand{\\q}{\\mathfrak{q}}\n\\newcommand{\\tildering}[3]{#1_{\\widetilde{(#2, #3)}}}\n\\newcommand{\\tildeideal}[2]{\\widetilde{(#1, #2)}}"});</script>
+    <script>
+      (function () {
   function escapeHtml(text) {
     const previewUtils = window.bpPreviewUtils;
     if (previewUtils && typeof previewUtils.escapeHtml === "function") {
@@ -7916,7 +7918,7 @@ window.onload = () => {
             <div class="split-toc book">
               <div class="title">
                 <label for="--verso-manual-toc-----bookRoot" class="toggle-split-toc"><input type="checkbox" class="toggle-split-toc" id="--verso-manual-toc-----bookRoot" checked="checked"></label><span class="">Table of Contents</span></div>
-              <table><tr class="numbered"><td class="num">1.</td><td><a href="Replete-categories/#Pro-___tale-cohomology--Replete-categories">Replete categories</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Dependency-Graph/#Pro-___tale-cohomology--Dependency-Graph">Dependency Graph</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Blueprint-Summary/#Pro-___tale-cohomology--Blueprint-Summary">Blueprint Summary</a></td></tr></table></div>
+              <table><tr class="numbered"><td class="num">1.</td><td><a href="Local-structures/#Pro-___tale-cohomology--Local-structures">Local structures</a></td></tr><tr class="numbered"><td class="num">2.</td><td><a href="More-on-local-structure/#Pro-___tale-cohomology--More-on-local-structure">More on local structure</a></td></tr><tr class="numbered"><td class="num">3.</td><td><a href="Replete-categories/#Pro-___tale-cohomology--Replete-categories">Replete categories</a></td></tr><tr class="numbered"><td class="num">4.</td><td><a href="Pro-categories/#Pro-___tale-cohomology--Pro-categories">Pro-categories</a></td></tr><tr class="numbered"><td class="num">5.</td><td><a href="The-pro-___tale-topology/#Pro-___tale-cohomology--The-pro-___tale-topology">The pro-étale topology</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Dependency-Graph/#Pro-___tale-cohomology--Dependency-Graph">Dependency Graph</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Blueprint-Summary/#Pro-___tale-cohomology--Blueprint-Summary">Blueprint Summary</a></td></tr></table></div>
             </div>
           </div>
         <div class="last"></div>

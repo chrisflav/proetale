@@ -6139,8 +6139,6 @@ window.onload = () => {
   window.addEventListener("hashchange", openFromHash);
 })();</script>
     <script>
-      window.bpTexPreludeTable = Object.assign({}, window.bpTexPreludeTable || {}, {"default":""});</script>
-    <script>
       (function () {
   const triggerSelector = ".bp_inline_preview_ref[data-bp-preview-id]";
 
@@ -6732,42 +6730,7 @@ window.onload = () => {
   }
 })();</script>
     <script>
-      (function () {
-  function bindCodeSummaryPreview(root) {
-    if (!(root instanceof Element)) return;
-    if (root.getAttribute("data-bp-code-summary-preview-bound") === "1") return;
-    root.setAttribute("data-bp-code-summary-preview-bound", "1");
-
-    const previewUtils = window.bpPreviewUtils;
-    const panel = root.querySelector(".bp_code_summary_preview_panel");
-    if (!panel || !previewUtils || typeof previewUtils.bindTemplatePreview !== "function") return;
-    previewUtils.bindTemplatePreview({
-      root: root,
-      previewRoot: root,
-      triggerRoot: root,
-      panel: panel,
-      templateSelector: "template.bp_code_summary_preview_tpl[data-bp-preview-id]",
-      triggerSelector: ".bp_code_summary_preview_wrap_active[data-bp-preview-id]",
-      keyAttr: "data-bp-preview-id",
-      titleAttr: "data-bp-preview-title",
-      titleSelector: ".bp_code_summary_preview_title",
-      bodySelector: ".bp_code_summary_preview_body",
-      closeSelector: ".bp_code_summary_preview_close",
-      triggerBoundAttr: "data-bp-code-summary-trigger-bound",
-      defaults: { mode: "hover", placement: "anchored" }
-    });
-  }
-
-  function init() {
-    document.querySelectorAll(".bp_code_summary_preview_root").forEach(bindCodeSummaryPreview);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
-  }
-})();</script>
+      window.bpTexPreludeTable = Object.assign({}, window.bpTexPreludeTable || {}, {"default":""});</script>
     <script>
       (function () {
   if (window.bpPreviewUtils) return;
@@ -7558,6 +7521,45 @@ window.onload = () => {
 })();</script>
     <script>
       (function () {
+  function bindCodeSummaryPreview(root) {
+    if (!(root instanceof Element)) return;
+    if (root.getAttribute("data-bp-code-summary-preview-bound") === "1") return;
+    root.setAttribute("data-bp-code-summary-preview-bound", "1");
+
+    const previewUtils = window.bpPreviewUtils;
+    const panel = root.querySelector(".bp_code_summary_preview_panel");
+    if (!panel || !previewUtils || typeof previewUtils.bindTemplatePreview !== "function") return;
+    previewUtils.bindTemplatePreview({
+      root: root,
+      previewRoot: root,
+      triggerRoot: root,
+      panel: panel,
+      templateSelector: "template.bp_code_summary_preview_tpl[data-bp-preview-id]",
+      triggerSelector: ".bp_code_summary_preview_wrap_active[data-bp-preview-id]",
+      keyAttr: "data-bp-preview-id",
+      titleAttr: "data-bp-preview-title",
+      titleSelector: ".bp_code_summary_preview_title",
+      bodySelector: ".bp_code_summary_preview_body",
+      closeSelector: ".bp_code_summary_preview_close",
+      triggerBoundAttr: "data-bp-code-summary-trigger-bound",
+      defaults: { mode: "hover", placement: "anchored" }
+    });
+  }
+
+  function init() {
+    document.querySelectorAll(".bp_code_summary_preview_root").forEach(bindCodeSummaryPreview);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();</script>
+    <script>
+      window.bpTexPreludeTable = Object.assign({}, window.bpTexPreludeTable || {}, {"default":"\\newcommand{\\proet}[1]{#1_{\\text{proét}}}\n\\newcommand{\\affproet}[1]{#1^{\\text{aff}}_{\\text{proét}}}\n\\newcommand{\\et}[1]{#1_{\\text{ét}}}\n\\newcommand{\\affet}[1]{#1^{\\text{aff}}_{\\text{ét}}}\n\\newcommand{\\fpqc}[1]{#1_{\\mathrm{fpqc}}}\n\\newcommand{\\preshv}[1]{\\mathrm{PreShv}(#1)}\n\\newcommand{\\shv}[1]{\\mathrm{Shv}(#1)}\n\\newcommand{\\spec}[1]{\\mathrm{Spec}(#1)}\n\\newcommand{\\Spec}{\\operatorname{Spec}}\n\\newcommand{\\gammacont}{\\Gamma_{\\mathrm{cont}}}\n\\newcommand{\\colim}{\\operatorname{colim}}\n\\newcommand{\\pro}[1]{\\mathrm{Pro}(#1)}\n\\newcommand{\\sep}{\\mathrm{sep}}\n\\newcommand{\\Hom}{\\operatorname{Hom}}\n\\renewcommand{\\N}{\\mathbb{N}}\n\\newcommand{\\m}{\\mathfrak{m}}\n\\newcommand{\\n}{\\mathfrak{n}}\n\\newcommand{\\p}{\\mathfrak{p}}\n\\newcommand{\\q}{\\mathfrak{q}}\n\\newcommand{\\tildering}[3]{#1_{\\widetilde{(#2, #3)}}}\n\\newcommand{\\tildeideal}[2]{\\widetilde{(#1, #2)}}"});</script>
+    <script>
+      (function () {
   function escapeHtml(text) {
     const previewUtils = window.bpPreviewUtils;
     if (previewUtils && typeof previewUtils.escapeHtml === "function") {
@@ -7916,7 +7918,7 @@ window.onload = () => {
             <div class="split-toc book">
               <div class="title">
                 <label for="--verso-manual-toc-----bookRoot" class="toggle-split-toc"><input type="checkbox" class="toggle-split-toc" id="--verso-manual-toc-----bookRoot" checked="checked"></label><span class="">Table of Contents</span></div>
-              <table><tr class="numbered"><td class="num">1.</td><td><a href="Replete-categories/#Pro-___tale-cohomology--Replete-categories">Replete categories</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Dependency-Graph/#Pro-___tale-cohomology--Dependency-Graph">Dependency Graph</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Blueprint-Summary/#Pro-___tale-cohomology--Blueprint-Summary">Blueprint Summary</a></td></tr></table></div>
+              <table><tr class="numbered"><td class="num">1.</td><td><a href="Local-structures/#Pro-___tale-cohomology--Local-structures">Local structures</a></td></tr><tr class="numbered"><td class="num">2.</td><td><a href="More-on-local-structure/#Pro-___tale-cohomology--More-on-local-structure">More on local structure</a></td></tr><tr class="numbered"><td class="num">3.</td><td><a href="Replete-categories/#Pro-___tale-cohomology--Replete-categories">Replete categories</a></td></tr><tr class="numbered"><td class="num">4.</td><td><a href="Pro-categories/#Pro-___tale-cohomology--Pro-categories">Pro-categories</a></td></tr><tr class="numbered"><td class="num">5.</td><td><a href="The-pro-___tale-topology/#Pro-___tale-cohomology--The-pro-___tale-topology">The pro-étale topology</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Dependency-Graph/#Pro-___tale-cohomology--Dependency-Graph">Dependency Graph</a></td></tr><tr class="unnumbered"><td class="num"><td><a href="Blueprint-Summary/#Pro-___tale-cohomology--Blueprint-Summary">Blueprint Summary</a></td></tr></table></div>
             </div>
           </div>
         <div class="last"></div>
@@ -7924,20 +7926,20 @@ window.onload = () => {
       <main><div class="content-wrapper">
           <nav class="prev-next-buttons">
             <div></div>
-            <a class="local-button active" href="Replete-categories/#Pro-___tale-cohomology--Replete-categories" rel="next" title="1. Replete categories"><span class="where">1. Replete categories</span><span class="arrow">→</span></a></nav>
+            <a class="local-button active" href="Local-structures/#Pro-___tale-cohomology--Local-structures" rel="next" title="1. Local structures"><span class="where">1. Local structures</span><span class="arrow">→</span></a></nav>
           <section>
             <div class="titlepage">
               <h1>
                  Pro-étale cohomology<span class="permalink-widget inline"><a href="find/?domain=Verso.Genre.Manual.section&amp;name=Pro-___tale-cohomology" title="Permalink">🔗</a></span></h1>
 <div class="bp_build_metadata" aria-label="Build metadata">
-  <span class="bp_build_metadata_item"><span class="bp_build_metadata_label">Compiled</span><span class="bp_build_metadata_value">2026-06-12T07:43:37Z</span></span><span class="bp_build_metadata_item"><a class="bp_build_metadata_label bp_build_metadata_link" href="https://github.com/chrisflav/proetale">Project</a><a class="bp_build_metadata_commit_link" href="https://github.com/chrisflav/proetale/commit/33b450a9c60c436325a074dc9c38df216650d666"><code class="bp_build_metadata_commit">33b450a</code></a><span class="bp_build_metadata_subject">Merge e041fec4d7c39ddff90610c2a7867340118b52da into d181e69d86b15b722d34e2a05f8dc72f1f027213</span></span><span class="bp_build_metadata_item"><span class="bp_build_metadata_label">Lean</span><span class="bp_build_metadata_value">leanprover/lean4:v4.30.0</span></span><span class="bp_build_metadata_item"><a class="bp_build_metadata_label bp_build_metadata_link" href="https://github.com/leanprover/verso-blueprint">VersoBlueprint</a><a class="bp_build_metadata_commit_link" href="https://github.com/leanprover/verso-blueprint/commit/11c82ed5b84417b0aecc4a22b89ee536ee832ff4"><code class="bp_build_metadata_commit">v4.30.0@11c82ed5b844</code></a></span><span class="bp_build_metadata_item"><a class="bp_build_metadata_label bp_build_metadata_link" href="https://github.com/leanprover-community/mathlib4">Mathlib</a><a class="bp_build_metadata_commit_link" href="https://github.com/leanprover-community/mathlib4/commit/9a568f0b75d28670664e6d6862d6e01c4625e380"><code class="bp_build_metadata_commit">9a568f0b75d28670664e6d6862d6e01c4625e380@9a568f0b75d2</code></a></span></div>
+  <span class="bp_build_metadata_item"><span class="bp_build_metadata_label">Compiled</span><span class="bp_build_metadata_value">2026-06-12T10:04:36Z</span></span><span class="bp_build_metadata_item"><a class="bp_build_metadata_label bp_build_metadata_link" href="https://github.com/chrisflav/proetale">Project</a><a class="bp_build_metadata_commit_link" href="https://github.com/chrisflav/proetale/commit/8e309bfaafd212bac414c50050e264ae8ee2b7b6"><code class="bp_build_metadata_commit">8e309bf</code></a><span class="bp_build_metadata_subject">Merge b5707730ce07a6778182d301ba37ec51335c1ad3 into d181e69d86b15b722d34e2a05f8dc72f1f027213</span></span><span class="bp_build_metadata_item"><span class="bp_build_metadata_label">Lean</span><span class="bp_build_metadata_value">leanprover/lean4:v4.30.0</span></span><span class="bp_build_metadata_item"><a class="bp_build_metadata_label bp_build_metadata_link" href="https://github.com/leanprover/verso-blueprint">VersoBlueprint</a><a class="bp_build_metadata_commit_link" href="https://github.com/leanprover/verso-blueprint/commit/11c82ed5b84417b0aecc4a22b89ee536ee832ff4"><code class="bp_build_metadata_commit">v4.30.0@11c82ed5b844</code></a></span><span class="bp_build_metadata_item"><a class="bp_build_metadata_label bp_build_metadata_link" href="https://github.com/leanprover-community/mathlib4">Mathlib</a><a class="bp_build_metadata_commit_link" href="https://github.com/leanprover-community/mathlib4/commit/9a568f0b75d28670664e6d6862d6e01c4625e380"><code class="bp_build_metadata_commit">9a568f0b75d28670664e6d6862d6e01c4625e380@9a568f0b75d2</code></a></span></div>
 
               <div class="authors"></div>
               <p>
                 This blueprint tracks the formalisation of (pro)étale cohomology in Lean,
 following the paper <strong>The pro-étale topology for schemes</strong> by Bhatt and Scholze.
 A long-term goal of the project is Theorem 5.6.2 of that paper, comparing
-étale and pro-étale cohomology with <code class="bp_math inline">\overline{\mathbb{Q}}_\ell</code>-coefficients
+étale and pro-étale cohomology with <code class="bp_math inline" data-bp-tex-prelude-id="default">\overline{\mathbb{Q}}_\ell</code>-coefficients
 for varieties over an algebraically closed field.</p>
               </div>
             <section>
@@ -7945,7 +7947,15 @@ for varieties over an algebraically closed field.</p>
                 Contents</h2>
               <ol class="section-toc">
                 <li>
-                  <a href="Replete-categories/#Pro-___tale-cohomology--Replete-categories"><span class="number">1.</span> Replete categories</a></li>
+                  <a href="Local-structures/#Pro-___tale-cohomology--Local-structures"><span class="number">1.</span> Local structures</a></li>
+                <li>
+                  <a href="More-on-local-structure/#Pro-___tale-cohomology--More-on-local-structure"><span class="number">2.</span> More on local structure</a></li>
+                <li>
+                  <a href="Replete-categories/#Pro-___tale-cohomology--Replete-categories"><span class="number">3.</span> Replete categories</a></li>
+                <li>
+                  <a href="Pro-categories/#Pro-___tale-cohomology--Pro-categories"><span class="number">4.</span> Pro-categories</a></li>
+                <li>
+                  <a href="The-pro-___tale-topology/#Pro-___tale-cohomology--The-pro-___tale-topology"><span class="number">5.</span> The pro-étale topology</a></li>
                 <li>
                   <a href="Dependency-Graph/#Pro-___tale-cohomology--Dependency-Graph"><span class="unnumbered"></span>Dependency Graph</a></li>
                 <li>
@@ -7955,7 +7965,7 @@ for varieties over an algebraically closed field.</p>
             </section>
           <nav class="prev-next-buttons">
             <div></div>
-            <a class="local-button active" href="Replete-categories/#Pro-___tale-cohomology--Replete-categories" rel="next" title="1. Replete categories"><span class="where">1. Replete categories</span><span class="arrow">→</span></a></nav>
+            <a class="local-button active" href="Local-structures/#Pro-___tale-cohomology--Local-structures" rel="next" title="1. Local structures"><span class="where">1. Local structures</span><span class="arrow">→</span></a></nav>
           </div>
         </main></div>
     </body>
