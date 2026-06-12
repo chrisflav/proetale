@@ -1,13 +1,33 @@
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.HenselianLocalRing
+import Proetale.Mathlib.RingTheory.Flat.FilteredColimit
 
 universe u
 
-instance {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+open CategoryTheory Limits
+
+/-- Every ind-étale algebra is weakly étale. -/
+instance Algebra.IndEtale.weaklyEtale {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.IndEtale R S] :
-    Algebra.WeaklyEtale R S :=
-  sorry
+    Algebra.WeaklyEtale R S := by
+  -- Write `S` as a filtered colimit of étale (hence weakly étale) `R`-algebras and use that
+  -- weak étaleness is stable under filtered colimits.
+  obtain ⟨ι, _, _, P, hP⟩ := Algebra.IndEtale.exists_colimitPresentation (R := R) (S := S)
+  have hflat (i : ι) : Module.Flat R (P.diag.obj i) := by
+    have : Algebra.Etale R (P.diag.obj i) := hP i
+    exact (inferInstance : Algebra.WeaklyEtale R (P.diag.obj i)).flat
+  have hlmul (i : ι) : (Algebra.TensorProduct.lmul' R (S := P.diag.obj i)).Flat := by
+    have : Algebra.Etale R (P.diag.obj i) := hP i
+    exact Algebra.WeaklyEtale.flat_lmul' R (P.diag.obj i)
+  refine ⟨?_, ?_⟩
+  · -- `Module.Flat R S`: transfer the `CommAlgCat`-level presentation to `ModuleCat`.
+    rw [← CommAlgCat.flat_iff (S := .of R S), CommAlgCat.flat,
+        ObjectProperty.inverseImage, ← ModuleCat.ind_flat R,
+        ← ObjectProperty.prop_inverseImage_iff (ModuleCat.flat.{u} R).ind]
+    refine ObjectProperty.ind_inverseImage_le _ _ _ ⟨ι, ‹_›, ‹_›, P, fun i ↦ ?_⟩
+    exact CommAlgCat.flat_iff.mpr (hflat i)
+  · exact RingHom.Flat.of_filteredColim_lmul' P hlmul
 
 lemma RingHom.IndEtale.weaklyEtale {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IndEtale) :
