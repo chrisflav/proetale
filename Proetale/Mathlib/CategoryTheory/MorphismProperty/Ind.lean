@@ -176,19 +176,11 @@ instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] [P.IsStableUnderBaseChang
     -- `J` is connected, so `Over.forget` reflects `J`-indexed limits
     have : IsConnected J := IsCofiltered.isConnected J
     -- the diagram `D` as a diagram in `Over Y` via the structure maps `t`
-    let DY : J ⥤ CategoryTheory.Over Y := D.toOver Y (fun j ↦ t.app j)
-      (fun {i j} u ↦ (t.naturality u).trans (by simp))
+    let DY : J ⥤ CategoryTheory.Over Y := CategoryTheory.Over.lift D t
     -- the limit cone `(Z, s)` lifted to a limit cone in `Over Y` with apex `Over.mk g`
-    let cY : Cone DY :=
-      { pt := CategoryTheory.Over.mk g
-        π :=
-          { app j := CategoryTheory.Over.homMk (s.app j) (hts j).2
-            naturality i j u := by
-              ext
-              simpa using s.naturality u } }
-    have hcY : IsLimit cY := by
-      apply isLimitOfReflects (CategoryTheory.Over.forget Y)
-      exact hs.ofIsoLimit (Cone.ext (Iso.refl _) (fun j ↦ by simp [cY]))
+    let cY : Cone DY := CategoryTheory.Over.liftCone D t (Cone.mk _ s) g (fun j ↦ (hts j).2)
+    have hcY : IsLimit cY :=
+      CategoryTheory.Over.isLimitLiftCone D t (Cone.mk _ s) g (fun j ↦ (hts j).2) hs
     -- `Over.pullback f` preserves all limits, being a right adjoint
     have : PreservesLimitsOfSize.{w, w} (CategoryTheory.Over.pullback f) :=
       (CategoryTheory.Over.mapPullbackAdj f).rightAdjoint_preservesLimits
