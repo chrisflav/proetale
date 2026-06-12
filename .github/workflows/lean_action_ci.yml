@@ -8,10 +8,9 @@ on:
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# via the gh-pages branch
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 jobs:
   build:
@@ -35,3 +34,22 @@ jobs:
         with:
           api-docs: false
           blueprint: true
+          # The site is deployed to the gh-pages branch below instead of
+          # docgen-action's artifact-based Pages deployment, so that the Verso
+          # blueprint (deployed by verso-blueprint.yml to /verso-blueprint and
+          # /preview/<pr>/verso-blueprint) can live on the same Pages site.
+          deploy: false
+
+      - name: Deploy website to GitHub Pages
+        if: github.event_name == 'push'
+        # `force: false` makes the deploy action rebase and retry if another
+        # workflow pushed to gh-pages concurrently.
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs
+          branch: gh-pages
+          force: false
+          clean-exclude: |
+            verso-blueprint
+            preview
+          commit-message: 'deploy docs for ${{ github.sha }}'
