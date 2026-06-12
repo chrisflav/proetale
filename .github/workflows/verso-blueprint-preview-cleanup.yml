@@ -1,0 +1,47 @@
+name: Verso Blueprint Preview Cleanup
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    name: Remove PR preview from gh-pages
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - name: Check whether gh-pages exists
+        id: check
+        run: |
+          if git ls-remote --exit-code "https://github.com/${{ github.repository }}.git" gh-pages >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout gh-pages
+        if: steps.check.outputs.exists == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Remove preview directory
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          pr=${{ github.event.pull_request.number }}
+          if [ -d "preview/$pr" ]; then
+            git rm -r --quiet "preview/$pr"
+            git -c user.name='github-actions[bot]' \
+                -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+                commit -m "remove preview for PR #$pr"
+            git push
+          else
+            echo "No preview directory for PR #$pr, nothing to do."
+          fi
