@@ -169,7 +169,7 @@ lemma pro_coneπ {J : Type w} [SmallCategory J] [IsCofiltered J]
   rw [pro_eq_unop_ind_op]
   exact ind_coconeι P.op hc.op _ (fun _ ↦ H _)
 
-instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [P.IsStableUnderBaseChangeAlong f] :
+instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] :
     (pro.{w} P).IsStableUnderBaseChangeAlong f where
   of_isPullback {Z W f' g' g} pb hg := by
     obtain ⟨J, _, _, D, t, s, hs, hts⟩ := hg
@@ -209,12 +209,10 @@ instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [P.IsStableUnderBaseChangeAlon
       simp only [NatTrans.comp_app, Functor.const_map_app, Iso.symm_hom]
       exact (Iso.inv_hom_id_assoc _ _).symm
     · exact P.pullback_snd _ f (hts j).1
-    · have h1 : cX.π.app j ≫ ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom =
+    · have hsnd : cX.π.app j ≫ ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom =
           pullback.snd g f :=
         CategoryTheory.Over.w (((CategoryTheory.Over.pullback f).mapCone cY).π.app j)
-      change (pb.isoPullback.hom ≫ cX.π.app j) ≫
-        ((DY ⋙ CategoryTheory.Over.pullback f).obj j).hom = g'
-      rw [Category.assoc]
-      exact (congrArg (pb.isoPullback.hom ≫ ·) h1).trans pb.isoPullback_hom_snd
+      simp only [NatTrans.comp_app, Functor.const_map_app, Category.assoc]
+      exact (congrArg (pb.isoPullback.hom ≫ ·) hsnd).trans pb.isoPullback_hom_snd
 
 end CategoryTheory.MorphismProperty
