@@ -234,7 +234,9 @@ theorem henselian_if_exists_section (R : Type u)
               - (Ideal.Quotient.mk I) a₀ := by simp
         _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0))
               - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
-        _ = 0 := sorry
+        _ = 0 := by
+          rw [sub_eq_zero, g]
+          exact (Ideal.Quotient.lift_mk _ _ _).trans (by simp)
 
 -- Success
 
