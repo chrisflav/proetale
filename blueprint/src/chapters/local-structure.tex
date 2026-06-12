@@ -15,6 +15,7 @@ This chapter serves for the first half of the commutative algebra preparation of
   \label{def:extremally-disconnected}
   \lean{ExtremallyDisconnected}
   \mathlibok
+  \leanok
 
   A topological space \(X\) is \emph{extremally disconnected} if the closure of every open subset is open.
 \end{definition}
@@ -26,11 +27,13 @@ The reason that we are interested in extremally disconnected space is the follow
   \uses{def:extremally-disconnected}
   \lean{CompHaus.toStonean,Stonean.instProjectiveCompHausCompHaus}
   \mathlibok
+  \leanok
   Let \(X\) be a quasi-compact Hausdorff topological space. Then \(X\) is extremally disconnected if and only if it is a projective object in the category of quasi-compact Hausdorff spaces, i.e., for every continuous surjection \(f : Y \to Z\) of quasi-compact Hausdorff spaces and every continuous map \(g : X \to Z\), there exists a continuous map \(h : X \to Y\) such that \(f \circ h = g\).
 \end{theorem}
 
 \begin{proof}
   \mathlibok
+  \leanok
   Omitted.
 \end{proof}
 
@@ -38,6 +41,7 @@ The reason that we are interested in extremally disconnected space is the follow
   \label{def:stone-cech-compactification}
   \lean{StoneCech}
   \mathlibok
+  \leanok
   Let \(X\) be a topological space. The \emph{Stone-Čech compactification} of \(X\) is the
   profinite space \(\beta(X)\) such that
   \begin{enumerate}
@@ -54,10 +58,12 @@ The reason that we are interested in extremally disconnected space is the follow
     \uses{def:extremally-disconnected, def:stone-cech-compactification}
     \lean{StoneCech.projective}
     \mathlibok
+    \leanok
 \end{theorem}
 
 \begin{proof}
   \mathlibok
+  \leanok
   Omitted.
 \end{proof}
 
@@ -67,10 +73,12 @@ The reason that we are interested in extremally disconnected space is the follow
   \uses{def:extremally-disconnected, def:stone-cech-compactification}
   \lean{CompHaus.presentation,CompHaus.presentation.π,CompHaus.presentation.epi_π,CompHaus.lift}
   \mathlibok
+  \leanok
 \end{proposition}
 
 \begin{proof}
   \mathlibok
+  \leanok
   \uses{thm:stone-cech-extremally-disconnected}
   Let $Y=X$ but endowed with the discrete topology. Let $X'=\beta (Y)$, which is extremally disconnected by \Cref{thm:stone-cech-extremally-disconnected}. The continuous map $Y \to X$ factors as $Y \to X' \to X$.
 \end{proof}
