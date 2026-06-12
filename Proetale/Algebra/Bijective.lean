@@ -4,19 +4,20 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open TensorProduct
 
+/-- A ring hom `f` admitting a section `g` (i.e. `f.comp g = id`) induces an injective map on
+prime spectra, with left inverse `comap g`. -/
+theorem PrimeSpectrum.comap_injective_of_comp_eq_id {A B : Type*} [CommRing A] [CommRing B]
+    {f : A →+* B} {g : B →+* A} (h : f.comp g = RingHom.id B) :
+    Function.Injective (PrimeSpectrum.comap f) :=
+  Function.LeftInverse.injective (g := PrimeSpectrum.comap g) fun z ↦ by
+    rw [← PrimeSpectrum.comap_comp_apply, h, PrimeSpectrum.comap_id]
+
+/-- A left inverse `f` of a bijection `g` is itself bijective. -/
+theorem Function.bijective_of_leftInverse_of_bijective {α β : Type*} {f : α → β} {g : β → α}
+    (h : Function.LeftInverse g f) (hg : Function.Bijective g) : Function.Bijective f :=
+  ⟨h.injective, fun x ↦ ⟨g x, hg.injective (h (g x))⟩⟩
+
 namespace Algebra
-
-lemma isLocalRing_tensorProduct_of_krullDimLE_zero (k : Type*) [Field k] (R : Type*)
-    [CommRing R] [IsLocalRing R] [Algebra k R] [IsLocalHom (algebraMap k R)] [Ring.KrullDimLE 0 R]
-    (h : Function.Bijective (algebraMap k (IsLocalRing.ResidueField R))) :
-    IsLocalRing (R ⊗[k] R) :=
-  sorry
-
-lemma krullDimLE_zero_tensorProduct_of_krullDimLE_zero (k : Type*) [Field k] (R : Type*)
-    [CommRing R] [IsLocalRing R] [Algebra k R] [IsLocalHom (algebraMap k R)] [Ring.KrullDimLE 0 R]
-    (h : Function.Bijective (algebraMap k (IsLocalRing.ResidueField R))) :
-    Ring.KrullDimLE 0 (R ⊗[k] R) :=
-  sorry
 
 /-- If all residue field extensions are trivial and the map on prime spectra is
 bijective, the map `Spec S ⟶ Spec (S ⊗[R] S)` is bijective. -/
@@ -39,15 +40,9 @@ lemma bijective_comap_lmul'_of_bijective_of_bijective
     ((Algebra.TensorProduct.includeLeft : S →ₐ[R] S ⊗[R] S).commutes r).trans
       ((Algebra.TensorProduct.includeRight : S →ₐ[R] S ⊗[R] S).commutes r).symm
   have hcomm : ι₁.comp (algebraMap R S) = ι₂.comp (algebraMap R S) :=
-    RingHom.ext fun r ↦ hcommfun r
+    RingHom.ext hcommfun
   -- `Spec (lmul')` has the section `Spec (includeLeft)`, hence is injective.
-  have hsec : ∀ z : PrimeSpectrum S,
-      PrimeSpectrum.comap ι₁ (PrimeSpectrum.comap μ z) = z := by
-    intro z
-    apply PrimeSpectrum.ext
-    rw [PrimeSpectrum.comap_asIdeal, PrimeSpectrum.comap_asIdeal, Ideal.comap_comap, hμι,
-      Ideal.comap_id]
-  refine ⟨fun x y hxy ↦ by rw [← hsec x, ← hsec y, hxy], fun P ↦ ?_⟩
+  refine ⟨PrimeSpectrum.comap_injective_of_comp_eq_id hμι, fun P ↦ ?_⟩
   -- For surjectivity, let `P` be a prime of `S ⊗[R] S`. Its two pullbacks to `S` agree,
   -- since `Spec S → Spec R` is injective.
   set q : Ideal S := P.asIdeal.comap ι₁ with hq₁
@@ -55,11 +50,13 @@ lemma bijective_comap_lmul'_of_bijective_of_bijective
     have heq : PrimeSpectrum.comap (algebraMap R S) (PrimeSpectrum.comap ι₁ P) =
         PrimeSpectrum.comap (algebraMap R S) (PrimeSpectrum.comap ι₂ P) := by
       apply PrimeSpectrum.ext
-      simp only [PrimeSpectrum.comap_asIdeal, Ideal.comap_comap, hcomm]
+      simp [Ideal.comap_comap, hcomm]
     exact hq₁.trans (congrArg PrimeSpectrum.asIdeal (hf.injective heq))
-  haveI hqprime : q.IsPrime := by rw [hq₁]; infer_instance
+  have hqprime : q.IsPrime := by
+    rw [hq₁]
+    infer_instance
   set p : Ideal R := q.comap (algebraMap R S) with hp
-  haveI : q.LiesOver p := ⟨hp⟩
+  have : q.LiesOver p := ⟨hp⟩
   -- The two induced maps `κ(q) → κ(P)` agree, since both restrict to the same map on
   -- `κ(p)` and `κ(p) → κ(q)` is surjective.
   have hρ : Function.Bijective (Ideal.ResidueField.map p q (algebraMap R S) hp) := h p q
@@ -89,7 +86,7 @@ lemma bijective_comap_lmul'_of_bijective_of_bijective
       algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ (μ x)) := by
     intro x
     induction x with
-    | zero => simp only [map_zero]
+    | zero => simp
     | tmul s t =>
       calc algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (s ⊗ₜ[R] t)
           = algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ s) *
@@ -102,7 +99,7 @@ lemma bijective_comap_lmul'_of_bijective_of_bijective
         _ = algebraMap (S ⊗[R] S) P.asIdeal.ResidueField (ι₁ (μ (s ⊗ₜ[R] t))) := by
             rw [← map_mul, ← map_mul]
             congr 2
-    | add x y hx hy => simp only [map_add, hx, hy]
+    | add x y hx hy => simp [hx, hy]
   -- Conclude that `P` is the pullback of `q` along `lmul'`.
   refine ⟨PrimeSpectrum.comap ι₁ P, PrimeSpectrum.ext ?_⟩
   ext x
@@ -119,8 +116,8 @@ lemma bijective_of_bijective_of_flat [Module.Flat R S]
   rw [RingHom.injective_iff_ker_eq_bot]
   have e : (R ⧸ RingHom.ker (algebraMap R S)) ≃ₐ[R] S :=
     AlgEquiv.ofRingEquiv (f := (algebraMap R S).quotientKerEquivOfSurjective hf') fun _ ↦ rfl
-  have : (RingHom.ker (algebraMap R S)).Pure := Module.Flat.of_linearEquiv e.toLinearEquiv
-  have : (⊥ : Ideal R).Pure := Module.Flat.of_linearEquiv (Submodule.quotEquivOfEqBot ⊥ rfl)
+  have hker : (RingHom.ker (algebraMap R S)).Pure := Module.Flat.of_linearEquiv e.toLinearEquiv
+  have hbot : (⊥ : Ideal R).Pure := Module.Flat.of_linearEquiv (Submodule.quotEquivOfEqBot ⊥ rfl)
   rw [← Ideal.zeroLocus_inj_of_pure, PrimeSpectrum.zeroLocus_bot, Set.eq_univ_iff_forall]
   intro p
   obtain ⟨q, rfl⟩ := hf.surjective p
@@ -160,33 +157,31 @@ lemma WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap
   -- spectra, hence bijective.
   have hμ : Function.Bijective (TensorProduct.lmul' (S := S) R) := by
     letI : Algebra (S ⊗[R] S) S := (TensorProduct.lmul' (S := S) R).toRingHom.toAlgebra
-    haveI : Module.Flat (S ⊗[R] S) S := WeaklyEtale.flat_lmul' R S
+    have : Module.Flat (S ⊗[R] S) S := WeaklyEtale.flat_lmul' R S
     have halg : algebraMap (S ⊗[R] S) S = (TensorProduct.lmul' (S := S) R).toRingHom :=
       RingHom.algebraMap_toAlgebra _
     have hsurj : Function.Surjective (algebraMap (S ⊗[R] S) S) := by
       rw [halg]
-      exact fun s ↦ ⟨s ⊗ₜ 1, by simp [TensorProduct.lmul'_apply_tmul]⟩
-    have := bijective_of_bijective_of_flat (R := S ⊗[R] S) (S := S)
-      (by rw [halg]; exact bijective_comap_lmul'_of_bijective_of_bijective h hres) hsurj
+      refine fun s ↦ ⟨s ⊗ₜ 1, ?_⟩
+      simp [TensorProduct.lmul'_apply_tmul]
+    have hbij : Function.Bijective (PrimeSpectrum.comap (algebraMap (S ⊗[R] S) S)) := by
+      rw [halg]
+      exact bijective_comap_lmul'_of_bijective_of_bijective h hres
+    have := bijective_of_bijective_of_flat (R := S ⊗[R] S) (S := S) hbij hsurj
     rwa [halg] at this
   -- Hence `includeLeft : S → S ⊗[R] S` is bijective, being a section of `lmul'`.
   have hone : ∀ s : S, TensorProduct.lmul' (S := S) R (s ⊗ₜ[R] 1) = s := fun s ↦ by
     rw [TensorProduct.lmul'_apply_tmul, mul_one]
-  have hinc : Function.Bijective fun s : S ↦ (s ⊗ₜ[R] 1 : S ⊗[R] S) := by
-    constructor
-    · intro a b hab
-      rw [← hone a, ← hone b]
-      exact congrArg _ hab
-    · intro x
-      refine ⟨TensorProduct.lmul' (S := S) R x, hμ.injective ?_⟩
-      rw [hone]
+  have hinc : Function.Bijective fun s : S ↦ (s ⊗ₜ[R] 1 : S ⊗[R] S) :=
+    Function.bijective_of_leftInverse_of_bijective hone hμ
   -- Faithfully flat descent of surjectivity: `S ⊗[R] R → S ⊗[R] S` is surjective, hence
   -- so is `R → S`.
   have hsurj : Function.Surjective (algebraMap R S) := by
     have hT : Function.Surjective ⇑(LinearMap.lTensor S (Algebra.linearMap R S)) := by
       intro y
       obtain ⟨s, rfl⟩ := hinc.surjective y
-      exact ⟨s ⊗ₜ 1, by simp⟩
+      refine ⟨s ⊗ₜ 1, ?_⟩
+      simp
     exact (Module.FaithfullyFlat.lTensor_surjective_iff_surjective R S
       (Algebra.linearMap R S)).mp hT
   exact bijective_of_bijective_of_flat h hsurj
