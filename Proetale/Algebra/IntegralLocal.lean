@@ -74,8 +74,17 @@ variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 /-- The residue field extension induced by a local integral homomorphism of local rings is
 algebraic. -/
 theorem IsAlgebraic.residueField_of_isIntegral [Algebra.IsIntegral R S] :
-    Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-  sorry
+    Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) := by
+  refine ⟨fun x => ?_⟩
+  obtain ⟨s, rfl⟩ := IsLocalRing.residue_surjective (R := S) x
+  rw [isAlgebraic_iff_isIntegral]
+  obtain ⟨F, hFm, hFe⟩ := Algebra.IsIntegral.isIntegral (R := R) s
+  refine ⟨F.map (IsLocalRing.residue R), hFm.map _, ?_⟩
+  have hcomm : (algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)).comp
+      (IsLocalRing.residue R) = (IsLocalRing.residue S).comp (algebraMap R S) := by
+    ext r
+    exact IsLocalRing.ResidueField.algebraMap_residue r
+  rw [Polynomial.eval₂_map, hcomm, ← Polynomial.hom_eval₂, hFe, map_zero]
 
 variable (R S) in
 /-- Let `R → S` and `R → T` be local ring homomorphisms of local rings, with `R → S`
