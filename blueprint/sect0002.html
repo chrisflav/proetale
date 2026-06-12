@@ -1143,7 +1143,7 @@
   \[  \sum _{i=1}^n b_i y_i = \sum _{i=1}^n \sum _{k=1}^K u_k \otimes (v_k b_i m_i) = \sum _{k=1}^K u_k \otimes \Big( v_k \sum _{i=1}^n b_i m_i \Big).  \]
 </div>
 <p> By our initial assumption, \(\sum _{i=1}^n b_i m_i = 0\) in \(M\). Therefore: </p>
-<div class="equation" id="<plasTeX.TeXFragment object at 0x7f97d495d190>">
+<div class="equation" id="<plasTeX.TeXFragment object at 0x7faabb1b9190>">
 <p>
   <div class="equation_content">
     \begin{equation}  \label{eq:tensor_rel} \sum _{i=1}^n \sum _{k=1}^K (b_i u_k) \otimes (v_k m_i) = 0 \quad \text{in } B \otimes _A M. \end{equation}
@@ -1670,6 +1670,8 @@
 </span></span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
@@ -1738,7 +1740,7 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p> Let \(M\) be a flat \(B\)-module and \(N \subseteq M\) a submodule. By <a href="sect0002.html#lemma:weakly-etale-flat">Lemma 2.15</a> it suffices to show that \(N\) is \(A\)-flat. Since \(B\) is \(A\)-flat, \(M\) is also \(A\)-flat and hence its submodule \(N\) is \(A\)-flat by <a href="sect0002.html#lemma:weak-dim-flat-submodule">Lemma 2.21</a>. </p>
+  <p> Let \(I \subseteq B\) be a finitely generated ideal. Since \(B\) is weakly étale, \(B\) is \(A\)-flat, so its \(A\)-submodule \(I\) is \(A\)-flat by <a href="sect0002.html#lemma:weak-dim-flat-submodule">Lemma 2.21</a>. By <a href="sect0002.html#lemma:weakly-etale-flat">Lemma 2.15</a> it follows that \(I\) is \(B\)-flat. Hence \(B\) is of weak dimension \(\le 1\). </p>
 
   </div>
 </div>
@@ -1750,6 +1752,8 @@
     <span class="lemma_thmlabel">2.24</span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
@@ -1760,10 +1764,29 @@
     
     
     
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="/find/#doc/Submodule.FG.mem_pi" class="lean_decl">Submodule.FG.mem_pi</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
         </div>
   </div>
   <div class="lemma_thmcontent">
-  <p>Let \((A_i)_{i \in I}\) be a family of rings and for every \(i\) an \(A_i\)-module \(M_i\). Let \(N\) be a \(\prod _{i \in I} A_i\)-submodule of \(\prod _{i \in I} M_i\). Then \(N \subseteq \prod _{i \in I} N_i\). If \(N\) is finitely generated, equality holds.  </p>
+  <p>Let \((A_i)_{i \in I}\) be a family of rings and for every \(i\) an \(A_i\)-module \(M_i\). Let \(N\) be a \(\prod _{i \in I} A_i\)-submodule of \(\prod _{i \in I} M_i\) and let \(N_i \subseteq M_i\) be the image of \(N\) under the \(i\)-th projection. Then \(N \subseteq \prod _{i \in I} N_i\). If \(N\) is finitely generated, equality holds.   </p>
 
   </div>
 </div>
@@ -1775,7 +1798,7 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p>TBA. </p>
+  <p>The inclusion \(N \subseteq \prod _{i \in I} N_i\) is clear. Assume \(N\) is finitely generated and pick a finite generating set \(s\). Let \(y \in \prod _{i \in I} M_i\) with \(y_i \in N_i\) for every \(i\). For each \(i\) choose \(z^{(i)} \in N\) with \(z^{(i)}_i = y_i\) and write \(z^{(i)} = \sum _{a \in s} c^{(i)}_a \cdot a\) with \(c^{(i)}_a \in \prod _{j} A_j\). Setting \(b_a := (i \mapsto (c^{(i)}_a)_i) \in \prod _j A_j\), we have \(y = \sum _{a \in s} b_a \cdot a\), since componentwise \(y_i = z^{(i)}_i = \sum _{a \in s} (c^{(i)}_a)_i \cdot a_i\). Hence \(y \in N\). </p>
 
   </div>
 </div>
@@ -1794,6 +1817,8 @@
 </span></span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
@@ -1887,6 +1912,8 @@
 </span></span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
