@@ -38,6 +38,7 @@ import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
 import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.MapBijective
 import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.Product
 import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.Resolution
+import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.SequentialLimit
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.Algebra.Module.LocalizedModule.Finiteness
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
@@ -142,8 +143,11 @@ import Proetale.Topology.Comparison.Affine
 import Proetale.Topology.Comparison.CechColimit
 import Proetale.Topology.Comparison.CohomologyComparison
 import Proetale.Topology.Comparison.ContinuousComparison
+import Proetale.Topology.Comparison.EllAdic
+import Proetale.Topology.Comparison.EllAdicLimit
 import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Comparison.FreeSheaf
+import Proetale.Topology.Comparison.ProetConstantSheaf
 import Proetale.Topology.Comparison.RepleteExact
 import Proetale.Topology.Comparison.SectionsColimit
 import Proetale.Topology.Comparison.WeaklyContractible
