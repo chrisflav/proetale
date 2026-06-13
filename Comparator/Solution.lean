@@ -20,21 +20,21 @@ universe u
 
 open CategoryTheory Limits Opposite Abelian AlgebraicGeometry
 
-namespace EllAdicEtaleComparison
-
-instance : HasFilteredColimitsOfSize.{u, u + 1} Ab.{u + 1} :=
+instance Ab.hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{u, u + 1} Ab.{u + 1} :=
   hasFilteredColimitsOfSize_of_univLE.{u, u + 1, u + 1, u + 1}
 
-instance : AB5OfSize.{u, u + 1} Ab.{u + 1} :=
+instance Ab.ab5OfSize : AB5OfSize.{u, u + 1} Ab.{u + 1} :=
   AB5OfSize_of_univLE.{u, u + 1, u + 1, u + 1} Ab.{u + 1}
 
 /-- The category of abelian sheaves on the small étale site of `X : Scheme.{u}` (with
 coefficients in `Ab.{u + 1}`) is Grothendieck abelian. In particular it has enough
 injectives and `Ext`-groups (`HasExt`). -/
-instance (X : Scheme.{u}) :
+instance isGrothendieckAbelianSheafSmallEtaleTopologyAb (X : Scheme.{u}) :
     IsGrothendieckAbelian.{u + 1} (Sheaf X.smallEtaleTopology Ab.{u + 1}) := by
   have : EssentiallySmall.{u + 1} X.Etale := inferInstance
   exact Sheaf.isGrothendieckAbelian_of_essentiallySmall _ _
+
+namespace EllAdicEtaleComparison
 
 /-- The inverse system `n ↦ ULift ℤ/ℓⁿℤ` of abelian groups, with the reduction maps as
 transition maps. -/
