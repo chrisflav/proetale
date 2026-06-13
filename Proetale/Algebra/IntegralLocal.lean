@@ -325,16 +325,16 @@ variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 algebraic. -/
 theorem IsAlgebraic.residueField_of_isIntegral [Algebra.IsIntegral R S] :
     Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) := by
-  refine ⟨fun x ↦ ?_⟩
-  obtain ⟨s, rfl⟩ := IsLocalRing.residue_surjective (R := S) x
-  rw [isAlgebraic_iff_isIntegral]
-  obtain ⟨F, hFm, hFe⟩ := Algebra.IsIntegral.isIntegral (R := R) s
-  refine ⟨F.map (IsLocalRing.residue R), hFm.map _, ?_⟩
-  have hcomm : (algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)).comp
-      (IsLocalRing.residue R) = (IsLocalRing.residue S).comp (algebraMap R S) := by
-    ext r
-    exact IsLocalRing.ResidueField.algebraMap_residue r
-  rw [Polynomial.eval₂_map, hcomm, ← Polynomial.hom_eval₂, hFe, map_zero]
+  -- It suffices to show that `κ(S)` is integral over `R`: since `S` is integral over `R`
+  -- and `κ(S)` is integral over `S` (the map `S → κ(S)` is surjective), the composition
+  -- `R → S → κ(S)` is integral.  Integrality then descends along the surjection `R → κ(R)`,
+  -- so `κ(S)` is integral, hence algebraic, over `κ(R)`.
+  have : Algebra.IsIntegral S (IsLocalRing.ResidueField S) :=
+    Algebra.isIntegral_of_surjective IsLocalRing.residue_surjective
+  have : Algebra.IsIntegral R (IsLocalRing.ResidueField S) := Algebra.IsIntegral.trans S
+  have : Algebra.IsIntegral (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
+    Algebra.IsIntegral.tower_top R
+  infer_instance
 
 section TensorProduct
 

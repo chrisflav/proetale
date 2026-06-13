@@ -15,25 +15,29 @@ noncomputable
 abbrev toScheme : S.AffineEtale ⥤ Scheme :=
   AffineEtale.Spec _ ⋙ Etale.forget _ ⋙ Over.forget _
 
+variable {S} in
+lemma mem_topology_iff {X : S.AffineEtale} (R : Sieve X) :
+    R ∈ topology S X ↔
+      Sieve.functorPushforward (toScheme S) R ∈ etaleTopology ((toScheme S).obj X) := by
+  rw [Sieve.functorPushforward_comp, Sieve.functorPushforward_comp]
+  rfl
+
 -- TODO: When the Zariski topology on `CommRingCatᵒᵖ` lands, consider refactoring this.
 noncomputable
 def zariskiTopology : GrothendieckTopology S.AffineEtale :=
   (Precoverage.comap (toScheme S) zariskiPrecoverage).toGrothendieck
 
+/-- The Zariski topology on the small affine étale site of `S` is coarser than the affine étale
+topology, since a Zariski cover consists of open immersions, which are étale. -/
 lemma zariskiTopology_le_topology : zariskiTopology S ≤ topology S := by
   rw [zariskiTopology, Precoverage.toGrothendieck_le_iff_le_toPrecoverage]
   intro X R hR
   rw [Precoverage.mem_comap_iff] at hR
-  have hle : @IsOpenImmersion ≤ @Etale := by
-    intro X Y f hf
-    infer_instance
-  have : Sieve.generate (R.map (toScheme S)) ∈ grothendieckTopology @Etale ((toScheme S).obj X) :=
-    Precoverage.generate_mem_toGrothendieck (precoverage_mono hle _ hR)
-  rw [GrothendieckTopology.mem_toPrecoverage_iff, topology,
-    Functor.mem_inducedTopology_sieves_iff, smallEtaleTopology,
-    Functor.mem_inducedTopology_sieves_iff, GrothendieckTopology.mem_over_iff]
-  simpa only [Sieve.overEquiv, Equiv.coe_fn_mk,
-    ← Sieve.generate_map_eq_functorPushforward, ← Presieve.map_comp, Functor.assoc] using this
+  rw [GrothendieckTopology.mem_toPrecoverage_iff, mem_topology_iff,
+    ← Sieve.generate_map_eq_functorPushforward]
+  -- Open immersions are étale, so a Zariski cover is an étale cover.
+  have hle : @IsOpenImmersion ≤ @Etale := fun _ _ _ _ ↦ inferInstance
+  exact Precoverage.generate_mem_toGrothendieck (precoverage_mono hle _ hR)
 
 /-- A single surjective (étale) morphism is a cover in the small affine étale site. -/
 lemma generate_singleton_mem_topology {X Y : S.AffineEtale} (f : X ⟶ Y)

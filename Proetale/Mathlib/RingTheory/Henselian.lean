@@ -235,10 +235,8 @@ theorem henselian_if_exists_section (R : Type u)
         _ = (g e u).toRingHom ((Ideal.Quotient.mk (idealJ f)) (X 0))
               - (Ideal.Quotient.mk I) a₀ := by simp [hσ]
         _ = 0 := by
-              rw [sub_eq_zero]
-              exact (AlgHom.congr_fun (Ideal.Quotient.liftₐ_comp (idealJ f)
-                (MvPolynomial.aeval ![(Ideal.Quotient.mk I) a₀, u.unit.inv])
-                (fun _ ↦ aeval_zero_of_mem_span e u)) (MvPolynomial.X 0)).trans (by simp)
+          rw [sub_eq_zero, g]
+          exact (Ideal.Quotient.lift_mk _ _ _).trans (by simp)
 
 -- Success
 

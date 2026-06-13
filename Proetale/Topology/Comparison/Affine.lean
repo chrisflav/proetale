@@ -1182,7 +1182,7 @@ lemma singleton_inf_le_relativelyPresentable :
     intro k
     obtain ⟨m, w, hw⟩ := exists_range_map_subset_range_app_of_surjective_isLimitMap
       GY ((toScheme S).mapCone pY.cone) GX ((toScheme S).mapCone pX.cone) hcX g k
-      (hopen k) hsurjlim
+      (hopen k).isOpen_range hsurjlim
     exact ⟨m, w, hw⟩
   -- The refinement index category.
   haveI hAcof : IsCofiltered Φ.FullSubcategory :=
