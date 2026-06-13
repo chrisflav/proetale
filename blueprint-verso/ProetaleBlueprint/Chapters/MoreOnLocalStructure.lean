@@ -393,18 +393,31 @@ Then $`B` is of weak dimension $`\le 1`.
 :::
 
 :::proof "lemma:weakly-etale-preserve-weak-dim" (uses := "lemma:weakly-etale-flat, lemma:weak-dim-flat-submodule")
-Let $`M` be a flat $`B`-module and $`N \subseteq M` a submodule. By
-{bpref "lemma:weakly-etale-flat"}[] it suffices to show that $`N` is $`A`-flat.
-Since $`B` is $`A`-flat, $`M` is also $`A`-flat and hence its submodule $`N` is
-$`A`-flat by {bpref "lemma:weak-dim-flat-submodule"}[].
+Let $`I \subseteq B` be a finitely generated ideal. Since $`B` is weakly étale,
+$`B` is $`A`-flat, so its $`A`-submodule $`I` is $`A`-flat by
+{bpref "lemma:weak-dim-flat-submodule"}[]. By {bpref "lemma:weakly-etale-flat"}[]
+it follows that $`I` is $`B`-flat. Hence $`B` is of weak dimension $`\le 1`.
 :::
 
-:::lemma_ "lemma:prod-submodule-fg" (parent := "more-on-local-structure")
+:::lemma_ "lemma:prod-submodule-fg" (parent := "more-on-local-structure") (lean := "Submodule.FG.mem_pi")
 Let $`(A_i)_{i \in I}` be a family of rings and for every $`i` an
 $`A_i`-module $`M_i`. Let $`N` be a $`\prod_{i \in I} A_i`-submodule of
 $`\prod_{i \in I} M_i` and let $`N_i` be the image of $`N` in $`M_i`. Then
 $`N \subseteq \prod_{i \in I} N_i`. If $`N` is finitely generated, equality
 holds.
+:::
+
+:::proof "lemma:prod-submodule-fg"
+The inclusion $`N \subseteq \prod_{i \in I} N_i` is clear. Assume $`N` is
+finitely generated and pick a finite generating set $`s`. Let
+$`y \in \prod_{i \in I} M_i` with $`y_i \in N_i` for every $`i`. For each
+$`i` choose $`z^{(i)} \in N` with $`z^{(i)}_i = y_i` and write
+$`z^{(i)} = \sum_{a \in s} c^{(i)}_a \cdot a` with
+$`c^{(i)}_a \in \prod_{j} A_j`. Setting
+$`b_a := (i \mapsto (c^{(i)}_a)_i) \in \prod_j A_j`, we have
+$`y = \sum_{a \in s} b_a \cdot a`, since componentwise
+$`y_i = z^{(i)}_i = \sum_{a \in s} (c^{(i)}_a)_i \cdot a_i`. Hence
+$`y \in N`.
 :::
 
 :::lemma_ "lemma:prod-valuation-ring-weak-dim-integrally-closed" (parent := "more-on-local-structure") (uses := "def:weak-dim-le-one") (lean := "Ring.WeakDimensionLEOne.pi_of_isValuationRing")
