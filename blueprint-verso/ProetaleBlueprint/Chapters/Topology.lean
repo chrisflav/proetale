@@ -277,7 +277,7 @@ We denote by $`\nu_{p}\colon \preshv{\proet{X}} \to \preshv{\et{X}}` and
 $`\nu^{p}\colon \preshv{\et{X}} \to \preshv{\proet{X}}` the pushforward and
 pullback functors on the level of presheaves.
 
-:::lemma_ "lemma:affproet-pushforward-presheaf-filtered-colim" (parent := "proetale-topology") (lean := "AlgebraicGeometry.Scheme.ProEt.preservesFilteredColimitsOfSize_lan_toProEtale")
+:::lemma_ "lemma:affproet-pushforward-presheaf-filtered-colim" (parent := "proetale-topology") (lean := "AlgebraicGeometry.Scheme.ProEt.preservesRelativeFilteredColimits_lan_toProEtale")
 Let $`F` be a presheaf on $`\et{X}`. Then $`(\nu^p F)|_{\affproet{X}}`
 preserves filtered colimits.
 :::

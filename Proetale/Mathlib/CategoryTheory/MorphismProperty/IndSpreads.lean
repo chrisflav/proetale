@@ -183,6 +183,18 @@ lemma PreProSpreads.op_iff (P : MorphismProperty C) :
 instance PreProSpreads.op [PreIndSpreads.{w} P] : PreProSpreads.{w} P.op := by
   rwa [PreProSpreads.op_iff]
 
+lemma PreIndSpreads.op_iff (P : MorphismProperty C) :
+    PreIndSpreads.{w} P.op ↔ PreProSpreads.{w} P := by
+  refine ⟨fun h ↦ ⟨fun {J} _ _ D c hc T f hf ↦ ?_⟩, fun h ↦ ⟨fun {J} _ _ D c hc T f hf ↦ ?_⟩⟩
+  · obtain ⟨j, T', f', g, h, hf'⟩ := P.op.exists_isPushout_of_isFiltered hc.op f.op hf
+    exact ⟨j.unop, T'.unop, f'.unop, g.unop, h.unop.flip, hf'⟩
+  · obtain ⟨j, T', f', g, h, hf'⟩ := P.exists_isPullback_of_isCofiltered
+      (coneLeftOpOfCocone c) (isLimitConeLeftOpOfCocone _ hc) f.unop hf
+    exact ⟨j.unop, Opposite.op T', f'.op, g.op, h.op.flip, hf'⟩
+
+instance PreIndSpreads.op [PreProSpreads.{w} P] : PreIndSpreads.{w} P.op := by
+  rwa [PreIndSpreads.op_iff]
+
 /--
 - Given a `lim Dᵢ`-morphism `f : A = lim Dᵢ ×_[Dᵢ] A' ⟶ lim Dᵢ ×_[Dⱼ] B' = B` where `Dᵢ ⟶ A'` and
   `Dⱼ ⟶ B'` satisfiy `P`, there exists
@@ -215,13 +227,29 @@ class ProSpreads (P : MorphismProperty C) : Prop extends PreProSpreads.{w} P whe
 
 alias exists_isPullback_of_isCofiltered_of_hom := ProSpreads.exists_isPullback_of_hom
 
--- TODO: this is in mathlib with the correct assumptions, fix this one
-instance [P.IsStableUnderComposition] [PreProSpreads.{w} P] :
-    IsStableUnderComposition (pro.{w} P) :=
-    sorry
+/-- If `P` pro-spreads, then `pro P` is stable under composition, provided the assumptions of
+`MorphismProperty.ind_ind` are satisfied in `Cᵒᵖ`: `LocallySmall.{w} C` and
+`P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ`. This is the dual of
+`MorphismProperty.IsStableUnderComposition.ind_of_le_isFinitelyPresentable`. -/
+lemma IsStableUnderComposition.pro_of_le_isFinitelyPresentable {P : MorphismProperty C}
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [HasPullbacks C]
+    [PreProSpreads.{w} P] [LocallySmall.{w} C] (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ) :
+    IsStableUnderComposition (pro.{w} P) := by
+  have : (ind.{w} P.op).IsStableUnderComposition :=
+    .ind_of_le_isFinitelyPresentable H
+  refine ⟨fun {X Y Z} f g hf hg ↦ ?_⟩
+  rw [pro_eq_unop_ind_op] at hf hg ⊢
+  exact (ind.{w} P.op).comp_mem g.op f.op hg hf
 
--- TODO: this is in mathlib with the correct assumptions, fix this one
-instance [P.IsMultiplicative] [PreProSpreads.{w} P] : (pro.{w} P).IsMultiplicative where
+/-- If `P` pro-spreads, then `pro P` is multiplicative, provided the assumptions of
+`MorphismProperty.ind_ind` are satisfied in `Cᵒᵖ`: `LocallySmall.{w} C` and
+`P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ`. -/
+lemma IsMultiplicative.pro_of_le_isFinitelyPresentable {P : MorphismProperty C}
+    [P.IsMultiplicative] [P.IsStableUnderBaseChange] [HasPullbacks C]
+    [PreProSpreads.{w} P] [LocallySmall.{w} C] (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ) :
+    (pro.{w} P).IsMultiplicative := by
+  haveI := IsStableUnderComposition.pro_of_le_isFinitelyPresentable H
+  constructor
 
 end MorphismProperty
 

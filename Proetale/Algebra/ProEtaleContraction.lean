@@ -52,7 +52,8 @@ instance indEtale_indEtaleContraction : Algebra.IndEtale R (IndEtaleContraction 
   rw [MorphismProperty.ind_eq_unop_pro_op]
   dsimp only [MorphismProperty.unop.eq_1, Quiver.Hom.op_unop]
   apply MorphismProperty.pro_contractionBase
-  grw [← MorphismProperty.op_isFinitelyPresentable, CommRingCat.etale_le_isFinitelyPresentable]
+  exact MorphismProperty.le_isFinitelyPresentable_op_op
+    CommRingCat.etale_le_isFinitelyPresentable.{u}
 
 instance faithfullyFlat_indEtaleContraction : Module.FaithfullyFlat R (IndEtaleContraction R) := by
   rw [← RingHom.faithfullyFlat_algebraMap_iff, RingHom.algebraMap_toAlgebra]

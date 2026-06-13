@@ -557,11 +557,25 @@ suffices for our purposes.
     \end{tikzcd}
     \] with $S$ of weak dimension $\le 1$ and $S \to T$ a flat, injective epimorphism of rings.
     \label{lemma:integrally-closed-cartesian-weak-dim}
+    \lean{IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact}
+    \leanok
 \end{lemma}
 
 \begin{proof}
     \uses{lemma:prod-valuation-ring-weak-dim-integrally-closed}
-    TBA.
+    \leanok
+    For every $x \in L \setminus A$, the element $x$ is not integral over $A$, since $A$ is
+    integrally closed in $L$. Hence there exists a valuation subring $A \subseteq V_x \subseteq L$
+    with $x \notin V_x$ (\stacksproject{090P}). Set
+    \[
+        S = \prod_{x \in L \setminus A} V_x \quad \text{and} \quad T = \prod_{x \in L \setminus A} L.
+    \]
+    Then $S$ is of weak dimension $\le 1$ by
+    \Cref{lemma:prod-valuation-ring-weak-dim-integrally-closed}. Since each $V_x$ has fraction
+    field $L$, the map $S \to T$ is the localization at the non-zerodivisors of $S$ (which are
+    exactly the componentwise non-vanishing elements), hence flat, injective and an epimorphism.
+    The square is cartesian: if $l \in L$ and $s \in S$ have the same image in $T$, then
+    $l \in V_x$ for all $x \in L \setminus A$, so $l \in A$, since otherwise $l \notin V_l$.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092W}]
@@ -571,12 +585,24 @@ suffices for our purposes.
     in $B \otimes_{A} L$.
     \uses{def:weakly-etale-algebra}
     \label{lemma:weakly-etale-integrally-closed}
+    \lean{Algebra.WeaklyEtale.isIntegrallyClosedIn_tensorProduct}
+    \leanok
 \end{lemma}
 
 \begin{proof}
     \uses{lemma:weak-dim-integrally-closed, lemma:weakly-etale-preserve-weak-dim,
       lemma:integrally-closed-cartesian-weak-dim}
-    % TODO
+    \leanok
+    Choose a cartesian diagram as in \Cref{lemma:integrally-closed-cartesian-weak-dim} and
+    tensor it with the flat $A$-algebra $B$. The resulting diagram with vertices $B$,
+    $B \otimes_A L$, $B \otimes_A S$ and $B \otimes_A T$ is again cartesian. The ring
+    $B \otimes_A S$ is weakly étale over $S$, hence of weak dimension $\le 1$ by
+    \Cref{lemma:weakly-etale-preserve-weak-dim}, and $B \otimes_A S \to B \otimes_A T$ is a
+    flat, injective ring epimorphism, since all three properties are stable under (flat) base
+    change. By \Cref{lemma:weak-dim-integrally-closed}, $B \otimes_A S$ is integrally closed
+    in $B \otimes_A T$. An element of $B \otimes_A L$ integral over $B$ maps to an element of
+    $B \otimes_A T$ integral over $B \otimes_A S$, hence lying in $B \otimes_A S$; by
+    cartesianness it lies in $B$.
 \end{proof}
 
 \section{Fields}
@@ -702,6 +728,7 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     Recall that a \emph{pure} ideal $I$ in $A$ is an ideal such that $A/I$ is flat.
     (Use \verb|Ideal.Pure|.) In our case, let $I$ be the kernel of the map $A \to B$.
     Then $I$ is pure and has empty vanishing locus. But we know that pure ideals are determined by
@@ -825,7 +852,9 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
-    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable, lemma:henselian-local-integral-local}
+    \uses{lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable,
+    lemma:henselian-local-integral-local, lemma:weakly-etale-integrally-closed}
+    \leanok
     Let $R'$ be the integral closure of $R / \mathfrak{p}$ in $L$. Since $R \to R / \mathfrak{p} \to R'$
     is integral, $R'$ is local by \Cref{lemma:henselian-local-integral-local}. Moreover,
     the residue field $\kappa(R')$ is an algebraic extension of $\kappa(R)$
@@ -854,6 +883,7 @@ suffices for our purposes.
     lem:idempotent-in-ind-etale-of-primes,
     lem:idempotent-in-ind-etale-of-field-ext,
     lemma:weakly-etale-over-sh-aux}
+    \leanok
     It suffices to show that for all $\mathfrak{p} \subset A$ there is a unique prime
     $\mathfrak{q} \subset B$ lying over $\mathfrak{p}$ and $\kappa(\mathfrak{p}) =
     \kappa(\mathfrak{q})$ by \Cref{lem:isom-of-unique-lying-over-and-residue-field-eq}
@@ -903,7 +933,18 @@ suffices for our purposes.
 \end{lemma}
 
 \begin{proof}
-    TBA.
+    \leanok
+    \uses{thm:modify-pi0-profinite-properties, thm:identifies-local-ring-to-top-fully-faithful,
+    thm:isom-of-identifies-local-rings-w-local-isom-pi0}
+    Let $T = \pi_0(\Spec B)$ with its continuous map to $\pi_0(\Spec A)$. By
+    \Cref{thm:modify-pi0-profinite-properties}, there is an ind-Zariski $A$-algebra $A'$
+    with $\Spec A' = \Spec A \times_{\pi_0(\Spec A)} T$. The universal property of the
+    pullback gives a continuous map $\Spec B \to \Spec A'$ over $\Spec A$, which by
+    fully faithfulness (\Cref{thm:identifies-local-ring-to-top-fully-faithful}) comes
+    from an $A$-algebra map $A' \to B$. This map is a w-local map of w-local rings that
+    identifies local rings and induces a bijection on connected components, hence is an
+    isomorphism by \Cref{thm:isom-of-identifies-local-rings-w-local-isom-pi0}. Thus
+    $B \cong A'$ is ind-Zariski over $A$.
 \end{proof}
 
 \begin{proposition}[\stacksproject{097G}]
@@ -933,6 +974,20 @@ suffices for our purposes.
 \end{theorem}
 
 \begin{proof}
-    \uses{thm:weakly-etale-over-sh, prop:bijective-on-stalks-ind-zariski}
-    TBA.
+    \leanok
+    \uses{thm:weakly-etale-over-sh, lemma:w-local-bijective-on-stalks-ind-zariski,
+    thm:ind-etale-w-strictly-local-cover}
+    Let $C$ be a faithfully flat, ind-étale, w-strictly local $R$-algebra
+    (\Cref{thm:ind-etale-w-strictly-local-cover}) and let $J \subseteq C$ be the ideal
+    cutting out the closed points of $\spec{C}$. Set $D' = C \otimes_R S$, which is
+    weakly étale over $C$ and faithfully flat ind-étale over $S$, and let $D$ be the
+    w-localization of $D'$ along $J D'$ (\stacksproject{097A}). Then $D$ is w-local,
+    ind-Zariski over $D'$, and the closed points of $\spec{D}$ lie over closed points of
+    $\spec{C}$. Since the local rings of $C$ at closed points are strictly henselian,
+    the weakly étale map $C \to D$ identifies local rings by
+    \Cref{thm:weakly-etale-over-sh}, hence is ind-Zariski by
+    \Cref{lemma:w-local-bijective-on-stalks-ind-zariski}. Thus $T = D$ works:
+    $S \to D' \to D$ is faithfully flat and ind-étale (faithful flatness of the
+    composition uses that the closed points of $\spec{C}$ surject onto $\spec{R}$), and
+    $R \to C \to D$ is ind-étale.
 \end{proof}
