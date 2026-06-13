@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-  pull_request:
+  pull_request_target:
     paths:
       - 'blueprint-verso/**'
       - 'Proetale/**'
@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Install elan
         run: |
@@ -98,9 +100,7 @@ jobs:
 
   deploy-preview:
     name: Deploy PR preview (/preview/<pr>/verso-blueprint)
-    # Forks have a read-only GITHUB_TOKEN, so previews are deployed for
-    # same-repository PRs only.
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request_target'
     needs: build
     runs-on: ubuntu-latest
     concurrency:
