@@ -99,6 +99,7 @@ variable {A B C}
 /-- The continuous map `Spec C → Spec B` over `Spec A` induced by an
 `A`-algebra homomorphism `f : B →ₐ[A] C`. This is the forward direction of
 the hom-set bijection from Stacks 096L. -/
+@[stacks 096L "The forward map on hom sets."]
 def continuousMap_of_algHom (f : B →ₐ[A] C) : HomOver A B C where
   toContinuousMap :=
     { toFun := PrimeSpectrum.comap f.toRingHom

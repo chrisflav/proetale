@@ -283,6 +283,8 @@ An important property of the pro-étale site is the following:
     The category of sheaves on $\proet{X}$ has enough weakly contractible objects.
     \uses{def:weakly-contractible, def:proetale-site}
     \label{prop:proet-wc}
+    \lean{AlgebraicGeometry.Scheme.AffineProEt.exists_isWeaklyContractible_cover}
+    \leanok
 \end{proposition}
 
 \begin{proof}
@@ -410,6 +412,8 @@ In contrast to \cite{proetale}, we write $R \nu_{*}$ for the derived functor of 
     $\nu^*F(U) = \colim_i F(U_i)$.
     \uses{lemma:forget-proet-continuous, def:affproet}
     \label{lemma:pullback-section-affproet}
+    \lean{AlgebraicGeometry.Scheme.ProEt.isColimitSheafPullbackSectionsCocone}
+    \leanok
 \end{corollary}
 
 \begin{proof}
@@ -481,6 +485,8 @@ if they preserve affine filtered colimits:
     $R \Gamma(U, \nu^*K) = \colim_i R\Gamma(U_i, K)$.
     \uses{lemma:forget-proet-continuous}
     \label{lemma:derived-pullback-section-affproet}
+    \lean{AlgebraicGeometry.Scheme.ProEt.mapExt_bijective_sheafPullback}
+    \leanok
 \end{lemma}
 
 \begin{proof}
@@ -504,6 +510,8 @@ if they preserve affine filtered colimits:
     .\]
     \uses{lemma:forget-proet-continuous}
     \label{cor:derived-sections-proetale-etale-iso}
+    \lean{AlgebraicGeometry.Scheme.ProEt.sheafHAddEquiv}
+    \leanok
 \end{corollary}
 
 \begin{proof}
@@ -524,6 +532,8 @@ if they preserve affine filtered colimits:
     the \emph{continuous étale cohomology} of $X$ with coefficients in $\left( F_n \right)_{n \in \N}$.
 
     \label{def:continuous-etale-cohomology}
+    \lean{AlgebraicGeometry.Scheme.continuousH}
+    \leanok
 \end{definition}
 
 \begin{theorem}[{\cite[Proposition 5.6.2]{proetale}}]
@@ -537,6 +547,8 @@ if they preserve affine filtered colimits:
     .\]
     \uses{def:continuous-etale-cohomology, lemma:forget-proet-continuous}
     \label{thm:comparison-continuous}
+    \lean{AlgebraicGeometry.Scheme.ProEt.nonempty_continuousH_addEquiv_H_limit}
+    \leanok
 \end{theorem}
 
 \begin{proof}

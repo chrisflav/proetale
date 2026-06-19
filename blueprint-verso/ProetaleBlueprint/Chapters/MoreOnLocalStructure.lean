@@ -459,7 +459,7 @@ $$`A' \otimes_{A} A' \to B \otimes_{A} B \to B`
 is injective.
 :::
 
-:::lemma_ "lemma:integrally-closed-cartesian-weak-dim" (parent := "more-on-local-structure")
+:::lemma_ "lemma:integrally-closed-cartesian-weak-dim" (parent := "more-on-local-structure") (lean := "IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact")
 Let $`A` be a domain and $`L` an algebraic extension of $`\mathrm{Frac}(A)`.
 If $`A` is integrally closed in $`L`, then there exists a cartesian diagram of
 rings
@@ -473,7 +473,7 @@ epimorphism of rings.
 TBA.
 :::
 
-:::lemma_ "lemma:weakly-etale-integrally-closed" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra")
+:::lemma_ "lemma:weakly-etale-integrally-closed" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra") (lean := "Algebra.WeaklyEtale.isIntegrallyClosedIn_tensorProduct")
 Let $`A` be a domain and $`B` a weakly étale $`A`-algebra. Let $`L` be an
 algebraic extension of $`\mathrm{Frac}(A)` and assume that $`A` is integrally
 closed in $`L`. Then $`B` is integrally closed in $`B \otimes_{A} L`.

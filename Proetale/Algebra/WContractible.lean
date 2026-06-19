@@ -377,6 +377,7 @@ end PullbackProfinite
 `Spec D = Spec R ×_{π₀(Spec R)} T`, see `PullbackProfinite.isPullback`. This is the
 ring `A^f_{π₀}` of Stacks 097D, realized as the restriction of `LocallyConstant T R`
 to the components on the graph of `i`. -/
+@[stacks 097D]
 def PullbackProfinite : Type u :=
   Restriction (PullbackProfinite.Z R T i)
 
@@ -464,6 +465,7 @@ Spec R --→ π₀(Spec R)
 ```
 is cartesian in the category of topological spaces. This is
 `thm:modify-pi0-profinite-properties` (Stacks 097D) in the blueprint. -/
+@[stacks 097D]
 theorem isPullback :
     CategoryTheory.IsPullback (ofHom (projT R T i)) (ofHom (projSpec R T i)) (ofHom i)
       (ofHom ⟨ConnectedComponents.mk, ConnectedComponents.continuous_coe⟩) := by
@@ -643,6 +645,7 @@ private theorem exists_retraction_of_isClosed_of_bijOn [IsWLocalRing R]
 `thm:ff-identifies-local-rings-plus-c-has-retraction-if`: a faithfully flat map identifying
 local rings from a w-local ring with extremally disconnected π₀ to a w-local ring whose
 closed points are cut out by the pulled-back ideal has a retraction. -/
+@[stacks 09AZ "second part of the proof of (3) => (1)"]
 theorem exists_retraction_of_bijectiveOnStalks [IsWLocalRing R]
     [ExtremallyDisconnected (ConnectedComponents (PrimeSpectrum R))]
     {I : Ideal R} (hI : zeroLocus (I : Set R) = closedPoints (PrimeSpectrum R))

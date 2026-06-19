@@ -693,6 +693,8 @@ and $P$ a property of morphisms.
 \begin{definition}[Strictly Henselian local ring]
     \uses{def:p-henselian}
     \label{def:strictly-henselian-local-ring}
+    \lean{IsStrictlyHenselianLocalRing}
+    \leanok
     A local ring $(R, \mathfrak{m}, \kappa)$ is \emph{strictly henselian} if the composition $R \to \kappa \to \kappa^{\mathrm{sep}}$ is étale-Henselian
     for a separable closure $\kappa^{\mathrm{sep}}$.
 \end{definition}
@@ -1159,6 +1161,8 @@ be a cartesian diagram in the category of topological spaces with $T$ profinite.
     A ring map \(f: A \to B\) between w-local rings is \emph{w-local} if the induced map of w-local spaces \(\Spec(f) : \Spec(B) \to \Spec(A)\) is w-local.
     % Spectral is automatic, only sending closed pts to closed pts matters.
     \label{def:w-local-ring-map}
+    \lean{RingHom.IsWLocal}
+    \leanok
     \uses{def:w-local-ring, def:w-local-space, def:w-local-space-map}
 \end{definition}
 

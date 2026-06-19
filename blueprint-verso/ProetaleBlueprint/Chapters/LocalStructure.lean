@@ -448,7 +448,7 @@ on stalks.
 Holds because the same holds for bijective maps of sets.
 :::
 
-:::definition "def:identifies-local-ring-to-top" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-rings-composition")
+:::definition "def:identifies-local-ring-to-top" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-rings-composition") (lean := "Algebra.BijectiveOnStalks.continuousMap_of_algHom")
 Let $`A` be a ring and $`X = \Spec(A)`. Let $`\operatorname{ILR}_A` denote the
 category of $`A`-algebras $`B` for which $`A \to B` identifies local rings, and
 let $`\operatorname{Top}_X` denote the category of topological spaces over $`X`.
@@ -459,7 +459,7 @@ by sending $`B` to $`\Spec(B)`.
 (Stacks Project, [Tag 096L](https://stacks.math.columbia.edu/tag/096L))
 :::
 
-:::lemma_ "thm:identifies-local-ring-to-top-fully-faithful" (parent := "local-structure") (uses := "def:identifies-local-ring-to-top")
+:::lemma_ "thm:identifies-local-ring-to-top-fully-faithful" (parent := "local-structure") (uses := "def:identifies-local-ring-to-top") (lean := "Algebra.BijectiveOnStalks.continuousMap_of_algHom_bijective")
 Let $`A` be a ring. Set $`X = \Spec (A)`. The functor $`F` constructed in
 {bpref "def:identifies-local-ring-to-top"}[],
 $$`B \longmapsto \Spec (B),`
@@ -485,7 +485,7 @@ $`f^{-1}\mathcal{O}_Y \cong f^{-1}p^{-1}\mathcal{O}_X = q^{-1}\mathcal{O}_X \con
 where $`p \colon Y \to X` and $`q \colon Z \to X` are the structure maps.
 :::
 
-:::definition "def:identifies-local-ring-hom-set-bijection" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-ring-to-top-fully-faithful")
+:::definition "def:identifies-local-ring-hom-set-bijection" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-ring-to-top-fully-faithful") (lean := "Algebra.BijectiveOnStalks.algHomEquivContinuousMap")
 Let $`A` be a ring and $`X = \Spec(A)`. Let $`A \to B` and $`A \to C` be two
 $`A`-algebras that identify local rings. As a consequence of
 {bpref "thm:identifies-local-ring-to-top-fully-faithful"}[], we have a bijective
@@ -629,10 +629,12 @@ $`R \to S \to \kappa(\mathfrak{q}) = \kappa` is a factorisation of
 $`R \to \kappa`. Thus $`R \to S` has a retraction.
 :::
 
-:::definition "def:strictly-henselian-local-ring" (parent := "local-structure") (uses := "def:p-henselian")
+:::definition "def:strictly-henselian-local-ring" (parent := "local-structure") (uses := "def:p-henselian") (lean := "IsStrictlyHenselianLocalRing")
 A local ring $`(R, \mathfrak{m}, \kappa)` is *strictly henselian* if the
 composition $`R \to \kappa \to \kappa^{\mathrm{sep}}` is étale-Henselian for a
 separable closure $`\kappa^{\mathrm{sep}}`.
+
+*Note (2026/06/19):* The current formal definition did not use $`P`-henselian. Instead it uses henselian + residue field separably closed.
 :::
 
 The following lemma shows that our definition agrees with the one in
@@ -672,10 +674,14 @@ satisfies $`\n B_b = s_b^{-1}(\m)`. Composition with the localization map
 $`B \to B_b` gives the desired section $`s : B \to A`.
 :::
 
-:::proposition "thm:etale-over-strictly-henselian-localization-isom" (parent := "local-structure") (uses := "def:strictly-henselian-local-ring")
+:::proposition "thm:etale-over-strictly-henselian-localization-isom" (parent := "local-structure") (uses := "def:strictly-henselian-local-ring") (lean := "Algebra.WeaklyEtale.bijective_algebraMap_localization_atPrime")
 Let $`A` be a strictly Henselian local ring and $`f : A \to B` an étale ring
 map. Suppose $`\n` is a maximal ideal of $`B` lying over the maximal ideal $`\m`
 of $`A`. Then the induced map $`A \to B_\n` is an isomorphism.
+
+*Note (2026/06/19):* We proved a weakly etale version of this, see
+{bpref "thm:weakly-etale-over-sh"}[]. Merge this and {bpref "thm:weakly-etale-over-sh"}[]
+in the blueprint later.
 :::
 
 :::proof "thm:etale-over-strictly-henselian-localization-isom" (uses := "thm:strictly-henselian-good-retraction")
@@ -1044,7 +1050,7 @@ A ring $`A` is *w-local* if $`\Spec(A)` is w-local.
 (Bhatt–Scholze, Definition 2.2.1(i))
 :::
 
-:::definition "def:w-local-ring-map" (parent := "local-structure") (uses := "def:w-local-ring, def:w-local-space, def:w-local-space-map")
+:::definition "def:w-local-ring-map" (parent := "local-structure") (uses := "def:w-local-ring, def:w-local-space, def:w-local-space-map") (lean := "RingHom.IsWLocal")
 A ring map $`f \colon A \to B` between w-local rings is *w-local* if the induced
 map of w-local spaces $`\Spec(f) : \Spec(B) \to \Spec(A)` is w-local.
 (Bhatt–Scholze, Definition 2.2.1(iii))
@@ -1059,9 +1065,11 @@ w-local.
 This is {bpref "thm:closed-subspace-w-local"}[].
 :::
 
-:::lemma_ "thm:w-local-set-decomposition" (parent := "local-structure") (uses := "def:w-local-ring")
+:::lemma_ "thm:w-local-set-decomposition" (parent := "local-structure") (uses := "def:w-local-ring") (lean := "WLocalSpace.isHomeomorph_connectedComponents_closedPoints, WLocalSpace.closedPointsHomeomorph")
 Let $`A` be a w-local ring. Then $`\Spec (A)` is set theoretically the disjoint
 union of the spectra of the local rings at closed points.
+
+Note (2026/06/19): This lemma is not formalized as a stand-alone lemma. Remove this later.
 :::
 
 :::proof "thm:w-local-set-decomposition"
@@ -1571,10 +1579,14 @@ $`A` at a maximal ideal is strictly henselian.
 The goal of this section is to show that every ring $`A` admits a faithfully
 flat, ind-étale algebra $`B` that is w-strictly-local.
 
-:::lemma_ "thm:ind-etale-strictly-henselian-localization-isom" (parent := "local-structure") (uses := "def:ind-etale, def:strictly-henselian-local-ring, def:identify-local-rings")
+:::lemma_ "thm:ind-etale-strictly-henselian-localization-isom" (parent := "local-structure") (uses := "def:ind-etale, def:strictly-henselian-local-ring, def:identify-local-rings") (lean := "Algebra.WeaklyEtale.bijective_algebraMap_localization_atPrime")
 Let $`A` be a strictly henselian local ring. Let $`A \to B` be an ind-étale
 ring map. Let $`\n` be a maximal ideal of $`B` lying over the maximal ideal
 $`\m` of $`A`. Then the map $`A \to B_\n` is an isomorphism.
+
+*Note (2026/06/19):* We proved a weakly etale version of this, see
+{bpref "thm:weakly-etale-over-sh"}[]. Merge this and {bpref "thm:weakly-etale-over-sh"}[]
+in the blueprint later.
 :::
 
 :::proof "thm:ind-etale-strictly-henselian-localization-isom" (uses := "thm:etale-over-strictly-henselian-localization-isom, lemma:ind-etale-weakly-etale")
@@ -1585,7 +1597,7 @@ $`B_i`. Then use {bpref "thm:etale-over-strictly-henselian-localization-isom"}[]
 to conclude each $`(B_i)_{\n_i}` is isomorphic to $`A`.
 :::
 
-:::lemma_ "lemma:retractions-strictly-henselian" (parent := "local-structure")
+:::lemma_ "lemma:retractions-strictly-henselian" (parent := "local-structure") (lean := "IsStrictlyHenselianLocalRing.localization_atPrime_of_forall_retraction, Algebra.Etale.exists_algHom_localization_atPrime_comap_eq")
 Let $`A` be a ring such that every faithfully flat étale ring map $`A \to B`
 has a retraction. Then every local ring of $`A` at a maximal ideal is strictly
 henselian.
@@ -1709,7 +1721,7 @@ $`B' \to T^{n+1}(A) \to T^{\infty}(A)` now induce a retraction
 $$`B = T^{\infty}(A) \otimes_{T^n(A)} B' \to T^{\infty}(A).`
 :::
 
-:::corollary "cor:strictly-henselian-etale-contraction" (parent := "local-structure") (uses := "def:etale-contraction")
+:::corollary "cor:strictly-henselian-etale-contraction" (parent := "local-structure") (uses := "def:etale-contraction") (lean := "IsStrictlyHenselianLocalRing.localization_atPrime_indEtaleContraction")
 Let $`\mathfrak{m}` be a maximal ideal of $`T^{\infty}(A)`. Then
 $`T^{\infty}(A)_{\mathfrak{m}}` is strictly Henselian.
 :::
@@ -1755,7 +1767,7 @@ general element of $`\kappa(\mathfrak{q})` is a ratio of two such images, and
 separability passes to ratios via the separable closure.
 :::
 
-:::proposition "thm:ind-etale-w-strictly-local-cover" (parent := "local-structure") (uses := "def:w-strictly-local-ring, def:ind-etale")
+:::proposition "thm:ind-etale-w-strictly-local-cover" (parent := "local-structure") (uses := "def:w-strictly-local-ring, def:ind-etale") (lean := "WStrictLocalization, exists_isWStrictlyLocalRing")
 For any ring $`A`, there exists an ind-étale faithfully flat $`A`-algebra $`B`
 with $`B` w-strictly local.
 (Stacks Project, [Tag 097X](https://stacks.math.columbia.edu/tag/097X))
@@ -1903,7 +1915,7 @@ faithfulness in {bpref "def:identifies-local-ring-hom-set-bijection"}[] we
 conclude that they are equal.
 :::
 
-:::definition "def:modify-pi0-profinite" (parent := "local-structure") (uses := "def:modify-pi0-finite, def:modify-pi0-transition-map, thm:modify-pi0-transition-map-compatible")
+:::definition "def:modify-pi0-profinite" (parent := "local-structure") (uses := "def:modify-pi0-finite, def:modify-pi0-transition-map, thm:modify-pi0-transition-map-compatible") (lean := "WContractification.PullbackProfinite")
 Let $`A` be a ring and let $`X = \Spec (A)`. Let $`T` be a profinite space and
 let $`T \to \pi_0(X)` be a continuous map. Write $`T = \lim T_i` as the limit of
 an inverse system of finite discrete spaces over a directed set. Define the ring
@@ -1917,7 +1929,7 @@ compatible, thus the colimit is well-defined.
 (Stacks Project, [Tag 097D](https://stacks.math.columbia.edu/tag/097D))
 :::
 
-:::lemma_ "thm:modify-pi0-profinite-properties" (parent := "local-structure") (uses := "def:modify-pi0-profinite, def:ind-Zariski")
+:::lemma_ "thm:modify-pi0-profinite-properties" (parent := "local-structure") (uses := "def:modify-pi0-profinite, def:ind-Zariski") (lean := "WContractification.PullbackProfinite.indZariski, WContractification.PullbackProfinite.isPullback")
 Let $`A` be a ring and let $`X = \Spec (A)`. Let $`T` be a profinite space and
 let $`T \to \pi_0(X)` be a continuous map. Then the $`A`-algebra
 $`A^f_{\pi_0}` defined in {bpref "def:modify-pi0-profinite"}[] is ind-Zariski.
@@ -1940,7 +1952,7 @@ of topological spaces. By {bpref "thm:cartesian-profinite"}[] we conclude that
 $`T = \pi_0(Y)`.
 :::
 
-:::lemma_ "thm:ff-identifies-local-rings-plus-c-has-retraction-if" (parent := "local-structure") (uses := "def:w-local-ring, def:extremally-disconnected, def:identify-local-rings")
+:::lemma_ "thm:ff-identifies-local-rings-plus-c-has-retraction-if" (parent := "local-structure") (uses := "def:w-local-ring, def:extremally-disconnected, def:identify-local-rings") (lean := "exists_retraction_of_bijectiveOnStalks")
 Let $`A` be a ring. If the following two conditions hold:
 
 1. $`A` is w-local, and
