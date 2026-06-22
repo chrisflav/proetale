@@ -6,10 +6,6 @@ name: Comparator
 # permitted axioms.
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
   workflow_dispatch:
 
 permissions:
