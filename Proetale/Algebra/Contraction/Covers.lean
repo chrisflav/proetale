@@ -379,10 +379,12 @@ lemma contraction.w (n m : ℕ) (hmn : n ≤ m) :
     contraction.π P Q X m ≫ (Construction.diag P Q X).map ⟨homOfLE hmn⟩ = contraction.π P Q X n :=
   limit.w _ _
 
-lemma pro_pro_contractionπ [PreProSpreads.{w} P]
+lemma pro_pro_contractionπ [PreProSpreads.{w} P] [Limits.HasPullbacks C] [LocallySmall.{w} C]
+    (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ)
     [P.IsStableUnderBaseChange] [P.IsMultiplicative]
     [Q.IsStableUnderBaseChange] [Q.IsMultiplicative] (X : C) (n : ℕ) :
     pro.{0} (pro.{w} P) (contraction.π P Q X n) := by
+  haveI := IsMultiplicative.pro_of_le_isFinitelyPresentable H
   apply pro_coneπ
   · exact limit.isLimit _
   · intro k f
@@ -391,11 +393,12 @@ lemma pro_pro_contractionπ [PreProSpreads.{w} P]
     apply pro_mono inf_le_left
     exact pro_precontraction_hom.{w} (P ⊓ Q) (Construction.obj P Q X m)
 
-lemma pro_pro_contractionBase [PreProSpreads.{w} P]
+lemma pro_pro_contractionBase [PreProSpreads.{w} P] [Limits.HasPullbacks C] [LocallySmall.{w} C]
+    (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ)
     [P.IsStableUnderBaseChange] [P.IsMultiplicative]
     [Q.IsStableUnderBaseChange] [Q.IsMultiplicative] (X : C) :
     pro.{0} (pro.{w} P) (Contraction.base P Q X) :=
-  pro_pro_contractionπ _ _ _ 0
+  pro_pro_contractionπ _ _ H _ 0
 
 lemma prop_contractionπ
     (h : pro.{w} Q = Q)
@@ -454,14 +457,14 @@ lemma exists_comp_eq_id_contraction
   simp [l]
 
 lemma pro_contractionBase [LocallySmall.{w} C]
-    (H : P ≤ isFinitelyPresentable.{w} C)
-    [PreProSpreads.{w} P]
+    (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ)
+    [PreProSpreads.{w} P] [Limits.HasPullbacks C]
     [P.IsStableUnderBaseChange] [P.IsMultiplicative]
     [Q.IsStableUnderBaseChange] [Q.IsMultiplicative] (X : C) :
     pro.{w} P (Contraction.base P Q X) := by
-  rw [← pro_pro H]
+  rw [← pro_pro (P := P) H]
   apply pro_of_univLE.{0, w}
-  exact P.pro_pro_contractionBase _ _
+  exact P.pro_pro_contractionBase _ H _
 
 end MorphismProperty
 

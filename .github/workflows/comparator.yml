@@ -13,7 +13,6 @@ permissions:
 
 jobs:
   comparator:
-    if: github.event_name != 'pull_request' || github.event.pull_request.number == 165
     runs-on: ubuntu-latest
 
     steps:

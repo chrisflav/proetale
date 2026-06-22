@@ -1,0 +1,154 @@
+# formalization.yaml (v0.3): repo-root metadata for formalization projects.
+# See https://github.com/mathlib-initiative/formalization.yaml
+
+version: "v0.3"
+
+# project - the formalization itself (not the source).
+project:
+  name: "Proetale"
+  authors: ["Jiedong Jiang", "Christian Merten"]
+  license: "Apache-2.0"
+
+# sources - what was formalized.
+sources:
+  - title: "The pro-étale topology for schemes"
+    authors: ["Bhargav Bhatt", "Peter Scholze"]
+    id: "https://arxiv.org/abs/1309.1198"
+    type: "article (Astérisque 369, 2015, pp. 99-201)"
+    author_contacted: "no"
+  - title: "Continuous étale cohomology"
+    authors: ["Uwe Jannsen"]
+    id: "https://doi.org/10.1007/BF01456052"
+    type: "article (Math. Ann. 280, 1988, pp. 207-245)"
+    author_contacted: "no"
+  - title: "Stacks Project (in particular the chapter on pro-étale cohomology, tags 0965ff.)"
+    authors: ["The Stacks Project Authors"]
+    id: "https://stacks.math.columbia.edu"
+    type: "online reference"
+    author_contacted: "no"
+  - title: "Proetale project blueprint"
+    authors: ["Christian Merten"]
+    id: "https://github.com/chrisflav/proetale (blueprint/)"
+    type: "blueprint"
+
+# project status
+status:
+  scope: >
+    The pro-étale topology for schemes following Bhatt-Scholze: weakly étale and
+    ind-étale ring maps (including w-local rings, w-contractible covers and the
+    equivalence of weakly étale and pro-étale-locally split maps), the small pro-étale
+    site, repleteness of the pro-étale topos, comparison of pro-étale cohomology with
+    étale cohomology for pulled-back sheaves, continuous étale cohomology (Jannsen) as
+    Ext-groups of inverse systems, and the comparison of ℓ-adic cohomology (as defined
+    in mathlib on the pro-étale site) with the inverse limit of étale cohomology with
+    ℤ/ℓⁿℤ-coefficients. Foundational files on the pro-étale site of a general scheme
+    are still in progress (all remaining sorries are in propositions there, none in
+    the dependency tree of the main results below).
+  sorry_count: 33
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound", "sorryAx (only in in-progress files, not used by the main results)"]
+  main_results:
+  - declaration: "AlgebraicGeometry.Scheme.ProEt.nonempty_ellAdicCohomology_addEquiv_limit_of_finite"
+    file: "Proetale/Topology/Comparison/EllAdic.lean"
+    sorry_count: 0
+    axioms: ["propext", "Classical.choice", "Quot.sound"]
+    comparator_config: "Comparator/config.json"
+  - declaration: "AlgebraicGeometry.Scheme.ProEt.nonempty_ellAdicCohomology_addEquiv_continuousH"
+    file: "Proetale/Topology/Comparison/EllAdic.lean"
+    sorry_count: 0
+    axioms: ["propext", "Classical.choice", "Quot.sound"]
+  - declaration: "AlgebraicGeometry.Scheme.ProEt.nonempty_continuousH_addEquiv_H_limit"
+    file: "Proetale/Topology/Comparison/ContinuousComparison.lean"
+    sorry_count: 0
+    axioms: ["propext", "Classical.choice", "Quot.sound"]
+  - declaration: "AlgebraicGeometry.Scheme.ProEt.mapExt_bijective_sheafPullback"
+    file: "Proetale/Topology/Comparison/CohomologyComparison.lean"
+    sorry_count: 0
+    axioms: ["propext", "Classical.choice", "Quot.sound"]
+  - declaration: "Algebra.WeaklyEtale.exists_indEtale"
+    file: "Proetale/Algebra/WeaklyEtaleIndEtale.lean"
+    sorry_count: 0
+    axioms: ["propext", "Classical.choice", "Quot.sound"]
+
+# how it was produced.
+automation:
+  methods:
+    - method: "agent"
+      models: ["claude-fable-5"]
+      framework: "Claude Code"
+      tool_setup: >
+        Claude Code sessions with a Lean LSP MCP server (goal states, diagnostics,
+        local/mathlib search, multi-attempt tactic probing), parallel subagents for
+        independent sorry-filling, and lake-build/axiom-check verification loops.
+        Persistent agent memory across sessions for elaboration pitfalls and proof
+        strategies.
+      prompting_notes: >
+        Blueprint-driven: statements and proof sketches are laid out as commented
+        skeletons with sorries, then filled per-sorry. Agents are instructed to
+        check claimed statements against the sources before proving; one stated
+        hypothesis (surjectivity of cohomology transition maps following from
+        finiteness) was refuted by an agent-found counterexample and corrected to
+        the Mittag-Leffler condition.
+    - method: "manual"
+      models: []
+      tool_setup: "Blueprint authoring, statement design, task specification and supervision by the project author."
+  spend_usd: ""
+  notes: >
+    The repository is developed blueprint-first; agent sessions fill and verify the
+    Lean side. Several supporting results have been upstreamed to mathlib (e.g. the
+    definition of ℓ-adic cohomology on the pro-étale site,
+    Mathlib.AlgebraicGeometry.Sites.ElladicCohomology).
+
+# fidelity
+fidelity:
+  divergences: >
+    Comparison theorems are stated as mere existence of additive equivalences
+    (`Nonempty (· ≃+ ·)`) rather than as canonical isomorphisms. The ℓ-adic/étale
+    comparison in positive degrees is proved under a Mittag-Leffler hypothesis on the
+    levelwise étale cohomology system (with surjective-transitions and finite-groups
+    corollaries) via an eventual-image argument, instead of Jannsen's lim¹ exact
+    sequence; an earlier hypothesis (surjectivity of the transition maps) was found
+    not to follow from finiteness (counterexample: X = Spec ℝ, ℓ = 2, i = 1) and the
+    statements were corrected accordingly. Continuous étale cohomology is defined as
+    Ext-groups out of the constant system in the category of ℕᵒᵖ-indexed systems of
+    sheaves, which agrees with Jannsen's definition by deriving the same functor. A
+    statement of EGA IV 8.10.5(vi) for systems without base change that the blueprint
+    initially relied on is false as literally stated and was circumvented.
+
+# review status
+review:
+  status: "agent-reviewed"
+  reviewers: []
+  notes: >
+    All main results are verified sorry-free with standard axioms only (#print
+    axioms); the full repository builds. The headline ℓ-adic comparison is
+    additionally backed by a leanprover/comparator challenge whose statement uses
+    only mathlib (Comparator/). Statements were cross-checked against the sources by
+    agents during formalization; no independent human peer review yet.
+
+# alignment - how source statements map to formal declarations.
+alignment:
+  namespace: "AlgebraicGeometry.Scheme (site-theoretic results), Algebra (ring-theoretic results)"
+  statements:
+    - source: "Stacks 097Z (a weakly étale ring map factors through a faithfully flat ind-étale one)"
+      lean: "Algebra.WeaklyEtale.exists_indEtale"
+      module: "Proetale/Algebra/WeaklyEtaleIndEtale.lean"
+      status: "proved"
+    - source: "Bhatt-Scholze, Proposition 5.6.2 (continuous étale cohomology vs. pro-étale cohomology of the limit)"
+      lean: "AlgebraicGeometry.Scheme.ProEt.nonempty_continuousH_addEquiv_H_limit"
+      module: "Proetale/Topology/Comparison/ContinuousComparison.lean"
+      status: "proved"
+    - source: "Bhatt-Scholze, Corollary 5.1.8 (étale and pro-étale Ext-groups of pulled-back sheaves agree)"
+      lean: "AlgebraicGeometry.Scheme.ProEt.mapExt_bijective_sheafPullback"
+      module: "Proetale/Topology/Comparison/CohomologyComparison.lean"
+      status: "proved"
+    - source: "Jannsen, Continuous étale cohomology, §1; Bhatt-Scholze §6.8 (ℓ-adic cohomology as lim of finite-coefficient étale cohomology under finiteness)"
+      lean: "AlgebraicGeometry.Scheme.ProEt.nonempty_ellAdicCohomology_addEquiv_limit_of_finite"
+      module: "Proetale/Topology/Comparison/EllAdic.lean"
+      status: "proved"
+      note: "Proved more generally under a Mittag-Leffler hypothesis (nonempty_ellAdicCohomology_addEquiv_limit)."
+
+# acknowledgements
+acknowledgements: >
+  Built on mathlib (in particular the derived-category Ext API, sheaf cohomology, and
+  the pro-étale site of a scheme). Thanks to the mathlib community.

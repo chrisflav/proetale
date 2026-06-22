@@ -71,6 +71,6 @@ theorem nonempty_ellAdicCohomology_addEquiv_limit_of_finite
     (hfin : ∀ n : ℕ, Finite (ToType ((etaleCohomologySystem X ℓ i).obj (op n)))) :
     Nonempty (X.EllAdicCohomology ℓ (i + 1) ≃+
       ↥(limit (etaleCohomologySystem X ℓ (i + 1)))) :=
-  sorry
+  Scheme.ProEt.nonempty_ellAdicCohomology_addEquiv_limit_of_finite X ℓ i hfin
 
 end EllAdicEtaleComparison
