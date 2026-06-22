@@ -585,12 +585,28 @@ suffices for our purposes.
     \label{lem:flat-tensor-over-field-imples-algebraic}
     Let $L/K$ be an extension of fields. If $L \otimes_K L \to L$ is flat, then $L$ is an algebraic
     separable extension of $K$.
-    \lean{Algebra.WeaklyEtale.isAlgebraic}
+    \lean{Algebra.WeaklyEtale.isSeparable}
     \leanok
 \end{lemma}
 
 \begin{proof}
-    TBA.
+    \leanok
+    Flatness of $L \otimes_K L \to L$ means $K \to L$ is weakly étale, and since $L$ is a field
+    (hence absolutely flat) the base change $L \to L \otimes_K L$ is again weakly étale, so
+    $L \otimes_K L$ is absolutely flat, i.e.\ von Neumann regular: every $a \in L \otimes_K L$
+    can be written as $a = a^2 u$.
+
+    It suffices to show that every $x \in L$ is separable algebraic over $K$, so we may replace
+    $L$ by the simple subextension $E := K(x)$. The inclusion $E \to L$ is split by an
+    $E$-linear retraction $\pi : L \to E$, which induces an additive, unital retraction
+    $r : L \otimes_K L \to E \otimes_K E$ of $\iota : E \otimes_K E \to L \otimes_K L$
+    satisfying $r(\iota(c) \cdot z) = c \cdot r(z)$. Along such a retraction von Neumann
+    regularity descends, so $E \otimes_K E$ is again absolutely flat, hence $K \to E$ is
+    weakly étale.
+
+    Finally $E = K(x)$ is essentially of finite type and formally unramified over $K$ (the
+    latter from weak étaleness), and an essentially-of-finite-type formally unramified extension
+    of fields is separable. Thus $x$ is separable over $K$, as required.
 \end{proof}
 
 \begin{theorem}[\stacksproject{092Q}, (2) => (3) and last part]
