@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Limits.Presentation
+import Mathlib.CategoryTheory.Limits.Connected
 import Proetale.Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
@@ -18,6 +19,8 @@ pushouts.
 
 * `CategoryTheory.Limits.ColimitPresentation.diagPushout`: the diagonal pushout
   functor associated to a colimit presentation.
+* `CategoryTheory.Limits.ColimitPresentation.isColimitDiagPushout`: for a connected index
+  category, the codiagonal cocone exhibits `X` as the colimit of `diagPushout`.
 
 ## TODO
 
@@ -63,6 +66,72 @@ lemma diagPushout_inr_map {i j : ι} (h : i ⟶ j) :
     pushout.inr (P.ι.app i) (P.ι.app i) ≫ P.diagPushout.map h =
       pushout.inr (P.ι.app j) (P.ι.app j) := by
   simp
+
+/-- The codiagonal cocone on the diagonal pushout diagram, with cocone point `X` and
+`app i = pushout.desc (𝟙 X) (𝟙 X)`. -/
+@[simps]
+noncomputable def diagPushoutCocone : P.diagPushout ⟶ (Functor.const ι).obj X where
+  app i := pushout.desc (𝟙 X) (𝟙 X) rfl
+  naturality {i j} h := by
+    dsimp [diagPushout]
+    apply pushout.hom_ext
+    all_goals
+      simp only [← Category.assoc, pushout.inl_desc, pushout.inr_desc,
+        Category.id_comp, Category.comp_id]
+
+variable [IsConnected ι]
+
+/-- For a cocone `s` over the diagonal pushout diagram with `ι` connected, the morphism
+`pushout.inl _ _ ≫ s.ι.app i : X ⟶ s.pt` does not depend on `i`. -/
+lemma diagPushout_inl_app_eq (s : Cocone P.diagPushout) (i j : ι) :
+    pushout.inl (P.ι.app i) (P.ι.app i) ≫ s.ι.app i =
+      pushout.inl (P.ι.app j) (P.ι.app j) ≫ s.ι.app j := by
+  refine constant_of_preserves_morphisms
+    (fun k ↦ pushout.inl (P.ι.app k) (P.ι.app k) ≫ s.ι.app k) (fun a b f ↦ ?_) i j
+  simp only [← s.w f, P.diagPushout_inl_map_assoc]
+
+/-- For a cocone `s` over the diagonal pushout diagram with `ι` connected, the morphism
+`pushout.inr _ _ ≫ s.ι.app i : X ⟶ s.pt` does not depend on `i`. -/
+lemma diagPushout_inr_app_eq (s : Cocone P.diagPushout) (i j : ι) :
+    pushout.inr (P.ι.app i) (P.ι.app i) ≫ s.ι.app i =
+      pushout.inr (P.ι.app j) (P.ι.app j) ≫ s.ι.app j := by
+  refine constant_of_preserves_morphisms
+    (fun k ↦ pushout.inr (P.ι.app k) (P.ι.app k) ≫ s.ι.app k) (fun a b f ↦ ?_) i j
+  simp only [← s.w f, P.diagPushout_inr_map_assoc]
+
+/-- The cocone over `P.diag` with point `s.pt` induced by a cocone `s` over the diagonal
+pushout diagram, via the left pushout inclusion. -/
+@[simps]
+noncomputable def diagPushoutCoconeDescAux (s : Cocone P.diagPushout) : Cocone P.diag where
+  pt := s.pt
+  ι :=
+    { app := fun i ↦ P.ι.app i ≫ pushout.inl _ _ ≫ s.ι.app i
+      naturality := fun {i j} f ↦ by
+        dsimp
+        rw [Category.comp_id, P.diagPushout_inl_app_eq s j i, ← Category.assoc, P.w f] }
+
+/-- The codiagonal cocone over the diagonal pushout diagram is a colimit when `ι` is connected.
+
+This is the special case of "connected colimits commute with pushouts" for the span
+`X ← P.diag.obj i → X`: the colimit of `i ↦ pushout (P.ι.app i) (P.ι.app i)` is again `X`. -/
+noncomputable def isColimitDiagPushout :
+    IsColimit (Cocone.mk X P.diagPushoutCocone) where
+  desc s := P.isColimit.desc (P.diagPushoutCoconeDescAux s)
+  fac s i := by
+    apply pushout.hom_ext
+    · rw [diagPushoutCocone_app, pushout.inl_desc_assoc,
+        Category.id_comp (P.isColimit.desc (P.diagPushoutCoconeDescAux s))]
+      refine P.isColimit.hom_ext fun k ↦ ?_
+      rw [P.isColimit.fac, diagPushoutCoconeDescAux_ι_app, P.diagPushout_inl_app_eq s k i]
+    · rw [diagPushoutCocone_app, pushout.inr_desc_assoc,
+        Category.id_comp (P.isColimit.desc (P.diagPushoutCoconeDescAux s))]
+      refine P.isColimit.hom_ext fun k ↦ ?_
+      rw [P.isColimit.fac, diagPushoutCoconeDescAux_ι_app, P.diagPushout_inr_app_eq s i k]
+      simp only [← Category.assoc, pushout.condition]
+  uniq s m hm := by
+    refine P.isColimit.hom_ext fun i ↦ ?_
+    rw [P.isColimit.fac, diagPushoutCoconeDescAux_ι_app, ← hm i, diagPushoutCocone_app,
+      pushout.inl_desc_assoc, Category.id_comp m]
 
 end ColimitPresentation
 
