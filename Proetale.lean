@@ -3,6 +3,7 @@ import Proetale.Algebra.Contraction.Covers
 import Proetale.Algebra.Contraction.IndContraction
 import Proetale.Algebra.Etale
 import Proetale.Algebra.FaithfullyFlat
+import Proetale.Algebra.FilteredColimitLmul
 import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.HenselianLocalRing
 import Proetale.Algebra.Ind
@@ -88,7 +89,6 @@ import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Etale.Field
 import Proetale.Mathlib.RingTheory.Etale.Prod
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Proetale.Mathlib.RingTheory.Flat.FilteredColimit
 import Proetale.Mathlib.RingTheory.Flat.Pi
 import Proetale.Mathlib.RingTheory.Henselian
 import Proetale.Mathlib.RingTheory.Ideal.GoingDown

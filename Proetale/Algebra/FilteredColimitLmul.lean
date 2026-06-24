@@ -36,7 +36,7 @@ variable {S : Type u} [CommRing S] [Algebra R S]
 
 This is the key colimit-stability lemma used to prove that ind-étale algebras are weakly
 étale (since étale implies weakly étale). -/
-theorem of_filteredColim_lmul'
+theorem of_filteredColimit_lmul'
     (P : ColimitPresentation ι (CommAlgCat.of R S))
     (h : ∀ i, (Algebra.TensorProduct.lmul' R (S := P.diag.obj i)).Flat) :
     (Algebra.TensorProduct.lmul' R (S := S)).Flat := by
@@ -209,8 +209,7 @@ theorem of_filteredColim_lmul'
           (CommRingCat.isPushout_tensorProduct (P.diag.obj i) S S).inr_isoPushout_hom
         rw [ht_inr, ← Category.assoc, hα_inr, hγ_inr]
         rfl
-    rw [heq]
-    change (γ.hom.hom.comp α.toRingHom).Flat
+    rw [heq, CommRingCat.hom_comp, CommRingCat.hom_ofHom]
     exact RingHom.Flat.comp hα (RingHom.Flat.of_bijective
       (ConcreteCategory.bijective_of_isIso γ.hom))
   -- Apply of_isColimit.
