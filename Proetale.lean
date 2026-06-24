@@ -1,4 +1,5 @@
 import Proetale.Algebra.Bijective
+import Proetale.Algebra.BijectiveOnStalks.ColimitPresentation
 import Proetale.Algebra.Contraction.Covers
 import Proetale.Algebra.Contraction.IndContraction
 import Proetale.Algebra.Etale
