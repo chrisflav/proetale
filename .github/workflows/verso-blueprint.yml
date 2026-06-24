@@ -1,0 +1,126 @@
+name: Verso Blueprint
+
+on:
+  push:
+    branches:
+      - master
+  pull_request_target:
+    paths:
+      - 'blueprint-verso/**'
+      - 'Proetale/**'
+      - 'lean-toolchain'
+      - 'lakefile.toml'
+      - 'lake-manifest.json'
+      - '.github/workflows/verso-blueprint.yml'
+  workflow_dispatch:
+
+# The deploy jobs push to the `gh-pages` branch
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.repository }}-verso-blueprint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build blueprint site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Lake package cache
+        uses: actions/cache@v4
+        with:
+          path: blueprint-verso/.lake/packages
+          key: ${{ runner.os }}-blueprint-lake-packages-${{ hashFiles('blueprint-verso/lean-toolchain', 'blueprint-verso/lake-manifest.json') }}
+          restore-keys: |
+            ${{ runner.os }}-blueprint-lake-packages-
+
+      - name: Restore Lean build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            blueprint-verso/.lake/build
+            .lake/build
+          key: ${{ runner.os }}-blueprint-lean-build-${{ hashFiles('blueprint-verso/lean-toolchain', 'blueprint-verso/lake-manifest.json', 'blueprint-verso/lakefile.toml', 'blueprint-verso/**/*.lean', 'Proetale/**/*.lean') }}
+          restore-keys: |
+            ${{ runner.os }}-blueprint-lean-build-${{ hashFiles('blueprint-verso/lean-toolchain', 'blueprint-verso/lake-manifest.json', 'blueprint-verso/lakefile.toml') }}-
+            ${{ runner.os }}-blueprint-lean-build-
+
+      - name: Get Mathlib cache
+        working-directory: blueprint-verso
+        run: lake exe cache get || true
+
+      - name: Build blueprint site
+        run: ./blueprint-verso/scripts/ci-pages.sh
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verso-blueprint-site
+          path: blueprint-verso/_out/site/html-multi
+
+  deploy:
+    name: Deploy to GitHub Pages (/verso-blueprint)
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    # Serialize all jobs that push to gh-pages (across workflows) to avoid
+    # racing deployments.
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Download site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: verso-blueprint-site
+          path: _site
+
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: _site
+          branch: gh-pages
+          target-folder: verso-blueprint
+          force: false
+          commit-message: 'deploy verso blueprint for ${{ github.sha }}'
+
+  deploy-preview:
+    name: Deploy PR preview (/preview/<pr>/verso-blueprint)
+    if: github.event_name == 'pull_request_target'
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Download site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: verso-blueprint-site
+          path: _site
+
+      - name: Deploy preview to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: _site
+          branch: gh-pages
+          target-folder: preview/${{ github.event.pull_request.number }}/verso-blueprint
+          force: false
+          commit-message: 'deploy verso blueprint preview for PR #${{ github.event.pull_request.number }} (${{ github.sha }})'
