@@ -156,8 +156,8 @@ lemma WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap
   -- The multiplication map `S ⊗[R] S → S` is flat, surjective and bijective on prime
   -- spectra, hence bijective.
   have hμ : Function.Bijective (TensorProduct.lmul' (S := S) R) := by
-    letI : Algebra (S ⊗[R] S) S := (TensorProduct.lmul' (S := S) R).toRingHom.toAlgebra
-    have : Module.Flat (S ⊗[R] S) S := WeaklyEtale.flat_lmul' R S
+    have hflat := WeaklyEtale.flat_lmul' R S
+    algebraize [(TensorProduct.lmul' (S := S) R).toRingHom]
     have halg : algebraMap (S ⊗[R] S) S = (TensorProduct.lmul' (S := S) R).toRingHom :=
       RingHom.algebraMap_toAlgebra _
     have hsurj : Function.Surjective (algebraMap (S ⊗[R] S) S) := by
