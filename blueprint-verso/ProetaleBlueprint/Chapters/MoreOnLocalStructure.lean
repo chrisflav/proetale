@@ -1,0 +1,761 @@
+import Verso
+import VersoManual
+import VersoBlueprint
+import Proetale
+import ProetaleBlueprint.TexPrelude
+
+open Verso.Genre
+open Verso.Genre.Manual
+open Informal
+
+#doc (Manual) "More on local structure" =>
+
+This chapter serves for the second half of the commutative algebra preparation
+of the remaining part of the paper. The key result is
+{bpref "thm:weakly-etale-ind-etale"}[], expressing that every weakly étale map
+can be covered by ind-étale maps. The proof goes via the local input
+{bpref "thm:weakly-etale-over-sh"}[].
+
+:::group "more-on-local-structure"
+Weakly étale ring maps, weak dimension, and the comparison between weakly étale
+and ind-étale, following Section 2 of Bhatt–Scholze and the Stacks Project.
+:::
+
+:::lemma_ "lemma:finite-over-henselian-local" (parent := "more-on-local-structure") (lean := "HenselianLocalRing.exists_pi_of_finite")
+Let $`R` be a Henselian local ring and $`S` a finite $`R`-algebra. Then $`S` is
+a finite product of Henselian local rings, each finite over $`R`.
+(Stacks Project, [Tag 04GH](https://stacks.math.columbia.edu/tag/04GH), (1))
+:::
+
+:::lemma_ "lemma:colimit-local" (parent := "more-on-local-structure") (lean := "CommRingCat.FilteredColimits.isLocalRing_of_isColimit")
+A filtered colimit of local rings along local homomorphisms is local.
+:::
+
+:::proof "lemma:colimit-local"
+Let $`R = \colim_i R_i` with $`R_i` local rings and $`R_i \to R_j` a local ring
+map. Suppose $`x, y \in R_i` are non-units. Since $`R_i` is local, their sum is
+not a unit. If the image of $`x + y` in $`\colim_i R_i` is a unit, there exists
+a $`j` such that the image of $`x + y` is a unit in $`R_j`. But this does not
+happen because $`R_i \to R_j` is a local ring map.
+:::
+
+:::lemma_ "lemma:colimit-henselian-local" (parent := "more-on-local-structure")
+A filtered colimit of (strictly) Henselian local rings along local
+homomorphisms is (strictly) Henselian.
+(Stacks Project, [Tag 04GI](https://stacks.math.columbia.edu/tag/04GI))
+:::
+
+:::lemma_ "lemma:henselian-local-integral-local" (parent := "more-on-local-structure") (lean := "IsLocalRing.of_henselianLocalRing_of_isIntegral_of_isDomain")
+Let $`R` be a Henselian local ring and $`S` be an integral $`R`-algebra and an
+integral domain. Then $`S` is a local ring.
+:::
+
+:::proof "lemma:henselian-local-integral-local" (uses := "lemma:colimit-local, lemma:finite-over-henselian-local")
+Since $`S` is integral over $`R`, it is the colimit of its finite
+$`R`-sub-algebras. Since a subring of an integral domain is still an integral
+domain, by {bpref "lemma:colimit-local"}[] we may assume that $`S` is finite
+over $`R`. By {bpref "lemma:finite-over-henselian-local"}[], $`S` is a product
+of (Henselian) local rings and hence local as an integral domain.
+:::
+
+:::lemma_ "lemma:integral-local-hom" (parent := "more-on-local-structure") (lean := "RingHom.IsIntegral.isLocalHom_of_isLocalRing")
+Let $`R \to S` be an integral ring map of local rings. Then $`R \to S` is a
+local ring homomorphism.
+:::
+
+:::proof "lemma:integral-local-hom"
+This follows from going-up.
+:::
+
+:::lemma_ "lemma:integral-local-algebraic-residue-field" (parent := "more-on-local-structure") (lean := "Algebra.IsAlgebraic.residueField_of_isIntegral")
+Let $`R \to S` be a local ring homomorphism of local rings. If $`R \to S` is
+integral, the extension of residue fields $`\kappa(S) / \kappa(R)` is
+algebraic.
+:::
+
+:::proof "lemma:integral-local-algebraic-residue-field"
+It suffices to show that $`\kappa(S)` is integral over $`R`. Since $`S` is
+integral over $`R` and $`\kappa(S)` is integral over $`S` (the map
+$`S \to \kappa(S)` is surjective), the composition $`R \to S \to \kappa(S)` is
+integral.
+:::
+
+:::lemma_ "lemma:tensorprod-local-purely-inseparable" (parent := "more-on-local-structure") (lean := "Algebra.isLocalRing_tensorProduct_of_isPurelyInseparable_residueField")
+Let $`R \to S` and $`R \to T` be local ring maps of local rings. Suppose
+$`R \to S` is integral and $`\kappa(S) / \kappa(R)` or
+$`\kappa(T) / \kappa(R)` is purely inseparable, then $`T \otimes_{R} S` is a
+local ring.
+(Stacks Project, [Tag 092Y](https://stacks.math.columbia.edu/tag/092Y))
+:::
+
+:::proof "lemma:tensorprod-local-purely-inseparable"
+Integral is stable under base change, so $`T \to S' = T \otimes_{R} S` is
+integral. Hence by going-up any maximal ideal of $`S'` lies over
+$`\mathfrak{m}_T`. We have
+$$`S' / \mathfrak{m}_T S' = \kappa(T) \otimes_{R} S = \kappa(T) \otimes_{\kappa(R)} S / \mathfrak{m}_R S.`
+Again by going-up and since $`S` is local, $`\spec{S / \mathfrak{m}_R S}` is a
+single point. Thus
+$`\spec{S' / \mathfrak{m}_T S'} \cong \spec{\kappa(T) \otimes_{\kappa(R)} \kappa(S)}`.
+The latter is a single point, because purely inseparable extensions induce
+universal homeomorphisms.
+:::
+
+# Weakly étale algebras
+
+Ind-étale is a practical notion, since it usually allows reducing proofs to the
+étale case. Geometrically, ind-étale is badly behaved though, since it is not
+local on the (geometric) target. For this reason, when we later define the
+pro-étale site of a scheme, we use the notion of weakly étale ring maps
+instead.
+
+:::definition "def:weakly-etale-algebra" (parent := "more-on-local-structure") (lean := "Algebra.WeaklyEtale")
+An $`R`-algebra $`S` is *weakly étale* if it is flat over $`R` and flat over
+$`S \otimes_{R} S`. A ring homomorphism $`f \colon R \to S` is *weakly étale*
+if $`S` is weakly étale as an $`R`-algebra.
+:::
+
+Historically, the property weakly étale is studied under the name of
+*absolutely flat*. {bpref "lemma:weakly-etale-flat"}[] partially justifies this
+name. Furthermore, we have an absolute version of this property.
+
+:::definition "def:absolutely-flat" (parent := "more-on-local-structure") (lean := "Ring.AbsolutelyFlat, Ring.AbsolutelyFlat.instFlat")
+A ring $`A` is called *absolutely flat* if every $`A`-module is flat over $`A`.
+:::
+
+:::lemma_ "lemma:etale-weakly-etale-algebra" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra") (tags := "mathlib")
+Every étale algebra is weakly étale.
+:::
+
+:::proof "lemma:etale-weakly-etale-algebra"
+Let $`S` be an étale $`R`-algebra. Then $`S` is $`R`-flat. Also
+$`S \otimes_{R} S \cong S \times T` for some ring $`T`, in particular
+$`\spec{S \otimes_{R} S} \to \spec{S}` is an open immersion, hence flat.
+:::
+
+:::lemma_ "lem:field-absolutely-flat" (parent := "more-on-local-structure") (uses := "def:absolutely-flat") (lean := "Ring.AbsolutelyFlat.of_field, Ring.AbsolutelyFlat.of_isField")
+A field is absolutely flat.
+:::
+
+:::lemma_ "lem:weakly-etale-comp" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra") (lean := "RingHom.WeaklyEtale.comp, Algebra.WeaklyEtale.trans")
+If $`A \to B` and $`B \to C` are weakly étale, then $`A \to C` is weakly étale.
+(Stacks Project, [Tag 092J](https://stacks.math.columbia.edu/tag/092J))
+:::
+
+:::lemma_ "lem:weakly-etale-localization" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra") (lean := "Algebra.WeaklyEtale.of_isLocalization")
+For any commutative ring $`A` and multiplicative submonoid $`S \subseteq A`,
+the localization map $`A \to S^{-1} A` is weakly étale.
+(Stacks Project, [Tag 092J](https://stacks.math.columbia.edu/tag/092J))
+:::
+
+:::proof "lem:weakly-etale-localization"
+The localization $`A \to S^{-1} A` is flat. Moreover, the multiplication map
+$`S^{-1} A \otimes_{A} S^{-1} A \to S^{-1} A` is bijective, hence flat.
+:::
+
+:::lemma_ "lem:weakly-etale-base-change" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra") (tags := "mathlib")
+If $`B` is a weakly-étale $`A`-algebra and $`A'` is any $`A`-algebra, the base
+change $`A' \otimes_{A} B` is a weakly-étale $`A'`-algebra.
+(Stacks Project, [Tag 092H](https://stacks.math.columbia.edu/tag/092H))
+:::
+
+:::lemma_ "lemma:weakly-etale-flat" (parent := "more-on-local-structure") (lean := "Module.Flat.of_flat_lmul'_of_flat")
+Let $`B` be an $`A`-algebra such that $`B \otimes_{A} B \to B` is flat. Let
+$`N` be a $`B`-module. If $`N` is flat as an $`A`-module, then $`N` is flat as
+a $`B`-module.
+(Stacks Project, [Tag 092C](https://stacks.math.columbia.edu/tag/092C))
+:::
+
+:::proof "lemma:weakly-etale-flat"
+First proof:
+
+If $`N'` is a second $`B`-module, then
+$$`N \otimes_B N' = B \otimes_{B \otimes_{A} B} (N \otimes_{A} N').`
+Hence this follows from the definitions.
+
+Second proof by element chasing (which is the proof we actually formalized):
+
+To prove that $`N` is flat as a $`B`-module, we will use the equational
+criterion for flatness: we must show that for any finite relation
+$`\sum_{i=1}^n b_i m_i = 0` in $`N` (where $`b_i \in B` and $`m_i \in N`),
+there exist elements $`m'_s \in N` and $`d_{is} \in B` such that
+$`m_i = \sum_{s=1}^S d_{is} m'_s` for all $`i`, and
+$`\sum_{i=1}^n b_i d_{is} = 0` for all $`s`.
+
+*Step 1: The flat epimorphism property.*
+Let $`I = \ker(\mu)` where $`\mu \colon B \otimes_A B \to B` is the
+multiplication map. Since $`B` is a flat $`B \otimes_A B`-module, $`I` is a
+pure ideal. Consider the elements
+$`z_i = 1 \otimes b_i - b_i \otimes 1 \in B \otimes_A B`. Clearly,
+$`\mu(z_i) = b_i - b_i = 0`, so $`z_i \in I` for all $`i = 1, \dots, n`.
+
+By the pureness of $`I`, there exists an element
+$`t = \sum_{k=1}^K u_k \otimes v_k \in B \otimes_A B` such that $`\mu(t) = 1`
+and $`t z_i = 0` for all $`i`. The condition $`\mu(t) = 1` means
+$`\sum_{k=1}^K u_k v_k = 1`. The condition $`t z_i = 0` implies
+$`t(1 \otimes b_i) = t(b_i \otimes 1)`, which expands to:
+$$`\sum_{k=1}^K u_k \otimes v_k b_i = \sum_{k=1}^K b_i u_k \otimes v_k \quad \text{in } B \otimes_A B. \tag{1}`
+
+*Step 2: Constructing a relation in $`B \otimes_A N`.*
+Define the elements $`y_i \in B \otimes_A N` for $`i = 1, \dots, n` by:
+$$`y_i = \sum_{k=1}^K u_k \otimes (v_k m_i).`
+Let us evaluate the sum $`\sum_{i=1}^n b_i y_i` in the $`B`-module
+$`B \otimes_A N` (where $`B` acts on the left factor):
+$$`\sum_{i=1}^n b_i y_i = \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i).`
+Because the map $`x \otimes y \mapsto x \otimes ym_i` from
+$`B \otimes_A B \to B \otimes_A N` is a well-defined $`A`-linear homomorphism,
+we can apply it to equation (1) to shift the $`b_i` factor:
+$$`\sum_{k=1}^K (b_i u_k) \otimes (v_k m_i) = \sum_{k=1}^K u_k \otimes (v_k b_i m_i).`
+Summing this over all $`i` yields:
+$$`\sum_{i=1}^n b_i y_i = \sum_{i=1}^n \sum_{k=1}^K u_k \otimes (v_k b_i m_i) = \sum_{k=1}^K u_k \otimes \Big( v_k \sum_{i=1}^n b_i m_i \Big).`
+By our initial assumption, $`\sum_{i=1}^n b_i m_i = 0` in $`N`. Therefore:
+$$`\sum_{i=1}^n \sum_{k=1}^K (b_i u_k) \otimes (v_k m_i) = 0 \quad \text{in } B \otimes_A N. \tag{2}`
+
+*Step 3: Utilizing the $`A`-flatness of $`N`.*
+We now leverage a standard element-theoretic property of flat modules: because
+$`N` is flat over $`A`, any relation of the form $`\sum e_l \otimes x_l = 0` in
+$`E \otimes_A N` (for any $`A`-module $`E`) implies there exist $`x'_s \in N`
+and $`a_{ls} \in A` such that $`x_l = \sum_s a_{ls} x'_s` and
+$`\sum_l e_l a_{ls} = 0`.
+
+Applying this principle to equation (2) with $`E = B`, where the terms are
+indexed by pairs $`(i, k)`, there exist elements $`m'_s \in N` (for
+$`s = 1, \dots, S`) and scalars $`a_{iks} \in A` such that:
+$$`v_k m_i = \sum_{s=1}^S a_{iks} m'_s \quad \text{in } N \text{ for all } i, k, \tag{3}`
+$$`\sum_{i=1}^n \sum_{k=1}^K (b_i u_k) a_{iks} = 0 \quad \text{in } B \text{ for all } s. \tag{4}`
+
+*Step 4: Reconstructing the $`B`-trivialization.*
+Consider the evaluation map $`\mu_N \colon B \otimes_A N \to N` given by
+$`b \otimes m \mapsto bm`. Applying $`\mu_N` to $`y_i` gives:
+$$`\mu_N(y_i) = \sum_{k=1}^K u_k (v_k m_i) = \Big(\sum_{k=1}^K u_k v_k\Big) m_i = 1 \cdot m_i = m_i.`
+Substitute equation (3) into this expansion of $`m_i`:
+$$`m_i = \sum_{k=1}^K u_k \Big( \sum_{s=1}^S a_{iks} m'_s \Big) = \sum_{s=1}^S \Big( \sum_{k=1}^K u_k a_{iks} \Big) m'_s.`
+Define $`d_{is} = \sum_{k=1}^K u_k a_{iks} \in B`. This immediately gives our
+required reconstruction:
+$$`m_i = \sum_{s=1}^S d_{is} m'_s \quad \text{for all } i = 1, \dots, n.`
+Finally, we must verify that these coefficients annihilate $`b_i`. We compute:
+$$`\sum_{i=1}^n b_i d_{is} = \sum_{i=1}^n b_i \Big( \sum_{k=1}^K u_k a_{iks} \Big) = \sum_{i=1}^n \sum_{k=1}^K (b_i u_k) a_{iks}.`
+By equation (4), this sum is exactly $`0` in $`B` for every $`s`.
+
+Thus, we have successfully trivialized the arbitrary relation
+$`\sum_{i=1}^n b_i m_i = 0` over $`B`. By the equational criterion, $`N` is a
+flat $`B`-module.
+:::
+
+:::lemma_ "lem:weakly-etale-preserves-absolutely-flat" (parent := "more-on-local-structure") (lean := "Ring.AbsolutelyFlat.of_flat_lmul'")
+Let $`A \to B` be a ring map such that $`B \otimes_{A} B \to B` is flat. If
+$`A` is an absolutely flat ring, then so is $`B`.
+(Stacks Project, [Tag 092I](https://stacks.math.columbia.edu/tag/092I), (1))
+:::
+
+:::proof "lem:weakly-etale-preserves-absolutely-flat" (uses := "lemma:weakly-etale-flat")
+First proof (the formalized version): it follows from
+{bpref "lemma:weakly-etale-flat"}[] immediately.
+
+Second proof by element chasing, in the special case that $`B` is a local
+$`k`-algebra for a field $`k` (showing that $`B` is then a field):
+
+Let $`A = B \otimes_k B`. The multiplication map $`\mu \colon A \to B` is a
+surjective ring homomorphism. Because $`B` is assumed to be a flat $`A`-module,
+$`\mu` is a *flat epimorphism*. A fundamental property of flat epimorphisms is
+that their kernel, $`J = \ker(\mu)`, is a *pure ideal*. The equational
+criterion for flatness dictates that for any element $`z \in J`, there exists a
+"localizing" element $`t \in A` such that $`\mu(t) = 1` and $`t z = 0`.
+
+Let $`\mathfrak{m}` be the unique maximal ideal of the local ring $`B`. We wish
+to show that $`\mathfrak{m} = 0`. Suppose for the sake of contradiction that
+there exists a non-zero element $`x \in \mathfrak{m}`.
+
+Consider the element $`z = x \otimes 1 - 1 \otimes x \in A`. Clearly,
+$`\mu(z) = x - x = 0`, so $`z \in J`. By the pureness of $`J`, there exists
+$`t \in B \otimes_k B` such that $`\mu(t) = 1` and
+$$`t(x \otimes 1 - 1 \otimes x) = 0 \quad \text{in } B \otimes_k B.`
+
+Let $`K = B/\mathfrak{m}` be the residue field of $`B`, and let
+$`\pi \colon B \to K` be the natural quotient map. We base-change our equation
+along the homomorphism $`1 \otimes \pi \colon B \otimes_k B \to B \otimes_k K`.
+Because $`x \in \mathfrak{m}`, we have $`\pi(x) = 0`, which means
+$`(1 \otimes \pi)(1 \otimes x) = 1 \otimes 0 = 0`.
+
+Let $`\bar{t} = (1 \otimes \pi)(t) \in B \otimes_k K`. Applying
+$`1 \otimes \pi` to our annihilator equation isolates the $`x \otimes 1` term:
+$$`\bar{t} \cdot (x \otimes 1) = 0 \quad \text{in } B \otimes_k K.`
+
+Since $`K` is a field extension of $`k`, it is a free $`k`-module. Because
+tensor products preserve freeness, $`N = B \otimes_k K` is a free left
+$`B`-module. The element $`x \otimes 1` represents scalar multiplication by
+$`x` on $`N`. Thus, the relation $`x \bar{t} = 0` implies that $`x`
+annihilates the *content ideal* $`c(\bar{t})` of $`\bar{t}` in $`B` (the ideal
+generated by the coordinates of $`\bar{t}` with respect to a basis), meaning
+$`x \cdot c(\bar{t}) = 0`.
+
+Now, consider the evaluation map $`\mu_K \colon B \otimes_k K \to K` given by
+$`b \otimes v \mapsto \pi(b)v`. This evaluates $`\bar{t}` at the central point
+of the local ring:
+$$`\mu_K(\bar{t}) = \mu_K\big((1 \otimes \pi)(t)\big) = \pi(\mu(t)) = \pi(1) = 1.`
+Since $`\mu_K(\bar{t}) = 1 \neq 0`, the coordinates of $`\bar{t}` cannot all
+map to zero under $`\pi`. Thus, they cannot all lie in $`\mathfrak{m}`. This
+implies the content ideal $`c(\bar{t})` is not contained in $`\mathfrak{m}`.
+
+Because $`B` is a local ring, the only ideal not contained in the unique
+maximal ideal is the unit ideal itself. Therefore, $`c(\bar{t}) = B`.
+
+Substituting this into our annihilator relation yields $`x \cdot B = 0`, which
+forces $`x = 0`. This directly contradicts our initial assumption that
+$`x \neq 0`. We conclude that $`\mathfrak{m} = 0`, meaning the local ring $`B`
+has only the trivial maximal ideal. Therefore, $`B` is a field.
+:::
+
+:::lemma_ "lemma:spectral-profinite" (parent := "more-on-local-structure")
+Let $`X` be a spectral space in which every quasi-compact open subset is
+closed. Then $`X` is profinite.
+(Stacks Project, [Tag 0905](https://stacks.math.columbia.edu/tag/0905))
+:::
+
+:::proof "lemma:spectral-profinite"
+It suffices to show that $`X` is Hausdorff and totally disconnected. Let
+$`x \neq y` be in $`X`. Since $`X` is quasi-sober and pre-spectral, we may
+assume that there exists a quasi-compact open $`U` with $`x \in U` and
+$`y \not\in U`. By assumption, its complement is open and $`X` is Hausdorff.
+This argument also shows that $`x` and $`y` lie in distinct connected
+components, so $`X` is totally disconnected.
+:::
+
+:::lemma_ "lem:reduced-prime-maximal-of-absolutely-flat" (parent := "more-on-local-structure") (lean := "Ring.AbsolutelyFlat.tfae")
+If $`A` is an absolutely flat ring, then $`A` is reduced and every prime is
+maximal.
+(Stacks Project, [Tag 092F](https://stacks.math.columbia.edu/tag/092F), (2) ⟹ (3), (4))
+:::
+
+:::proof "lem:reduced-prime-maximal-of-absolutely-flat" (uses := "lemma:spectral-profinite")
+It suffices to show that for every $`f \in A`, there exists an idempotent
+element $`e \in A` such that $`(f) = (e)`. Indeed, if $`f^n = 0` for some
+$`n`, then $`e = e^n \in (f^n) = 0`. Hence $`f = 0`. For the second claim
+observe that every quasi-compact open $`D(f) = D(e)` is closed. Hence the
+claim follows from {bpref "lemma:spectral-profinite"}[] and the fact that every
+quasi-compact open of $`\mathrm{Spec}(A)` is a finite union of basic opens.
+
+Now let $`f \in A` be any element. Since $`(f)` is pure by assumption it is
+idempotent by `Ideal.isIdempotentElem_of_pure` and every idempotent finitely
+generated ideal is generated by an idempotent element by
+`Ideal.isIdempotentElem_iff_of_fg`.
+:::
+
+:::lemma_ "lemma:reduced-prime-maximal-field" (parent := "more-on-local-structure") (lean := "Ring.AbsolutelyFlat.tfae")
+If $`A` is reduced and every prime is maximal, then every local ring of $`A`
+is a field.
+:::
+
+:::proof "lemma:reduced-prime-maximal-field"
+Localizations of reduced rings are reduced, and reduced local rings of Krull
+dimension $`\le 0` are fields.
+:::
+
+# Weak dimension
+
+Currently, mathlib does not have $`\mathrm{Tor}` so we give a non-standard, but
+equivalent definition which suffices for our purposes.
+
+:::definition "def:weak-dim-le-one" (parent := "more-on-local-structure") (lean := "Ring.WeakDimensionLEOne")
+Let $`A` be a ring. We say it is of *weak dimension* $`\le 1` if every finitely
+generated ideal of $`A` is flat over $`A`.
+:::
+
+:::lemma_ "lemma:weak-dim-flat-submodule" (parent := "more-on-local-structure") (uses := "def:weak-dim-le-one") (lean := "Ring.WeakDimensionLEOne.flat_submodule")
+Let $`A` be a ring of weak dimension $`\le 1` and $`M` a flat $`A`-module.
+Then any submodule of $`M` is flat.
+(Stacks Project, [Tag 092S](https://stacks.math.columbia.edu/tag/092S), (2) ⟹ (4))
+:::
+
+:::proof "lemma:weak-dim-flat-submodule"
+Let $`N \subseteq M` be a submodule. It suffices to show that for any finitely
+generated ideal $`I`, the linear map $`I \otimes_{A} N \to N` is injective. For
+this, consider the commutative diagram
+$$`\begin{CD} I \otimes_{A} N @>>> N \\ @VVV @VVV \\ I \otimes_{A} M @>>> M \end{CD}`
+The left vertical map is injective, because $`I` is flat by assumption on
+$`A`. The bottom horizontal map is injective, because $`M` is flat. Hence
+$`I \otimes_{A} N \to N \to M` is injective, from which the claim follows.
+:::
+
+:::corollary "lemma:weak-dim-ideal-flat" (parent := "more-on-local-structure") (uses := "def:weak-dim-le-one") (lean := "Ring.WeakDimensionLEOne.flat_ideal")
+If $`A` is of weak dimension $`\le 1`, then every ideal $`I \subseteq A` is
+flat.
+(Stacks Project, [Tag 092S](https://stacks.math.columbia.edu/tag/092S), (1) ⟹ (2))
+:::
+
+:::proof "lemma:weak-dim-ideal-flat" (uses := "lemma:weak-dim-flat-submodule")
+Immediate consequence of {bpref "lemma:weak-dim-flat-submodule"}[].
+:::
+
+:::lemma_ "lemma:weakly-etale-preserve-weak-dim" (parent := "more-on-local-structure") (uses := "def:weak-dim-le-one") (lean := "Ring.WeakDimensionLEOne.of_weaklyEtale")
+Let $`A` be of weak dimension $`\le 1` and $`B` a weakly étale $`A`-algebra.
+Then $`B` is of weak dimension $`\le 1`.
+(Stacks Project, [Tag 092E](https://stacks.math.columbia.edu/tag/092E))
+:::
+
+:::proof "lemma:weakly-etale-preserve-weak-dim" (uses := "lemma:weakly-etale-flat, lemma:weak-dim-flat-submodule")
+Let $`M` be a flat $`B`-module and $`N \subseteq M` a submodule. By
+{bpref "lemma:weakly-etale-flat"}[] it suffices to show that $`N` is $`A`-flat.
+Since $`B` is $`A`-flat, $`M` is also $`A`-flat and hence its submodule $`N` is
+$`A`-flat by {bpref "lemma:weak-dim-flat-submodule"}[].
+:::
+
+:::lemma_ "lemma:prod-submodule-fg" (parent := "more-on-local-structure")
+Let $`(A_i)_{i \in I}` be a family of rings and for every $`i` an
+$`A_i`-module $`M_i`. Let $`N` be a $`\prod_{i \in I} A_i`-submodule of
+$`\prod_{i \in I} M_i` and let $`N_i` be the image of $`N` in $`M_i`. Then
+$`N \subseteq \prod_{i \in I} N_i`. If $`N` is finitely generated, equality
+holds.
+:::
+
+:::lemma_ "lemma:prod-valuation-ring-weak-dim-integrally-closed" (parent := "more-on-local-structure") (uses := "def:weak-dim-le-one") (lean := "Ring.WeakDimensionLEOne.pi_of_isValuationRing")
+Let $`(A_i)_{i \in I}` be a family of valuation rings. Then
+$`\prod_{i \in I} A_i` is of weak dimension $`\le 1`.
+(Stacks Project, [Tag 092T](https://stacks.math.columbia.edu/tag/092T))
+:::
+
+:::proof "lemma:prod-valuation-ring-weak-dim-integrally-closed" (uses := "lemma:prod-submodule-fg")
+Let $`I \subseteq \prod_{i \in I} A_i` be a finitely generated ideal. Let
+$`I_i \subseteq A_i` be the image of $`I` in $`A_i`. By
+{bpref "lemma:prod-submodule-fg"}[], $`I` is the product of the $`I_i`. Since
+each $`A_i` is a valuation ring, there exists $`f_i \in A_i` such that
+$`I_i = (f_i)`. Hence $`I = (f)` where $`f = (f_i)`. Let $`e \in A` be the
+idempotent element defined by
+$$`e_i = \begin{cases} 0 & f_i = 0 \\ 1 & f_i \neq 0 \end{cases}`
+and let $`g` be the element defined by
+$$`g_i = \begin{cases} 1 & f_i = 0 \\ f_i & f_i \neq 0 \end{cases}.`
+Since every $`A_i` is a domain, $`g` is a non-zerodivisor and $`f = g e`. In
+particular, the $`A`-linear map $`(e) \to (ge) = (f)` is an isomorphism: It is
+surjective by construction and injective because $`g` is a nonzerodivisor.
+Since $`e` is idempotent, we have $`A = (e) \oplus (1 - e)` as $`A`-modules, so
+$`(e)` is projective.
+:::
+
+:::lemma_ "lemma:weak-dim-integrally-closed" (parent := "more-on-local-structure") (lean := "Ring.WeakDimensionLEOne.isIntegrallyClosedIn_of_isEpi")
+Let $`A` be of weak dimension $`\le 1`. Let $`B` be a flat $`A`-algebra such
+that $`A \to B` is injective and an epimorphism of rings. Then $`A` is
+integrally closed in $`B`.
+(Stacks Project, [Tag 092V](https://stacks.math.columbia.edu/tag/092V))
+:::
+
+:::proof "lemma:weak-dim-integrally-closed" (uses := "lemma:weak-dim-flat-submodule")
+Let $`x \in B` be integral over $`A` and $`A' = A[x]`. The map $`A \to A'` is
+injective and finite, so to show $`A = A'` it suffices to check that
+$`A \to A'` is an epimorphism. By {bpref "lemma:weak-dim-flat-submodule"}[],
+$`A'` is flat over $`A`. Hence the composition
+$$`A' \otimes_{A} A' \to B \otimes_{A} B \to B`
+is injective.
+:::
+
+:::lemma_ "lemma:integrally-closed-cartesian-weak-dim" (parent := "more-on-local-structure")
+Let $`A` be a domain and $`L` an algebraic extension of $`\mathrm{Frac}(A)`.
+If $`A` is integrally closed in $`L`, then there exists a cartesian diagram of
+rings
+$$`\begin{CD} A @>>> L \\ @VVV @VVV \\ S @>>> T \end{CD}`
+with $`S` of weak dimension $`\le 1` and $`S \to T` a flat, injective
+epimorphism of rings.
+(Stacks Project, [Tag 092U](https://stacks.math.columbia.edu/tag/092U))
+:::
+
+:::proof "lemma:integrally-closed-cartesian-weak-dim" (uses := "lemma:prod-valuation-ring-weak-dim-integrally-closed")
+TBA.
+:::
+
+:::lemma_ "lemma:weakly-etale-integrally-closed" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra")
+Let $`A` be a domain and $`B` a weakly étale $`A`-algebra. Let $`L` be an
+algebraic extension of $`\mathrm{Frac}(A)` and assume that $`A` is integrally
+closed in $`L`. Then $`B` is integrally closed in $`B \otimes_{A} L`.
+(Stacks Project, [Tag 092W](https://stacks.math.columbia.edu/tag/092W))
+:::
+
+:::proof "lemma:weakly-etale-integrally-closed" (uses := "lemma:weak-dim-integrally-closed, lemma:weakly-etale-preserve-weak-dim, lemma:integrally-closed-cartesian-weak-dim")
+TBA.
+:::
+
+# Fields
+
+:::lemma_ "lem:flat-tensor-over-field-imples-algebraic" (parent := "more-on-local-structure") (lean := "Algebra.WeaklyEtale.isAlgebraic")
+Let $`L/K` be an extension of fields. If $`L \otimes_K L \to L` is flat, then
+$`L` is an algebraic separable extension of $`K`.
+(Stacks Project, [Tag 092P](https://stacks.math.columbia.edu/tag/092P))
+:::
+
+:::theorem "thm:weakly-etale-imples-ind-etale-over-fields" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra, def:ind-etale") (lean := "Algebra.WeaklyEtale.indEtale_field, Algebra.WeaklyEtale.etale_of_fg")
+Let $`K` be a field. Suppose that $`K \to B` is weakly étale, then
+
+1. every finitely generated $`K`-subalgebra of $`B` is étale over $`K`,
+2. $`B` is a filtered colimit of étale $`K`-algebras, i.e. $`B` is ind-étale.
+
+(Stacks Project, [Tag 092Q](https://stacks.math.columbia.edu/tag/092Q), (2) ⟹ (3)
+and last part)
+:::
+
+:::proof "thm:weakly-etale-imples-ind-etale-over-fields" (uses := "lem:field-absolutely-flat, lem:weakly-etale-preserves-absolutely-flat, lemma:etale-weakly-etale-algebra, lem:reduced-prime-maximal-of-absolutely-flat, lemma:reduced-prime-maximal-field, lem:weakly-etale-comp, lem:flat-tensor-over-field-imples-algebraic")
+It suffices to show the first statement. A field is an absolutely flat ring by
+{bpref "lem:field-absolutely-flat"}[], hence $`B` is an absolutely flat ring by
+{bpref "lem:weakly-etale-preserves-absolutely-flat"}[]. And $`B` is reduced and
+every local ring is a field, by
+{bpref "lem:reduced-prime-maximal-of-absolutely-flat"}[] and
+{bpref "lemma:reduced-prime-maximal-field"}[].
+
+Let $`q \subset B` be a prime. The ring map $`B \to B_q` is weakly étale by
+{bpref "lem:weakly-etale-localization"}[], hence $`B_q` is weakly étale over
+$`K` ({bpref "lem:weakly-etale-comp"}[]). Thus $`B_q` is a separable algebraic
+extension of $`K` by {bpref "lem:flat-tensor-over-field-imples-algebraic"}[].
+
+Let $`K \subset A \subset B` be a finitely generated $`K`-subalgebra. We will
+show that $`A` is étale over $`K` which will finish the proof of the lemma.
+
+TBA.
+
+Then every minimal prime $`p \subset A` is the image of a prime $`q` of $`B`.
+Thus $`\kappa(p)` as a subfield of $`B_q = \kappa(q)` is separable algebraic
+over $`K`. Hence every generic point of $`\mathrm{Spec}(A)` is closed. Thus
+$`\dim(A) = 0`. Then $`A` is the product of its local rings. Moreover, since
+$`A` is reduced, all local rings are equal to their residue fields which are
+finite separable over $`K`. This means that $`A` is étale over $`K` and
+finishes the proof.
+:::
+
+# Local rings
+
+:::lemma_ "lem:ker-tensor-generated-by" (parent := "more-on-local-structure") (lean := "Algebra.TensorProduct.map_ker") (tags := "mathlib")
+Let $`A` be a ring, let $`f \colon R \to R'`, $`g : S \to S'` be two ring maps
+of $`A`-algebras. Then the kernel of $`R \otimes_A S \to R' \otimes_A S'` is
+generated by $`\ker f \otimes_A S` and $`R \otimes_A \ker g`.
+:::
+
+:::lemma_ "lem:local-dim-zero-tensor" (parent := "more-on-local-structure") (lean := "Algebra.isLocalRing_tensorProduct_of_krullDimLE_zero, Algebra.krullDimLE_zero_tensorProduct_of_krullDimLE_zero")
+Let $`k` be a field, $`A` be a local $`k`-algebra of dimension zero, i.e. there
+is a unique prime ideal in $`A`. Suppose that the residue field of $`A` is
+identified with $`k`. Then $`A \otimes_k A` is a local $`k`-algebra of
+dimension zero.
+:::
+
+:::proof "lem:local-dim-zero-tensor" (uses := "lem:ker-tensor-generated-by")
+The unique prime ideal of $`A` is the nilradical $`N` of $`A`. By
+{bpref "lem:ker-tensor-generated-by"}[], the kernel of
+$`A \otimes_k A \to k = A/N` is generated by $`N \otimes_k A` and
+$`A \otimes_k N`, which all consist of nilpotent elements. Thus the nilpotent
+ideal of $`A \otimes_k A` is also the maximal ideal. This finishes the proof.
+:::
+
+:::lemma_ "lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq" (parent := "more-on-local-structure") (lean := "Algebra.bijective_comap_lmul'_of_bijective_of_bijective")
+Let $`A \to B` be a ring map. Suppose for all $`\mathfrak{p} \subset A`, there
+is a unique prime $`\mathfrak{q} \subset B` lying over $`\mathfrak{p}` and
+$`\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})`. Then $`B \otimes_A B \to B` is
+bijective on spectra.
+:::
+
+:::proof "lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq" (uses := "lem:local-dim-zero-tensor")
+It suffices to show that, for every prime $`\mathfrak{p}` of $`A`, there is
+exactly one prime ideal $`q'` of $`B \otimes_A B` lying over $`\mathfrak{p}`.
+To detect this, we may assume $`A` is a field by replacing $`A` with
+$`\kappa(\mathfrak{p})` and $`B` with $`\kappa(\mathfrak{p}) \otimes_A B`,
+which is a local ring. Now the goal follows from
+{bpref "lem:local-dim-zero-tensor"}[].
+:::
+
+:::lemma_ "lem:iso-of-bij-on-spectrum-and-surj-and-flat" (parent := "more-on-local-structure") (lean := "Algebra.bijective_of_bijective_of_flat")
+Let $`A \to B` be a ring map that is bijective on spectra, as well as
+surjective and flat, then it is an isomorphism.
+:::
+
+:::proof "lem:iso-of-bij-on-spectrum-and-surj-and-flat"
+Recall that a *pure* ideal $`I` in $`A` is an ideal such that $`A/I` is flat.
+(Use `Ideal.Pure`.) In our case, let $`I` be the kernel of the map $`A \to B`.
+Then $`I` is pure and has empty vanishing locus. But we know that pure ideals
+are determined by their vanishing locus (`Ideal.zeroLocus_inj_of_pure`) and the
+zero ideal is also a pure ideal having the same vanishing locus as $`I`, thus
+$`I = 0`.
+:::
+
+:::lemma_ "lem:ring-epi-tfae" (parent := "more-on-local-structure")
+Let $`A \to B` be a ring map. The following are equivalent:
+
+1. $`A \to B` is an epimorphism;
+2. the two ring maps $`B \to B \otimes_A B` are equal;
+3. either of the ring maps $`B \to B \otimes_A B` is an isomorphism, and
+4. the ring map $`B \otimes_A B \to B` is an isomorphism.
+
+(Stacks Project, [Tag 04VN](https://stacks.math.columbia.edu/tag/04VN))
+:::
+
+:::proof "lem:ring-epi-tfae"
+Omitted. Use `Algebra.IsEpi`.
+:::
+
+:::lemma_ "lem:isom-of-ff-and-mul-isom" (parent := "more-on-local-structure") (lean := "Algebra.bijective_of_faithfullyFlat_of_isEpi")
+Let $`A \to B` be a faithfully flat ring epimorphism. Then $`A \to B` is an
+isomorphism.
+(Stacks Project, [Tag 04VU](https://stacks.math.columbia.edu/tag/04VU))
+:::
+
+:::proof "lem:isom-of-ff-and-mul-isom" (uses := "lem:ring-epi-tfae")
+By {bpref "lem:ring-epi-tfae"}[], the map $`B \to B \otimes_A B`, which is a
+base change of $`A \to B`, is an isomorphism. So is $`A \to B` by faithful
+flatness.
+:::
+
+:::lemma_ "lem:isom-of-unique-lying-over-and-residue-field-eq" (parent := "more-on-local-structure") (lean := "Algebra.WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap")
+Let $`A \to B` be a weakly étale local homomorphism of local rings. Suppose
+for all $`\mathfrak{p} \subset A`, there is a unique prime
+$`\mathfrak{q} \subset B` lying over $`\mathfrak{p}` and
+$`\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})`. Then $`A \to B` is an
+isomorphism.
+:::
+
+:::proof "lem:isom-of-unique-lying-over-and-residue-field-eq" (uses := "lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq, def:weakly-etale-algebra, lem:iso-of-bij-on-spectrum-and-surj-and-flat, lem:isom-of-ff-and-mul-isom")
+Suppose that we are under the above hypothesis. This implies that
+$`\mu : B \otimes_A B \to B` is bijective on spectra by
+{bpref "lem:bij-on-spectrum-of-unique-lying-over-and-residue-field-eq"}[], as
+well as surjective and flat (immediately by
+{bpref "def:weakly-etale-algebra"}[]). Hence it is an isomorphism by
+{bpref "lem:iso-of-bij-on-spectrum-and-surj-and-flat"}[]. Together with the
+fact that $`A \to B` is faithfully flat (by surjectivity on spectra), we can
+apply {bpref "lem:isom-of-ff-and-mul-isom"}[] to conclude $`A = B`.
+:::
+
+:::lemma_ "lem:totally-disconnected-inverse-limit" (parent := "more-on-local-structure") (lean := "TopCat.limitCone_pt_totallyDisconnectedSpace")
+Let $`I` be a directed set. Let $`T_i`, $`i \in I` be a family of totally
+disconnected topological spaces. Then
+$$`T = \varprojlim_{i \in I} T_i`
+is also totally disconnected.
+:::
+
+:::proof "lem:totally-disconnected-inverse-limit"
+Suppose $`x, y` are two distinct points that live in the same connected
+component. Then the projections of $`x, y` will always fall in the same
+connected components, thus be equal. This is a contradiction.
+:::
+
+:::lemma_ "lem:idempotent-in-ind-etale-of-primes" (parent := "more-on-local-structure") (lean := "Algebra.IndEtale.exists_isIdempotentElem_of_two_primes")
+Let $`B` be an ind-étale algebra over some field $`K`. If there are two
+different prime ideals $`q_1` and $`q_2` in $`B`, then $`B` has a nontrivial
+idempotent element $`e` (i.e. $`e^2 = e`).
+:::
+
+:::proof "lem:idempotent-in-ind-etale-of-primes" (uses := "lem:totally-disconnected-inverse-limit")
+Write $`B` as a filtered colimit $`\colim B_i` of étale algebras over $`K`.
+Each $`B_i` is a product of separable field extensions of $`K`. In particular,
+the spectra of the $`B_i` are totally disconnected. By
+{bpref "lem:totally-disconnected-inverse-limit"}[], the spectrum of $`B` is
+again totally disconnected. Thus the different prime ideals $`q_1` and $`q_2`
+live in different connected components. This gives the desired nontrivial
+idempotent element.
+:::
+
+:::lemma_ "lem:idempotent-in-ind-etale-of-field-ext" (parent := "more-on-local-structure") (uses := "def:ind-etale") (lean := "Algebra.IndEtale.exists_isIdempotentElem_tensorProduct_of_residueField_ne")
+Let $`B` be an ind-étale algebra over some field $`K`. If there exists a prime
+ideal $`q` of $`B`, such that the residue field of $`q` is not $`K`, then
+$`\kappa(q) \otimes_K B` has a nontrivial idempotent element.
+:::
+
+:::proof "lem:idempotent-in-ind-etale-of-field-ext"
+Write $`B` as a filtered colimit $`\colim B_i` of étale algebras over $`K`.
+(Each $`B_i` is a product of separable field extensions of $`K`.) Let $`q_i` be
+the inverse image of $`q` in $`B_i` and $`\kappa(q_i)` be the residue field of
+$`q_i`, then $`\kappa(q_i)` is a separable field extension of $`K`. Now
+$`\kappa(q) = \colim \kappa(q_i)` is again a separable extension of $`K`. Then
+$`\kappa(q) \otimes_K B \supseteq \kappa(q) \otimes_K \kappa(q)` splits. The
+conclusion follows.
+:::
+
+:::lemma_ "lemma:weakly-etale-over-sh-aux" (parent := "more-on-local-structure") (lean := "Algebra.WeaklyEtale.eq_of_isIdempotentElem")
+Let $`R` be a Henselian local ring with separably closed residue field and
+$`S` a weakly étale local $`R`-algebra with $`R \to S` a local homomorphism.
+Let $`\mathfrak{p}` be a prime ideal of $`R` and $`L` an algebraic field
+extension of $`\kappa(\mathfrak{p})`. Then $`L \otimes_{R} S` has no
+non-trivial idempotents.
+:::
+
+:::proof "lemma:weakly-etale-over-sh-aux" (uses := "lemma:integral-local-algebraic-residue-field, lemma:tensorprod-local-purely-inseparable, lemma:henselian-local-integral-local, lemma:weakly-etale-integrally-closed")
+Let $`R'` be the integral closure of $`R / \mathfrak{p}` in $`L`. Since
+$`R \to R / \mathfrak{p} \to R'` is integral, $`R'` is local by
+{bpref "lemma:henselian-local-integral-local"}[]. Moreover, the residue field
+$`\kappa(R')` is an algebraic extension of $`\kappa(R)` by
+{bpref "lemma:integral-local-algebraic-residue-field"}[]. Since $`\kappa(R)` is
+separably closed, the extension is purely inseparable. Hence
+$`R' \otimes_{R} S` is local by
+{bpref "lemma:tensorprod-local-purely-inseparable"}[]. By
+{bpref "lemma:weakly-etale-integrally-closed"}[] and since $`R'` is integrally
+closed in $`L`, the tensor product $`R' \otimes_{R} S` is integrally closed in
+$`L \otimes_{R} S`. Since $`R' \otimes_{R} S` is local and any idempotent of
+$`L \otimes_{R} S` is integral over $`R' \otimes_{R} S`, the latter can not
+have any non-trivial idempotent elements.
+:::
+
+:::theorem "thm:weakly-etale-over-henselian-sep-closed" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra") (lean := "Algebra.WeaklyEtale.bijective_of_henselianLocalRing")
+Let $`A \to B` be a local homomorphism of local rings. If $`A` is henselian,
+the residue field of $`A` is separably closed, and $`A \to B` is weakly étale,
+then $`A = B`.
+(Stacks Project, [Tag 097Z](https://stacks.math.columbia.edu/tag/097Z) (Olivier))
+:::
+
+:::proof "thm:weakly-etale-over-henselian-sep-closed" (uses := "lem:isom-of-unique-lying-over-and-residue-field-eq, lem:weakly-etale-base-change, thm:weakly-etale-imples-ind-etale-over-fields, lem:idempotent-in-ind-etale-of-primes, lem:idempotent-in-ind-etale-of-field-ext, lemma:weakly-etale-over-sh-aux")
+It suffices to show that for all $`\mathfrak{p} \subset A` there is a unique
+prime $`\mathfrak{q} \subset B` lying over $`\mathfrak{p}` and
+$`\kappa(\mathfrak{p}) = \kappa(\mathfrak{q})`, by
+{bpref "lem:isom-of-unique-lying-over-and-residue-field-eq"}[].
+
+Note that the fibre ring $`\kappa(\mathfrak{p}) \otimes_A B` is weakly étale
+over $`\kappa(\mathfrak{p})` by {bpref "lem:weakly-etale-base-change"}[], thus
+it is a colimit of étale extensions of $`\kappa(\mathfrak{p})` by
+{bpref "thm:weakly-etale-imples-ind-etale-over-fields"}[]. If the conclusion
+does not hold, at least one of the following cases is true:
+
+1. there exists more than one prime $`\mathfrak{q}_1, \mathfrak{q}_2` lying
+   over $`\mathfrak{p}`;
+2. $`\kappa(\mathfrak{p}) \neq \kappa(\mathfrak{q})` for some $`\mathfrak{q}`.
+
+In the first case, by {bpref "lem:idempotent-in-ind-etale-of-primes"}[]; in the
+second case, by {bpref "lem:idempotent-in-ind-etale-of-field-ext"}[], we can
+always find some (separable) algebraic field extension
+$`L/\kappa(\mathfrak{p})` such that $`L \otimes_A B` has a nontrivial
+idempotent.
+
+Now the statement follows from {bpref "lemma:weakly-etale-over-sh-aux"}[].
+:::
+
+:::theorem "thm:weakly-etale-over-sh" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra, def:strictly-henselian-local-ring") (lean := "Algebra.WeaklyEtale.bijective_of_isStrictlyHenselianLocalRing")
+Let $`A \to B` be a local homomorphism of local rings. If $`A` is strictly
+henselian, and $`A \to B` is weakly étale, then $`A = B`.
+:::
+
+:::proof "thm:weakly-etale-over-sh" (uses := "thm:weakly-etale-over-henselian-sep-closed, lem:sh-iff-henselian-and-sep-closed")
+This is simply {bpref "thm:weakly-etale-over-henselian-sep-closed"}[] plus
+{bpref "lem:sh-iff-henselian-and-sep-closed"}[].
+:::
+
+# Bijective on stalks and ind-Zariski
+
+:::lemma_ "lemma:w-local-bijective-on-stalks-ind-zariski" (parent := "more-on-local-structure") (lean := "RingHom.BijectiveOnStalks.indZariski_of_isWLocal")
+Let $`A \to B` be a w-local ring map of w-local rings that identifies local
+rings. Then $`A \to B` is ind-Zariski.
+(Stacks Project, [Tag 097F](https://stacks.math.columbia.edu/tag/097F))
+:::
+
+:::proposition "prop:bijective-on-stalks-ind-zariski" (parent := "more-on-local-structure") (lean := "Algebra.BijectiveOnStalks.exists_indZariski, RingHom.BijectiveOnStalks.exists_indZariski")
+Let $`A \to B` be a ring map that is bijective on stalks. Then there exists a
+faithfully flat, ind-Zariski map $`B \to B'` such that $`A \to B'` is
+ind-Zariski.
+(Stacks Project, [Tag 097G](https://stacks.math.columbia.edu/tag/097G))
+:::
+
+:::proof "prop:bijective-on-stalks-ind-zariski" (uses := "def:w-localization-map, lemma:bijective-on-stalks-of-comp, lemma:w-local-bijective-on-stalks-ind-zariski")
+By {bpref "lemma:bijective-on-stalks-of-comp"}[], the induced map
+$`A_w \to B_w` is again bijective on stalks and hence ind-Zariski by
+{bpref "lemma:w-local-bijective-on-stalks-ind-zariski"}[]. Since $`B \to B_w`
+is ind-Zariski and faithfully flat and the composition $`A \to B \to B_w` is
+ind-Zariski, the claim follows.
+:::
+
+# Weakly étale and ind-étale
+
+:::theorem "thm:weakly-etale-ind-etale" (parent := "more-on-local-structure") (lean := "RingHom.WeaklyEtale.exists_indEtale_comp, Algebra.WeaklyEtale.exists_indEtale")
+Let $`R \to S` be weakly étale. Then there exists a faithfully flat ind-étale
+morphism $`S \to T` such that the composition $`R \to T` is ind-étale.
+:::
+
+:::proof "thm:weakly-etale-ind-etale" (uses := "thm:weakly-etale-over-sh, prop:bijective-on-stalks-ind-zariski")
+TBA.
+:::

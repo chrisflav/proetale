@@ -82,6 +82,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 \end{lemma}
 
 \begin{proof}
+    \leanok
     It suffices to show that $\kappa(S)$ is integral over $R$. Since $S$ is integral over $R$
     and $\kappa(S)$ is integral over $S$ (the map $S \to \kappa(S)$ is surjective),
     the composition $R \to S \to \kappa(S)$ is integral.
@@ -480,22 +481,32 @@ suffices for our purposes.
 
 \begin{proof}
     \uses{lemma:weakly-etale-flat, lemma:weak-dim-flat-submodule}
-    Let $M$ be a flat $B$-module and $N \subseteq M$ a submodule. By
-    \Cref{lemma:weakly-etale-flat} it suffices to show that $N$ is $A$-flat.
-    Since $B$ is $A$-flat, $M$ is also $A$-flat and hence its submodule $N$
-    is $A$-flat by \Cref{lemma:weak-dim-flat-submodule}.
+    \leanok
+    Let $I \subseteq B$ be a finitely generated ideal. Since $B$ is weakly étale, $B$ is
+    $A$-flat, so its $A$-submodule $I$ is $A$-flat by \Cref{lemma:weak-dim-flat-submodule}.
+    By \Cref{lemma:weakly-etale-flat} it follows that $I$ is $B$-flat. Hence $B$ is of weak
+    dimension $\le 1$.
 \end{proof}
 
 \begin{lemma}
     Let $(A_i)_{i \in I}$ be a family of rings and for every $i$ an $A_i$-module $M_i$.
-    Let $N$ be a $\prod_{i \in I} A_i$-submodule of $\prod_{i \in I} M_i$.
+    Let $N$ be a $\prod_{i \in I} A_i$-submodule of $\prod_{i \in I} M_i$ and let
+    $N_i \subseteq M_i$ be the image of $N$ under the $i$-th projection.
     Then $N \subseteq \prod_{i \in I} N_i$.
     If $N$ is finitely generated, equality holds.
     \label{lemma:prod-submodule-fg}
+    \lean{Submodule.FG.mem_pi}
+    \leanok
 \end{lemma}
 
 \begin{proof}
-    TBA.
+    \leanok
+    The inclusion $N \subseteq \prod_{i \in I} N_i$ is clear. Assume $N$ is finitely generated
+    and pick a finite generating set $s$. Let $y \in \prod_{i \in I} M_i$ with $y_i \in N_i$ for
+    every $i$. For each $i$ choose $z^{(i)} \in N$ with $z^{(i)}_i = y_i$ and write
+    $z^{(i)} = \sum_{a \in s} c^{(i)}_a \cdot a$ with $c^{(i)}_a \in \prod_{j} A_j$. Setting
+    $b_a := (i \mapsto (c^{(i)}_a)_i) \in \prod_j A_j$, we have $y = \sum_{a \in s} b_a \cdot a$,
+    since componentwise $y_i = z^{(i)}_i = \sum_{a \in s} (c^{(i)}_a)_i \cdot a_i$. Hence $y \in N$.
 \end{proof}
 
 \begin{lemma}[\stacksproject{092T}]
@@ -509,6 +520,7 @@ suffices for our purposes.
 
 \begin{proof}
     \uses{lemma:prod-submodule-fg}
+    \leanok
     Let $I \subseteq \prod_{i \in I} A_i$ be a finitely generated ideal. Let $I_i \subseteq A_i$
     be the image of $I$ in $A_i$.
     By \Cref{lemma:prod-submodule-fg}, $I$ is the product of the $I_i$.
@@ -543,6 +555,7 @@ suffices for our purposes.
 
 \begin{proof}
     \uses{lemma:weak-dim-flat-submodule}
+    \leanok
     Let $x \in B$ be integral over $A$ and $A' = A[x]$. The map $A \to A'$ is injective and finite, so
     to show $A = A'$ it suffices to check that $A \to A'$ is an epimorphism. By
     \Cref{lemma:weak-dim-flat-submodule}, $A'$ is flat over $A$. Hence

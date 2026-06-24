@@ -74,8 +74,17 @@ variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 /-- The residue field extension induced by a local integral homomorphism of local rings is
 algebraic. -/
 theorem IsAlgebraic.residueField_of_isIntegral [Algebra.IsIntegral R S] :
-    Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-  sorry
+    Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) := by
+  -- It suffices to show that `κ(S)` is integral over `R`: since `S` is integral over `R`
+  -- and `κ(S)` is integral over `S` (the map `S → κ(S)` is surjective), the composition
+  -- `R → S → κ(S)` is integral.  Integrality then descends along the surjection `R → κ(R)`,
+  -- so `κ(S)` is integral, hence algebraic, over `κ(R)`.
+  have : Algebra.IsIntegral S (IsLocalRing.ResidueField S) :=
+    Algebra.isIntegral_of_surjective IsLocalRing.residue_surjective
+  have : Algebra.IsIntegral R (IsLocalRing.ResidueField S) := Algebra.IsIntegral.trans S
+  have : Algebra.IsIntegral (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
+    Algebra.IsIntegral.tower_top R
+  infer_instance
 
 variable (R S) in
 /-- Let `R → S` and `R → T` be local ring homomorphisms of local rings, with `R → S`
