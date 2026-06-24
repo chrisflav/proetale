@@ -64,6 +64,52 @@ theorem of_henselianLocalRing_of_isIntegral_of_isDomain
     IsLocalRing S :=
   sorry
 
+/-- A commutative ring with nonempty and subsingleton prime spectrum is local. -/
+theorem of_nonempty_subsingleton_primeSpectrum {A : Type*} [CommRing A]
+    (h₁ : Nonempty (PrimeSpectrum A)) (h₂ : Subsingleton (PrimeSpectrum A)) :
+    IsLocalRing A := by
+  obtain ⟨p⟩ := h₁
+  have : Nontrivial A :=
+    ⟨0, 1, fun e ↦ p.isPrime.ne_top ((Ideal.eq_top_iff_one _).mpr (e ▸ p.asIdeal.zero_mem))⟩
+  obtain ⟨m, hm⟩ := Ideal.exists_maximal A
+  refine IsLocalRing.of_unique_max_ideal ⟨m, hm, fun J hJ ↦ ?_⟩
+  exact congrArg PrimeSpectrum.asIdeal (h₂.elim ⟨J, hJ.isPrime⟩ ⟨m, hm.isPrime⟩)
+
+/-- If the quotient `A ⧸ I` is local and `I` is contained in the Jacobson radical of `A`
+(equivalently, `I` is contained in every maximal ideal of `A`), then `A` is local. -/
+theorem of_isLocalRing_quotient_of_le_jacobson {A : Type*} [CommRing A] (I : Ideal A)
+    [IsLocalRing (A ⧸ I)] (hI : I ≤ (⊥ : Ideal A).jacobson) : IsLocalRing A := by
+  classical
+  have : Nontrivial A := (Ideal.Quotient.mk I).domain_nontrivial
+  -- every maximal ideal of `A` contains `I`, hence is the contraction of `𝔪_{A ⧸ I}`
+  have key : ∀ Q : Ideal A, Q.IsMaximal →
+      Q = (maximalIdeal (A ⧸ I)).comap (Ideal.Quotient.mk I) := by
+    intro Q hQ
+    have hIQ : I ≤ Q := hI.trans (sInf_le ⟨bot_le, hQ⟩)
+    have hmapne : Q.map (Ideal.Quotient.mk I) ≠ ⊤ := by
+      intro htop
+      have hcm := Ideal.comap_map_of_surjective (Ideal.Quotient.mk I)
+        Ideal.Quotient.mk_surjective Q
+      rw [htop, Ideal.comap_top] at hcm
+      have hker : Ideal.comap (Ideal.Quotient.mk I) ⊥ = I := Ideal.mk_ker
+      rw [hker] at hcm
+      exact hQ.ne_top (by rw [← sup_eq_left.mpr hIQ, ← hcm])
+    have hQle : Q ≤ (maximalIdeal (A ⧸ I)).comap (Ideal.Quotient.mk I) :=
+      Ideal.le_comap_map.trans (Ideal.comap_mono (IsLocalRing.le_maximalIdeal hmapne))
+    exact hQ.eq_of_le (Ideal.comap_ne_top _ (IsLocalRing.maximalIdeal.isMaximal _).ne_top) hQle
+  obtain ⟨M, hM⟩ := Ideal.exists_maximal A
+  exact of_unique_max_ideal ⟨M, hM, fun J hJ ↦ by rw [key J hJ, key M hM]⟩
+
+/-- For a local ring `W` with a local homomorphism `R → W` from a local ring `R`, the
+composite `R → κ(W)` kills the maximal ideal of `R`. -/
+theorem algebraMap_residueField_eq_zero_of_mem_maximalIdeal {R W : Type*} [CommRing R]
+    [CommRing W] [IsLocalRing R] [Algebra R W] [IsLocalRing W] [IsLocalHom (algebraMap R W)]
+    {x : R} (hx : x ∈ maximalIdeal R) : algebraMap R (ResidueField W) x = 0 := by
+  rw [IsScalarTower.algebraMap_apply R W (ResidueField W), ResidueField.algebraMap_eq,
+    IsLocalRing.residue_eq_zero_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff]
+  intro hu
+  exact mem_nonunits_iff.mp ((IsLocalRing.mem_maximalIdeal x).mp hx) (IsLocalHom.map_nonunit x hu)
+
 end IsLocalRing
 
 namespace Algebra
@@ -90,17 +136,6 @@ section TensorProduct
 
 open IsLocalRing
 
-/-- A commutative ring whose prime spectrum is a singleton is local. -/
-private theorem isLocalRing_of_primeSpectrum {A : Type*} [CommRing A]
-    (h₁ : Nonempty (PrimeSpectrum A)) (h₂ : Subsingleton (PrimeSpectrum A)) :
-    IsLocalRing A := by
-  obtain ⟨p⟩ := h₁
-  have : Nontrivial A :=
-    ⟨0, 1, fun e ↦ p.isPrime.ne_top ((Ideal.eq_top_iff_one _).mpr (e ▸ p.asIdeal.zero_mem))⟩
-  obtain ⟨m, hm⟩ := Ideal.exists_maximal A
-  refine IsLocalRing.of_unique_max_ideal ⟨m, hm, fun J hJ ↦ ?_⟩
-  exact congrArg PrimeSpectrum.asIdeal (h₂.elim ⟨J, hJ.isPrime⟩ ⟨m, hm.isPrime⟩)
-
 /-- If `L` is a purely inseparable extension of the residue field of a local ring `R` and
 `K` is an `R`-field killed by the maximal ideal, then `L ⊗[R] K` is a local ring. -/
 private theorem isLocalRing_tensorProduct_of_isPurelyInseparable_left
@@ -121,8 +156,7 @@ private theorem isLocalRing_tensorProduct_of_isPurelyInseparable_left
     | tmul r x =>
       obtain ⟨r, rfl⟩ := IsLocalRing.residue_surjective r
       refine ⟨algebraMap R K r * x, ?_⟩
-      rw [show (IsLocalRing.residue R r : ResidueField R) = r • (1 : ResidueField R) by
-            rw [Algebra.smul_def, mul_one]; rfl,
+      rw [← ResidueField.algebraMap_eq, Algebra.algebraMap_eq_smul_one,
         TensorProduct.smul_tmul, Algebra.smul_def]
     | add z₁ z₂ h₁ h₂ =>
       obtain ⟨x₁, rfl⟩ := h₁
@@ -133,8 +167,8 @@ private theorem isLocalRing_tensorProduct_of_isPurelyInseparable_left
     · intro z w hzw
       obtain ⟨x, rfl⟩ := htmul z
       obtain ⟨y, rfl⟩ := htmul w
-      have hxy : x = y := by simpa [Φ] using hzw
-      rw [hxy]
+      obtain rfl : x = y := by simpa [Φ] using hzw
+      rfl
     · intro x
       exact ⟨1 ⊗ₜ x, by simp [Φ]⟩
   let e : (ResidueField R) ⊗[R] K ≃ₐ[R] K := AlgEquiv.ofBijective Φ hΦ
@@ -142,15 +176,16 @@ private theorem isLocalRing_tensorProduct_of_isPurelyInseparable_left
       (Algebra.ofId (ResidueField R) L) (AlgHom.id R K)).toRingHom) :=
     PrimeSpectrum.isHomeomorph_comap_tensorProductMap_of_isPurelyInseparable
       (K := ResidueField R) (R := R) (S := K) L
-  have h2 : Function.Bijective
-      (PrimeSpectrum.comap (e.toRingEquiv : (ResidueField R) ⊗[R] K ≃+* K).toRingHom) :=
-    (PrimeSpectrum.isHomeomorph_comap_of_bijective e.toRingEquiv.bijective).bijective
+  -- `Spec (κ(R) ⊗[R] K)` is a single point: it is homeomorphic to `Spec K`, which is one
   have hsub : Subsingleton (PrimeSpectrum ((ResidueField R) ⊗[R] K)) :=
-    h2.surjective.subsingleton
+    ((PrimeSpectrum.isHomeomorph_comap_of_bijective
+      e.toRingEquiv.bijective).bijective.surjective).subsingleton
   have hne : Nonempty (PrimeSpectrum ((ResidueField R) ⊗[R] K)) := by
     obtain ⟨q⟩ : Nonempty (PrimeSpectrum K) := inferInstance
     exact ⟨PrimeSpectrum.comap (e.toRingEquiv : _ ≃+* K).toRingHom q⟩
-  refine isLocalRing_of_primeSpectrum ?_ (h1.bijective.injective.subsingleton)
+  -- `Spec (L ⊗[R] K) ≅ Spec (κ(R) ⊗[R] K)` since `κ(R) → L` is purely inseparable
+  refine IsLocalRing.of_nonempty_subsingleton_primeSpectrum ?_
+    (h1.bijective.injective.subsingleton)
   obtain ⟨q⟩ := hne
   obtain ⟨p, -⟩ := h1.bijective.surjective q
   exact ⟨p⟩
@@ -163,31 +198,22 @@ private theorem isLocalRing_tensorProduct_aux
         IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField T)) :
     IsLocalRing (T ⊗[R] S) := by
   classical
-  -- the residue fields of `S` and `T` are killed by the maximal ideal of `R`
-  have hkill : ∀ (W : Type u) [CommRing W] [Algebra R W] [IsLocalRing W]
-      [IsLocalHom (algebraMap R W)], ∀ x ∈ maximalIdeal R,
-        algebraMap R (ResidueField W) x = 0 := by
-    intro W _ _ _ _ x hx
-    rw [IsScalarTower.algebraMap_apply R W (ResidueField W), ResidueField.algebraMap_eq,
-      IsLocalRing.residue_eq_zero_iff]
-    rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff]
-    intro hu
-    exact mem_nonunits_iff.mp ((IsLocalRing.mem_maximalIdeal x).mp hx)
-      (IsLocalHom.map_nonunit x hu)
   -- the tensor product of the residue fields is local
   have hcase : IsLocalRing ((ResidueField T) ⊗[R] (ResidueField S)) := by
     rcases h with h | h
-    · haveI := h
+    · have := h
       have hloc : IsLocalRing ((ResidueField S) ⊗[R] (ResidueField T)) :=
         isLocalRing_tensorProduct_of_isPurelyInseparable_left R (ResidueField S)
-          (ResidueField T) (hkill T)
+          (ResidueField T) fun _ hx ↦
+            IsLocalRing.algebraMap_residueField_eq_zero_of_mem_maximalIdeal (W := T) hx
       exact (Algebra.TensorProduct.comm R (ResidueField S)
         (ResidueField T)).toRingEquiv.isLocalRing
-    · haveI := h
+    · have := h
       exact isLocalRing_tensorProduct_of_isPurelyInseparable_left R (ResidueField T)
-        (ResidueField S) (hkill S)
+        (ResidueField S) fun _ hx ↦
+          IsLocalRing.algebraMap_residueField_eq_zero_of_mem_maximalIdeal (W := S) hx
   -- the two distinguished ideals of the tensor product
-  set A := T ⊗[R] S with hAdef
+  set A := T ⊗[R] S
   let inclS : S →ₐ[R] A := Algebra.TensorProduct.includeRight
   let J₂ : Ideal A := (maximalIdeal S).map inclS
   let J₁ : Ideal A := (maximalIdeal T).map (algebraMap T A)
@@ -203,9 +229,7 @@ private theorem isLocalRing_tensorProduct_aux
     exact Algebra.TensorProduct.tensorQuotientEquiv_apply_tmul (R := R) R S T
       (maximalIdeal S) t 1
   have hIJ : J₁.map (Ideal.Quotient.mk J₂)
-      = I₁.map (e₁.toRingEquiv : T ⊗[R] (ResidueField S) ≃+* A ⧸ J₂) := by
-    change J₁.map (Ideal.Quotient.mk J₂)
-      = I₁.map (e₁ : T ⊗[R] (ResidueField S) →+* A ⧸ J₂)
+      = I₁.map (e₁ : T ⊗[R] (ResidueField S) →+* A ⧸ J₂) := by
     rw [Ideal.map_map, Ideal.map_map, hcomm]
   let E₂ : (T ⊗[R] (ResidueField S)) ⧸ I₁ ≃+* (A ⧸ J₂) ⧸ J₁.map (Ideal.Quotient.mk J₂) :=
     Ideal.quotientEquiv I₁ (J₁.map (Ideal.Quotient.mk J₂)) e₁.toRingEquiv hIJ
@@ -217,7 +241,7 @@ private theorem isLocalRing_tensorProduct_aux
   -- every maximal ideal of `A` contains `J₂ ⊔ J₁`
   have hle : ∀ Q : Ideal A, Q.IsMaximal → J₂ ⊔ J₁ ≤ Q := by
     intro Q hQ
-    haveI := hQ.isPrime
+    have := hQ.isPrime
     have hT : Q.comap (algebraMap T A) = maximalIdeal T :=
       IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal Q)
     have hR : Q.comap (algebraMap R A) = maximalIdeal R := by
@@ -234,29 +258,11 @@ private theorem isLocalRing_tensorProduct_aux
       rw [hScomap]
       exact IsLocalRing.maximalIdeal.isMaximal R
     have hS : Q.comap inclS.toRingHom = maximalIdeal S := IsLocalRing.eq_maximalIdeal hSmax
-    refine sup_le ?_ (Ideal.map_le_iff_le_comap.mpr hT.ge)
-    have : (maximalIdeal S).map inclS.toRingHom ≤ Q := Ideal.map_le_iff_le_comap.mpr hS.ge
-    exact this
-  -- conclude
-  have hnontriv : Nontrivial A := (Ideal.Quotient.mk (J₂ ⊔ J₁)).domain_nontrivial
-  have key : ∀ Q : Ideal A, Q.IsMaximal →
-      Q = (maximalIdeal (A ⧸ (J₂ ⊔ J₁))).comap (Ideal.Quotient.mk (J₂ ⊔ J₁)) := by
-    intro Q hQ
-    have hKQ : J₂ ⊔ J₁ ≤ Q := hle Q hQ
-    have hmapne : Q.map (Ideal.Quotient.mk (J₂ ⊔ J₁)) ≠ ⊤ := by
-      intro htop
-      have hcm := Ideal.comap_map_of_surjective (Ideal.Quotient.mk (J₂ ⊔ J₁))
-        Ideal.Quotient.mk_surjective Q
-      rw [htop, Ideal.comap_top] at hcm
-      have hker : Ideal.comap (Ideal.Quotient.mk (J₂ ⊔ J₁)) ⊥ = J₂ ⊔ J₁ := Ideal.mk_ker
-      rw [hker] at hcm
-      exact hQ.ne_top (by rw [← sup_eq_left.mpr hKQ, ← hcm])
-    have hQle : Q ≤ (maximalIdeal (A ⧸ (J₂ ⊔ J₁))).comap (Ideal.Quotient.mk (J₂ ⊔ J₁)) :=
-      le_trans Ideal.le_comap_map (Ideal.comap_mono (IsLocalRing.le_maximalIdeal hmapne))
-    exact hQ.eq_of_le (Ideal.comap_ne_top _ (IsLocalRing.maximalIdeal.isMaximal _).ne_top) hQle
-  obtain ⟨M, hM⟩ := Ideal.exists_maximal A
-  refine IsLocalRing.of_unique_max_ideal ⟨M, hM, fun J hJ ↦ ?_⟩
-  rw [key J hJ, key M hM]
+    exact sup_le (Ideal.map_le_iff_le_comap.mpr hS.ge) (Ideal.map_le_iff_le_comap.mpr hT.ge)
+  -- conclude: `J₂ ⊔ J₁` is below every maximal ideal, and the quotient by it is local
+  have := hQuot
+  exact IsLocalRing.of_isLocalRing_quotient_of_le_jacobson (J₂ ⊔ J₁)
+    (le_sInf fun Q hQ ↦ hle Q hQ.2)
 
 variable (R S) in
 /-- Let `R → S` and `R → T` be local ring homomorphisms of local rings, with `R → S`

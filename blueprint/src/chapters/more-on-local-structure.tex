@@ -90,7 +90,7 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 
 \begin{lemma}[{\cite[\href{https://stacks.math.columbia.edu/tag/092Y}{Tag 092Y}]{stacks-project}}]
     Let $R \to S$ and $R \to T$ be local ring maps of local rings. Suppose
-    $R \to S$ is integral and $\kappa(S) / \kappa(R)$ or $\kappa(T) / \kappa(S)$
+    $R \to S$ is integral and $\kappa(S) / \kappa(R)$ or $\kappa(T) / \kappa(R)$
     is purely inseparable, then $T \otimes_{R} S$ is a local ring.
     \label{lemma:tensorprod-local-purely-inseparable}
     \lean{Algebra.isLocalRing_tensorProduct_of_isPurelyInseparable_residueField}
@@ -99,14 +99,21 @@ The proof goes via the local input \label{weakly-etale-over-sh}.
 
 \begin{proof}
     \leanok
-    Integral is stable under base change, so $T \to S' = T \otimes_{R} S$ is integral. Hence by going-up
-    any maximal ideal of $S'$ lies over $\mathfrak{m}_T$. We have
+    Write $A = T \otimes_{R} S$. Integrality is stable under base change, so
+    $T \to A$ and $S \to A$ are integral. Hence by going-up every maximal ideal
+    $\mathfrak{q}$ of $A$ contracts to $\mathfrak{m}_T$ along $T \to A$ and to
+    $\mathfrak{m}_S$ along $S \to A$, so $\mathfrak{q}$ contains the ideal
+    $J = \mathfrak{m}_T A + \mathfrak{m}_S A$. In particular $J$ is contained in the
+    Jacobson radical of $A$, so it suffices to show that the quotient $A / J$ is local.
+    Using the base change of quotients twice, this quotient is identified with
     \[
-        S' / \mathfrak{m}_T S' = \kappa(T) \otimes_{R} S = \kappa(T) \otimes_{\kappa(R)} S / \mathfrak{m}_R S
-    .\] Again by going-up and since $S$ is local, $\spec{S / \mathfrak{m}_R S}$ is
-    a single point. Thus $\spec{S' / \mathfrak{m}_T S'} \cong \spec{\kappa(T) \otimes_{\kappa(R)} \kappa(S)}$.
-    The latter is a single point, because purely inseparable extensions induce
-    universal homeomorphisms.
+        A / J \cong \kappa(T) \otimes_{R} \kappa(S) \cong \kappa(T) \otimes_{\kappa(R)} \kappa(S)
+    .\] By assumption one of $\kappa(S) / \kappa(R)$, $\kappa(T) / \kappa(R)$ is purely
+    inseparable; using the symmetry $\kappa(T) \otimes_{R} \kappa(S) \cong
+    \kappa(S) \otimes_{R} \kappa(T)$ we reduce both cases to the same statement. A purely
+    inseparable extension induces a universal homeomorphism on spectra, so
+    $\spec{\kappa(T) \otimes_{\kappa(R)} \kappa(S)}$ is a single point and the tensor
+    product of the residue fields is local.
 \end{proof}
 
 \section{Weakly étale algebras}
