@@ -1,0 +1,74 @@
+name: Comparator
+
+# Verify the comparator challenge/solution pair in Comparator/ (see
+# Comparator/README.md): the solution must prove the mathlib-only challenge
+# statement of the ell-adic/etale cohomology comparison, using only the
+# permitted axioms.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  comparator:
+    if: github.event_name != 'pull_request' || github.event.pull_request.number == 165
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          path: project
+
+      - name: Checkout comparator
+        uses: actions/checkout@v4
+        with:
+          repository: leanprover/comparator
+          path: comparator-tool
+
+      - name: Checkout lean4export
+        uses: actions/checkout@v4
+        with:
+          repository: leanprover/lean4export
+          path: lean4export
+
+      - name: Checkout landrun
+        uses: actions/checkout@v4
+        with:
+          repository: Zouuup/landrun
+          path: landrun
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Build landrun
+        working-directory: landrun
+        run: go build -o landrun cmd/landrun/main.go
+
+      - name: Build challenge and solution
+        uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: project
+          build-args: "Challenge Solution"
+
+      # lean4export runs against the project's environment, so it must be built
+      # with the project's toolchain.
+      - name: Build lean4export
+        working-directory: lean4export
+        run: |
+          cp "$GITHUB_WORKSPACE/project/lean-toolchain" lean-toolchain
+          lake build
+
+      - name: Build comparator
+        working-directory: comparator-tool
+        run: lake build comparator
+
+      - name: Run comparator
+        working-directory: project
+        run: |
+          export COMPARATOR_LANDRUN="$GITHUB_WORKSPACE/landrun/landrun"
+          export COMPARATOR_LEAN4EXPORT="$GITHUB_WORKSPACE/lean4export/.lake/build/bin/lean4export"
+          lake env "$GITHUB_WORKSPACE/comparator-tool/.lake/build/bin/comparator" Comparator/config.json
