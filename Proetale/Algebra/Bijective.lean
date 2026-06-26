@@ -1,21 +1,9 @@
 import Proetale.Algebra.WeaklyEtale
+import Proetale.Mathlib.Logic.Function.Basic
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open TensorProduct
-
-/-- A ring hom `f` admitting a section `g` (i.e. `f.comp g = id`) induces an injective map on
-prime spectra, with left inverse `comap g`. -/
-theorem PrimeSpectrum.comap_injective_of_comp_eq_id {A B : Type*} [CommRing A] [CommRing B]
-    {f : A →+* B} {g : B →+* A} (h : f.comp g = RingHom.id B) :
-    Function.Injective (PrimeSpectrum.comap f) :=
-  Function.LeftInverse.injective (g := PrimeSpectrum.comap g) fun z ↦ by
-    rw [← PrimeSpectrum.comap_comp_apply, h, PrimeSpectrum.comap_id]
-
-/-- A left inverse `f` of a bijection `g` is itself bijective. -/
-theorem Function.bijective_of_leftInverse_of_bijective {α β : Type*} {f : α → β} {g : β → α}
-    (h : Function.LeftInverse g f) (hg : Function.Bijective g) : Function.Bijective f :=
-  ⟨h.injective, fun x ↦ ⟨g x, hg.injective (h (g x))⟩⟩
 
 namespace Algebra
 
@@ -33,16 +21,14 @@ lemma bijective_comap_lmul'_of_bijective_of_bijective
     (Algebra.TensorProduct.includeLeft : S →ₐ[R] S ⊗[R] S).toRingHom with hι₁def
   set ι₂ : S →+* S ⊗[R] S :=
     (Algebra.TensorProduct.includeRight : S →ₐ[R] S ⊗[R] S).toRingHom with hι₂def
-  have hμι : μ.comp ι₁ = RingHom.id S := by
-    ext s
-    simp [hμdef, hι₁def]
+  have hμsurj : Function.Surjective μ := fun s ↦ ⟨ι₁ s, by simp [hμdef, hι₁def]⟩
   have hcommfun : ∀ r : R, ι₁ (algebraMap R S r) = ι₂ (algebraMap R S r) := fun r ↦
     ((Algebra.TensorProduct.includeLeft : S →ₐ[R] S ⊗[R] S).commutes r).trans
       ((Algebra.TensorProduct.includeRight : S →ₐ[R] S ⊗[R] S).commutes r).symm
   have hcomm : ι₁.comp (algebraMap R S) = ι₂.comp (algebraMap R S) :=
     RingHom.ext hcommfun
-  -- `Spec (lmul')` has the section `Spec (includeLeft)`, hence is injective.
-  refine ⟨PrimeSpectrum.comap_injective_of_comp_eq_id hμι, fun P ↦ ?_⟩
+  -- `lmul'` is surjective (it has the section `includeLeft`), hence `Spec (lmul')` is injective.
+  refine ⟨PrimeSpectrum.comap_injective_of_surjective μ hμsurj, fun P ↦ ?_⟩
   -- For surjectivity, let `P` be a prime of `S ⊗[R] S`. Its two pullbacks to `S` agree,
   -- since `Spec S → Spec R` is injective.
   set q : Ideal S := P.asIdeal.comap ι₁ with hq₁

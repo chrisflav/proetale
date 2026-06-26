@@ -84,6 +84,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.Pullback
 import Proetale.Mathlib.CategoryTheory.Sites.Sheafification
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.FieldTheory.IsSepClosed
+import Proetale.Mathlib.Logic.Function.Basic
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Etale.Field
 import Proetale.Mathlib.RingTheory.Etale.Prod
