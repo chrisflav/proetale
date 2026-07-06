@@ -661,7 +661,7 @@ variable {SC : ShortComplex (ℕᵒᵖ ⥤ A)}
 
 omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ A] in
 /-- Componentwise, `levelDelta` is postcomposition with the levelwise extension class. -/
-private lemma levelDelta_app_apply
+lemma levelDelta_app_apply
     (hSCk : ∀ k : ℕᵒᵖ, (SC.map ((evaluation ℕᵒᵖ A).obj k)).ShortExact) (i : ℕ) (k : ℕᵒᵖ)
     (x : Ext Z (SC.X₃.obj k) i) :
     ConcreteCategory.hom ((levelDelta Z hSCk i).app k) x = x.comp (hSCk k).extClass rfl :=
@@ -670,7 +670,7 @@ private lemma levelDelta_app_apply
 omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ A] in
 /-- Componentwise, whiskering `SC.g` with the `Ext`-functor is postcomposition with
 `mk₀` of the corresponding component of `SC.g`. -/
-private lemma whiskerRight_extFunctorObj_app_apply (i : ℕ) (k : ℕᵒᵖ)
+lemma whiskerRight_extFunctorObj_app_apply (i : ℕ) (k : ℕᵒᵖ)
     (x : Ext Z (SC.X₂.obj k) i) :
     ConcreteCategory.hom ((Functor.whiskerRight SC.g (extFunctorObj Z i)).app k) x =
       x.comp (Ext.mk₀ ((SC.map ((evaluation ℕᵒᵖ A).obj k)).g)) (add_zero i) :=
@@ -679,7 +679,7 @@ private lemma whiskerRight_extFunctorObj_app_apply (i : ℕ) (k : ℕᵒᵖ)
 omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ A] in
 /-- The image of a levelwise `Hom`-class from the middle object dies under the
 connecting map. -/
-private lemma levelDelta_comp_app_zero
+lemma levelDelta_comp_app_zero
     (hSCk : ∀ k : ℕᵒᵖ, (SC.map ((evaluation ℕᵒᵖ A).obj k)).ShortExact) (i : ℕ) (k : ℕᵒᵖ)
     (b : Ext Z (SC.X₂.obj k) i) :
     ConcreteCategory.hom ((levelDelta Z hSCk i).app k)
@@ -694,7 +694,7 @@ private lemma levelDelta_comp_app_zero
 omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ A] in
 /-- Levelwise exactness at the third object: classes killed by the connecting map come
 from the middle object. -/
-private lemma exists_of_levelDelta_app_eq_zero
+lemma exists_of_levelDelta_app_eq_zero
     (hSCk : ∀ k : ℕᵒᵖ, (SC.map ((evaluation ℕᵒᵖ A).obj k)).ShortExact) (i : ℕ) (k : ℕᵒᵖ)
     (c : Ext Z (SC.X₃.obj k) i)
     (hc : ConcreteCategory.hom ((levelDelta Z hSCk i).app k) c = 0) :
@@ -708,7 +708,7 @@ private lemma exists_of_levelDelta_app_eq_zero
 omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ A] in
 /-- The connecting map is levelwise surjective when the positive `Ext`-groups of the
 middle levels vanish. -/
-private lemma surjective_levelDelta_app
+lemma surjective_levelDelta_app
     (hSCk : ∀ k : ℕᵒᵖ, (SC.map ((evaluation ℕᵒᵖ A).obj k)).ShortExact) (i : ℕ) (k : ℕᵒᵖ)
     (h₂ : Subsingleton (Ext Z (SC.X₂.obj k) (i + 1))) :
     Function.Surjective (ConcreteCategory.hom ((levelDelta Z hSCk i).app k)) := by
@@ -719,7 +719,7 @@ private lemma surjective_levelDelta_app
 omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ A] in
 /-- The connecting map is levelwise injective in positive degrees when the `Ext`-groups
 of the middle levels vanish there. -/
-private lemma injective_levelDelta_app
+lemma injective_levelDelta_app
     (hSCk : ∀ k : ℕᵒᵖ, (SC.map ((evaluation ℕᵒᵖ A).obj k)).ShortExact) (j : ℕ) (k : ℕᵒᵖ)
     (h₂ : Subsingleton (Ext Z (SC.X₂.obj k) (j + 1))) :
     Function.Injective (ConcreteCategory.hom ((levelDelta Z hSCk (j + 1)).app k)) := by
@@ -750,7 +750,7 @@ omit [HasExt.{w} (ℕᵒᵖ ⥤ A)] [EnoughInjectives A] [HasProductsOfShape ℕ
 Mittag-Leffler hypothesis on `Hom(Z, SC.X₁•)`, the kernels of the level maps from the
 level system of the middle object to that of the third object satisfy the stabilized
 elementwise Mittag-Leffler condition. -/
-private lemma exists_transition_preimage_ker
+lemma exists_transition_preimage_ker
     (hSCk : ∀ k : ℕᵒᵖ, (SC.map ((evaluation ℕᵒᵖ A).obj k)).ShortExact)
     (hML : (levelSystem Z SC.X₁ 0 ⋙
       CategoryTheory.forget AddCommGrpCat.{w}).IsMittagLeffler) :

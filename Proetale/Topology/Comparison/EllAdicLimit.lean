@@ -629,6 +629,18 @@ noncomputable def ellAdicSheafLimitIso :
   exact (isLimitEllAdicCone X ℓ).conePointUniqueUpToIso
     (limit.isLimit (zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}))
 
+/-- The legs of `ellAdicSheafLimitIso`: composing with the limit projections recovers
+the reduction maps `ℤ_[ℓ] → ℤ/ℓⁿℤ` on the sheaves of continuous functions, up to the
+comparison isomorphism with the pullback of the constant sheaf. -/
+lemma ellAdicSheafLimitIso_hom_π (n : ℕ) :
+    (ellAdicSheafLimitIso X ℓ).hom ≫
+        limit.π (zmodSystem X ℓ ⋙ ProEt.sheafPullback X Ab.{u + 1}) (op n) =
+      topologicalSheafLiftedMap X ℤ_[ℓ] (PadicInt.toZModPow n).toAddMonoidHom
+          (continuous_toZModPow ℓ n) ≫
+        (sheafPullbackConstantTopologicalIso X (ZMod (ℓ ^ n))).inv :=
+  IsLimit.conePointUniqueUpToIso_hom_comp (isLimitEllAdicCone X ℓ)
+    (limit.isLimit _) (op n)
+
 /-- The transition maps of the pulled-back system are epimorphisms. -/
 lemma epi_transition_zmodSystem_sheafPullback (n : ℕ) :
     Epi (SequentialSystem.transition
