@@ -81,6 +81,8 @@ import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.Precoverage
 import Proetale.Mathlib.CategoryTheory.Sites.PrecoverageGenerating
 import Proetale.Mathlib.CategoryTheory.Sites.Pullback
+import Proetale.Mathlib.CategoryTheory.Sites.SheafCohomology.FreeAbelianSheaf
+import Proetale.Mathlib.CategoryTheory.Sites.SheafCohomology.LocallyVanish
 import Proetale.Mathlib.CategoryTheory.Sites.Sheafification
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.FieldTheory.IsSepClosed
