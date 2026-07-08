@@ -44,6 +44,7 @@ import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineRefinement
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Proetale.Mathlib.AlgebraicGeometry.Sites.Proetale
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Proetale.Mathlib.CategoryTheory.Filtered.Basic
