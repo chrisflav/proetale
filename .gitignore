@@ -15,3 +15,9 @@ blueprint/src/print.out
 blueprint/src/print.synctex.gz
 blueprint/src/print.pdf
 .agent/.initialized
+
+# Root umbrella files that `lake exe mk_all` generates for the `Challenge` and
+# `Solution` comparator libs (which live in `Comparator/`). They are empty orphan
+# modules imported by no lib; keep them out of the tree but let mk_all find them.
+/Challenge.lean
+/Solution.lean
