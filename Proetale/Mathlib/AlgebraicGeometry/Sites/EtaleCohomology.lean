@@ -39,10 +39,10 @@ universe u
 
 open CategoryTheory Limits Opposite Abelian
 
-instance Ab.hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{u, u + 1} Ab.{u + 1} :=
+instance : HasFilteredColimitsOfSize.{u, u + 1} Ab.{u + 1} :=
   hasFilteredColimitsOfSize_of_univLE.{u, u + 1, u + 1, u + 1}
 
-instance Ab.ab5OfSize : AB5OfSize.{u, u + 1} Ab.{u + 1} :=
+instance : AB5OfSize.{u, u + 1} Ab.{u + 1} :=
   AB5OfSize_of_univLE.{u, u + 1, u + 1, u + 1} Ab.{u + 1}
 
 namespace AlgebraicGeometry
