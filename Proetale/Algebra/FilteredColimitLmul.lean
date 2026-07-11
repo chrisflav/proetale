@@ -217,3 +217,25 @@ theorem of_filteredColimit_lmul'
     (fun i ↦ ⟨htflat i, htc_eq i⟩)
 
 end RingHom.Flat
+
+namespace Algebra.WeaklyEtale
+
+variable {R : Type u} [CommRing R]
+variable {ι : Type u} [SmallCategory ι] [IsFiltered ι]
+variable {S : Type u} [CommRing S] [Algebra R S]
+
+/-- If `S = colim_i Sᵢ` is a filtered colimit in `CommAlgCat R` and each `Sᵢ` is weakly étale
+over `R`, then `S` is also weakly étale over `R`.
+
+This is used to prove that ind-étale algebras are weakly étale (since étale implies weakly
+étale). -/
+theorem of_colimitPresentation
+    (P : ColimitPresentation ι (CommAlgCat.of R S))
+    (h : ∀ i, Algebra.WeaklyEtale R (P.diag.obj i)) :
+    Algebra.WeaklyEtale R S where
+  flat := CommAlgCat.flat_of_colimitPresentation P fun i ↦ (h i).flat
+  flat_lmul' := RingHom.Flat.of_filteredColimit_lmul' P fun i ↦
+    haveI := h i
+    Algebra.WeaklyEtale.flat_lmul' R (P.diag.obj i)
+
+end Algebra.WeaklyEtale

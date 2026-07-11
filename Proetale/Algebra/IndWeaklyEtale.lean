@@ -14,14 +14,10 @@ instance Algebra.IndEtale.weaklyEtale {R S : Type u} [CommRing R] [CommRing S] [
   -- Write `S` as a filtered colimit of étale (hence weakly étale) `R`-algebras and use that
   -- weak étaleness is stable under filtered colimits.
   obtain ⟨ι, _, _, P, hP⟩ := Algebra.IndEtale.exists_colimitPresentation (R := R) (S := S)
-  -- Each `P.diag.obj i` is étale, hence weakly étale: it is flat over `R` and `lmul'` is flat.
-  have hwe (i : ι) : Module.Flat R (P.diag.obj i) ∧
-      (Algebra.TensorProduct.lmul' R (S := P.diag.obj i)).Flat := by
-    have : Algebra.Etale R (P.diag.obj i) := hP i
-    exact ⟨(inferInstance : Algebra.WeaklyEtale R (P.diag.obj i)).flat,
-      Algebra.WeaklyEtale.flat_lmul' R (P.diag.obj i)⟩
-  exact ⟨CommAlgCat.flat_of_colimitPresentation P fun i ↦ (hwe i).1,
-    RingHom.Flat.of_filteredColimit_lmul' P fun i ↦ (hwe i).2⟩
+  refine Algebra.WeaklyEtale.of_colimitPresentation P fun i ↦ ?_
+  -- Each `P.diag.obj i` is étale, hence weakly étale.
+  have : Algebra.Etale R (P.diag.obj i) := hP i
+  infer_instance
 
 lemma RingHom.IndEtale.weaklyEtale {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IndEtale) :
