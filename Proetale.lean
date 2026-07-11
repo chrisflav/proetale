@@ -29,6 +29,8 @@ import Proetale.Algebra.WeaklyEtale
 import Proetale.Algebra.WeaklyEtaleField
 import Proetale.Algebra.WeaklyEtaleIndEtale
 import Proetale.Basic
+import Proetale.Etale.Finiteness
+import Proetale.Etale.ProperBaseChange
 import Proetale.FromPi1.Etale
 import Proetale.Mathlib.Algebra.Algebra.Pi
 import Proetale.Mathlib.Algebra.Category.AlgCat.FilteredColimits
@@ -39,6 +41,7 @@ import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.MapBijective
 import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.Product
 import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.Resolution
 import Proetale.Mathlib.Algebra.Homology.DerivedCategory.Ext.SequentialLimit
+import Proetale.Mathlib.Algebra.Homology.DerivedCategoryPlus
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.Algebra.Module.LocalizedModule.Finiteness
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
@@ -51,8 +54,10 @@ import Proetale.Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineRefinement
 import Proetale.Mathlib.AlgebraicGeometry.Sites.BigZariski
+import Proetale.Mathlib.AlgebraicGeometry.Sites.DerivedPushforward
 import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
+import Proetale.Mathlib.AlgebraicGeometry.Sites.SmallBaseChange
 import Proetale.Mathlib.CategoryTheory.Abelian.SequentialSystem
 import Proetale.Mathlib.CategoryTheory.CofilteredSystem
 import Proetale.Mathlib.CategoryTheory.Comma.ArrowRefinement
@@ -98,6 +103,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.SheafCohomology.FreeAbelianSheaf
 import Proetale.Mathlib.CategoryTheory.Sites.SheafCohomology.LocallyVanish
 import Proetale.Mathlib.CategoryTheory.Sites.Sheafification
 import Proetale.Mathlib.CategoryTheory.Sites.Sieves
+import Proetale.Mathlib.CategoryTheory.Sites.Torsion
 import Proetale.Mathlib.FieldTheory.IsSepClosed
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Etale.Field

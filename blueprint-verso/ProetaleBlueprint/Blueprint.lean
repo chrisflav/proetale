@@ -8,6 +8,7 @@ import ProetaleBlueprint.Chapters.MoreOnLocalStructure
 import ProetaleBlueprint.Chapters.RepleteCategories
 import ProetaleBlueprint.Chapters.ProCategories
 import ProetaleBlueprint.Chapters.Topology
+import ProetaleBlueprint.Chapters.ProperBaseChange
 
 open Verso.Genre
 open Verso.Genre.Manual
@@ -30,6 +31,8 @@ for varieties over an algebraically closed field.
 {include 0 ProetaleBlueprint.Chapters.ProCategories}
 
 {include 0 ProetaleBlueprint.Chapters.Topology}
+
+{include 0 ProetaleBlueprint.Chapters.ProperBaseChange}
 
 {blueprint_graph}
 {blueprint_summary}
