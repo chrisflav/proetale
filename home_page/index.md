@@ -11,4 +11,3 @@ Useful links:
 * [Zulip chat for Lean](https://leanprover.zulipchat.com/) for coordination
 * [Blueprint]({{ site.url }}/blueprint/)
 * [Dependency graph]({{ site.url }}/blueprint/Dependency-Graph/)
-* [Doc pages for this repository]({{ site.url }}/docs/)
