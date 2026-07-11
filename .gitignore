@@ -1,17 +1,3 @@
 .claude
 /.lake
-blueprint/print
-blueprint/web
-blueprint/lean_decls
-blueprint/src/web.bbl
-blueprint/src/web.paux
-blueprint/src/print.aux
-blueprint/src/print.bbl
-blueprint/src/print.blg
-blueprint/src/print.fdb_latexmk
-blueprint/src/print.fls
-blueprint/src/print.log
-blueprint/src/print.out
-blueprint/src/print.synctex.gz
-blueprint/src/print.pdf
 .agent/.initialized

@@ -1,9 +1,8 @@
 import VersoBlueprint
 
 /-!
-KaTeX macro prelude shared by all blueprint chapters. These mirror the macros
-from the LaTeX blueprint (`blueprint/src/macros/common.tex`), adapted to
-KaTeX-compatible definitions.
+KaTeX macro prelude shared by all blueprint chapters. These are the
+KaTeX-compatible definitions of the macros used throughout the blueprint.
 -/
 
 open Informal

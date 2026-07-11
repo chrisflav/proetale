@@ -399,7 +399,7 @@ Since $`B` is $`A`-flat, $`M` is also $`A`-flat and hence its submodule $`N` is
 $`A`-flat by {bpref "lemma:weak-dim-flat-submodule"}[].
 :::
 
-:::lemma_ "lemma:prod-submodule-fg" (parent := "more-on-local-structure")
+:::lemma_ "lemma:prod-submodule-fg" (parent := "more-on-local-structure") (lean := "Submodule.FG.mem_pi")
 Let $`(A_i)_{i \in I}` be a family of rings and for every $`i` an
 $`A_i`-module $`M_i`. Let $`N` be a $`\prod_{i \in I} A_i`-submodule of
 $`\prod_{i \in I} M_i` and let $`N_i` be the image of $`N` in $`M_i`. Then
