@@ -100,6 +100,16 @@ lemma ind_flat : ObjectProperty.ind.{u} (flat.{u} R) = flat.{u} R := by
   refine le_trans (ObjectProperty.ind_inverseImage_le _ _) ?_
   rw [ModuleCat.ind_flat]
 
+/-- A `CommAlgCat`-level filtered colimit of flat `R`-algebras is flat over `R`. -/
+lemma flat_of_colimitPresentation {S : CommAlgCat.{u} R}
+    {J : Type u} [SmallCategory J] [IsFiltered J] (pres : ColimitPresentation J S)
+    (h : ∀ j, Module.Flat R (pres.diag.obj j)) :
+    Module.Flat R S := by
+  rw [← flat_iff, flat, ObjectProperty.inverseImage, ← ModuleCat.ind_flat R,
+    ← ObjectProperty.prop_inverseImage_iff (ModuleCat.flat.{u} R).ind]
+  refine ObjectProperty.ind_inverseImage_le _ _ _ ⟨J, ‹_›, ‹_›, pres, fun j ↦ ?_⟩
+  exact h j
+
 /-- The object property of faithfully-flat `R`-algebras. -/
 def faithfullyFlat (R : Type u) [CommRing R] : ObjectProperty (CommAlgCat.{w} R) :=
   (ModuleCat.faithfullyFlat R).inverseImage (forget₂ _ (AlgCat R) ⋙ forget₂ _ _)
@@ -112,11 +122,7 @@ lemma faithfullyFlat_of_colimitPresentation {S : CommAlgCat.{u} R}
     {J : Type u} [SmallCategory J] [IsFiltered J] (pres : ColimitPresentation J S)
     (h : ∀ j, Module.FaithfullyFlat R (pres.diag.obj j)) :
     Module.FaithfullyFlat R S := by
-  have : Module.Flat R S := by
-    rw [← flat_iff, flat, ObjectProperty.inverseImage, ← ModuleCat.ind_flat R,
-      ← ObjectProperty.prop_inverseImage_iff (ModuleCat.flat.{u} R).ind]
-    refine ObjectProperty.ind_inverseImage_le _ _ _ ⟨J, ‹_›, ‹_›, pres, fun j ↦ ?_⟩
-    exact (h j).1
+  have : Module.Flat R S := flat_of_colimitPresentation pres fun j ↦ (h j).1
   refine Module.FaithfullyFlat.of_nontrivial_tensor_quotient fun m hm ↦ ?_
   let qpres : ColimitPresentation J (CommAlgCat.of R <| (R ⧸ m) ⊗[R] S) :=
     pres.map <| MonoidalCategory.tensorLeft (CommAlgCat.of R (R ⧸ m))

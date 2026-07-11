@@ -1,13 +1,23 @@
 import Proetale.Algebra.WeaklyEtale
 import Proetale.Algebra.IndEtale
 import Proetale.Algebra.HenselianLocalRing
+import Proetale.Algebra.FilteredColimitLmul
 
 universe u
 
-instance {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+open CategoryTheory Limits
+
+/-- Every ind-étale algebra is weakly étale. -/
+instance Algebra.IndEtale.weaklyEtale {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.IndEtale R S] :
-    Algebra.WeaklyEtale R S :=
-  sorry
+    Algebra.WeaklyEtale R S := by
+  -- Write `S` as a filtered colimit of étale (hence weakly étale) `R`-algebras and use that
+  -- weak étaleness is stable under filtered colimits.
+  obtain ⟨ι, _, _, P, hP⟩ := Algebra.IndEtale.exists_colimitPresentation (R := R) (S := S)
+  refine Algebra.WeaklyEtale.of_colimitPresentation P fun i ↦ ?_
+  -- Each `P.diag.obj i` is étale, hence weakly étale.
+  have : Algebra.Etale R (P.diag.obj i) := hP i
+  infer_instance
 
 lemma RingHom.IndEtale.weaklyEtale {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IndEtale) :
