@@ -33,11 +33,13 @@ jobs:
         uses: leanprover-community/docgen-action@main
         with:
           api-docs: false
-          blueprint: true
+          # The blueprint is built and deployed separately by blueprint.yml (the
+          # Verso blueprint), so docgen-action does not build one here.
+          blueprint: false
           # The site is deployed to the gh-pages branch below instead of
-          # docgen-action's artifact-based Pages deployment, so that the Verso
-          # blueprint (deployed by verso-blueprint.yml to /verso-blueprint and
-          # /preview/<pr>/verso-blueprint) can live on the same Pages site.
+          # docgen-action's artifact-based Pages deployment, so that the
+          # blueprint (deployed by blueprint.yml to /blueprint and
+          # /preview/<pr>/blueprint) can live on the same Pages site.
           deploy: false
 
       - name: Deploy website to GitHub Pages
@@ -50,6 +52,6 @@ jobs:
           branch: gh-pages
           force: false
           clean-exclude: |
-            verso-blueprint
+            blueprint
             preview
           commit-message: 'deploy docs for ${{ github.sha }}'

@@ -35,13 +35,3 @@ srcDir = "Comparator"
 [[lean_lib]]
 name = "Solution"
 srcDir = "Comparator"
-
-# Local replacement for PatrickMassot/checkdecls, run by the blueprint CI step as
-# `lake exe checkdecls blueprint/lean_decls`. The upstream version imports every
-# lean_lib into one environment, which fails because Challenge and Solution
-# intentionally declare the same names. See CheckDecls.lean.
-[[lean_exe]]
-name = "checkdecls"
-root = "CheckDecls"
-supportInterpreter = true
-weakLinkArgs = ["-lLake"]
