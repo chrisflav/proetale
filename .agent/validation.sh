@@ -5,7 +5,7 @@ if ! [ -z "$(git status --porcelain)" ]; then
 fi
 
 # Verify all .lean files are imported.
-lake exe mk_all --git --check || exit 1
+lake exe mk_all --lib Proetale --git --check || exit 1
 
 # Fetch build cache
 lake exe cache get
