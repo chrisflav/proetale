@@ -5,7 +5,11 @@ if ! [ -z "$(git status --porcelain)" ]; then
 fi
 
 # Verify all .lean files are imported.
-lake exe mk_all --git --check || exit 1
+# Only the `Proetale` library is checked: the `Challenge` and `Solution` comparator
+# libraries use `srcDir = "Comparator"`, so their names don't match a top-level folder
+# and `mk_all` (which is folder-based) cannot manage them. This mirrors mk_all's own
+# guidance for projects downstream of mathlib (`lake exe mk_all --lib MyProject`).
+lake exe mk_all --lib Proetale --git --check || exit 1
 
 # Fetch build cache
 lake exe cache get
