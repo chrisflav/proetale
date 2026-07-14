@@ -178,14 +178,14 @@ theorem bijective_etaleToProetaleCohomology (ℓ m n : ℕ) :
     Function.Bijective (ConcreteCategory.hom
       ((EllAdicEtaleComparison.etaleToProetaleCohomologySystemHom X ℓ m).app (op n))) := by
   have h1 : Function.Bijective (Ext.mapExactFunctor
-      (EllAdicEtaleComparison.sheafPullback X)
-      (X := EllAdicEtaleComparison.etaleConstantUnit X)
+      (ProEt.sheafPullback X Ab.{u + 1})
+      (X := EllAdicEtaleComparison.etaleConstantInt X)
       (Y := (EllAdicEtaleComparison.zmodAbSystem ℓ ⋙
         constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj (op n)) (n := m)) :=
     mapExt_bijective_sheafPullback _ _ m
   have h2 := (Ext.precompAddEquiv (asIso (EllAdicEtaleComparison.pullbackConstantComparison
     X (AddCommGrpCat.of (ULift.{u + 1} ℤ))))
-    ((EllAdicEtaleComparison.sheafPullback X).obj
+    ((ProEt.sheafPullback X Ab.{u + 1}).obj
       ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj
         (AddCommGrpCat.of (ULift.{u + 1} (ZMod (ℓ ^ n)))))) m).bijective
   haveI : IsIso
@@ -193,7 +193,7 @@ theorem bijective_etaleToProetaleCohomology (ℓ m n : ℕ) :
     inferInstanceAs (IsIso
       (EllAdicEtaleComparison.pullbackConstantToTopological X (ZMod (ℓ ^ n))))
   have h3 := bijective_comp_mk₀
-    (Z := EllAdicEtaleComparison.proetaleConstantUnit X)
+    (Z := EllAdicEtaleComparison.proetaleConstantInt X)
     ((EllAdicEtaleComparison.pullbackConstantToTopologicalSystemHom X ℓ).app (op n)) m
   exact h3.comp (h2.comp h1)
 

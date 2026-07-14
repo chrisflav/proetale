@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Proetale.Mathlib.CategoryTheory.Sites.SheafCohomology.FreeAbelianSheaf
-import Proetale.Topology.Comparison.Etale
+import Definitions
 
 /-!
 # Pullback of free abelian sheaves along the inclusion of the étale site
