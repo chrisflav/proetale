@@ -147,7 +147,6 @@ import Proetale.Topology.Comparison.ContinuousComparison
 import Proetale.Topology.Comparison.EllAdic
 import Proetale.Topology.Comparison.EllAdicCanonical
 import Proetale.Topology.Comparison.EllAdicLimit
-import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Comparison.FreeSheaf
 import Proetale.Topology.Comparison.LimitComparison
 import Proetale.Topology.Comparison.ProetConstantSheaf

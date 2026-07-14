@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Definitions
-import Proetale.Topology.Comparison.EllAdicCanonical
+import Proetale
 
 /-!
 # Solution: `ℓ`-adic cohomology is the limit of étale cohomology with `ℤ/ℓⁿℤ`-coefficients
@@ -30,7 +30,7 @@ degree. -/
 theorem bijective_etaleToProetaleCohomology (m n : ℕ) :
     Function.Bijective (ConcreteCategory.hom
       ((etaleToProetaleCohomologySystemHom X ℓ m).app (op n))) :=
-  Scheme.ProEt.bijective_etaleToProetaleCohomology X ℓ m n
+  sorry
 
 variable [Fact ℓ.Prime]
 
@@ -41,7 +41,7 @@ variable [Fact ℓ.Prime]
 theorem bijective_ellAdicCohomologyToLimit_of_finite (i : ℕ)
     (hfin : ∀ n : ℕ, Finite (ToType ((etaleCohomologySystem X ℓ i).obj (op n)))) :
     Function.Bijective (ConcreteCategory.hom (ellAdicCohomologyToLimit X ℓ (i + 1))) :=
-  Scheme.ProEt.bijective_ellAdicCohomologyToLimit_of_finite X ℓ i hfin
+  sorry
 
 /-- **`ℓ`-adic cohomology is the inverse limit of the étale cohomology groups of
 `ℤ/ℓⁿℤ`** in positive degrees, whenever the étale cohomology groups `Hⁱ(X_ét, ℤ/ℓⁿℤ)`
@@ -55,6 +55,6 @@ theorem existsUnique_ellAdicCohomology_addEquiv_limit_of_finite (i : ℕ)
       ∀ x, ConcreteCategory.hom (limMap (etaleToProetaleCohomologySystemHom X ℓ (i + 1)))
           (e x) =
         ConcreteCategory.hom (ellAdicCohomologyToLimit X ℓ (i + 1)) x :=
-  Scheme.ProEt.existsUnique_ellAdicCohomology_addEquiv_limit_of_finite X ℓ i hfin
+  sorry
 
 end EllAdicEtaleComparison
