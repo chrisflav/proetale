@@ -290,6 +290,28 @@ lemma topologicalSheafMap_comp
   intro x
   rfl
 
+/-- The sheaf `U ↦ C(U, M)` on the pro-étale site of `X`, as a functor in the coefficient
+topological abelian group `M`. On objects it is `topologicalSheaf`, on morphisms
+`topologicalSheafMap`. -/
+noncomputable def topologicalSheafFunctor :
+    TopModuleCat.{v} ℤ ⥤ Sheaf (ProEt.topology X) Ab.{max u v} where
+  obj N := topologicalSheaf X N
+  map f := topologicalSheafMap X _ f.hom.toLinearMap.toAddMonoidHom f.hom.continuous
+  map_id N := by
+    apply Sheaf.hom_ext
+    apply NatTrans.ext
+    funext U
+    apply ConcreteCategory.hom_ext
+    intro x
+    rfl
+  map_comp f g := by
+    apply Sheaf.hom_ext
+    apply NatTrans.ext
+    funext U
+    apply ConcreteCategory.hom_ext
+    intro x
+    rfl
+
 variable {C : Type*} [Category C] {J : GrothendieckTopology C}
 
 /-- Universe lifting on sheaves of abelian groups: `Sheaf J Ab.{u} ⥤ Sheaf J Ab.{u + 1}`,
@@ -321,15 +343,23 @@ lemma topologicalSheafULiftMap_comp
 
 end Topological
 
+/-- The inverse system `n ↦ ℤ/ℓⁿℤ` of (discrete) topological abelian groups, with the
+reduction maps as transition maps. -/
+noncomputable def zmodTopSystem (ℓ : ℕ) : ℕᵒᵖ ⥤ TopModuleCat.{0} ℤ :=
+  Functor.ofOpSequence
+    (X := fun n ↦ TopModuleCat.of ℤ (ZMod (ℓ ^ n)))
+    (fun n ↦ TopModuleCat.ofHom
+      { toLinearMap := (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n))
+          (ZMod (ℓ ^ n))).toAddMonoidHom.toIntLinearMap
+        cont := continuous_of_discreteTopology })
+
 /-- The inverse system `n ↦ (U ↦ C(U, ℤ/ℓⁿℤ))` of abelian sheaves on the pro-étale site
-of `X`, with the reduction maps as transition maps. -/
+of `X`, with the reduction maps as transition maps. It is the composition of the system
+of coefficient groups `zmodTopSystem` with the (lifted) sheaf-of-continuous-functions
+functor. -/
 noncomputable def zmodContinuousSystem (ℓ : ℕ) :
     ℕᵒᵖ ⥤ Sheaf (ProEt.topology X) Ab.{max u v} :=
-  Functor.ofOpSequence
-    (X := fun n ↦ topologicalSheaf X (ZMod (ℓ ^ n)))
-    (fun n ↦ (topologicalSheafMap X (ZMod (ℓ ^ (n + 1)))
-      (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
-      continuous_of_discreteTopology)) |>.comp Sheaf.uliftFunctor.{u, v}
+  zmodTopSystem ℓ ⋙ topologicalSheafFunctor.{u, 0} X ⋙ Sheaf.uliftFunctor.{u, v}
 
 /-- The transition maps of `zmodContinuousSystem` are induced by the reduction maps. -/
 lemma zmodContinuousSystem_map_succ (ℓ n : ℕ) :
@@ -337,9 +367,9 @@ lemma zmodContinuousSystem_map_succ (ℓ n : ℕ) :
       Sheaf.uliftFunctor.map (topologicalSheafMap X (ZMod (ℓ ^ (n + 1)))
         (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
         continuous_of_discreteTopology) := by
-  simp [zmodContinuousSystem]
-
-  -- Functor.ofOpSequence_map_homOfLE_succ _ n
+  simp only [zmodContinuousSystem, Functor.comp_map, zmodTopSystem,
+    Functor.ofOpSequence_map_homOfLE_succ]
+  rfl
 
 /-- The inverse system `n ↦ Hᵐ(X_proét, ℤ/ℓⁿℤ)` of pro-étale cohomology groups of the
 sheaves of continuous `ℤ/ℓⁿℤ`-valued functions, with transition maps induced by the
