@@ -1,4 +1,4 @@
-name: Verso Blueprint
+name: Blueprint
 
 on:
   push:
@@ -6,12 +6,12 @@ on:
       - master
   pull_request_target:
     paths:
-      - 'blueprint-verso/**'
+      - 'blueprint/**'
       - 'Proetale/**'
       - 'lean-toolchain'
       - 'lakefile.toml'
       - 'lake-manifest.json'
-      - '.github/workflows/verso-blueprint.yml'
+      - '.github/workflows/blueprint.yml'
   workflow_dispatch:
 
 # The deploy jobs push to the `gh-pages` branch
@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: ${{ github.repository }}-verso-blueprint-${{ github.ref }}
+  group: ${{ github.repository }}-blueprint-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -40,8 +40,8 @@ jobs:
       - name: Restore Lake package cache
         uses: actions/cache@v4
         with:
-          path: blueprint-verso/.lake/packages
-          key: ${{ runner.os }}-blueprint-lake-packages-${{ hashFiles('blueprint-verso/lean-toolchain', 'blueprint-verso/lake-manifest.json') }}
+          path: blueprint/.lake/packages
+          key: ${{ runner.os }}-blueprint-lake-packages-${{ hashFiles('blueprint/lean-toolchain', 'blueprint/lake-manifest.json') }}
           restore-keys: |
             ${{ runner.os }}-blueprint-lake-packages-
 
@@ -49,28 +49,28 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            blueprint-verso/.lake/build
+            blueprint/.lake/build
             .lake/build
-          key: ${{ runner.os }}-blueprint-lean-build-${{ hashFiles('blueprint-verso/lean-toolchain', 'blueprint-verso/lake-manifest.json', 'blueprint-verso/lakefile.toml', 'blueprint-verso/**/*.lean', 'Proetale/**/*.lean') }}
+          key: ${{ runner.os }}-blueprint-lean-build-${{ hashFiles('blueprint/lean-toolchain', 'blueprint/lake-manifest.json', 'blueprint/lakefile.toml', 'blueprint/**/*.lean', 'Proetale/**/*.lean') }}
           restore-keys: |
-            ${{ runner.os }}-blueprint-lean-build-${{ hashFiles('blueprint-verso/lean-toolchain', 'blueprint-verso/lake-manifest.json', 'blueprint-verso/lakefile.toml') }}-
+            ${{ runner.os }}-blueprint-lean-build-${{ hashFiles('blueprint/lean-toolchain', 'blueprint/lake-manifest.json', 'blueprint/lakefile.toml') }}-
             ${{ runner.os }}-blueprint-lean-build-
 
       - name: Get Mathlib cache
-        working-directory: blueprint-verso
+        working-directory: blueprint
         run: lake exe cache get || true
 
       - name: Build blueprint site
-        run: ./blueprint-verso/scripts/ci-pages.sh
+        run: ./blueprint/scripts/ci-pages.sh
 
       - name: Upload site artifact
         uses: actions/upload-artifact@v4
         with:
-          name: verso-blueprint-site
-          path: blueprint-verso/_out/site/html-multi
+          name: blueprint-site
+          path: blueprint/_out/site/html-multi
 
   deploy:
-    name: Deploy to GitHub Pages (/verso-blueprint)
+    name: Deploy to GitHub Pages (/blueprint)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     needs: build
     runs-on: ubuntu-latest
@@ -86,7 +86,7 @@ jobs:
       - name: Download site artifact
         uses: actions/download-artifact@v4
         with:
-          name: verso-blueprint-site
+          name: blueprint-site
           path: _site
 
       - name: Deploy to gh-pages
@@ -94,12 +94,12 @@ jobs:
         with:
           folder: _site
           branch: gh-pages
-          target-folder: verso-blueprint
+          target-folder: blueprint
           force: false
-          commit-message: 'deploy verso blueprint for ${{ github.sha }}'
+          commit-message: 'deploy blueprint for ${{ github.sha }}'
 
   deploy-preview:
-    name: Deploy PR preview (/preview/<pr>/verso-blueprint)
+    name: Deploy PR preview (/preview/<pr>/blueprint)
     if: github.event_name == 'pull_request_target'
     needs: build
     runs-on: ubuntu-latest
@@ -113,7 +113,7 @@ jobs:
       - name: Download site artifact
         uses: actions/download-artifact@v4
         with:
-          name: verso-blueprint-site
+          name: blueprint-site
           path: _site
 
       - name: Deploy preview to gh-pages
@@ -121,6 +121,6 @@ jobs:
         with:
           folder: _site
           branch: gh-pages
-          target-folder: preview/${{ github.event.pull_request.number }}/verso-blueprint
+          target-folder: preview/${{ github.event.pull_request.number }}/blueprint
           force: false
-          commit-message: 'deploy verso blueprint preview for PR #${{ github.event.pull_request.number }} (${{ github.sha }})'
+          commit-message: 'deploy blueprint preview for PR #${{ github.event.pull_request.number }} (${{ github.sha }})'

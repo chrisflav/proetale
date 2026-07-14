@@ -1,4 +1,4 @@
-name: Verso Blueprint Preview Cleanup
+name: Blueprint Preview Cleanup
 
 on:
   pull_request:
