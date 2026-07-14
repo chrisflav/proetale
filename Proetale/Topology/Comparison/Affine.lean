@@ -756,7 +756,7 @@ instance ProEt.preservesFilteredColimitsOfSize_lan_toProEtale (F : S.Etaleᵒᵖ
   sorry
 
 instance : AB5OfSize.{u, u} Ab.{u + 1} :=
-  AB5OfSize_of_univLE.{_, _, u + 1, u + 1} Ab
+  AB5OfSize_of_univLE.{u, u, u + 1, u + 1} Ab.{u + 1}
 
 noncomputable
 def AffineEtale.toAffineProEtCompToProEtIso :

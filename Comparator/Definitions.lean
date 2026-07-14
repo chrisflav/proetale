@@ -30,16 +30,17 @@ constant) `ℤ/ℓⁿℤ`-valued functions, defined in exact analogy with mathli
   constant sheaves (all obtained from adjunctions).
 -/
 
-universe u
+universe u v w
 
 open CategoryTheory Limits Opposite Abelian AlgebraicGeometry AlgebraicGeometry.Scheme
   MorphismProperty
 
-instance Ab.hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{u, u + 1} Ab.{u + 1} :=
-  hasFilteredColimitsOfSize_of_univLE.{u, u + 1, u + 1, u + 1}
+instance Ab.hasFilteredColimitsOfSize [UnivLE.{u, v}] [UnivLE.{u, w}] [UnivLE.{v, w}] :
+    HasFilteredColimitsOfSize.{u, v} Ab.{w} :=
+  hasFilteredColimitsOfSize_of_univLE.{u, v, w}
 
-instance Ab.ab5OfSize : AB5OfSize.{u, u + 1} Ab.{u + 1} :=
-  AB5OfSize_of_univLE.{u, u + 1, u + 1, u + 1} Ab.{u + 1}
+instance Ab.ab5OfSize [UnivLE.{u, v}] [UnivLE.{u, w}] [UnivLE.{v, w}] : AB5OfSize.{u, v} Ab.{w} :=
+  AB5OfSize_of_univLE.{u, v, w, w} Ab.{w}
 
 /-- The category of abelian sheaves on the small étale site of `X : Scheme.{u}` (with
 coefficients in `Ab.{u + 1}`) is Grothendieck abelian. In particular it has enough
@@ -247,46 +248,41 @@ pro-étale cohomology of `X` with `ℤ/ℓⁿℤ`-coefficients.
 
 section Topological
 
-variable (M : Type) [TopologicalSpace M] [AddCommGroup M] [IsTopologicalAddGroup M]
+variable (M : Type v) [TopologicalSpace M] [AddCommGroup M] [IsTopologicalAddGroup M]
 
 /-- The sheaf `U ↦ C(U, M)` on the pro-étale site of `X`, for a topological abelian
 group `M`. For `M = ℤ_[ℓ]` this is `X.ellAdicSheaf ℓ` (definitionally). -/
-noncomputable def topologicalSheaf : Sheaf (ProEt.topology X) Ab.{u} :=
+noncomputable def topologicalSheaf : Sheaf (ProEt.topology X) Ab.{max u v} :=
   ((ProEt.forget X ⋙ Over.forget _).sheafPushforwardContinuous _ _ proetaleTopology).obj
-    ⟨continuousMapPresheafAb M, .of_le proetaleTopology_le_fpqcTopology <|
+    ⟨continuousMapPresheafAb.{v} M, .of_le proetaleTopology_le_fpqcTopology <|
       isSheaf_fpqcTopology_continuousMapPresheafAb _⟩
 
 lemma ellAdicSheaf_eq_topologicalSheaf (ℓ : ℕ) [Fact ℓ.Prime] :
     X.ellAdicSheaf ℓ = topologicalSheaf X ℤ_[ℓ] :=
   rfl
 
-/-- The `ULift` of `topologicalSheaf X M` to `Ab.{u + 1}`. -/
-noncomputable def topologicalSheafLifted : Sheaf (ProEt.topology X) Ab.{u + 1} :=
-  (sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj (topologicalSheaf X M)
-
-/-- Postcomposition with a continuous additive map, as a morphism of the lifted
-sheaves of continuous maps. -/
-noncomputable def topologicalSheafLiftedMap {M' : Type} [TopologicalSpace M']
+/-- Postcomposition with a continuous additive map, as a morphism of the sheaves of
+continuous maps. -/
+noncomputable def topologicalSheafMap {M' : Type v} [TopologicalSpace M']
     [AddCommGroup M'] [IsTopologicalAddGroup M'] (f : M →+ M') (hf : Continuous f) :
-    topologicalSheafLifted X M ⟶ topologicalSheafLifted X M' where
+    topologicalSheaf X M ⟶ topologicalSheaf X M' where
   hom :=
-    { app := fun U ↦ AddCommGrpCat.uliftFunctor.{u + 1}.map
-        (AddCommGrpCat.ofHom
-          (AddMonoidHom.mk' (fun g ↦ (ContinuousMap.mk f hf).comp g)
-            (fun g₁ g₂ ↦ by ext x; exact map_add f _ _)))
+    { app := fun U ↦ AddCommGrpCat.ofHom
+        (AddMonoidHom.mk' (fun g ↦ (ContinuousMap.mk f hf).comp g)
+          (fun g₁ g₂ ↦ by ext x; exact map_add f _ _))
       naturality := by
         intro U V h
         apply ConcreteCategory.hom_ext
         intro g
         rfl }
 
-/-- Functoriality of `topologicalSheafLiftedMap` in the coefficient map. -/
-lemma topologicalSheafLiftedMap_comp
-    {M₂ M₃ : Type} [TopologicalSpace M₂] [AddCommGroup M₂] [IsTopologicalAddGroup M₂]
+/-- Functoriality of `topologicalSheafMap` in the coefficient map. -/
+lemma topologicalSheafMap_comp
+    {M₂ M₃ : Type v} [TopologicalSpace M₂] [AddCommGroup M₂] [IsTopologicalAddGroup M₂]
     [TopologicalSpace M₃] [AddCommGroup M₃] [IsTopologicalAddGroup M₃]
     (f : M →+ M₂) (hf : Continuous f) (g : M₂ →+ M₃) (hg : Continuous g) :
-    topologicalSheafLiftedMap X M f hf ≫ topologicalSheafLiftedMap X M₂ g hg =
-      topologicalSheafLiftedMap X M (g.comp f) (hg.comp hf) := by
+    topologicalSheafMap X M f hf ≫ topologicalSheafMap X M₂ g hg =
+      topologicalSheafMap X M (g.comp f) (hg.comp hf) := by
   apply Sheaf.hom_ext
   apply NatTrans.ext
   funext U
@@ -294,39 +290,100 @@ lemma topologicalSheafLiftedMap_comp
   intro x
   rfl
 
+/-- The sheaf `U ↦ C(U, M)` on the pro-étale site of `X`, as a functor in the coefficient
+topological abelian group `M`. On objects it is `topologicalSheaf`, on morphisms
+`topologicalSheafMap`. -/
+noncomputable def topologicalSheafFunctor :
+    TopModuleCat.{v} ℤ ⥤ Sheaf (ProEt.topology X) Ab.{max u v} where
+  obj N := topologicalSheaf X N
+  map f := topologicalSheafMap X _ f.hom.toLinearMap.toAddMonoidHom f.hom.continuous
+  map_id N := by
+    apply Sheaf.hom_ext
+    apply NatTrans.ext
+    funext U
+    apply ConcreteCategory.hom_ext
+    intro x
+    rfl
+  map_comp f g := by
+    apply Sheaf.hom_ext
+    apply NatTrans.ext
+    funext U
+    apply ConcreteCategory.hom_ext
+    intro x
+    rfl
+
+variable {C : Type*} [Category C] {J : GrothendieckTopology C}
+
+/-- Universe lifting on sheaves of abelian groups: `Sheaf J Ab.{u} ⥤ Sheaf J Ab.{u + 1}`,
+obtained by postcomposition with `AddCommGrpCat.uliftFunctor`. -/
+noncomputable def _root_.Sheaf.uliftFunctor : Sheaf J Ab.{u} ⥤ Sheaf J Ab.{max u v} :=
+  sheafCompose J AddCommGrpCat.uliftFunctor
+
+/-- The `ULift` of `topologicalSheaf X M` to `Ab.{u + 1}`. -/
+noncomputable def topologicalSheafULift : Sheaf (ProEt.topology X) Ab.{max u v w} :=
+  Sheaf.uliftFunctor.obj (topologicalSheaf X M)
+
+/-- Postcomposition with a continuous additive map, as a morphism of the lifted
+sheaves of continuous maps. -/
+noncomputable def topologicalSheafULiftMap {M' : Type v} [TopologicalSpace M']
+    [AddCommGroup M'] [IsTopologicalAddGroup M'] (f : M →+ M') (hf : Continuous f) :
+    Sheaf.uliftFunctor.obj (topologicalSheaf X M) ⟶ topologicalSheafULift X M' :=
+  Sheaf.uliftFunctor.map (topologicalSheafMap X M f hf)
+
+/-- Functoriality of `topologicalSheafULiftMap` in the coefficient map. -/
+lemma topologicalSheafULiftMap_comp
+    {M₂ M₃ : Type v} [TopologicalSpace M₂] [AddCommGroup M₂] [IsTopologicalAddGroup M₂]
+    [TopologicalSpace M₃] [AddCommGroup M₃] [IsTopologicalAddGroup M₃]
+    (f : M →+ M₂) (hf : Continuous f) (g : M₂ →+ M₃) (hg : Continuous g) :
+    topologicalSheafULiftMap X M f hf ≫ topologicalSheafULiftMap X M₂ g hg =
+      topologicalSheafULiftMap X M (g.comp f) (hg.comp hf) := by
+  simp only [topologicalSheafULiftMap, ← topologicalSheafMap_comp X M f hf g hg]
+  exact Sheaf.uliftFunctor.map_comp
+    (topologicalSheafMap X M f hf) (topologicalSheafMap X M₂ g hg)
+
 end Topological
 
-/-- The inverse system `n ↦ (U ↦ C(U, ℤ/ℓⁿℤ))` of abelian sheaves on the pro-étale site
-of `X`, with the reduction maps as transition maps. -/
-noncomputable def zmodContinuousSystem (ℓ : ℕ) :
-    ℕᵒᵖ ⥤ Sheaf (ProEt.topology X) Ab.{u + 1} :=
+/-- The inverse system `n ↦ ℤ/ℓⁿℤ` of (discrete) topological abelian groups, with the
+reduction maps as transition maps. -/
+noncomputable def zmodTopSystem (ℓ : ℕ) : ℕᵒᵖ ⥤ TopModuleCat.{0} ℤ :=
   Functor.ofOpSequence
-    (X := fun n ↦ topologicalSheafLifted X (ZMod (ℓ ^ n)))
-    (fun n ↦ topologicalSheafLiftedMap X (ZMod (ℓ ^ (n + 1)))
-      (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
-      continuous_of_discreteTopology)
+    (X := fun n ↦ TopModuleCat.of ℤ (ZMod (ℓ ^ n)))
+    (fun n ↦ TopModuleCat.ofHom
+      { toLinearMap := (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n))
+          (ZMod (ℓ ^ n))).toAddMonoidHom.toIntLinearMap
+        cont := continuous_of_discreteTopology })
+
+/-- The inverse system `n ↦ (U ↦ C(U, ℤ/ℓⁿℤ))` of abelian sheaves on the pro-étale site
+of `X`, with the reduction maps as transition maps. It is the composition of the system
+of coefficient groups `zmodTopSystem` with the (lifted) sheaf-of-continuous-functions
+functor. -/
+noncomputable def zmodContinuousSystem (ℓ : ℕ) :
+    ℕᵒᵖ ⥤ Sheaf (ProEt.topology X) Ab.{max u v} :=
+  zmodTopSystem ℓ ⋙ topologicalSheafFunctor.{u, 0} X ⋙ Sheaf.uliftFunctor.{u, v}
 
 /-- The transition maps of `zmodContinuousSystem` are induced by the reduction maps. -/
 lemma zmodContinuousSystem_map_succ (ℓ n : ℕ) :
     (zmodContinuousSystem X ℓ).map (homOfLE (Nat.le_succ n)).op =
-      topologicalSheafLiftedMap X (ZMod (ℓ ^ (n + 1)))
+      Sheaf.uliftFunctor.map (topologicalSheafMap X (ZMod (ℓ ^ (n + 1)))
         (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
-        continuous_of_discreteTopology :=
-  Functor.ofOpSequence_map_homOfLE_succ _ n
+        continuous_of_discreteTopology) := by
+  simp only [zmodContinuousSystem, Functor.comp_map, zmodTopSystem,
+    Functor.ofOpSequence_map_homOfLE_succ]
+  rfl
 
 /-- The inverse system `n ↦ Hᵐ(X_proét, ℤ/ℓⁿℤ)` of pro-étale cohomology groups of the
 sheaves of continuous `ℤ/ℓⁿℤ`-valued functions, with transition maps induced by the
 reduction maps. -/
 noncomputable def proetaleCohomologySystem (ℓ : ℕ) (m : ℕ) :
     ℕᵒᵖ ⥤ AddCommGrpCat.{u + 1} :=
-  zmodContinuousSystem X ℓ ⋙ extFunctorObj (proetaleConstantInt X) m
+  zmodContinuousSystem.{u, u + 1} X ℓ ⋙ extFunctorObj (proetaleConstantInt X) m
 
 /-- The value of `proetaleCohomologySystem` at level `n` is the pro-étale cohomology
 `Hᵐ(X_proét, ℤ/ℓⁿℤ)` of the sheaf of continuous `ℤ/ℓⁿℤ`-valued functions in the sense
 of mathlib's `CategoryTheory.Sheaf.H`. -/
 theorem proetaleCohomologySystem_obj (ℓ m n : ℕ) :
     (proetaleCohomologySystem X ℓ m).obj (op n) =
-      AddCommGrpCat.of (Sheaf.H (topologicalSheafLifted X (ZMod (ℓ ^ n))) m) :=
+      AddCommGrpCat.of (Sheaf.H (topologicalSheafULift.{u, 0, u + 1} X (ZMod (ℓ ^ n))) m) :=
   rfl
 
 /-! ### The reduction map from `ℓ`-adic cohomology to the limit -/
@@ -360,25 +417,23 @@ lemma continuous_toZModPow (n : ℕ) : Continuous (PadicInt.toZModPow (p := ℓ)
 /-- The reduction map from the (`ULift`ed) `ℓ`-adic sheaf to the sheaf of continuous
 `ℤ/ℓⁿℤ`-valued functions, induced by `PadicInt.toZModPow`. -/
 noncomputable def ellAdicToZModContinuous (n : ℕ) :
-    (sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj (X.ellAdicSheaf ℓ) ⟶
-      topologicalSheafLifted X (ZMod (ℓ ^ n)) :=
-  topologicalSheafLiftedMap X ℤ_[ℓ] (PadicInt.toZModPow n).toAddMonoidHom
+    Sheaf.uliftFunctor.obj (X.ellAdicSheaf ℓ) ⟶
+      Sheaf.uliftFunctor.obj (topologicalSheaf X (ZMod (ℓ ^ n))) :=
+  topologicalSheafULiftMap X ℤ_[ℓ] (PadicInt.toZModPow n).toAddMonoidHom
     (continuous_toZModPow ℓ n)
 
 /-- The reduction maps `ellAdicToZModContinuous` assemble into a cone over the system
 of sheaves of continuous `ℤ/ℓⁿℤ`-valued functions, with apex the `ℓ`-adic sheaf. -/
 noncomputable def ellAdicCone : Cone (zmodContinuousSystem X ℓ) where
-  pt := (sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj (X.ellAdicSheaf ℓ)
+  pt := topologicalSheafULift.{u, 0, u + 1} X ℤ_[ℓ]
   π := NatTrans.ofOpSequence
     (app := fun n ↦ ellAdicToZModContinuous X ℓ n)
     (naturality := fun n ↦ by
       simp only [Functor.const_obj_map]
       rw [zmodContinuousSystem_map_succ]
-      change topologicalSheafLiftedMap X ℤ_[ℓ] (PadicInt.toZModPow n).toAddMonoidHom
-          (continuous_toZModPow ℓ n) =
-        topologicalSheafLiftedMap X ℤ_[ℓ] (PadicInt.toZModPow (n + 1)).toAddMonoidHom
-          (continuous_toZModPow ℓ (n + 1)) ≫ _
-      rw [topologicalSheafLiftedMap_comp]
+      change topologicalSheafULiftMap .. =
+        topologicalSheafULiftMap .. ≫ topologicalSheafULiftMap ..
+      rw [topologicalSheafULiftMap_comp]
       congr 1
       ext x
       exact (RingHom.congr_fun
@@ -418,7 +473,7 @@ noncomputable def constantsToSectionsPushforward :
     AddCommGrpCat.of (ULift.{u + 1} M) ⟶
       ((sheafSections X.smallEtaleTopology Ab.{u + 1}).obj
         (op (MorphismProperty.Over.mk ⊤ (𝟙 X) (MorphismProperty.id_mem _ X)))).obj
-        ((sheafPushforward X Ab).obj (topologicalSheafLifted X M)) :=
+        ((sheafPushforward X Ab).obj (topologicalSheafULift.{u, 0, u + 1} X M)) :=
   AddCommGrpCat.ofHom
     { toFun := fun m ↦ ULift.up ⟨fun _ ↦ m.down, continuous_const⟩
       map_zero' := rfl
@@ -431,7 +486,7 @@ constants map `M → C(X, M)`. -/
 noncomputable def pullbackConstantToTopological :
     (sheafPullback X Ab).obj ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj
         (AddCommGrpCat.of (ULift.{u + 1} M))) ⟶
-      topologicalSheafLifted X M :=
+      topologicalSheafULift.{u, 0, u + 1} X M :=
   ((sheafAdjunction X Ab).homEquiv _ _).symm
     (((constantSheafAdj X.smallEtaleTopology Ab.{u + 1} (Over.mkIdTerminal _ _)).homEquiv
       _ _).symm (constantsToSectionsPushforward X M))
@@ -442,7 +497,7 @@ lemma pullbackConstantToTopological_naturality {M' : Type} [TopologicalSpace M']
     (sheafPullback X Ab).map ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).map
         (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom f))) ≫
       pullbackConstantToTopological X M' =
-        pullbackConstantToTopological X M ≫ topologicalSheafLiftedMap X M f hf := by
+        pullbackConstantToTopological X M ≫ topologicalSheafULiftMap X M f hf := by
   unfold pullbackConstantToTopological
   refine Eq.trans (Eq.trans
     ((sheafAdjunction X Ab).homEquiv_naturality_left_symm _ _).symm ?_)
@@ -468,7 +523,7 @@ pullbacks of the constant étale sheaves `ℤ/ℓⁿℤ` to the sheaves of conti
 (BS, Lemma 4.2.12) and not part of the definition. -/
 noncomputable def pullbackConstantToTopologicalSystemHom (ℓ : ℕ) :
     (zmodAbSystem ℓ ⋙ constantSheaf X.smallEtaleTopology Ab.{u + 1}) ⋙ sheafPullback X Ab ⟶
-      zmodContinuousSystem X ℓ :=
+      zmodContinuousSystem.{u, u + 1} X ℓ :=
   NatTrans.ofOpSequence
     (app := fun n ↦ pullbackConstantToTopological X (ZMod (ℓ ^ n)))
     (naturality := fun n ↦ by
@@ -477,7 +532,8 @@ noncomputable def pullbackConstantToTopologicalSystemHom (ℓ : ℕ) :
       rw [zmodAbSystem_map_succ, zmodContinuousSystem_map_succ,
         pullbackConstantToTopological_naturality X (ZMod (ℓ ^ (n + 1)))
           (ZMod.castHom (pow_dvd_pow ℓ (Nat.le_succ n)) (ZMod (ℓ ^ n))).toAddMonoidHom
-          continuous_of_discreteTopology])
+          continuous_of_discreteTopology]
+      cat_disch)
 
 /-- **The canonical comparison map from étale to pro-étale cohomology with
 `ℤ/ℓⁿℤ`-coefficients**, as a morphism of inverse systems: on each level it is given by
