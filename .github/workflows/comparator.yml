@@ -6,6 +6,10 @@ name: Comparator
 # permitted axioms.
 
 on:
+  push:
+    branches:
+      - master
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -13,7 +17,6 @@ permissions:
 
 jobs:
   comparator:
-    if: github.event_name != 'pull_request' || github.event.pull_request.number == 165
     runs-on: ubuntu-latest
 
     steps:

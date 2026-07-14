@@ -1,4 +1,5 @@
 import Mathlib.AlgebraicGeometry.Sites.AffineEtale
+import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 
 universe u
 
@@ -37,6 +38,28 @@ lemma zariskiTopology_le_topology : zariskiTopology S ≤ topology S := by
   -- Open immersions are étale, so a Zariski cover is an étale cover.
   have hle : @IsOpenImmersion ≤ @Etale := fun _ _ _ _ ↦ inferInstance
   exact Precoverage.generate_mem_toGrothendieck (precoverage_mono hle _ hR)
+
+/-- A single surjective (étale) morphism is a cover in the small affine étale site. -/
+lemma generate_singleton_mem_topology {X Y : S.AffineEtale} (f : X ⟶ Y)
+    (hf : Function.Surjective ((toScheme S).map f).base) :
+    Sieve.generate (Presieve.singleton f) ∈ topology S Y := by
+  have het : Etale ((toScheme S).map f) := by
+    refine MorphismProperty.of_postcomp (W := @Etale) (W' := @Etale) ((toScheme S).map f)
+      ((AffineEtale.Spec S).obj Y).hom ((AffineEtale.Spec S).obj Y).prop ?_
+    have w := MorphismProperty.Over.w ((AffineEtale.Spec S).map f)
+    dsimp at w
+    change Etale (Spec.map f.left.unop ≫ Y.hom)
+    rw [w]
+    exact X.prop
+  have : Sieve.generate ((Presieve.singleton f).map (toScheme S)) ∈
+      grothendieckTopology @Etale ((toScheme S).obj Y) := by
+    refine Precoverage.generate_mem_toGrothendieck ?_
+    rw [Presieve.map_singleton, singleton_mem_precoverage_iff]
+    exact ⟨hf, het⟩
+  rw [topology, Functor.mem_inducedTopology_sieves_iff, smallEtaleTopology,
+    Functor.mem_inducedTopology_sieves_iff, GrothendieckTopology.mem_over_iff]
+  simpa only [Sieve.overEquiv, Equiv.coe_fn_mk,
+    ← Sieve.generate_map_eq_functorPushforward, ← Presieve.map_comp, Functor.assoc] using this
 
 end AffineEtale
 

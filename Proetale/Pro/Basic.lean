@@ -386,11 +386,13 @@ def PreOneHypercover.RelativeLimitPresentation.cocone (pres : E.RelativeLimitPre
 
 noncomputable
 def PreOneHypercover.RelativeLimitPresentation.isColimit (pres : E.RelativeLimitPresentation J F)
-    (P : Dᵒᵖ ⥤ A) [PreservesColimitsOfShape Jᵒᵖ P] :
+    (P : Dᵒᵖ ⥤ A)
+    (h₀ : ∀ i, IsColimit (P.mapCocone (pres.pres₀ i).cone.op))
+    (h₁ : ∀ {i j : E.I₀} (k : E.I₁ i j), IsColimit (P.mapCocone (pres.pres₁ k).cone.op)) :
     IsColimit (pres.cocone P) :=
   evaluationJointlyReflectsColimits _ fun k ↦ match k with
-    | .left k => isColimitOfPreserves P (pres.pres₀ k).isLimit.op
-    | .right k => isColimitOfPreserves P (pres.pres₁ k.2).isLimit.op
+    | .left k => h₀ k
+    | .right k => h₁ k.2
 
 @[simps]
 def PreOneHypercover.RelativeLimitPresentation.multifork (pres : E.RelativeLimitPresentation J F)
@@ -420,14 +422,17 @@ def PreOneHypercover.RelativeLimitPresentation.multifork (pres : E.RelativeLimit
 
 noncomputable
 def PreOneHypercover.RelativeLimitPresentation.isLimit (P : Dᵒᵖ ⥤ A)
-    [PreservesColimitsOfShape Jᵒᵖ P]
     [HasColimitsOfShape Jᵒᵖ A]
     [PreservesLimitsOfShape (WalkingMulticospan E.multicospanShape) (colim : (Jᵒᵖ ⥤ A) ⥤ _)]
     (pres : E.RelativeLimitPresentation J F)
+    (hX : IsColimit (P.mapCocone pres.pres.cone.op))
+    (h₀ : ∀ i, IsColimit (P.mapCocone (pres.pres₀ i).cone.op))
+    (h₁ : ∀ {i j : E.I₀} (k : E.I₁ i j), IsColimit (P.mapCocone (pres.pres₁ k).cone.op))
     (h : ∀ j, IsLimit <| (pres.preOneHypercover j).multifork (F.op ⋙ P)) :
     IsLimit (E.multifork P) := by
-  refine IsLimit.ofPreservesLimitColim (pres.multifork P) ?_ (pres.cocone P) (pres.isColimit P)
-      (P.mapCocone pres.pres.cone.op) (isColimitOfPreserves _ pres.pres.isLimit.op) _ (.refl _) ?_
+  refine IsLimit.ofPreservesLimitColim (pres.multifork P) ?_ (pres.cocone P)
+      (pres.isColimit P h₀ h₁)
+      (P.mapCocone pres.pres.cone.op) hX _ (.refl _) ?_
   · refine evaluationJointlyReflectsLimits _ fun j ↦ ?_
     refine IsLimit.ofIsoLimit (h j.1) (Cone.ext (Iso.refl _) ?_)
     intro l
@@ -542,15 +547,34 @@ abbrev PreOneHypercover.IsSheafFor {X : D} (E : PreOneHypercover.{w} X) (P : D�
     Prop :=
   Nonempty (IsLimit <| E.multifork P)
 
+/-- A presheaf `P` on `D` sends limits of small cofiltered diagrams factoring through
+`F : C ⥤ D` to colimits in `A`. This is implied by `PreservesFilteredColimitsOfSize.{w, w} P`
+(see the instance below), but unlike the latter it can hold for presheaves that do not
+preserve arbitrary filtered colimits, e.g. pointwise left Kan extensions along `F.op`. -/
+class Functor.PreservesRelativeFilteredColimits (F : C ⥤ D) (P : Dᵒᵖ ⥤ A) : Prop where
+  nonempty_isColimit : ∀ {I : Type w} [SmallCategory I] [IsCofiltered I] {K : I ⥤ C}
+    (c : Cone (K ⋙ F)), IsLimit c → Nonempty (IsColimit (P.mapCocone c.op))
+
+instance (priority := 100) Functor.preservesRelativeFilteredColimits_of_preservesFilteredColimits
+    (P : Dᵒᵖ ⥤ A) [PreservesFilteredColimitsOfSize.{w, w} P] :
+    Functor.PreservesRelativeFilteredColimits.{w} F P where
+  nonempty_isColimit _ hc := ⟨isColimitOfPreserves P hc.op⟩
+
 lemma PreOneHypercover.IsSheafFor.of_preservesFilteredColimitsOfSize (P : Dᵒᵖ ⥤ A)
     (h : Presheaf.IsSheaf J (F.op ⋙ P))
-    [PreservesFilteredColimitsOfSize.{w, w} P] [HasFilteredColimitsOfSize.{w, w} A]
+    [Functor.PreservesRelativeFilteredColimits.{w} F P] [HasFilteredColimitsOfSize.{w, w} A]
     [AB5OfSize.{w} A]
     {X : D} (E : PreOneHypercover.{t} X) (h : IsRelativelyPresentable.{w} F J E) [E.Finite] :
     E.IsSheafFor P := by
   obtain ⟨I, _, _, pres, mem⟩ := h
   constructor
   apply pres.isLimit (P := P)
+    (Functor.PreservesRelativeFilteredColimits.nonempty_isColimit
+      pres.pres.cone pres.pres.isLimit).some
+    (fun i ↦ (Functor.PreservesRelativeFilteredColimits.nonempty_isColimit
+      (pres.pres₀ i).cone (pres.pres₀ i).isLimit).some)
+    (fun {i j} k ↦ (Functor.PreservesRelativeFilteredColimits.nonempty_isColimit
+      (pres.pres₁ k).cone (pres.pres₁ k).isLimit).some)
   intro j
   let E' : J.OneHypercover (pres.pres.diag.obj j) := pres.oneHypercover j (mem j).1 (mem j).2
   exact E'.isLimitMultifork ⟨_, h⟩

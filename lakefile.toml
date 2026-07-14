@@ -27,7 +27,6 @@ rev = "main"
 name = "Proetale"
 
 # Comparator (leanprover/comparator) challenge/solution pair for the comparison of
-# ell-adic and etale cohomology, see Comparator/config.json.
 # ell-adic and etale cohomology, see Comparator/config.json. The `Definitions`
 # library contains the mathlib-only definitions shared by challenge and solution.
 [[lean_lib]]
