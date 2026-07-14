@@ -49,8 +49,6 @@ instance isGrothendieckAbelianSheafSmallEtaleTopologyAb (X : Scheme.{u}) :
   have : EssentiallySmall.{u + 1} X.Etale := inferInstance
   exact Sheaf.isGrothendieckAbelian_of_essentiallySmall _ _
 
-namespace EllAdicEtaleComparison
-
 variable (X : Scheme.{u})
 
 /-! ### The inclusion of the small étale site into the pro-étale site
@@ -59,57 +57,79 @@ We equip the inclusion `ν : X.Etale ⥤ X.ProEt` with its continuity and flatne
 instances, and record that the associated pullback functor on abelian sheaves is exact.
 -/
 
-/-- The inclusion of the small étale site into the pro-étale site. -/
-def toProEtale : X.Etale ⥤ X.ProEt :=
+namespace AlgebraicGeometry.Scheme
+
+/-- The inclusion of the étale site into the pro-étale site. -/
+@[simps! obj_toComma]
+def toProEtale (S : Scheme.{u}) : S.Etale ⥤ S.ProEt :=
   MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl
 
-instance : (toProEtale X).Full :=
+variable (S : Scheme.{u})
+
+instance : (toProEtale S).Full :=
   inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Full
 
-instance : (toProEtale X).Faithful :=
+instance : (toProEtale S).Faithful :=
   inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Faithful
 
-instance : HasFiniteLimits X.Etale :=
-  inferInstanceAs <| HasFiniteLimits (MorphismProperty.Over @Etale ⊤ X)
+instance : HasFiniteLimits S.Etale :=
+  inferInstanceAs <| HasFiniteLimits (MorphismProperty.Over @Etale ⊤ S)
 
-instance : PreservesFiniteLimits (toProEtale X) := by
-  have : PreservesFiniteLimits (toProEtale X ⋙ ProEt.forget X) :=
-    inferInstanceAs <| PreservesFiniteLimits (MorphismProperty.Over.forget @Etale ⊤ X)
-  exact preservesFiniteLimits_of_reflects_of_preserves (toProEtale X) (ProEt.forget X)
+instance : PreservesFiniteLimits (toProEtale S) := by
+  have : PreservesFiniteLimits (toProEtale S ⋙ ProEt.forget S) :=
+    inferInstanceAs <| PreservesFiniteLimits (MorphismProperty.Over.forget @Etale ⊤ S)
+  exact preservesFiniteLimits_of_reflects_of_preserves (toProEtale S) (ProEt.forget S)
 
-instance representablyFlat_toProEtale : RepresentablyFlat (toProEtale X) :=
+instance representablyFlat_toProEtale : RepresentablyFlat (toProEtale S) :=
   flat_of_preservesFiniteLimits _
 
 /-- The inclusion of the étale site into the pro-étale site is continuous. -/
 instance isContinuous_toProEtale :
-    (toProEtale X).IsContinuous (smallEtaleTopology X) (ProEt.topology X) := by
+    (toProEtale S).IsContinuous (smallEtaleTopology S) (ProEt.topology S) := by
   refine Functor.isContinuous_of_coverPreserving
-    (compatiblePreservingOfFlat _ (toProEtale X)) ?_
-  refine ⟨fun {Y R} hR ↦ ?_⟩
+    (compatiblePreservingOfFlat _ (toProEtale S)) ?_
+  refine ⟨fun {X R} hR ↦ ?_⟩
   rw [ProEt.topology_eq_inducedTopology, Functor.mem_inducedTopology_sieves_iff,
     ← Sieve.functorPushforward_comp]
-  have hR' : R.functorPushforward (Over.forget @Etale ⊤ X) ∈ etaleTopology.over X _ := hR
+  have hR' : R.functorPushforward (Over.forget @Etale ⊤ S) ∈ etaleTopology.over S _ := hR
   rw [GrothendieckTopology.mem_over_iff] at hR' ⊢
   exact etaleTopology_le_proetaleTopology _ hR'
 
-/-- The direct image functor `ν_*` from abelian pro-étale sheaves to étale sheaves. -/
-abbrev sheafPushforward :
-    Sheaf (ProEt.topology X) Ab.{u + 1} ⥤ Sheaf X.smallEtaleTopology Ab.{u + 1} :=
-  (toProEtale X).sheafPushforwardContinuous _ _ _
+namespace ProEt
 
-instance (F : X.Etaleᵒᵖ ⥤ Ab.{u + 1}) : (toProEtale X).op.HasPointwiseLeftKanExtension F :=
+variable (A : Type*) [Category A]
+
+/-- The direct image functor from pro-étale sheafs to étale sheafs. -/
+@[simps! obj_obj]
+abbrev sheafPushforward :
+    Sheaf (ProEt.topology S) A ⥤ Sheaf (smallEtaleTopology S) A :=
+  (toProEtale S).sheafPushforwardContinuous _ _ _
+
+instance (F : S.Etaleᵒᵖ ⥤ Ab.{u + 1}) : (toProEtale S).op.HasPointwiseLeftKanExtension F :=
   inferInstance
 
-instance : (sheafPushforward X).IsRightAdjoint := inferInstance
+/-- The direct image functor from pro-étale sheafs to étale sheafs has a left-adjoint. -/
+instance : (ProEt.sheafPushforward S Ab.{u + 1}).IsRightAdjoint := inferInstance
 
-/-- The inverse image functor `ν^*` from abelian étale sheaves to pro-étale sheaves. -/
+variable [(sheafPushforward S A).IsRightAdjoint]
+
+/-- The inverse image functor from étale sheafs to pro-étale sheafs. -/
 noncomputable abbrev sheafPullback :
-    Sheaf X.smallEtaleTopology Ab.{u + 1} ⥤ Sheaf (ProEt.topology X) Ab.{u + 1} :=
-  (toProEtale X).sheafPullback _ _ _
+    Sheaf (smallEtaleTopology S) A ⥤ Sheaf (ProEt.topology S) A :=
+  (toProEtale S).sheafPullback _ _ _
 
-/-- The adjunction `ν^* ⊣ ν_*`. -/
-noncomputable abbrev sheafAdjunction : sheafPullback X ⊣ sheafPushforward X :=
-  (toProEtale X).sheafAdjunctionContinuous _ _ _
+/-- The inverse image - direct image adjunction for the pro-étale site. -/
+noncomputable abbrev sheafAdjunction :
+    ProEt.sheafPullback S A ⊣ ProEt.sheafPushforward S A :=
+  (toProEtale S).sheafAdjunctionContinuous _ _ _
+
+end ProEt
+
+end AlgebraicGeometry.Scheme
+
+open AlgebraicGeometry.Scheme ProEt
+
+namespace EllAdicEtaleComparison
 
 section LanEvaluation
 
@@ -153,17 +173,17 @@ noncomputable instance preservesFiniteLimits_lan :
     IsFiltered.of_equivalence (structuredArrowOpEquivalence (toProEtale X) (unop K))
   exact preservesLimitsOfShape_of_natIso (lanEvaluationIsoColim' (toProEtale X).op K).symm
 
-instance : PreservesFiniteLimits (sheafPullback X) :=
+instance : PreservesFiniteLimits (sheafPullback X Ab) :=
   Functor.sheafPullbackConstruction.preservesFiniteLimits (toProEtale X) Ab.{u + 1}
     (smallEtaleTopology X) (ProEt.topology X)
 
-instance : PreservesFiniteColimits (sheafPullback X) :=
-  haveI : PreservesColimitsOfSize.{0, 0} (sheafPullback X) :=
-    (sheafAdjunction X).leftAdjoint_preservesColimits
+instance : PreservesFiniteColimits (sheafPullback X Ab) :=
+  haveI : PreservesColimitsOfSize.{0, 0} (sheafPullback X Ab) :=
+    (sheafAdjunction X Ab).leftAdjoint_preservesColimits
   PreservesColimitsOfSize.preservesFiniteColimits _
 
-instance : (sheafPullback X).Additive := by
-  haveI : (sheafPullback X).IsLeftAdjoint := (sheafAdjunction X).isLeftAdjoint
+instance : (sheafPullback X Ab).Additive := by
+  haveI : (sheafPullback X Ab).IsLeftAdjoint := (sheafAdjunction X Ab).isLeftAdjoint
   exact Functor.additive_of_preserves_binary_products _
 
 /-! ### Terminal objects and constant sheaf units -/
@@ -393,13 +413,13 @@ the pro-étale site) the composite of the unit of the constant sheaf adjunction 
 étale site with the sections of the unit of the adjunction `ν^* ⊣ ν_*`. -/
 noncomputable def pullbackConstantComparison (M : AddCommGrpCat.{u + 1}) :
     (constantSheaf (ProEt.topology X) Ab.{u + 1}).obj M ⟶
-      (sheafPullback X).obj ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj M) :=
+      (sheafPullback X Ab).obj ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj M) :=
   ((constantSheafAdj (ProEt.topology X) Ab.{u + 1} (isTerminalMkIdProEt X)).homEquiv
     _ _).symm
     ((constantSheafAdj X.smallEtaleTopology Ab.{u + 1} (isTerminalMkId X)).unit.app M ≫
       ((sheafSections X.smallEtaleTopology Ab.{u + 1}).obj
         (op (MorphismProperty.Over.mk ⊤ (𝟙 X) (MorphismProperty.id_mem _ X)))).map
-        ((sheafAdjunction X).unit.app
+        ((sheafAdjunction X Ab).unit.app
           ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj M)))
 
 section PullbackToTopological
@@ -412,7 +432,7 @@ noncomputable def constantsToSectionsPushforward :
     AddCommGrpCat.of (ULift.{u + 1} M) ⟶
       ((sheafSections X.smallEtaleTopology Ab.{u + 1}).obj
         (op (MorphismProperty.Over.mk ⊤ (𝟙 X) (MorphismProperty.id_mem _ X)))).obj
-        ((sheafPushforward X).obj (topologicalSheafLifted X M)) :=
+        ((sheafPushforward X Ab).obj (topologicalSheafLifted X M)) :=
   AddCommGrpCat.ofHom
     { toFun := fun m ↦ ULift.up ⟨fun _ ↦ m.down, continuous_const⟩
       map_zero' := rfl
@@ -423,25 +443,25 @@ sheaf of continuous `M`-valued functions on the pro-étale site: the double tran
 (along `ν^* ⊣ ν_*` and the constant sheaf adjunction of the étale site) of the
 constants map `M → C(X, M)`. -/
 noncomputable def pullbackConstantToTopological :
-    (sheafPullback X).obj ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj
+    (sheafPullback X Ab).obj ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj
         (AddCommGrpCat.of (ULift.{u + 1} M))) ⟶
       topologicalSheafLifted X M :=
-  ((sheafAdjunction X).homEquiv _ _).symm
+  ((sheafAdjunction X Ab).homEquiv _ _).symm
     (((constantSheafAdj X.smallEtaleTopology Ab.{u + 1} (isTerminalMkId X)).homEquiv
       _ _).symm (constantsToSectionsPushforward X M))
 
 /-- Naturality of `pullbackConstantToTopological` in the coefficient group. -/
 lemma pullbackConstantToTopological_naturality {M' : Type} [TopologicalSpace M']
     [AddCommGroup M'] [IsTopologicalAddGroup M'] (f : M →+ M') (hf : Continuous f) :
-    (sheafPullback X).map ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).map
+    (sheafPullback X Ab).map ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).map
         (AddCommGrpCat.uliftFunctor.{u + 1}.map (AddCommGrpCat.ofHom f))) ≫
       pullbackConstantToTopological X M' =
         pullbackConstantToTopological X M ≫ topologicalSheafLiftedMap X M f hf := by
   unfold pullbackConstantToTopological
   refine Eq.trans (Eq.trans
-    ((sheafAdjunction X).homEquiv_naturality_left_symm _ _).symm ?_)
-    ((sheafAdjunction X).homEquiv_naturality_right_symm _ _)
-  refine congrArg ⇑(((sheafAdjunction X).homEquiv _ _).symm) ?_
+    ((sheafAdjunction X Ab).homEquiv_naturality_left_symm _ _).symm ?_)
+    ((sheafAdjunction X Ab).homEquiv_naturality_right_symm _ _)
+  refine congrArg ⇑(((sheafAdjunction X Ab).homEquiv _ _).symm) ?_
   refine Eq.trans (Eq.trans
     ((constantSheafAdj X.smallEtaleTopology Ab.{u + 1}
       (isTerminalMkId X)).homEquiv_naturality_left_symm _ _).symm ?_)
@@ -461,12 +481,12 @@ pullbacks of the constant étale sheaves `ℤ/ℓⁿℤ` to the sheaves of conti
 ("locally constant = continuous into a discrete group"), but this is a theorem
 (BS, Lemma 4.2.12) and not part of the definition. -/
 noncomputable def pullbackConstantToTopologicalSystemHom (ℓ : ℕ) :
-    (zmodAbSystem ℓ ⋙ constantSheaf X.smallEtaleTopology Ab.{u + 1}) ⋙ sheafPullback X ⟶
+    (zmodAbSystem ℓ ⋙ constantSheaf X.smallEtaleTopology Ab.{u + 1}) ⋙ sheafPullback X Ab ⟶
       zmodContinuousSystem X ℓ :=
   NatTrans.ofOpSequence
     (app := fun n ↦ pullbackConstantToTopological X (ZMod (ℓ ^ n)))
     (naturality := fun n ↦ by
-      change (sheafPullback X).map ((constantSheaf _ _).map
+      change (sheafPullback X Ab).map ((constantSheaf _ _).map
           ((zmodAbSystem ℓ).map (homOfLE (n.le_add_right 1)).op)) ≫ _ = _
       rw [zmodAbSystem_map_succ, zmodContinuousSystem_map_succ,
         pullbackConstantToTopological_naturality X (ZMod (ℓ ^ (n + 1)))
@@ -483,7 +503,7 @@ noncomputable def etaleToProetaleCohomologySystemHom (ℓ m : ℕ) :
   app k := AddCommGrpCat.ofHom
     { toFun := fun x ↦ ((Ext.mk₀ (pullbackConstantComparison X
         (AddCommGrpCat.of (ULift.{u + 1} ℤ)))).comp
-          (Ext.mapExactFunctor (sheafPullback X) x) (zero_add m)).comp
+          (Ext.mapExactFunctor (sheafPullback X Ab) x) (zero_add m)).comp
         (Ext.mk₀ ((pullbackConstantToTopologicalSystemHom X ℓ).app k)) (add_zero m)
       map_zero' := by
         rw [Ext.mapExactFunctor_zero, Ext.comp_zero, Ext.zero_comp]
@@ -494,17 +514,17 @@ noncomputable def etaleToProetaleCohomologySystemHom (ℓ m : ℕ) :
     intro x
     refine (ConcreteCategory.comp_apply _ _ _).trans
       (Eq.trans ?_ (ConcreteCategory.comp_apply _ _ _).symm)
-    change ((Ext.mk₀ _).comp (Ext.mapExactFunctor (sheafPullback X)
+    change ((Ext.mk₀ _).comp (Ext.mapExactFunctor (sheafPullback X Ab)
         (x.comp (Ext.mk₀ ((zmodAbSystem ℓ ⋙
           constantSheaf X.smallEtaleTopology Ab.{u + 1}).map f)) (add_zero m)))
           (zero_add m)).comp
           (Ext.mk₀ ((pullbackConstantToTopologicalSystemHom X ℓ).app k')) (add_zero m) =
-      (((Ext.mk₀ _).comp (Ext.mapExactFunctor (sheafPullback X) x) (zero_add m)).comp
+      (((Ext.mk₀ _).comp (Ext.mapExactFunctor (sheafPullback X Ab) x) (zero_add m)).comp
           (Ext.mk₀ ((pullbackConstantToTopologicalSystemHom X ℓ).app k)) (add_zero m)).comp
         (Ext.mk₀ ((zmodContinuousSystem X ℓ).map f)) (add_zero m)
     rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
     simp only [Ext.comp_assoc_of_third_deg_zero, Ext.mk₀_comp_mk₀]
     rw [← Functor.comp_map (zmodAbSystem ℓ ⋙ constantSheaf X.smallEtaleTopology Ab.{u + 1})
-      (sheafPullback X), (pullbackConstantToTopologicalSystemHom X ℓ).naturality f]
+      (sheafPullback X Ab), (pullbackConstantToTopologicalSystemHom X ℓ).naturality f]
 
 end EllAdicEtaleComparison
