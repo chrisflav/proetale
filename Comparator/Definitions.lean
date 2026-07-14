@@ -173,14 +173,14 @@ noncomputable instance preservesFiniteLimits_lan :
     IsFiltered.of_equivalence (structuredArrowOpEquivalence (toProEtale X) (unop K))
   exact preservesLimitsOfShape_of_natIso (lanEvaluationIsoColim' (toProEtale X).op K).symm
 
-instance : PreservesFiniteLimits (sheafPullback X Ab) :=
-  Functor.sheafPullbackConstruction.preservesFiniteLimits (toProEtale X) Ab.{u + 1}
-    (smallEtaleTopology X) (ProEt.topology X)
+instance : PreservesFiniteLimits (sheafPullback X Ab) := by
+  infer_instance
 
-instance : PreservesFiniteColimits (sheafPullback X Ab) :=
-  haveI : PreservesColimitsOfSize.{0, 0} (sheafPullback X Ab) :=
-    (sheafAdjunction X Ab).leftAdjoint_preservesColimits
-  PreservesColimitsOfSize.preservesFiniteColimits _
+instance : PreservesColimitsOfSize.{0, 0} (sheafPullback X Ab) :=
+  (sheafAdjunction X Ab).leftAdjoint_preservesColimits
+
+instance : PreservesFiniteColimits (sheafPullback X Ab) := by
+  infer_instance
 
 instance : (sheafPullback X Ab).Additive := by
   haveI : (sheafPullback X Ab).IsLeftAdjoint := (sheafAdjunction X Ab).isLeftAdjoint
@@ -188,25 +188,13 @@ instance : (sheafPullback X Ab).Additive := by
 
 /-! ### Terminal objects and constant sheaf units -/
 
-/-- `X` with the identity is a terminal object of the small étale site of `X`. -/
-noncomputable def isTerminalMkId :
-    IsTerminal (MorphismProperty.Over.mk ⊤ (𝟙 X) (MorphismProperty.id_mem _ X) : X.Etale) :=
-  MorphismProperty.Over.mkIdTerminal _ _
-
-/-- The image of the terminal object of the small étale site of `X` in the pro-étale
-site of `X` is terminal. -/
-noncomputable def isTerminalMkIdProEt :
-    IsTerminal ((toProEtale X).obj
-      (MorphismProperty.Over.mk ⊤ (𝟙 X) (MorphismProperty.id_mem _ X))) :=
-  MorphismProperty.Over.mkIdTerminal @WeaklyEtale X
-
 /-- The constant abelian sheaf `ℤ` on the small étale site (the unit for sheaf
 cohomology, see `CategoryTheory.Sheaf.H`). -/
-noncomputable abbrev etaleConstantUnit : Sheaf X.smallEtaleTopology Ab.{u + 1} :=
+noncomputable abbrev etaleConstantInt : Sheaf X.smallEtaleTopology Ab.{u + 1} :=
   (constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj (AddCommGrpCat.of (ULift.{u + 1} ℤ))
 
 /-- The constant abelian sheaf `ℤ` on the pro-étale site. -/
-noncomputable abbrev proetaleConstantUnit : Sheaf (ProEt.topology X) Ab.{u + 1} :=
+noncomputable abbrev proetaleConstantInt : Sheaf (ProEt.topology X) Ab.{u + 1} :=
   (constantSheaf (ProEt.topology X) Ab.{u + 1}).obj (AddCommGrpCat.of (ULift.{u + 1} ℤ))
 
 /-! ### The étale side: the system of constant sheaves `ℤ/ℓⁿℤ` -/
@@ -239,7 +227,7 @@ reduction maps. Its value at `n` is
 noncomputable def etaleCohomologySystem (ℓ : ℕ) (m : ℕ) :
     ℕᵒᵖ ⥤ AddCommGrpCat.{u + 1} :=
   (zmodAbSystem ℓ ⋙ constantSheaf X.smallEtaleTopology Ab.{u + 1}) ⋙
-    extFunctorObj (etaleConstantUnit X) m
+    extFunctorObj (etaleConstantInt X) m
 
 /-- The value of `etaleCohomologySystem` at level `n` is the étale cohomology
 `Hᵐ(X_ét, ℤ/ℓⁿℤ)` in the sense of mathlib's `CategoryTheory.Sheaf.H`. -/
@@ -331,7 +319,7 @@ sheaves of continuous `ℤ/ℓⁿℤ`-valued functions, with transition maps ind
 reduction maps. -/
 noncomputable def proetaleCohomologySystem (ℓ : ℕ) (m : ℕ) :
     ℕᵒᵖ ⥤ AddCommGrpCat.{u + 1} :=
-  zmodContinuousSystem X ℓ ⋙ extFunctorObj (proetaleConstantUnit X) m
+  zmodContinuousSystem X ℓ ⋙ extFunctorObj (proetaleConstantInt X) m
 
 /-- The value of `proetaleCohomologySystem` at level `n` is the pro-étale cohomology
 `Hᵐ(X_proét, ℤ/ℓⁿℤ)` of the sheaf of continuous `ℤ/ℓⁿℤ`-valued functions in the sense
@@ -401,7 +389,7 @@ cohomology groups with `ℤ/ℓⁿℤ`-coefficients**, induced by the reduction 
 `ℤ_[ℓ] → ℤ/ℓⁿℤ` of coefficient sheaves. -/
 noncomputable def ellAdicCohomologyToLimit (m : ℕ) :
     AddCommGrpCat.of (X.EllAdicCohomology ℓ m) ⟶ limit (proetaleCohomologySystem X ℓ m) :=
-  limit.lift _ ((extFunctorObj (proetaleConstantUnit X) m).mapCone (ellAdicCone X ℓ))
+  limit.lift _ ((extFunctorObj (proetaleConstantInt X) m).mapCone (ellAdicCone X ℓ))
 
 end Padic
 
@@ -414,13 +402,11 @@ the pro-étale site) the composite of the unit of the constant sheaf adjunction 
 noncomputable def pullbackConstantComparison (M : AddCommGrpCat.{u + 1}) :
     (constantSheaf (ProEt.topology X) Ab.{u + 1}).obj M ⟶
       (sheafPullback X Ab).obj ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj M) :=
-  ((constantSheafAdj (ProEt.topology X) Ab.{u + 1} (isTerminalMkIdProEt X)).homEquiv
-    _ _).symm
-    ((constantSheafAdj X.smallEtaleTopology Ab.{u + 1} (isTerminalMkId X)).unit.app M ≫
-      ((sheafSections X.smallEtaleTopology Ab.{u + 1}).obj
-        (op (MorphismProperty.Over.mk ⊤ (𝟙 X) (MorphismProperty.id_mem _ X)))).map
-        ((sheafAdjunction X Ab).unit.app
-          ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj M)))
+  ((constantSheafAdj (ProEt.topology X) Ab.{u + 1} (Over.mkIdTerminal _ _)).homEquiv _ _).symm
+    ((constantSheafAdj X.smallEtaleTopology Ab.{u + 1} (Over.mkIdTerminal _ _)).unit.app M ≫
+        ((sheafSections X.smallEtaleTopology Ab.{u + 1}).obj
+          (op (Over.mk ⊤ (𝟙 X) (id_mem _ X)))).map ((sheafAdjunction X Ab).unit.app
+            ((constantSheaf X.smallEtaleTopology Ab.{u + 1}).obj M)))
 
 section PullbackToTopological
 
@@ -447,7 +433,7 @@ noncomputable def pullbackConstantToTopological :
         (AddCommGrpCat.of (ULift.{u + 1} M))) ⟶
       topologicalSheafLifted X M :=
   ((sheafAdjunction X Ab).homEquiv _ _).symm
-    (((constantSheafAdj X.smallEtaleTopology Ab.{u + 1} (isTerminalMkId X)).homEquiv
+    (((constantSheafAdj X.smallEtaleTopology Ab.{u + 1} (Over.mkIdTerminal _ _)).homEquiv
       _ _).symm (constantsToSectionsPushforward X M))
 
 /-- Naturality of `pullbackConstantToTopological` in the coefficient group. -/
@@ -464,11 +450,11 @@ lemma pullbackConstantToTopological_naturality {M' : Type} [TopologicalSpace M']
   refine congrArg ⇑(((sheafAdjunction X Ab).homEquiv _ _).symm) ?_
   refine Eq.trans (Eq.trans
     ((constantSheafAdj X.smallEtaleTopology Ab.{u + 1}
-      (isTerminalMkId X)).homEquiv_naturality_left_symm _ _).symm ?_)
+      (Over.mkIdTerminal _ _)).homEquiv_naturality_left_symm _ _).symm ?_)
     ((constantSheafAdj X.smallEtaleTopology Ab.{u + 1}
-      (isTerminalMkId X)).homEquiv_naturality_right_symm _ _)
+      (Over.mkIdTerminal _ _)).homEquiv_naturality_right_symm _ _)
   refine congrArg ⇑(((constantSheafAdj X.smallEtaleTopology Ab.{u + 1}
-    (isTerminalMkId X)).homEquiv _ _).symm) ?_
+    (Over.mkIdTerminal _ _)).homEquiv _ _).symm) ?_
   apply ConcreteCategory.hom_ext
   intro m
   rfl
