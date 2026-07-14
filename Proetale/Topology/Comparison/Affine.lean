@@ -3,13 +3,13 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Definitions
 import Proetale.Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Proetale.Mathlib.CategoryTheory.Sites.Finite
 import Proetale.Mathlib.CategoryTheory.Sites.Pullback
 import Proetale.Mathlib.CategoryTheory.Sites.Sheafification
 import Proetale.Mathlib.CategoryTheory.Sites.MorphismProperty
 import Proetale.Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
-import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Coherent.Affine
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Basic
@@ -24,6 +24,9 @@ import Proetale.Mathlib.CategoryTheory.Sites.Hypercover.Zero
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
 import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Proetale.Mathlib.AlgebraicGeometry.Sites.AffineRefinement
+import Proetale.Topology.Proetale.Sheafification
+import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
+import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Mathlib.CategoryTheory.Filtered.Connected
 
 /-!

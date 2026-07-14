@@ -125,7 +125,6 @@ import Proetale.Replete.WeaklyContractible
 import Proetale.Topology.Coherent.Affine
 import Proetale.Topology.Coherent.Etale
 import Proetale.Topology.Comparison.Affine
-import Proetale.Topology.Comparison.Etale
 import Proetale.Topology.Flat.CompactOpenCovered
 import Proetale.Topology.Flat.ConstantSheaf
 import Proetale.Topology.Flat.QuasiCompactCover
