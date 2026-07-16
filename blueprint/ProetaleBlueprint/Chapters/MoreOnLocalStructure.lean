@@ -446,7 +446,7 @@ $$`A' \otimes_{A} A' \to B \otimes_{A} B \to B`
 is injective.
 :::
 
-:::lemma_ "lemma:integrally-closed-cartesian-weak-dim" (parent := "more-on-local-structure")
+:::lemma_ "lemma:integrally-closed-cartesian-weak-dim" (parent := "more-on-local-structure") (lean := "IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact")
 Let $`A` be a domain and $`L` an algebraic extension of $`\mathrm{Frac}(A)`.
 If $`A` is integrally closed in $`L`, then there exists a cartesian diagram of
 rings
@@ -457,7 +457,17 @@ epimorphism of rings.
 :::
 
 :::proof "lemma:integrally-closed-cartesian-weak-dim" (uses := "lemma:prod-valuation-ring-weak-dim-integrally-closed")
-TBA.
+Since $`A` is integrally closed in $`L`, for every $`x \in L` not in the image of
+$`A` there is a valuation subring $`V_x \subseteq L` containing $`A` with
+$`x \notin V_x`. Set $`S = \prod_x V_x` and $`T = \prod_x L`. By
+{bpref "lemma:prod-valuation-ring-weak-dim-integrally-closed"}[], $`S` is of weak
+dimension $`\le 1`. An element of $`S` is a non-zerodivisor if and only if each of
+its components is nonzero, and $`T` is the localization of $`S` at the
+non-zerodivisors; hence $`S \to T` is flat, injective, and an epimorphism of rings.
+Finally, the diagram is cartesian: an element $`(l, s) \in L \times S` has the same
+image in $`T` if and only if $`l = s_x` in $`L` for all $`x`, which forces
+$`l` to lie in the image of $`A`, since otherwise $`x = l` would witness
+$`l = s_l \in V_l` contradicting $`l \notin V_l`.
 :::
 
 :::lemma_ "lemma:weakly-etale-integrally-closed" (parent := "more-on-local-structure") (uses := "def:weakly-etale-algebra")
