@@ -454,12 +454,12 @@ lemma exists_comp_eq_id_contraction
   simp [l]
 
 lemma pro_contractionBase [LocallySmall.{w} C]
-    (H : P ≤ isFinitelyPresentable.{w} C)
+    (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ)
     [PreProSpreads.{w} P]
     [P.IsStableUnderBaseChange] [P.IsMultiplicative]
     [Q.IsStableUnderBaseChange] [Q.IsMultiplicative] (X : C) :
     pro.{w} P (Contraction.base P Q X) := by
-  rw [← pro_pro H]
+  rw [← pro_pro (P := P) H]
   apply pro_of_univLE.{0, w}
   exact P.pro_pro_contractionBase _ _
 
