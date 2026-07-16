@@ -448,7 +448,7 @@ on stalks.
 Holds because the same holds for bijective maps of sets.
 :::
 
-:::definition "def:identifies-local-ring-to-top" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-rings-composition")
+:::definition "def:identifies-local-ring-to-top" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-rings-composition") (lean := "Algebra.BijectiveOnStalks.continuousMap_of_algHom")
 Let $`A` be a ring and $`X = \Spec(A)`. Let $`\operatorname{ILR}_A` denote the
 category of $`A`-algebras $`B` for which $`A \to B` identifies local rings, and
 let $`\operatorname{Top}_X` denote the category of topological spaces over $`X`.
@@ -459,7 +459,7 @@ by sending $`B` to $`\Spec(B)`.
 (Stacks Project, [Tag 096L](https://stacks.math.columbia.edu/tag/096L))
 :::
 
-:::lemma_ "thm:identifies-local-ring-to-top-fully-faithful" (parent := "local-structure") (uses := "def:identifies-local-ring-to-top")
+:::lemma_ "thm:identifies-local-ring-to-top-fully-faithful" (parent := "local-structure") (uses := "def:identifies-local-ring-to-top") (lean := "Algebra.BijectiveOnStalks.continuousMap_of_algHom_bijective")
 Let $`A` be a ring. Set $`X = \Spec (A)`. The functor $`F` constructed in
 {bpref "def:identifies-local-ring-to-top"}[],
 $$`B \longmapsto \Spec (B),`
@@ -485,7 +485,7 @@ $`f^{-1}\mathcal{O}_Y \cong f^{-1}p^{-1}\mathcal{O}_X = q^{-1}\mathcal{O}_X \con
 where $`p \colon Y \to X` and $`q \colon Z \to X` are the structure maps.
 :::
 
-:::definition "def:identifies-local-ring-hom-set-bijection" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-ring-to-top-fully-faithful")
+:::definition "def:identifies-local-ring-hom-set-bijection" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-ring-to-top-fully-faithful") (lean := "Algebra.BijectiveOnStalks.algHomEquivContinuousMap")
 Let $`A` be a ring and $`X = \Spec(A)`. Let $`A \to B` and $`A \to C` be two
 $`A`-algebras that identify local rings. As a consequence of
 {bpref "thm:identifies-local-ring-to-top-fully-faithful"}[], we have a bijective
