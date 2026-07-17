@@ -6,32 +6,35 @@ Authors: Christian Merten
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Proetale.Algebra.StalkIso
+import Proetale.Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Proetale.Mathlib.RingTheory.Spectrum.Prime.Localization
 
 /-!
 # Hom-set bijection for algebras identifying local rings
 
-Let `A` be a commutative ring and let `B`, `C` be `A`-algebras such that both
-`A → B` and `A → C` identify local rings (Lean class `Algebra.BijectiveOnStalks`).
-In this file we construct the hom-set bijection
+Let `A` be a commutative ring and let `B`, `C` be `A`-algebras such that `A → B`
+identifies local rings (Lean class `Algebra.BijectiveOnStalks`). In this file we
+construct the hom-set bijection
 $$
   \operatorname{Hom}_{A\text{-alg}}(B, C)
     \;\simeq\; \operatorname{Hom}_{\operatorname{Top}_{\operatorname{Spec} A}}
       (\operatorname{Spec} C, \operatorname{Spec} B)
 $$
-of Stacks Tag 096L, i.e. the fully faithfulness of `B ↦ Spec B` from `A`-algebras
-identifying local rings to topological spaces over `Spec A`.
+of Stacks Tag 096L, with `C` an arbitrary `A`-algebra. Specialized to `A → C` also
+identifying local rings, this is the fully faithfulness of `B ↦ Spec B` from
+`A`-algebras identifying local rings to topological spaces over `Spec A`.
 
 ## Main declarations
 
 * `Algebra.BijectiveOnStalks.HomOver A B C`: continuous maps
   `PrimeSpectrum C → PrimeSpectrum B` lying over `PrimeSpectrum A`.
-* `Algebra.BijectiveOnStalks.continuousMap_of_algHom`: the forward direction of the
+* `Algebra.BijectiveOnStalks.continuousMapOfAlgHom`: the forward direction of the
   bijection, induced by `Spec` functoriality of `PrimeSpectrum.comap`.
-* `Algebra.BijectiveOnStalks.continuousMap_of_algHom_bijective`: the forward direction
+* `Algebra.BijectiveOnStalks.continuousMapOfAlgHom_bijective`: the forward direction
   is a bijection.
 * `Algebra.BijectiveOnStalks.algHomEquivContinuousMap`: the resulting equivalence of
   hom-sets.
-* `Algebra.BijectiveOnStalks.algHom_of_continuousMap`: the inverse direction.
+* `Algebra.BijectiveOnStalks.algHomOfContinuousMap`: the inverse direction.
 
 ## Proof sketch for the inverse direction
 
@@ -76,8 +79,7 @@ variable {A B C}
 instance : FunLike (HomOver A B C) (PrimeSpectrum C) (PrimeSpectrum B) where
   coe φ := φ.toContinuousMap
   coe_injective' := by
-    rintro ⟨⟨f, hf⟩, _⟩ ⟨⟨g, hg⟩, _⟩ (h : f = g)
-    subst h
+    rintro ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ (rfl : f = g)
     rfl
 
 @[ext]
@@ -100,29 +102,19 @@ variable {A B C}
 `A`-algebra homomorphism `f : B →ₐ[A] C`. This is the forward direction of
 the hom-set bijection from Stacks 096L. -/
 @[stacks 096L "The forward map on hom sets."]
-def continuousMap_of_algHom (f : B →ₐ[A] C) : HomOver A B C where
+def continuousMapOfAlgHom (f : B →ₐ[A] C) : HomOver A B C where
   toContinuousMap :=
     { toFun := PrimeSpectrum.comap f.toRingHom
       continuous_toFun := PrimeSpectrum.continuous_comap _ }
   comp_comap_algebraMap p := by
-    change PrimeSpectrum.comap (algebraMap A B)
-        (PrimeSpectrum.comap f.toRingHom p) = _
-    rw [← PrimeSpectrum.comap_comp_apply]
-    congr 1
     ext x
-    simp
+    simp only [ContinuousMap.coe_mk, PrimeSpectrum.comap_asIdeal, Ideal.mem_comap,
+      AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.commutes]
 
 @[simp]
-lemma continuousMap_of_algHom_apply (f : B →ₐ[A] C) (p : PrimeSpectrum C) :
-    continuousMap_of_algHom f p = PrimeSpectrum.comap f.toRingHom p :=
+lemma continuousMapOfAlgHom_apply (f : B →ₐ[A] C) (p : PrimeSpectrum C) :
+    continuousMapOfAlgHom f p = PrimeSpectrum.comap f.toRingHom p :=
   rfl
-
-/-- Two elements of `C` agreeing in every localization at a prime are equal. -/
-private theorem eq_of_localizationAtPrime_eq {x y : C}
-    (h : ∀ p : PrimeSpectrum C,
-      algebraMap C (Localization.AtPrime p.asIdeal) x =
-        algebraMap C (Localization.AtPrime p.asIdeal) y) : x = y :=
-  PrimeSpectrum.toPiLocalization_injective C <| funext fun p ↦ h p
 
 section Inverse
 
@@ -213,7 +205,7 @@ private theorem isLocallyFraction_localRingHomAt (φ : HomOver A B C) (b : B) :
   obtain ⟨u, hu⟩ := (IsLocalization.map_eq_zero_iff (φ p).asIdeal.primeCompl _ _).mp hzero
   -- The open neighbourhood of `φ(p)` in `Spec B` on which the fraction
   -- representation is valid, and its preimage in `Spec C`.
-  set g : B := u.1 * algebraMap A B t with hg
+  set g : B := u.1 * algebraMap A B t
   have htB : algebraMap A B t.1 ∈ (φ p).asIdeal.primeCompl := t.2
   have hφp : φ p ∈ PrimeSpectrum.basicOpen g :=
     (PrimeSpectrum.mem_basicOpen _ _).mpr ((φ p).asIdeal.primeCompl.mul_mem u.2 htB)
@@ -286,31 +278,22 @@ private theorem algebraMap_ringHomOfHomOver (φ : HomOver A B C) (b : B)
 /-- (Implementation) `ringHomOfHomOver` is `A`-linear. -/
 private theorem ringHomOfHomOver_algebraMap (φ : HomOver A B C) (a : A) :
     ringHomOfHomOver φ (algebraMap A B a) = algebraMap A C a :=
-  eq_of_localizationAtPrime_eq fun p ↦ by
+  PrimeSpectrum.eq_of_localizationAtPrime_eq fun p ↦ by
     rw [algebraMap_ringHomOfHomOver, localRingHomAt_algebraMap]
-
-/-- (Implementation) For a local ring homomorphism, membership in the maximal ideal
-can be tested after applying the map. -/
-private theorem map_mem_maximalIdeal_iff {R S : Type*} [CommRing R] [CommRing S]
-    [IsLocalRing R] [IsLocalRing S] (g : R →+* S) [IsLocalHom g] (x : R) :
-    g x ∈ IsLocalRing.maximalIdeal S ↔ x ∈ IsLocalRing.maximalIdeal R := by
-  simp only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, not_iff_not]
-  exact isUnit_map_iff g x
 
 /-- (Implementation) `ringHomOfHomOver` induces `φ` on prime spectra. -/
 private theorem comap_ringHomOfHomOver (φ : HomOver A B C) (p : PrimeSpectrum C) :
     PrimeSpectrum.comap (ringHomOfHomOver φ) p = φ p := by
   have : ((φ p).asIdeal.comap (algebraMap A B)).IsPrime := Ideal.IsPrime.comap _
   ext b
-  change ringHomOfHomOver φ b ∈ p.asIdeal ↔ b ∈ (φ p).asIdeal
+  rw [PrimeSpectrum.comap_asIdeal, Ideal.mem_comap]
   set K := Localization.localRingHom ((φ p).asIdeal.comap (algebraMap A B)) (φ p).asIdeal
-    (algebraMap A B) rfl with hK
+    (algebraMap A B) rfl
   set L := Localization.localRingHom ((φ p).asIdeal.comap (algebraMap A B)) p.asIdeal
-    (algebraMap A C) (φ.comap_asIdeal p) with hL
+    (algebraMap A C) (φ.comap_asIdeal p)
   have : IsLocalHom K := Localization.isLocalHom_localRingHom _ _ _ rfl
   have : IsLocalHom L := Localization.isLocalHom_localRingHom _ _ _ _
   set z := (stalkEquivAt φ p).symm (algebraMap B (Localization.AtPrime (φ p).asIdeal) b)
-    with hz
   have hKz : K z = algebraMap B (Localization.AtPrime (φ p).asIdeal) b :=
     (stalkEquivAt φ p).apply_symm_apply _
   have hLz : localRingHomAt φ p b = L z := localRingHomAt_eq φ p b z hKz
@@ -320,8 +303,8 @@ private theorem comap_ringHomOfHomOver (φ : HomOver A B C) (p : PrimeSpectrum C
         (IsLocalization.AtPrime.to_map_mem_maximal_iff _ p.asIdeal _).symm
     _ ↔ L z ∈ IsLocalRing.maximalIdeal _ := by
         rw [algebraMap_ringHomOfHomOver, hLz]
-    _ ↔ z ∈ IsLocalRing.maximalIdeal _ := map_mem_maximalIdeal_iff L z
-    _ ↔ K z ∈ IsLocalRing.maximalIdeal _ := (map_mem_maximalIdeal_iff K z).symm
+    _ ↔ z ∈ IsLocalRing.maximalIdeal _ := IsLocalRing.map_mem_maximalIdeal_iff L z
+    _ ↔ K z ∈ IsLocalRing.maximalIdeal _ := (IsLocalRing.map_mem_maximalIdeal_iff K z).symm
     _ ↔ b ∈ (φ p).asIdeal := by
         rw [hKz]
         exact IsLocalization.AtPrime.to_map_mem_maximal_iff _ (φ p).asIdeal _
@@ -330,13 +313,14 @@ end Inverse
 
 variable (A B C)
 
-/-- **Stacks 096L, fully faithfulness.** When both `A → B` and `A → C` identify
-local rings, the map sending an `A`-algebra homomorphism `B →ₐ[A] C` to the induced
-continuous map `Spec C → Spec B` over `Spec A` is a bijection. -/
+/-- **Stacks 096L, fully faithfulness.** When `A → B` identifies local rings, the map
+sending an `A`-algebra homomorphism `B →ₐ[A] C` to the induced continuous map
+`Spec C → Spec B` over `Spec A` is a bijection. Here `C` is an arbitrary `A`-algebra;
+specializing to `A → C` also identifying local rings recovers the fully faithfulness
+of `B ↦ Spec B` on the category of `A`-algebras identifying local rings. -/
 @[stacks 096L]
-theorem continuousMap_of_algHom_bijective
-    [Algebra.BijectiveOnStalks A B] [Algebra.BijectiveOnStalks A C] :
-    Function.Bijective (continuousMap_of_algHom : (B →ₐ[A] C) → HomOver A B C) := by
+theorem continuousMapOfAlgHom_bijective [Algebra.BijectiveOnStalks A B] :
+    Function.Bijective (continuousMapOfAlgHom : (B →ₐ[A] C) → HomOver A B C) := by
   constructor
   · -- Injectivity: an `A`-algebra map `B → C` is determined by its localizations,
     -- which factor through the bijective maps `A_{p ∩ A} → B_{φ(p)}`.
@@ -344,10 +328,8 @@ theorem continuousMap_of_algHom_bijective
     have hcomap (p : PrimeSpectrum C) :
         p.asIdeal.comap f₁.toRingHom = p.asIdeal.comap f₂.toRingHom :=
       congrArg PrimeSpectrum.asIdeal (DFunLike.congr_fun heq p)
-    apply AlgHom.coe_ringHom_injective
-    apply RingHom.ext
-    intro b
-    refine eq_of_localizationAtPrime_eq fun p ↦ ?_
+    ext b
+    refine PrimeSpectrum.eq_of_localizationAtPrime_eq fun p ↦ ?_
     have : (p.asIdeal.comap f₁.toRingHom).IsPrime := Ideal.IsPrime.comap _
     set q := p.asIdeal.comap f₁.toRingHom with hq
     have : (q.comap (algebraMap A B)).IsPrime := Ideal.IsPrime.comap _
@@ -378,36 +360,32 @@ theorem continuousMap_of_algHom_bijective
     refine ⟨{ ringHomOfHomOver φ with commutes' := ringHomOfHomOver_algebraMap φ }, ?_⟩
     exact HomOver.ext fun p ↦ comap_ringHomOfHomOver φ p
 
-/-- The hom-set bijection `(B →ₐ[A] C) ≃ HomOver A B C` when both `A → B` and
-`A → C` identify local rings. This formalizes Stacks 096L
+/-- The hom-set bijection `(B →ₐ[A] C) ≃ HomOver A B C` when `A → B` identifies local
+rings, with `C` an arbitrary `A`-algebra. This formalizes Stacks 096L
 (`thm:identifies-local-ring-to-top-fully-faithful` and
 `def:identifies-local-ring-hom-set-bijection` in the blueprint). -/
 @[stacks 096L]
-noncomputable def algHomEquivContinuousMap
-    [Algebra.BijectiveOnStalks A B] [Algebra.BijectiveOnStalks A C] :
+noncomputable def algHomEquivContinuousMap [Algebra.BijectiveOnStalks A B] :
     (B →ₐ[A] C) ≃ HomOver A B C :=
-  Equiv.ofBijective continuousMap_of_algHom (continuousMap_of_algHom_bijective A B C)
+  Equiv.ofBijective continuousMapOfAlgHom (continuousMapOfAlgHom_bijective A B C)
 
 /-- The `A`-algebra homomorphism `B →ₐ[A] C` induced by a continuous map
-`Spec C → Spec B` over `Spec A`, when both `A → B` and `A → C` identify local
-rings. This is the inverse direction of the hom-set bijection from Stacks 096L. -/
-noncomputable def algHom_of_continuousMap
-    [Algebra.BijectiveOnStalks A B] [Algebra.BijectiveOnStalks A C]
+`Spec C → Spec B` over `Spec A`, when `A → B` identifies local rings. This is the
+inverse direction of the hom-set bijection from Stacks 096L. -/
+noncomputable def algHomOfContinuousMap [Algebra.BijectiveOnStalks A B]
     (φ : HomOver A B C) : B →ₐ[A] C :=
   (algHomEquivContinuousMap A B C).symm φ
 
 @[simp]
-lemma continuousMap_of_algHom_algHom_of_continuousMap
-    [Algebra.BijectiveOnStalks A B] [Algebra.BijectiveOnStalks A C]
+lemma continuousMapOfAlgHom_algHomOfContinuousMap [Algebra.BijectiveOnStalks A B]
     (φ : HomOver A B C) :
-    continuousMap_of_algHom (algHom_of_continuousMap A B C φ) = φ :=
+    continuousMapOfAlgHom (algHomOfContinuousMap A B C φ) = φ :=
   (algHomEquivContinuousMap A B C).apply_symm_apply φ
 
 @[simp]
-lemma algHom_of_continuousMap_continuousMap_of_algHom
-    [Algebra.BijectiveOnStalks A B] [Algebra.BijectiveOnStalks A C]
+lemma algHomOfContinuousMap_continuousMapOfAlgHom [Algebra.BijectiveOnStalks A B]
     (f : B →ₐ[A] C) :
-    algHom_of_continuousMap A B C (continuousMap_of_algHom f) = f :=
+    algHomOfContinuousMap A B C (continuousMapOfAlgHom f) = f :=
   (algHomEquivContinuousMap A B C).symm_apply_apply f
 
 end Algebra.BijectiveOnStalks
