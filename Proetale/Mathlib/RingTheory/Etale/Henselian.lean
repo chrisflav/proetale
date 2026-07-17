@@ -37,57 +37,31 @@ open Polynomial IsLocalRing
 
 variable {R : Type u} [CommRing R] [HenselianLocalRing R]
 
-/-- A point of a standard étale pair over a Henselian local ring `R` with values in the
+/-- A point of a standard etale pair over a Henselian local ring `R` with values in the
 residue field lifts to a point with values in `R`. -/
 theorem exists_hasMap_of_hasMap_residueField (P : StandardEtalePair R)
-    {x : (IsLocalRing.maximalIdeal R).ResidueField} (hx : P.HasMap x) :
-    ∃ a : R, P.HasMap a ∧ algebraMap R (IsLocalRing.maximalIdeal R).ResidueField a = x := by
-  obtain ⟨a₀, rfl⟩ := Ideal.algebraMap_residueField_surjective (IsLocalRing.maximalIdeal R) x
-  have key : ∀ q : R[X],
-      Polynomial.aeval (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField a₀) q
-        = algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (q.eval a₀) := fun q ↦
-    Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval a₀ q
-  have hf0 : P.f.eval a₀ ∈ IsLocalRing.maximalIdeal R := by
-    rw [← Ideal.algebraMap_residueField_eq_zero (I := IsLocalRing.maximalIdeal R), ← key]
-    exact hx.1
-  have hf' : IsUnit (P.f.derivative.eval a₀) := by
-    have hd := hx.isUnit_derivative_f
-    rw [key] at hd
-    by_contra hcon
-    have hmem : P.f.derivative.eval a₀ ∈ IsLocalRing.maximalIdeal R :=
-      (IsLocalRing.mem_maximalIdeal _).mpr hcon
-    rw [Ideal.algebraMap_residueField_eq_zero.mpr hmem] at hd
-    exact not_isUnit_zero hd
-  obtain ⟨a, hroot, hsub⟩ := HenselianLocalRing.is_henselian P.f P.monic_f a₀ hf0 hf'
-  have hres : algebraMap R (IsLocalRing.maximalIdeal R).ResidueField a
-      = algebraMap R (IsLocalRing.maximalIdeal R).ResidueField a₀ := by
-    rw [← sub_eq_zero, ← map_sub, Ideal.algebraMap_residueField_eq_zero]
-    exact hsub
-  refine ⟨a, ⟨?_, ?_⟩, hres⟩
-  · rw [show Polynomial.aeval a P.f = P.f.eval a from congrFun (Polynomial.coe_aeval_eq_eval a) _]
+    {x : (maximalIdeal R).ResidueField} (hx : P.HasMap x) :
+    ∃ a : R, P.HasMap a ∧ algebraMap R (maximalIdeal R).ResidueField a = x := by
+  have H := (HenselianLocalRing.TFAE R).out 0 2
+  obtain ⟨a, hroot, ha⟩ := H.mp ‹HenselianLocalRing R›
+    (algebraMap R (maximalIdeal R).ResidueField)
+    (Ideal.algebraMap_residueField_surjective _) P.f P.monic_f x
+    (by rw [← aeval_def]; exact hx.1)
+    (by rw [← aeval_def]; exact hx.isUnit_derivative_f.ne_zero)
+  refine ⟨a, ⟨?_, ?_⟩, ha⟩
+  · rw [coe_aeval_eq_eval]
     exact hroot
-  · rw [show Polynomial.aeval a P.g = P.g.eval a from congrFun (Polynomial.coe_aeval_eq_eval a) _]
-    by_contra hcon
-    have hmem : P.g.eval a ∈ IsLocalRing.maximalIdeal R :=
-      (IsLocalRing.mem_maximalIdeal _).mpr hcon
-    have h2 : algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (P.g.eval a) = 0 :=
-      Ideal.algebraMap_residueField_eq_zero.mpr hmem
-    have h3 := hx.2
-    rw [key] at h3
-    have h4 : algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (P.g.eval a)
-        = algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (P.g.eval a₀) := by
-      rw [← Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval,
-        ← Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval, hres]
-    rw [← h4, h2] at h3
-    exact not_isUnit_zero h3
+  · rw [← notMem_maximalIdeal, ← Ideal.algebraMap_residueField_eq_zero, coe_aeval_eq_eval,
+      ← aeval_algebraMap_apply_eq_algebraMap_eval, ha]
+    exact hx.2.ne_zero
 
 /-- A Henselian local ring admits sections of étale algebras pointed over the residue
 field. This is one implication of [Stacks 04GG (7)]
 (https://stacks.math.columbia.edu/tag/04GG). -/
 theorem exists_algHom_section {R' : Type u} [CommRing R'] [Algebra R R'] [Algebra.Etale R R']
-    (χ : R' →ₐ[R] (IsLocalRing.maximalIdeal R).ResidueField) :
+    (χ : R' →ₐ[R] (maximalIdeal R).ResidueField) :
     ∃ σ : R' →ₐ[R] R,
-      ∀ y, algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (σ y) = χ y := by
+      (IsScalarTower.toAlgHom R R (maximalIdeal R).ResidueField).comp σ = χ := by
   classical
   have hQp : (RingHom.ker χ.toRingHom).IsPrime := RingHom.ker_isPrime _
   have hFE : Algebra.FormallyEtale R (Localization.AtPrime (RingHom.ker χ.toRingHom)) :=
@@ -101,28 +75,23 @@ theorem exists_algHom_section {R' : Type u} [CommRing R'] [Algebra R R'] [Algebr
     refine IsUnit.pow _ ?_
     rw [isUnit_iff_ne_zero]
     exact fun e ↦ hhQ (RingHom.mem_ker.mpr e)
-  let χₗ : Localization.Away h →ₐ[R] (IsLocalRing.maximalIdeal R).ResidueField :=
+  let χₗ : Localization.Away h →ₐ[R] (maximalIdeal R).ResidueField :=
     IsLocalization.liftAlgHom (M := Submonoid.powers h) (f := χ) hu
   have hχₗ : ∀ y : R', χₗ (algebraMap R' (Localization.Away h) y) = χ y := fun y ↦
     IsLocalization.lift_eq hu y
   obtain ⟨Pres⟩ := hstd.nonempty_standardEtalePresentation
   obtain ⟨a, ha, hares⟩ := exists_hasMap_of_hasMap_residueField Pres.P (Pres.hasMap.map χₗ)
   let σ₀ : Localization.Away h →ₐ[R] R := (Pres.P.lift a ha).comp Pres.equivRing.toAlgHom
-  have key : (IsScalarTower.toAlgHom R R (IsLocalRing.maximalIdeal R).ResidueField).comp σ₀
-      = χₗ := by
+  have key : (IsScalarTower.toAlgHom R R (maximalIdeal R).ResidueField).comp σ₀ = χₗ := by
     refine Pres.hom_ext ?_
-    change algebraMap R (IsLocalRing.maximalIdeal R).ResidueField (σ₀ Pres.x) = χₗ Pres.x
     have hx : σ₀ Pres.x = a := by
-      change (Pres.P.lift a ha) (Pres.equivRing Pres.x) = a
-      rw [Pres.equivRing_x, Pres.P.lift_X]
-    rw [hx, hares]
-  refine ⟨σ₀.comp (IsScalarTower.toAlgHom R R' (Localization.Away h)), fun y ↦ ?_⟩
-  calc algebraMap R (IsLocalRing.maximalIdeal R).ResidueField
-        (σ₀ (algebraMap R' (Localization.Away h) y))
-      = ((IsScalarTower.toAlgHom R R (IsLocalRing.maximalIdeal R).ResidueField).comp σ₀)
-          (algebraMap R' (Localization.Away h) y) := rfl
-    _ = χₗ (algebraMap R' (Localization.Away h) y) := by rw [key]
-    _ = χ y := hχₗ y
+      simp only [σ₀, AlgHom.comp_apply, AlgEquiv.toAlgHom_apply, Pres.equivRing_x,
+        StandardEtalePair.lift_X]
+    rw [AlgHom.comp_apply, hx, IsScalarTower.coe_toAlgHom', hares]
+  refine ⟨σ₀.comp (IsScalarTower.toAlgHom R R' (Localization.Away h)), ?_⟩
+  rw [← AlgHom.comp_assoc, key]
+  ext y
+  exact hχₗ y
 
 /-- **Hensel's lemma for coprime factorizations.**  Over a Henselian local ring, a
 factorization of a monic polynomial into coprime monic factors over the residue field
@@ -131,28 +100,28 @@ lifts to a factorization into monic factors.
 This is one implication of [Stacks 04GG (3)](https://stacks.math.columbia.edu/tag/04GG). -/
 theorem exists_monic_mul_of_map_eq_mul
     {p : R[X]} (hp : p.Monic)
-    {f g : Polynomial (IsLocalRing.maximalIdeal R).ResidueField}
+    {f g : Polynomial (maximalIdeal R).ResidueField}
     (hf : f.Monic) (hg : g.Monic)
-    (H : p.map (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) = f * g)
+    (H : p.map (algebraMap R (maximalIdeal R).ResidueField) = f * g)
     (hco : IsCoprime f g) :
     ∃ p₁ p₂ : R[X], p₁.Monic ∧ p₂.Monic ∧ p = p₁ * p₂ ∧
-      p₁.map (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) = f ∧
-      p₂.map (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) = g := by
+      p₁.map (algebraMap R (maximalIdeal R).ResidueField) = f ∧
+      p₂.map (algebraMap R (maximalIdeal R).ResidueField) = g := by
   obtain ⟨R', _, _, _, Q, _, _, f', g', hbij, hf'm, hg'm, hmul, -, hfres, hgres⟩ :=
     Algebra.exists_etale_bijective_residueFieldMap_and_map_eq_mul_and_isCoprime
-      (IsLocalRing.maximalIdeal R) p f g hp hf hg H hco
-  let e : (IsLocalRing.maximalIdeal R).ResidueField ≃ₐ[R] Q.ResidueField :=
+      (maximalIdeal R) p f g hp hf hg H hco
+  let e : (maximalIdeal R).ResidueField ≃ₐ[R] Q.ResidueField :=
     AlgEquiv.ofBijective _ hbij
-  let χ : R' →ₐ[R] (IsLocalRing.maximalIdeal R).ResidueField :=
+  let χ : R' →ₐ[R] (maximalIdeal R).ResidueField :=
     e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R R' Q.ResidueField)
   obtain ⟨σ, hσ⟩ := exists_algHom_section χ
-  have hσ' : (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField).comp σ.toRingHom
-      = χ.toRingHom := RingHom.ext hσ
+  have hσ' : (algebraMap R (maximalIdeal R).ResidueField).comp σ.toRingHom
+      = χ.toRingHom := congrArg AlgHom.toRingHom hσ
   have hid : (e.symm.toAlgHom.toRingHom).comp
-      (Ideal.ResidueField.mapₐ (IsLocalRing.maximalIdeal R) Q (Algebra.ofId R R')
-        (Ideal.over_def Q (IsLocalRing.maximalIdeal R))).toRingHom = RingHom.id _ := by
-    have hcoe : (Ideal.ResidueField.mapₐ (IsLocalRing.maximalIdeal R) Q (Algebra.ofId R R')
-        (Ideal.over_def Q (IsLocalRing.maximalIdeal R))).toRingHom = e.toAlgHom.toRingHom := rfl
+      (Ideal.ResidueField.mapₐ (maximalIdeal R) Q (Algebra.ofId R R')
+        (Ideal.over_def Q (maximalIdeal R))).toRingHom = RingHom.id _ := by
+    have hcoe : (Ideal.ResidueField.mapₐ (maximalIdeal R) Q (Algebra.ofId R R')
+        (Ideal.over_def Q (maximalIdeal R))).toRingHom = e.toAlgHom.toRingHom := rfl
     rw [hcoe]
     ext z
     simp
