@@ -4,12 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Jingting Wang
 -/
 import Proetale.Algebra.WeaklyEtale
+import Proetale.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Proetale.Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Proetale.Mathlib.RingTheory.Localization.Pi
 import Mathlib
 
 /-!
 # Weak dimension of a commutative ring
 
 Since mathlib does not have `Tor`, we only define some special cases in low dimensions.
+
+We also prove `IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact`: for a domain `A`
+integrally closed in a field extension `L` of its fraction field, there is a cartesian diagram
+of rings whose upper-left vertex has weak dimension at most one (Stacks 092U).
 -/
 
 /-- A ring `R` is absolutely flat if every ideal of `R` is pure, i.e. `R ⧸ I` is flat. -/
@@ -324,3 +331,66 @@ lemma of_weaklyEtale [Ring.WeakDimensionLEOne R] [Algebra.WeaklyEtale R S] :
   exact Module.Flat.of_flat_lmul'_of_flat R S I (Algebra.WeaklyEtale.flat_lmul' R S)
 
 end Ring.WeakDimensionLEOne
+
+universe u v
+
+/-- If `A` is a domain that is integrally closed in a field extension `L` of its
+fraction field, there is a "cartesian diagram" of rings with vertices `A`, `L`, `S` and `T`,
+where `S` has weak dimension at most one and `S → T` is a flat, injective ring epimorphism.
+Cartesianness is expressed as exactness of `0 → A → L × S → T`, where the first map is
+`a ↦ (a, a)` and the second map is the difference of the two canonical maps.
+
+Note that algebraicity of `L` over `Frac A` is not needed for this statement. -/
+@[stacks 092U]
+theorem IsIntegrallyClosedIn.exists_weakDimensionLEOne_isEpi_exact
+    (A : Type u) (L : Type v) [CommRing A] [IsDomain A] [Field L] [Algebra A L]
+    [FaithfulSMul A L] [IsIntegrallyClosedIn A L] :
+    ∃ (S T : Type v) (_ : CommRing S) (_ : CommRing T) (_ : Algebra A S) (_ : Algebra A T)
+      (_ : Algebra S T) (_ : Algebra L T) (_ : IsScalarTower A S T) (_ : IsScalarTower A L T),
+      Ring.WeakDimensionLEOne S ∧ Module.Flat S T ∧ FaithfulSMul S T ∧ Algebra.IsEpi S T ∧
+      Function.Exact (LinearMap.prod (Algebra.linearMap A L) (Algebra.linearMap A S))
+        ((IsScalarTower.toAlgHom A L T).toLinearMap ∘ₗ LinearMap.fst A L S -
+          (IsScalarTower.toAlgHom A S T).toLinearMap ∘ₗ LinearMap.snd A L S) := by
+  classical
+  -- The image of `A` in `L` is integrally closed in `L`; this is used as an instance below.
+  have hicr : IsIntegrallyClosedIn (algebraMap A L).range L := .algebraMap_range
+  -- For every element of `L` not in `A`, choose a valuation subring avoiding it.
+  let ι := {x : L // x ∉ (algebraMap A L).range}
+  choose V hVle hVx using fun x : ι ↦
+    Subring.exists_le_valuationSubring_of_isIntegrallyClosedIn x.2
+  -- The algebra structures on `S = Π Vₓ` and `T = Π L`.
+  let _ : ∀ x : ι, Algebra A (V x) := fun x ↦
+    ((algebraMap A L).codRestrict (V x).toSubring fun a ↦ hVle x ⟨a, rfl⟩).toAlgebra
+  let _ : Algebra (Π x : ι, V x) (ι → L) :=
+    (Pi.ringHom fun x ↦ (V x).subtype.comp (Pi.evalRingHom _ x)).toAlgebra
+  have : IsScalarTower A (Π x : ι, V x) (ι → L) :=
+    .of_algebraMap_eq fun _ ↦ funext fun _ ↦ rfl
+  -- `T` is the localization of `S` at its non-zerodivisors.
+  have hloc : IsLocalization (nonZeroDivisors (Π x : ι, V x)) (ι → L) :=
+    IsLocalization.pi fun _ _ ↦ rfl
+  refine ⟨Π x : ι, V x, ι → L, inferInstance, inferInstance, inferInstance, inferInstance,
+    inferInstance, inferInstance, inferInstance, inferInstance,
+    Ring.WeakDimensionLEOne.pi_of_isValuationRing fun x : ι ↦ V x,
+    IsLocalization.flat _ (nonZeroDivisors (Π x : ι, V x)),
+    (faithfulSMul_iff_algebraMap_injective _ _).mpr fun _ _ h ↦
+      funext fun x ↦ Subtype.ext (congrFun h x),
+    CommRingCat.epi_iff_epi.mp (IsLocalization.epi (nonZeroDivisors (Π x : ι, V x)) _),
+    fun y ↦ ?_⟩
+  obtain ⟨l, s⟩ := y
+  constructor
+  · intro hy
+    have hls (x : ι) : l = (s x : L) := by
+      simpa only [LinearMap.sub_apply, LinearMap.comp_apply, LinearMap.fst_apply,
+        LinearMap.snd_apply, AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
+        Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using congrFun hy x
+    have hl : l ∈ (algebraMap A L).range := by
+      by_contra h
+      have hmem := (s ⟨l, h⟩).2
+      rw [← hls ⟨l, h⟩] at hmem
+      exact hVx ⟨l, h⟩ hmem
+    obtain ⟨a, ha⟩ := hl
+    exact ⟨a, Prod.ext ha (funext fun x ↦ Subtype.ext (ha.trans (hls x)))⟩
+  · rintro ⟨a, h⟩
+    rw [← h]
+    exact sub_eq_zero.mpr <| (IsScalarTower.algebraMap_apply A L (ι → L) a).symm.trans
+      (IsScalarTower.algebraMap_apply A (Π x : ι, V x) (ι → L) a)
