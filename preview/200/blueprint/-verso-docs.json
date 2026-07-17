@@ -27,1030 +27,1033 @@
  "<code>StableUnderGeneralization.{u_1} {X : Type u_1} [TopologicalSpace X] (s : Set X) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A subset `S` of a topological space is stable under specialization\nif `x ∈ S → y ∈ S` for all `y ⤳ x`. </code>",
  "84":
  "<code>stableUnderGeneralization_generalizationHull.{u_1} {X : Type u_1} [TopologicalSpace X] (s : Set X) :\n  StableUnderGeneralization (generalizationHull s)</code>",
- "835":
+ "836":
  "<code>CategoryTheory.Functor.Full.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (F : CategoryTheory.Functor C D) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A functor `F : C ⥤ D` is full if for each `X Y : C`, `F.map` is surjective. </code>",
- "834":
+ "835":
  "<code>AlgebraicGeometry.Scheme.ProEt.full_sheafPullback.{u} (S : AlgebraicGeometry.Scheme) :\n  (AlgebraicGeometry.Scheme.ProEt.sheafPullback S Ab).Full</code>",
- "833":
+ "834":
  "<code>CategoryTheory.Functor.Faithful.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (F : CategoryTheory.Functor C D) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective. </code>",
- "832":
+ "833":
  "<code>AlgebraicGeometry.Scheme.ProEt.faithful_sheafPullback.{u} (S : AlgebraicGeometry.Scheme) :\n  (AlgebraicGeometry.Scheme.ProEt.sheafPullback S Ab).Faithful</code>",
- "831":
+ "832":
  "<code>CategoryTheory.Adjunction.unit.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] {F : CategoryTheory.Functor C D} {G : CategoryTheory.Functor D C}\n  (self : F ⊣ G) : CategoryTheory.Functor.id C ⟶ F.comp G</code><span class=\"sep\"></span><code class=\"docstring\">The unit of an adjunction </code>",
- "830":
+ "831":
  "<code>AlgebraicGeometry.Scheme.ProEt.sheafAdjunction.{u, u_1, u_2} (S : AlgebraicGeometry.Scheme) (A : Type u_1)\n  [CategoryTheory.Category.{u_2, u_1} A] [(AlgebraicGeometry.Scheme.ProEt.sheafPushforward S A).IsRightAdjoint] :\n  AlgebraicGeometry.Scheme.ProEt.sheafPullback S A ⊣ AlgebraicGeometry.Scheme.ProEt.sheafPushforward S A</code><span class=\"sep\"></span><code class=\"docstring\">The inverse image - direct image adjunction for the pro-étale site. </code>",
+ "830":
+ "<code>CategoryTheory.IsIso.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] {X Y : C} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">The `IsIso` typeclass expresses that a morphism is invertible.\n\nGiven a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get\nthe inverse using `inv f`. </code>",
  "83":
  "<code>generalizationHull.{u_1} {X : Type u_1} [TopologicalSpace X] (s : Set X) : Set X</code><span class=\"sep\"></span><code class=\"docstring\">The generalization hull of `s` is the smallest set containing `s` that is stable\nunder generalization.\nIt is equal to the set of points specializing to a point in `s`, see `generalizationHull_eq`. </code>",
  "829":
- "<code>CategoryTheory.IsIso.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] {X Y : C} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">The `IsIso` typeclass expresses that a morphism is invertible.\n\nGiven a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get\nthe inverse using `inv f`. </code>",
- "828":
  "<code>AlgebraicGeometry.Scheme.ProEt.isIso_unit_sheafAdjunction.{u} (S : AlgebraicGeometry.Scheme) :\n  CategoryTheory.IsIso (AlgebraicGeometry.Scheme.ProEt.sheafAdjunction S Ab).unit</code>",
- "827":
+ "828":
  "<code>CategoryTheory.Functor.whiskeringLeft.{u₁, v₁, u₂, v₂, u₃, v₃} (C : Type u₁) [CategoryTheory.Category.{v₁, u₁} C]\n  (D : Type u₂) [CategoryTheory.Category.{v₂, u₂} D] (E : Type u₃) [CategoryTheory.Category.{v₃, u₃} E] :\n  CategoryTheory.Functor (CategoryTheory.Functor C D)\n    (CategoryTheory.Functor (CategoryTheory.Functor D E) (CategoryTheory.Functor C E))</code><span class=\"sep\"></span><code class=\"docstring\">Left-composition gives a functor `(C ⥤ D) ⥤ ((D ⥤ E) ⥤ (C ⥤ E))`.\n\n`(whiskeringLeft.obj F).obj G` is `F ⋙ G`, and\n`(whiskeringLeft.obj F).map α` is `whiskerLeft F α`.\n</code>",
- "826":
+ "827":
  "<code>CategoryTheory.Iso.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] (X Y : C) : Type v</code><span class=\"sep\"></span><code class=\"docstring\">An isomorphism (a.k.a. an invertible morphism) between two objects of a category.\nThe inverse morphism is bundled.\n\nSee also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing\nthe role of morphisms. </code>",
- "825":
+ "826":
  "<code>CategoryTheory.sheafToPresheaf.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C]\n  (J : CategoryTheory.GrothendieckTopology C) (A : Type u₂) [CategoryTheory.Category.{v₂, u₂} A] :\n  CategoryTheory.Functor (CategoryTheory.Sheaf J A) (CategoryTheory.Functor Cᵒᵖ A)</code><span class=\"sep\"></span><code class=\"docstring\">The inclusion functor of the category of sheaves in the category of presheaves. </code>",
- "824":
+ "825":
  "<code>AlgebraicGeometry.Scheme.ProEt.sheafPullback.{u, u_1, u_2} (S : AlgebraicGeometry.Scheme) (A : Type u_1)\n  [CategoryTheory.Category.{u_2, u_1} A] [(AlgebraicGeometry.Scheme.ProEt.sheafPushforward S A).IsRightAdjoint] :\n  CategoryTheory.Functor (CategoryTheory.Sheaf S.smallEtaleTopology A)\n    (CategoryTheory.Sheaf (AlgebraicGeometry.Scheme.ProEt.topology S) A)</code><span class=\"sep\"></span><code class=\"docstring\">The inverse image functor from étale sheafs to pro-étale sheafs. </code>",
- "823":
+ "824":
  "<code>AlgebraicGeometry.Scheme.ProEt.sheafPullbackCompIso.{u} (S : AlgebraicGeometry.Scheme) :\n  (AlgebraicGeometry.Scheme.ProEt.sheafPullback S Ab).comp\n      (((AlgebraicGeometry.Scheme.AffineProEt.toProEt S).sheafPushforwardContinuous Ab\n            (AlgebraicGeometry.Scheme.AffineProEt.topology S) (AlgebraicGeometry.Scheme.ProEt.topology S)).comp\n        (CategoryTheory.sheafToPresheaf (AlgebraicGeometry.Scheme.AffineProEt.topology S) Ab)) ≅\n    (CategoryTheory.sheafToPresheaf S.smallEtaleTopology Ab).comp\n      (S.toProEtale.op.lan.comp\n        ((CategoryTheory.Functor.whiskeringLeft S.AffineProEtᵒᵖ S.ProEtᵒᵖ Ab).obj\n          (AlgebraicGeometry.Scheme.AffineProEt.toProEt S).op))</code><span class=\"sep\"></span><code class=\"docstring\">The pullback of an étale sheaf `F` to the pro-étale site is isomorphic to the presheaf-pullback\nof `F` (i.e., left Kan extension) after restricting to the affine pro-étale site. </code>",
- "822": "<code>CategoryTheory.Presheaf.IsSheaf S.smallEtaleTopology F</code>",
- "821":
+ "823": "<code>CategoryTheory.Presheaf.IsSheaf S.smallEtaleTopology F</code>",
+ "822":
  "<code>AlgebraicGeometry.Scheme.isSheaf_lan_toProEtale.{u} (S : AlgebraicGeometry.Scheme)\n  (F : CategoryTheory.Functor S.Etaleᵒᵖ Ab) (hF : CategoryTheory.Presheaf.IsSheaf S.smallEtaleTopology F) :\n  CategoryTheory.Presheaf.IsSheaf (AlgebraicGeometry.Scheme.AffineProEt.topology S)\n    ((AlgebraicGeometry.Scheme.AffineProEt.toProEt S).op.comp (S.toProEtale.op.lan.obj F))</code><span class=\"sep\"></span><code class=\"docstring\">If `F` is a sheaf on the small étale site, the presheaf pullback of `F`\nto the small pro-étale site (i.e., the left Kan extension) is a\nsheaf when restricted to the small affine pro-étale site. </code>",
- "820":
+ "821":
  "<code>CategoryTheory.Functor.lan.{v_1, u_1, v_2, u_2, v_3, u_3} {C : Type u_1} {D : Type u_2}\n  [CategoryTheory.Category.{v_1, u_1} C] [CategoryTheory.Category.{v_2, u_2} D] (L : CategoryTheory.Functor C D)\n  {H : Type u_3} [CategoryTheory.Category.{v_3, u_3} H] [∀ (F : CategoryTheory.Functor C H), L.HasLeftKanExtension F] :\n  CategoryTheory.Functor (CategoryTheory.Functor C H) (CategoryTheory.Functor D H)</code><span class=\"sep\"></span><code class=\"docstring\">The left Kan extension functor `(C ⥤ H) ⥤ (D ⥤ H)` along a functor `C ⥤ D`. </code>",
+ "820":
+ "<code>Ab.{u_1} : Type (u_1 + 1)</code><span class=\"sep\"></span><code class=\"docstring\">`Ab` is an abbreviation for `AddCommGroup`, for the sake of mathematicians' sanity. </code>",
  "82":
  "<code>Iff (a b : Prop) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">If and only if, or logical bi-implication. `a ↔ b` means that `a` implies `b` and vice versa.\nBy `propext`, this implies that `a` and `b` are equal and hence any expression involving `a`\nis equivalent to the corresponding expression with `b` instead.\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `↔` in identifiers is `iff`.\n\n * The recommended spelling of `&lt;-&gt;` in identifiers is `iff` (prefer `↔` over `&lt;-&gt;`).</code>",
- "819":
- "<code>Ab.{u_1} : Type (u_1 + 1)</code><span class=\"sep\"></span><code class=\"docstring\">`Ab` is an abbreviation for `AddCommGroup`, for the sake of mathematicians' sanity. </code>",
- "818": "<code>CategoryTheory.Functor S.Etaleᵒᵖ Ab</code>",
- "817":
+ "819": "<code>CategoryTheory.Functor S.Etaleᵒᵖ Ab</code>",
+ "818":
  "<code>AlgebraicGeometry.Scheme.ProEt.preservesFilteredColimitsOfSize_lan_toProEtale.{u} (S : AlgebraicGeometry.Scheme)\n  (F : CategoryTheory.Functor S.Etaleᵒᵖ Ab) :\n  CategoryTheory.Limits.PreservesFilteredColimitsOfSize.{u, u, u, u + 1, u + 1, u + 2}\n    ((AlgebraicGeometry.Scheme.AffineProEt.toProEt S).op.comp (S.toProEtale.op.lan.obj F))</code>",
- "816":
+ "817":
  "<code>AlgebraicGeometry.Scheme.smallEtaleTopology.{u} (X : AlgebraicGeometry.Scheme) :\n  CategoryTheory.GrothendieckTopology X.Etale</code><span class=\"sep\"></span><code class=\"docstring\">The small étale site of a scheme is the Grothendieck topology on the\ncategory of schemes étale over `X` induced from the étale topology on `Scheme.{u}`. </code>",
- "815":
+ "816":
  "<code>CategoryTheory.Functor.IsContinuous.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (F : CategoryTheory.Functor C D) (J : CategoryTheory.GrothendieckTopology C)\n  (K : CategoryTheory.GrothendieckTopology D) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A functor `F` is continuous if the precomposition with `F.op` sends sheaves of\n`Type (max u₁ v₁ u₂ v₂)` to sheaves. This implies that this holds for an arbitrary\nuniverse (see `Functor.op_comp_isSheaf_of_types`). </code>",
- "814":
+ "815":
  "<code>AlgebraicGeometry.Scheme.isContinuous_toProEtale.{u} (S : AlgebraicGeometry.Scheme) :\n  S.toProEtale.IsContinuous S.smallEtaleTopology (AlgebraicGeometry.Scheme.ProEt.topology S)</code><span class=\"sep\"></span><code class=\"docstring\">The inclusion of the étale site into the pro-étale site is continuous. </code>",
- "813":
+ "814":
  "<code>AlgebraicGeometry.Scheme.ProEt.{u} (S : AlgebraicGeometry.Scheme) : Type (u + 1)</code><span class=\"sep\"></span><code class=\"docstring\">The (small) pro-étale site of a scheme `S`: Its objects are the schemes weakly étale over `S`.\nWe prefer to work with weakly étale morphisms instead of pro-étale morphisms, since the property\nof being pro-étale is not well-behaved: it is not local on the target.\n[Definition 4.1.1][proetale2015]\n</code>",
- "812":
+ "813":
  "<code>AlgebraicGeometry.Scheme.toProEtale.{u} (S : AlgebraicGeometry.Scheme) : CategoryTheory.Functor S.Etale S.ProEt</code><span class=\"sep\"></span><code class=\"docstring\">The inclusion of the étale site into the pro-étale site. </code>",
- "811":
+ "812":
  "<code>CategoryTheory.Functor.IsEquivalence.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (F : CategoryTheory.Functor C D) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A functor is an equivalence of categories if it is faithful, full and\nessentially surjective. </code>",
- "810":
+ "811":
  "<code>AlgebraicGeometry.Scheme.AffineProEt.topology.{u} (S : AlgebraicGeometry.Scheme) :\n  CategoryTheory.GrothendieckTopology S.AffineProEt</code>",
+ "810":
+ "<code>CategoryTheory.Functor.sheafPushforwardContinuous.{t, v₁, v₂, u₁, u₂, u} {C : Type u₁}\n  [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D]\n  (F : CategoryTheory.Functor C D) (A : Type u) [CategoryTheory.Category.{t, u} A]\n  (J : CategoryTheory.GrothendieckTopology C) (K : CategoryTheory.GrothendieckTopology D) [F.IsContinuous J K] :\n  CategoryTheory.Functor (CategoryTheory.Sheaf K A) (CategoryTheory.Sheaf J A)</code><span class=\"sep\"></span><code class=\"docstring\">The induced functor `Sheaf K A ⥤ Sheaf J A` given by `F.op ⋙ _`\nif `F` is a continuous functor.\n</code>",
  "81":
  "<code>Specializes.{u_1} {X : Type u_1} [TopologicalSpace X] (x y : X) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`x` specializes to `y` (notation: `x ⤳ y`) if either of the following equivalent properties\nhold:\n\n* `𝓝 x ≤ 𝓝 y`; this property is used as the definition;\n* `pure x ≤ 𝓝 y`; in other words, any neighbourhood of `y` contains `x`;\n* `y ∈ closure {x}`;\n* `closure {y} ⊆ closure {x}`;\n* for any closed set `s` we have `x ∈ s → y ∈ s`;\n* for any open set `s` we have `y ∈ s → x ∈ s`;\n* `y` is a cluster point of the filter `pure x = 𝓟 {x}`.\n\nThis relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this preorder is a partial\norder. If `X` is a T₁ space, then this partial order is trivial : `x ⤳ y ↔ x = y`. </code>",
  "809":
- "<code>CategoryTheory.Functor.sheafPushforwardContinuous.{t, v₁, v₂, u₁, u₂, u} {C : Type u₁}\n  [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D]\n  (F : CategoryTheory.Functor C D) (A : Type u) [CategoryTheory.Category.{t, u} A]\n  (J : CategoryTheory.GrothendieckTopology C) (K : CategoryTheory.GrothendieckTopology D) [F.IsContinuous J K] :\n  CategoryTheory.Functor (CategoryTheory.Sheaf K A) (CategoryTheory.Sheaf J A)</code><span class=\"sep\"></span><code class=\"docstring\">The induced functor `Sheaf K A ⥤ Sheaf J A` given by `F.op ⋙ _`\nif `F` is a continuous functor.\n</code>",
- "808":
  "<code>CategoryTheory.Limits.HasLimitsOfSize.{v₁, u₁, v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`C` has all limits of size `v₁ u₁` (`HasLimitsOfSize.{v₁ u₁} C`)\nif it has limits of every shape `J : Type u₁` with `[Category.{v₁} J]`.\n</code>",
- "807":
+ "808":
  "<code>AlgebraicGeometry.Scheme.AffineProEt.isEquivalence_sheafPushforwardContinuous_toProEt.{u, v_1, u_2}\n  (S : AlgebraicGeometry.Scheme) {A : Type u_2} [CategoryTheory.Category.{v_1, u_2} A]\n  [CategoryTheory.Limits.HasLimitsOfSize.{u, u + 1, v_1, u_2} A] :\n  ((AlgebraicGeometry.Scheme.AffineProEt.toProEt S).sheafPushforwardContinuous A\n      (AlgebraicGeometry.Scheme.AffineProEt.topology S) (AlgebraicGeometry.Scheme.ProEt.topology S)).IsEquivalence</code><span class=\"sep\"></span><code class=\"docstring\">Restriction along inclusion of the affine pro-étale site into the pro-étale site induces an\nequivalence of categories of sheaves of `Ab.{u + 1}`, or more generally any category\nhaving large enough limits. </code>",
- "806":
+ "807":
  "<code>AlgebraicGeometry.Scheme.ProEt.topology.{u} (S : AlgebraicGeometry.Scheme) : CategoryTheory.GrothendieckTopology S.ProEt</code><span class=\"sep\"></span><code class=\"docstring\">The pro-étale topology on the small pro-étale site. </code>",
- "805":
+ "806":
  "<code>CategoryTheory.Functor.IsCoverDense.{v_1, u_1, v_2, u_2} {C : Type u_1} [CategoryTheory.Category.{v_1, u_1} C]\n  {D : Type u_2} [CategoryTheory.Category.{v_2, u_2} D] (G : CategoryTheory.Functor C D)\n  (K : CategoryTheory.GrothendieckTopology D) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A functor `G : (C, J) ⥤ (D, K)` is cover dense if for each object in `D`,\nthere exists a covering sieve in `D` that factors through images of `G`.\n\nThis definition can be found in https://ncatlab.org/nlab/show/dense+sub-site Definition 2.2.\n</code>",
- "804":
+ "805":
  "<code>AlgebraicGeometry.Scheme.AffineProEt.toProEt.{u} (S : AlgebraicGeometry.Scheme) :\n  CategoryTheory.Functor S.AffineProEt S.ProEt</code><span class=\"sep\"></span><code class=\"docstring\">The inclusion of the affine pro-étale site into the pro-étale site. </code>",
- "803":
+ "804":
  "<code>AlgebraicGeometry.Scheme.AffineProEt.isCoverDense_toProEt.{u} {S : AlgebraicGeometry.Scheme} :\n  (AlgebraicGeometry.Scheme.AffineProEt.toProEt S).IsCoverDense (AlgebraicGeometry.Scheme.ProEt.topology S)</code><span class=\"sep\"></span><code class=\"docstring\">The affine pro-étale site embeds densely in the pro-étale site. The key ingredient\nof the proof is the commutative algebra lemma `RingHom.WeaklyEtale.exists_indEtale_comp`. </code>",
- "802":
+ "803":
  "<code>AlgebraicGeometry.Scheme.AffineProEt.{u} (S : AlgebraicGeometry.Scheme) : Type (u + 1)</code><span class=\"sep\"></span><code class=\"docstring\">The pro-étale affine site is the full subcategory of the pro-étale site where every\nobject can be written as a cofiltered limit of affine étale schemes over `S`. </code>",
- "801":
+ "802":
  "<code>CategoryTheory.Precoverage.ZeroHypercover.toPreZeroHypercover.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  {J : CategoryTheory.Precoverage C} {S : C} (self : J.ZeroHypercover S) : CategoryTheory.PreZeroHypercover S</code>",
- "800":
+ "801":
  "<code>AlgebraicGeometry.QuasiCompactCover.{u, v} {S : AlgebraicGeometry.Scheme} (𝒰 : CategoryTheory.PreZeroHypercover S) :\n  Prop</code><span class=\"sep\"></span><code class=\"docstring\">A cover of a scheme is quasi-compact if every affine open of the base can be covered\nby a finite union of images of quasi-compact opens of the components.\n</code>",
+ "800":
+ "<code>AlgebraicGeometry.LocallyOfFinitePresentation.{u} {X Y : AlgebraicGeometry.Scheme} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism of schemes `f : X ⟶ Y` is locally of finite presentation if for each affine `U ⊆ Y`\nand `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is of finite presentation. </code>",
  "80": "<code>X</code>",
  "8":
  "<code>TopologicalSpace.{u} (X : Type u) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">A topology on `X`. </code>",
  "799":
- "<code>AlgebraicGeometry.LocallyOfFinitePresentation.{u} {X Y : AlgebraicGeometry.Scheme} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism of schemes `f : X ⟶ Y` is locally of finite presentation if for each affine `U ⊆ Y`\nand `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is of finite presentation. </code>",
- "798":
  "<code>CategoryTheory.PreZeroHypercover.f.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] {S : C}\n  (self : CategoryTheory.PreZeroHypercover S) (i : self.I₀) : self.X i ⟶ S</code><span class=\"sep\"></span><code class=\"docstring\">the morphisms in the covering of `S` </code>",
- "797":
+ "798":
  "<code>CategoryTheory.PreZeroHypercover.I₀.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C] {S : C}\n  (self : CategoryTheory.PreZeroHypercover S) : Type w</code><span class=\"sep\"></span><code class=\"docstring\">the index type of the covering of `S` </code>",
- "796": "<code>𝒰.I₀</code>",
- "795":
+ "797": "<code>𝒰.I₀</code>",
+ "796":
  "<code>AlgebraicGeometry.Scheme.JointlySurjective.{u} (K : CategoryTheory.Precoverage AlgebraicGeometry.Scheme) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A coverage `K` on `Scheme` is called jointly surjective if every covering family in `K`\nis jointly surjective. </code>",
- "794":
+ "795":
  "<code>AlgebraicGeometry.Scheme.Cover.{v, u} (K : CategoryTheory.Precoverage AlgebraicGeometry.Scheme)\n  (S : AlgebraicGeometry.Scheme) : Type (max (u + 1) (v + 1))</code><span class=\"sep\"></span><code class=\"docstring\">A cover of `X` in the coverage `K` is a `0`-hypercover for `K`. </code>",
- "793": "<code>AlgebraicGeometry.Scheme.Cover K S</code>",
- "792":
+ "794": "<code>AlgebraicGeometry.Scheme.Cover K S</code>",
+ "793":
  "<code>CategoryTheory.Precoverage.{v_1, u_1} (C : Type u_1) [CategoryTheory.Category.{v_1, u_1} C] : Type (max u_1 v_1)</code><span class=\"sep\"></span><code class=\"docstring\">A precoverage is a collection of *covering* presieves on every object `X : C`.\nSee `CategoryTheory.Coverage` and `CategoryTheory.Pretopology` for common extensions of this. </code>",
- "791": "<code>CategoryTheory.Precoverage AlgebraicGeometry.Scheme</code>",
- "790":
+ "792": "<code>CategoryTheory.Precoverage AlgebraicGeometry.Scheme</code>",
+ "791":
  "<code>AlgebraicGeometry.QuasiCompactCover.of_flat_locallyOfFinitePresentation.{u, u_1} {S : AlgebraicGeometry.Scheme}\n  {K : CategoryTheory.Precoverage AlgebraicGeometry.Scheme} (𝒰 : AlgebraicGeometry.Scheme.Cover K S)\n  [AlgebraicGeometry.Scheme.JointlySurjective K] [∀ (i : 𝒰.I₀), AlgebraicGeometry.Flat (𝒰.f i)]\n  [∀ (i : 𝒰.I₀), AlgebraicGeometry.LocallyOfFinitePresentation (𝒰.f i)] :\n  AlgebraicGeometry.QuasiCompactCover 𝒰.toPreZeroHypercover</code><span class=\"sep\"></span><code class=\"docstring\">A jointly surjective family of flat morphisms locally of finite presentation is\nquasi-compact. </code>",
+ "790":
+ "<code>AlgebraicGeometry.HasRingHomProperty.{u} (P : CategoryTheory.MorphismProperty AlgebraicGeometry.Scheme)\n  (Q : outParam ({R S : Type u} → [inst : CommRing R] → [inst_1 : CommRing S] → (R →+* S) → Prop)) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`HasRingHomProperty P Q` is a type class asserting that `P` is local at the target and the source,\nand for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.\nTo make the proofs easier, we state it instead as\n1. `Q` is local (See `RingHom.PropertyIsLocal`)\n2. `P f` if and only if `Q` holds for every `Γ(Y, U) ⟶ Γ(X, V)` for all affine `U`, `V`.\n  See `HasRingHomProperty.iff_appLE`.\n</code>",
  "79":
  "<code>Topology.IsEmbedding.{u_1, u_2} {X : Type u_1} {Y : Type u_2} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]\n  (f : X → Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A function between topological spaces is an embedding if it is injective,\nand for all `s : Set X`, `s` is open iff it is the preimage of an open set. </code>",
  "789":
- "<code>AlgebraicGeometry.HasRingHomProperty.{u} (P : CategoryTheory.MorphismProperty AlgebraicGeometry.Scheme)\n  (Q : outParam ({R S : Type u} → [inst : CommRing R] → [inst_1 : CommRing S] → (R →+* S) → Prop)) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`HasRingHomProperty P Q` is a type class asserting that `P` is local at the target and the source,\nand for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.\nTo make the proofs easier, we state it instead as\n1. `Q` is local (See `RingHom.PropertyIsLocal`)\n2. `P f` if and only if `Q` holds for every `Γ(Y, U) ⟶ Γ(X, V)` for all affine `U`, `V`.\n  See `HasRingHomProperty.iff_appLE`.\n</code>",
- "788":
  "<code>AlgebraicGeometry.WeaklyEtale.hasRingHomProperty.{u} :\n  AlgebraicGeometry.HasRingHomProperty @AlgebraicGeometry.WeaklyEtale fun {R S} [CommRing R] [CommRing S] =&gt;\n    RingHom.WeaklyEtale</code><span class=\"sep\"></span><code class=\"docstring\">`WeaklyEtale` is induced by the ring-homomorphism property `RingHom.WeaklyEtale`,\nin the sense that a morphism `f : X ⟶ Y` of schemes is weakly étale iff for every affine\nopen `U ⊆ Y` and every affine open `V ⊆ X` with `f(V) ⊆ U`, the induced ring homomorphism\n`Γ(Y, U) → Γ(X, V)` is weakly étale. </code>",
- "787":
+ "788":
  "<code>AlgebraicGeometry.WeaklyEtale.{u} {X Y : AlgebraicGeometry.Scheme} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism is weakly étale if it is flat and the diagonal map is flat. </code>",
- "786":
+ "787":
  "<code>CategoryTheory.Limits.pullback.diagonal.{v_1, u_1} {C : Type u_1} [CategoryTheory.Category.{v_1, u_1} C] {X Y : C}\n  (f : X ⟶ Y) [CategoryTheory.Limits.HasPullback f f] : X ⟶ CategoryTheory.Limits.pullback.diagonalObj f</code><span class=\"sep\"></span><code class=\"docstring\">The diagonal morphism `X ⟶ Δ_{X/Y}` for a morphism `f : X ⟶ Y`. </code>",
- "785":
+ "786":
  "<code>AlgebraicGeometry.Flat (CategoryTheory.Limits.pullback.diagonal f)</code>",
- "784":
+ "785":
  "<code>AlgebraicGeometry.Flat.{u} {X Y : AlgebraicGeometry.Scheme} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and\n`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat. This is equivalent to\nasking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkMap`).\n</code>",
- "783": "<code>AlgebraicGeometry.Flat f</code>",
- "782":
+ "784": "<code>AlgebraicGeometry.Flat f</code>",
+ "783":
  "<code>CategoryTheory.GrothendieckTopology.OneHypercoverFamily.IsGenerating.{w, v, u} {C : Type u}\n  [CategoryTheory.Category.{v, u} C] {J : CategoryTheory.GrothendieckTopology C} (H : J.OneHypercoverFamily) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A family of 1-hypercovers generates the topology if any covering sieve\ncontains the sieve generated by the underlying covering of one of these 1-hypercovers.\nSee `OneHypercoverFamily.isSheaf_iff` for the characterization of sheaves. </code>",
- "781":
+ "782":
  "<code>CategoryTheory.GrothendieckTopology.finiteOneHypercover.{v₂, u₂, u_3} {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D]\n  (K : CategoryTheory.GrothendieckTopology D) : K.OneHypercoverFamily</code>",
- "780":
+ "781":
  "<code>CategoryTheory.AB5OfSize.{w, w', v, u} (C : Type u) [CategoryTheory.Category.{v, u} C]\n  [CategoryTheory.Limits.HasFilteredColimitsOfSize.{w, w', v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category `C` which has filtered colimits of a given size is said to have `AB5` of that size\nprovided that these filtered colimits are exact.\n\n`AB5OfSize.{w, w'} C` means that `C` has exact colimits of shape `J : Type w'` with\n`Category.{w} J` such that `J` is filtered.\n</code>",
+ "780":
+ "<code>CategoryTheory.Limits.HasFilteredColimitsOfSize.{w', w, v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Class for having all filtered colimits of a given size. </code>",
  "78": "<code>Topology.IsEmbedding f</code>",
  "779":
- "<code>CategoryTheory.Limits.HasFilteredColimitsOfSize.{w', w, v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Class for having all filtered colimits of a given size. </code>",
- "778":
  "<code>CategoryTheory.Functor.comp.{v₁, v₂, v₃, u₁, u₂, u₃} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] {E : Type u₃} [CategoryTheory.Category.{v₃, u₃} E]\n  (F : CategoryTheory.Functor C D) (G : CategoryTheory.Functor D E) : CategoryTheory.Functor C E</code><span class=\"sep\"></span><code class=\"docstring\">`F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).\n</code>",
- "777":
+ "778":
  "<code>CategoryTheory.Functor.op.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (F : CategoryTheory.Functor C D) : CategoryTheory.Functor Cᵒᵖ Dᵒᵖ</code><span class=\"sep\"></span><code class=\"docstring\">The opposite of a functor, i.e. considering a functor `F : C ⥤ D` as a functor `Cᵒᵖ ⥤ Dᵒᵖ`.\nIn informal mathematics no distinction is made between these. </code>",
- "776":
+ "777":
  "<code>CategoryTheory.Presheaf.IsSheaf.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {A : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} A] (J : CategoryTheory.GrothendieckTopology C) (P : CategoryTheory.Functor Cᵒᵖ A) :\n  Prop</code><span class=\"sep\"></span><code class=\"docstring\">A sheaf of A is a presheaf `P : Cᵒᵖ ⥤ A` such that for every `E : A`, the\npresheaf of types given by sending `U : C` to `Hom_{A}(E, P U)` is a sheaf of types. </code>",
- "775": "<code>CategoryTheory.Presheaf.IsSheaf J (F.op.comp P)</code>",
- "774": "<code>CategoryTheory.Functor Dᵒᵖ A</code>",
- "773":
+ "776": "<code>CategoryTheory.Presheaf.IsSheaf J (F.op.comp P)</code>",
+ "775": "<code>CategoryTheory.Functor Dᵒᵖ A</code>",
+ "774":
  "<code>CategoryTheory.Presheaf.IsSheaf.of_preservesFilteredColimitsOfSize.{w, v₁, v₂, u₁, u₂, u_2, u_3, u_4} {C : Type u₁}\n  [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D]\n  {F : CategoryTheory.Functor C D} {A : Type u_2} [CategoryTheory.Category.{u_3, u_2} A]\n  (J : CategoryTheory.GrothendieckTopology C) (K : CategoryTheory.GrothendieckTopology D)\n  (P : CategoryTheory.Functor Dᵒᵖ A) (h : CategoryTheory.Presheaf.IsSheaf J (F.op.comp P))\n  [CategoryTheory.Limits.PreservesFilteredColimitsOfSize.{w, w, v₂, u_3, u₂, u_2} P]\n  [CategoryTheory.Limits.HasFilteredColimitsOfSize.{w, w, u_3, u_2} A] [CategoryTheory.AB5OfSize.{w, w, u_3, u_2} A]\n  [(CategoryTheory.GrothendieckTopology.oneHypercoverRelativelyRepresentable F J K ⊓\n        K.finiteOneHypercover).IsGenerating] :\n  CategoryTheory.Presheaf.IsSheaf K P</code><span class=\"sep\"></span><code class=\"docstring\">Let `K` be a topology generated by limits of finite `1`-hypercovers in `C`. Then if `P` is a\npresheaf on `D` (think: `= Pro C`) such that\n\n1. `P` restricted to `C` is a sheaf, and\n2. `P` preserves filtered colimits, then\n\n`P` is a sheaf.\n</code>",
- "772":
+ "773":
  "<code>CategoryTheory.GrothendieckTopology.OneHypercoverFamily.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (J : CategoryTheory.GrothendieckTopology C) : Type (max (max u (w + 1)) v)</code><span class=\"sep\"></span><code class=\"docstring\">A family of 1-hypercovers consists of the data of a predicate on\n`OneHypercover.{w} J X` for all `X`. </code>",
- "771": "<code>CategoryTheory.GrothendieckTopology D</code>",
- "770":
+ "772": "<code>CategoryTheory.GrothendieckTopology D</code>",
+ "771":
  "<code>CategoryTheory.GrothendieckTopology.{v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Type (max u v)</code><span class=\"sep\"></span><code class=\"docstring\">The definition of a Grothendieck topology: a set of sieves `J X` on each object `X` satisfying\nthree axioms:\n1. For every object `X`, the maximal sieve is in `J X`.\n2. If `S ∈ J X` then its pullback along any `h : Y ⟶ X` is in `J Y`.\n3. If `S ∈ J X` and `R` is a sieve on `X`, then provided that the pullback of `R` along any arrow\n   `f : Y ⟶ X` in `S` is in `J Y`, we have that `R` itself is in `J X`.\n\nA sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.\n\nSee also [nlab] or [MM92] Chapter III, Section 2, Definition 1. </code>",
+ "770": "<code>CategoryTheory.GrothendieckTopology C</code>",
  "77": "<code>X → Y</code>",
- "769": "<code>CategoryTheory.GrothendieckTopology C</code>",
- "768": "<code>CategoryTheory.Functor C D</code>",
- "767":
+ "769": "<code>CategoryTheory.Functor C D</code>",
+ "768":
  "<code>CategoryTheory.GrothendieckTopology.oneHypercoverRelativelyRepresentable.{w, v₁, v₂, u₁, u₂, u_3} {C : Type u₁}\n  [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D]\n  (F : CategoryTheory.Functor C D) (J : CategoryTheory.GrothendieckTopology C)\n  (K : CategoryTheory.GrothendieckTopology D) : K.OneHypercoverFamily</code><span class=\"sep\"></span><code class=\"docstring\">The family of `1`-hypercovers of `D` (think: `= Pro C`) that is a limit\nof `1`-hypercovers in `C`.\n\nWe shall show that if `D = Pro C`, the finite `1`-hypercovers for a suitable topology\non `D` satisfy this.\n</code>",
- "766":
+ "767":
  "<code>CategoryTheory.Precoherent.{v_1, u_1} (C : Type u_1) [CategoryTheory.Category.{v_1, u_1} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">The condition `Precoherent C` is essentially the minimal condition required to define the\ncoherent coverage on `C`.\n</code>",
- "765":
+ "766":
  "<code>AlgebraicGeometry.Scheme.Etale.precoherent.{u} (S : AlgebraicGeometry.Scheme) : CategoryTheory.Precoherent S.Etale</code><span class=\"sep\"></span><code class=\"docstring\">The small étale site of a scheme is precoherent. </code>",
- "764":
+ "765":
  "<code>AlgebraicGeometry.Scheme.Etale.surjective_of_epi.{u_1} {S : AlgebraicGeometry.Scheme} {X Y : S.Etale} (f : X ⟶ Y)\n  [CategoryTheory.Epi f] : AlgebraicGeometry.Surjective f.left</code><span class=\"sep\"></span><code class=\"docstring\">A morphism in the small étale site is an epimorphism if and only if it is surjective. </code>",
- "763":
+ "764":
  "<code>CategoryTheory.EffectiveEpi.{v_1, u_1} {C : Type u_1} [CategoryTheory.Category.{v_1, u_1} C] {X Y : C} (f : Y ⟶ X) :\n  Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism `f : Y ⟶ X` is an effective epimorphism provided that `f` exhibits `X` as a colimit\nof the diagram of all \"relations\" `R ⇉ Y`.\nIf `f` has a kernel pair, then this is equivalent to showing that the corresponding cofork is\na colimit.\n</code>",
- "762":
+ "763":
  "<code>CategoryTheory.CommaMorphism.left.{v₁, v₂, v₃, u₁, u₂, u₃} {A : Type u₁} [CategoryTheory.Category.{v₁, u₁} A]\n  {B : Type u₂} [CategoryTheory.Category.{v₂, u₂} B] {T : Type u₃} [CategoryTheory.Category.{v₃, u₃} T]\n  {L : CategoryTheory.Functor A T} {R : CategoryTheory.Functor B T} {X Y : CategoryTheory.Comma L R}\n  (self : CategoryTheory.CommaMorphism X Y) : X.left ⟶ Y.left</code><span class=\"sep\"></span><code class=\"docstring\">Morphism on left objects </code>",
- "761":
+ "762":
  "<code>AlgebraicGeometry.Surjective.{u} {X Y : AlgebraicGeometry.Scheme} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism of schemes is surjective if the underlying map is. </code>",
- "760":
+ "761":
  "<code>AlgebraicGeometry.Scheme.Etale.{u} (X : AlgebraicGeometry.Scheme) : Type (u + 1)</code><span class=\"sep\"></span><code class=\"docstring\">The category `Etale X` is the category of schemes étale over `X`. </code>",
+ "760": "<code>S.Etale</code>",
  "76":
  "<code>Topology.IsEmbedding.specializes_iff.{u_2, u_3} {X : Type u_2} {Y : Type u_3} [TopologicalSpace X] [TopologicalSpace Y]\n  {f : X → Y} (hf : Topology.IsEmbedding f) {x y : X} : f x ⤳ f y ↔ x ⤳ y</code>",
- "759": "<code>S.Etale</code>",
- "758":
+ "759":
  "<code>AlgebraicGeometry.Scheme.{u_1} : Type (u_1 + 1)</code><span class=\"sep\"></span><code class=\"docstring\">We define `Scheme` as an `X : LocallyRingedSpace`,\nalong with a proof that every point has an open neighbourhood `U`\nso that the restriction of `X` to `U` is isomorphic,\nas a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`\nfor some `R : CommRingCat`.\n</code>",
- "757": "<code>AlgebraicGeometry.Scheme</code>",
- "756":
+ "758": "<code>AlgebraicGeometry.Scheme</code>",
+ "757":
  "<code>AlgebraicGeometry.Scheme.Etale.effectiveEpi_of_surjective.{u_1} {S : AlgebraicGeometry.Scheme} {X Y : S.Etale}\n  (f : X ⟶ Y) [AlgebraicGeometry.Surjective f.left] : CategoryTheory.EffectiveEpi f</code><span class=\"sep\"></span><code class=\"docstring\">A morphism in the small étale site is an epimorphism if and only if it is surjective. </code>",
- "755":
+ "756":
  "<code>CategoryTheory.coyoneda.{v₁, u₁} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] :\n  CategoryTheory.Functor Cᵒᵖ (CategoryTheory.Functor C (Type v₁))</code><span class=\"sep\"></span><code class=\"docstring\">The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.\n</code>",
- "754":
+ "755":
  "<code>CategoryTheory.EnoughProjectives.{v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category \"has enough projectives\" if for every object `X` there is a projective object `P` and\nan epimorphism `P ↠ X`. </code>",
- "753":
+ "754":
  "<code>CategoryTheory.EnoughProjectives.epi_iff_forall_projective.{u_1, u_2} {C : Type u_1}\n  [CategoryTheory.Category.{u_2, u_1} C] [CategoryTheory.EnoughProjectives C] {X Y : C} (f : X ⟶ Y) :\n  CategoryTheory.Epi f ↔\n    ∀ (P : C),\n      CategoryTheory.Projective P →\n        Function.Surjective ⇑(CategoryTheory.ConcreteCategory.hom ((CategoryTheory.coyoneda.obj (Opposite.op P)).map f))</code><span class=\"sep\"></span><code class=\"docstring\">If `C` has enough projectives, being an epimorphism can be detected on sections over\nprojective objects. </code>",
- "752":
+ "753":
  "<code>CategoryTheory.IsSplitEpi.{v₁, u₁} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {X Y : C} (f : X ⟶ Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`IsSplitEpi f` is the assertion that `f` admits a section </code>",
- "751": "<code>X ⟶ P</code>",
- "750": "<code>E ⟶ S</code>",
+ "752": "<code>X ⟶ P</code>",
+ "751": "<code>E ⟶ S</code>",
+ "750": "<code>X ⟶ S</code>",
  "75":
  "<code>HasSubset.Subset.{u} {α : Type u} [self : HasSubset α] : α → α → Prop</code><span class=\"sep\"></span><code class=\"docstring\">Subset relation: `a ⊆ b`  \n\nConventions for notations in identifiers:\n\n * The recommended spelling of `⊆` in identifiers is `subset`.</code>",
- "749": "<code>X ⟶ S</code>",
- "748":
+ "749":
  "<code>∀ {X E S : C} (f : X ⟶ S) (e : E ⟶ S),\n  CategoryTheory.Epi e → CategoryTheory.Epi (CategoryTheory.Limits.pullback.fst f e)</code>",
- "747":
+ "748":
  "<code>CategoryTheory.Limits.HasPullbacks.{v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category `HasPullbacks` if it has all limits of shape `WalkingCospan`, i.e. if it has a\npullback for every pair of morphisms with the same codomain. </code>",
- "746":
+ "747":
  "<code>CategoryTheory.Projective.iff_forall_isSplitEpi_of_hasPullbacks.{u_1, u_2} {C : Type u_1}\n  [CategoryTheory.Category.{u_2, u_1} C] [CategoryTheory.Limits.HasPullbacks C]\n  (H :\n    ∀ {X E S : C} (f : X ⟶ S) (e : E ⟶ S),\n      CategoryTheory.Epi e → CategoryTheory.Epi (CategoryTheory.Limits.pullback.fst f e))\n  (P : C) : CategoryTheory.Projective P ↔ ∀ {X : C} (f : X ⟶ P), CategoryTheory.Epi f → CategoryTheory.IsSplitEpi f</code><span class=\"sep\"></span><code class=\"docstring\">If `C` has pullbacks and epimorphisms are stable under pullbacks, `P` is projective\nif and only if every epimorphism to `P` splits.\nThe conditions hold for example in abelian categories and pretopoi. </code>",
- "745":
+ "746":
  "<code>CategoryTheory.WeaklyContractible.{u_1, u_2} {C : Type u_1} [CategoryTheory.Category.{u_2, u_1} C] (P : C) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An object `P` is weakly contractible if it is projective. </code>",
- "744": "<code>P ⟶ E</code>",
- "743": "<code>E ⟶ X</code>",
- "742": "<code>P ⟶ X</code>",
- "741":
+ "745": "<code>P ⟶ E</code>",
+ "744": "<code>E ⟶ X</code>",
+ "743": "<code>P ⟶ X</code>",
+ "742":
  "<code>CategoryTheory.IsReplete.{v_2, u_2} (C : Type u_2) [CategoryTheory.Category.{v_2, u_2} C] : Prop</code>",
- "740":
+ "741":
  "<code>Opposite.op.{u} {α : Sort u} (unop : α) : αᵒᵖ</code><span class=\"sep\"></span><code class=\"docstring\">The canonical map `α → αᵒᵖ`. </code>",
+ "740": "<code>CategoryTheory.Limits.IsLimit c</code>",
  "74":
  "<code>CategoryTheory.Functor.map.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] (self : CategoryTheory.Functor C D) {X Y : C} :\n  (X ⟶ Y) → (self.obj X ⟶ self.obj Y)</code><span class=\"sep\"></span><code class=\"docstring\">The action of a functor on morphisms. </code>",
- "739": "<code>CategoryTheory.Limits.IsLimit c</code>",
- "738":
+ "739":
  "<code>Quiver.Hom.op.{u_1, u_2} {V : Type u_1} [Quiver V] {X Y : V} (f : X ⟶ Y) : Opposite.op Y ⟶ Opposite.op X</code><span class=\"sep\"></span><code class=\"docstring\">The opposite of an arrow in `V`. </code>",
- "737":
+ "738":
  "<code>CategoryTheory.homOfLE.{u} {X : Type u} [Preorder X] {x y : X} (h : x ≤ y) : x ⟶ y</code><span class=\"sep\"></span><code class=\"docstring\">Express an inequality as a morphism in the corresponding preorder category. </code>",
- "736": "<code>ℕ</code>",
- "735":
+ "737": "<code>ℕ</code>",
+ "736":
  "<code>Nat : Type</code><span class=\"sep\"></span><code class=\"docstring\">The natural numbers, starting at zero.\n\nThis type is special-cased by both the kernel and the compiler, and overridden with an efficient\nimplementation. Both use a fast arbitrary-precision arithmetic library (usually\n[GMP](https://gmplib.org/)); at runtime, `Nat` values that are sufficiently small are unboxed.\n</code>",
- "734": "<code>CategoryTheory.Functor ℕᵒᵖ C</code>",
- "733":
+ "735": "<code>CategoryTheory.Functor ℕᵒᵖ C</code>",
+ "734":
  "<code>∀ (F : CategoryTheory.Functor ℕᵒᵖ C),\n  (∀ (n : ℕ), CategoryTheory.Epi (F.map (CategoryTheory.homOfLE ⋯).op)) →\n    ∀ (c : CategoryTheory.Limits.Cone F) (hc : CategoryTheory.Limits.IsLimit c) (n : ℕ),\n      CategoryTheory.Epi (c.π.app (Opposite.op n))</code>",
- "732":
+ "733":
  "<code>Algebra.WeaklyEtale.exists_indEtale.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]\n  [Algebra.WeaklyEtale R S] :\n  ∃ T x x_1 x_2, ∃ (_ : IsScalarTower R S T), Algebra.IndEtale S T ∧ Module.FaithfullyFlat S T ∧ Algebra.IndEtale R T</code><span class=\"sep\"></span><code class=\"docstring\">If `S` is a weakly étale `R`-algebra, there exists a faithfully flat, ind-étale `S`-algebra `T`\nsuch that `T` is an ind-étale `R`-algebra. </code>",
- "731":
+ "732":
  "<code>RingHom.WeaklyEtale.exists_indEtale_comp.{u} {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}\n  (hf : f.WeaklyEtale) : ∃ T x g, g.IndEtale ∧ g.FaithfullyFlat ∧ (g.comp f).IndEtale</code><span class=\"sep\"></span><code class=\"docstring\">If `S` is a weakly étale `R`-algebra, there exists a faithfully flat, ind-étale `S`-algebra `T`\nsuch that `T` is an ind-étale `R`-algebra. </code>",
- "730":
+ "731":
  "<code>RingHom.BijectiveOnStalks.exists_indZariski.{u} {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}\n  (hf : f.BijectiveOnStalks) : ∃ T x g, g.IndZariski ∧ g.FaithfullyFlat ∧ (g.comp f).IndZariski</code><span class=\"sep\"></span><code class=\"docstring\">If `R → S` is bijective on stalks, ind-Zariski locally it is ind-Zariski. </code>",
+ "730": "<code>Algebra R T</code>",
  "73": "<code>i ⟶ j</code>",
- "729": "<code>Algebra R T</code>",
- "728":
+ "729":
  "<code>Algebra.BijectiveOnStalks.exists_indZariski.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]\n  [Algebra.BijectiveOnStalks R S] :\n  ∃ T x x_1 x_2,\n    ∃ (_ : IsScalarTower R S T), Algebra.IndZariski S T ∧ Module.FaithfullyFlat S T ∧ Algebra.IndZariski R T</code>",
- "727":
+ "728":
  "<code>RingHom.BijectiveOnStalks.indZariski_of_isWLocal.{u} {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}\n  [IsWLocalRing R] [IsWLocalRing S] (hf : f.IsWLocal) (hf' : f.BijectiveOnStalks) : f.IndZariski</code><span class=\"sep\"></span><code class=\"docstring\">A w-local ring map between w-local spaces that is bijective on stalks is ind-Zariski. </code>",
- "726":
+ "727":
  "<code>Algebra.WeaklyEtale.bijective_of_isStrictlyHenselianLocalRing.{u} {R S : Type u} [CommRing R] [CommRing S]\n  [IsLocalRing S] [Algebra R S] [IsLocalHom (algebraMap R S)] [IsStrictlyHenselianLocalRing R]\n  [Algebra.WeaklyEtale R S] : Function.Bijective ⇑(algebraMap R S)</code><span class=\"sep\"></span><code class=\"docstring\">If `R → S` is a local homomorphism of local rings, `R` is strictly henselian and `S` is\nweakly étale over `R`, then `R → S` is an isomorphism. </code>",
- "725":
+ "726":
  "<code>Algebra.WeaklyEtale.bijective_of_henselianLocalRing.{u} {R S : Type u} [CommRing R] [CommRing S] [IsLocalRing S]\n  [Algebra R S] [IsLocalHom (algebraMap R S)] [HenselianLocalRing R] [IsSepClosed (IsLocalRing.ResidueField R)]\n  [Algebra.WeaklyEtale R S] : Function.Bijective ⇑(algebraMap R S)</code><span class=\"sep\"></span><code class=\"docstring\">If `R → S` is a local homomorphism of local rings, `R` is strictly henselian and `S` is\nweakly-étale over `R`, then `R → S` is an isomorphism. </code>",
- "724": "<code>IsIdempotentElem e</code>",
- "723": "<code>TensorProduct R L S</code>",
- "722":
+ "725": "<code>IsIdempotentElem e</code>",
+ "724": "<code>TensorProduct R L S</code>",
+ "723":
  "<code>Algebra.WeaklyEtale.eq_of_isIdempotentElem.{u, u_1} {R S : Type u} [CommRing R] [CommRing S] [IsLocalRing S]\n  [Algebra R S] [IsLocalHom (algebraMap R S)] [HenselianLocalRing R] [IsSepClosed (IsLocalRing.ResidueField R)]\n  [Algebra.WeaklyEtale R S] (p : Ideal R) [p.IsPrime] (L : Type u_1) [Field L] [Algebra (IsLocalRing.ResidueField R) L]\n  [Algebra R L] [Algebra.IsAlgebraic (IsLocalRing.ResidueField R) L] [IsScalarTower R (IsLocalRing.ResidueField R) L]\n  {e : TensorProduct R L S} (he : IsIdempotentElem e) : e = 0 ∨ e = 1</code><span class=\"sep\"></span><code class=\"docstring\">If `R → S` is a local homomorphism of local rings, `R` is strictly henselian and `S` is\nweakly-étale over `R`, then for any algebraic field extension `L` of `κ(p)` the\ntensorproduct `L ⊗[R] S` has no nontrivial idempotent elements. </code>",
- "721": "<code>TensorProduct K q.ResidueField B</code>",
- "720":
+ "722": "<code>TensorProduct K q.ResidueField B</code>",
+ "721":
  "<code>Not (a : Prop) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`Not p`, or `¬p`, is the negation of `p`. It is defined to be `p → False`,\nso if your goal is `¬p` you can use `intro h` to turn the goal into\n`h : p ⊢ False`, and if you have `hn : ¬p` and `h : p` then `hn h : False`\nand `(hn h).elim` will prove anything.\nFor more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic)\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `¬` in identifiers is `not`.</code>",
+ "720": "<code>¬Function.Bijective ⇑(algebraMap K q.ResidueField)</code>",
  "72": "<code>Type u_1</code>",
- "719": "<code>¬Function.Bijective ⇑(algebraMap K q.ResidueField)</code>",
- "718":
+ "719":
  "<code>Algebra.IndEtale.exists_isIdempotentElem_tensorProduct_of_residueField_ne.{u} {K B : Type u} [Field K] [CommRing B]\n  [Algebra K B] [Algebra.IndEtale K B] (q : Ideal B) [q.IsPrime]\n  (h : ¬Function.Bijective ⇑(algebraMap K q.ResidueField)) : ∃ e, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1</code><span class=\"sep\"></span><code class=\"docstring\">If `B` is an ind-étale algebra over a field `K` and `q` is a prime ideal of `B` whose\nresidue field is strictly larger than `K`, then the tensor product\n`κ(q) ⊗[K] B` has a nontrivial idempotent element. </code>",
- "717":
+ "718":
  "<code>IsIdempotentElem.{u_1} {M : Type u_1} [Mul M] (a : M) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An element `a` is said to be idempotent if `a * a = a`. </code>",
- "716": "<code>B</code>",
- "715":
+ "717": "<code>B</code>",
+ "716":
  "<code>Ne.{u} {α : Sort u} (a b : α) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`a ≠ b`, or `Ne a b` is defined as `¬ (a = b)` or `a = b → False`,\nand asserts that `a` and `b` are not equal.\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `≠` in identifiers is `ne`.</code>",
- "714": "<code>q₁ ≠ q₂</code>",
- "713":
+ "715": "<code>q₁ ≠ q₂</code>",
+ "714":
  "<code>Algebra.IndEtale.exists_isIdempotentElem_of_two_primes.{u} {K B : Type u} [Field K] [CommRing B] [Algebra K B]\n  [Algebra.IndEtale K B] {q₁ q₂ : Ideal B} [q₁.IsPrime] [q₂.IsPrime] (h : q₁ ≠ q₂) :\n  ∃ e, IsIdempotentElem e ∧ e ≠ 0 ∧ e ≠ 1</code><span class=\"sep\"></span><code class=\"docstring\">If `B` is an ind-étale algebra over a field `K` and `B` has at least two distinct prime\nideals, then `B` has a nontrivial idempotent element. </code>",
- "712":
+ "713":
  "<code>TopCat.limitCone.{v, u, w} {J : Type v} [CategoryTheory.Category.{w, v} J] (F : CategoryTheory.Functor J TopCat) :\n  CategoryTheory.Limits.Cone F</code><span class=\"sep\"></span><code class=\"docstring\">A choice of limit cone for a functor `F : J ⥤ TopCat`.\nGenerally you should just use `limit.cone F`, unless you need the actual definition\n(which is in terms of `Types.limitCone`).\n</code>",
- "711": "<code>CategoryTheory.Functor J TopCat</code>",
- "710":
+ "712": "<code>CategoryTheory.Functor J TopCat</code>",
+ "711":
  "<code>TopCat.limitCone_pt_totallyDisconnectedSpace.{v, u} {J : Type v} [CategoryTheory.SmallCategory J]\n  (F : CategoryTheory.Functor J TopCat) [∀ (j : J), TotallyDisconnectedSpace ↑(F.obj j)] :\n  TotallyDisconnectedSpace ↑(TopCat.limitCone F).pt</code><span class=\"sep\"></span><code class=\"docstring\">The inverse limit of a system of totally disconnected topological spaces is\ntotally disconnected. </code>",
+ "710":
+ "<code>Algebra.WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap.{u_1, u_2} {R : Type u_1} {S : Type u_2}\n  [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]\n  [Algebra.WeaklyEtale R S] (h : Function.Bijective (PrimeSpectrum.comap (algebraMap R S)))\n  (hres :\n    ∀ (p : Ideal R) [inst : p.IsPrime] (q : Ideal S) [inst_1 : q.IsPrime] [inst_2 : q.LiesOver p],\n      Function.Bijective ⇑(IsLocalRing.ResidueField.map (Localization.localRingHom p q (algebraMap R S) ⋯))) :\n  Function.Bijective ⇑(algebraMap R S)</code><span class=\"sep\"></span><code class=\"docstring\">Let `R → S` be a weakly étale local homomorphism of local rings.  If for every prime\n`p ⊂ R` there is a unique prime `q ⊂ S` lying over `p` and `κ(p) = κ(q)`, then `R → S` is\nan isomorphism. </code>",
  "71":
  "<code>image_closure_image_subset_closure_image.{u_1, u_2, u_3} {I : Type u_1} [CategoryTheory.Category.{u_2, u_1} I]\n  {F : CategoryTheory.Functor I TopCat} (C : CategoryTheory.Limits.Cone F) (s : Set ↑C.pt) {i j : I} (f : i ⟶ j) :\n  ⇑(CategoryTheory.ConcreteCategory.hom (F.map f)) ''\n      closure (⇑(CategoryTheory.ConcreteCategory.hom (C.π.app i)) '' s) ⊆\n    closure (⇑(CategoryTheory.ConcreteCategory.hom (C.π.app j)) '' s)</code>",
  "709":
- "<code>Algebra.WeaklyEtale.bijective_algebraMap_of_bijective_residueFieldMap.{u_1, u_2} {R : Type u_1} {S : Type u_2}\n  [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]\n  [Algebra.WeaklyEtale R S] (h : Function.Bijective (PrimeSpectrum.comap (algebraMap R S)))\n  (hres :\n    ∀ (p : Ideal R) [inst : p.IsPrime] (q : Ideal S) [inst_1 : q.IsPrime] [inst_2 : q.LiesOver p],\n      Function.Bijective ⇑(IsLocalRing.ResidueField.map (Localization.localRingHom p q (algebraMap R S) ⋯))) :\n  Function.Bijective ⇑(algebraMap R S)</code><span class=\"sep\"></span><code class=\"docstring\">Let `R → S` be a weakly étale local homomorphism of local rings.  If for every prime\n`p ⊂ R` there is a unique prime `q ⊂ S` lying over `p` and `κ(p) = κ(q)`, then `R → S` is\nan isomorphism. </code>",
- "708":
  "<code>Algebra.bijective_of_faithfullyFlat_of_isEpi.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R] [CommRing S]\n  [Algebra R S] [Module.FaithfullyFlat R S] [Algebra.IsEpi R S] : Function.Bijective ⇑(algebraMap R S)</code><span class=\"sep\"></span><code class=\"docstring\">A faithfully flat epimorphism `R → S` is an isomorphism. </code>",
- "707": "<code>Function.Surjective ⇑(algebraMap R S)</code>",
- "706":
+ "708": "<code>Function.Surjective ⇑(algebraMap R S)</code>",
+ "707":
  "<code>Algebra.bijective_of_bijective_of_flat.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R] [CommRing S] [Algebra R S]\n  [Module.Flat R S] (hf : Function.Bijective (PrimeSpectrum.comap (algebraMap R S)))\n  (hf' : Function.Surjective ⇑(algebraMap R S)) : Function.Bijective ⇑(algebraMap R S)</code><span class=\"sep\"></span><code class=\"docstring\">A flat surjective map `R → S` that is bijective on prime spectra is an isomorphism. </code>",
- "705":
+ "706":
  "<code>Localization.localRingHom.{u_1, u_3} {R : Type u_1} [CommSemiring R] {P : Type u_3} [CommSemiring P] (I : Ideal R)\n  [hI : I.IsPrime] (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = Ideal.comap f J) :\n  Localization.AtPrime I →+* Localization.AtPrime J</code><span class=\"sep\"></span><code class=\"docstring\">For a ring hom `f : R →+* S` and a prime ideal `J` in `S`, the induced ring hom from the\nlocalization of `R` at `J.comap f` to the localization of `S` at `J`.\n\nTo make this definition more flexible, we allow any ideal `I` of `R` as input, together with a proof\nthat `I = J.comap f`. This can be useful when `I` is not definitionally equal to `J.comap f`.\n</code>",
- "704":
+ "705":
  "<code>IsLocalRing.ResidueField.map.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R] [IsLocalRing R] [CommRing S]\n  [IsLocalRing S] (f : R →+* S) [IsLocalHom f] : IsLocalRing.ResidueField R →+* IsLocalRing.ResidueField S</code><span class=\"sep\"></span><code class=\"docstring\">The map on residue fields induced by a local homomorphism between local rings </code>",
- "703": "<code>q.LiesOver p</code>",
- "702": "<code>p.IsPrime</code>",
- "701":
+ "704": "<code>q.LiesOver p</code>",
+ "703": "<code>p.IsPrime</code>",
+ "702":
  "<code>∀ (p : Ideal R) [inst : p.IsPrime] (q : Ideal S) [inst_1 : q.IsPrime] [inst_2 : q.LiesOver p],\n  Function.Bijective ⇑(IsLocalRing.ResidueField.map (Localization.localRingHom p q (algebraMap R S) ⋯))</code>",
- "700":
+ "701":
  "<code>Function.Bijective (PrimeSpectrum.comap (algebraMap R S))</code>",
+ "700":
+ "<code>Algebra.bijective_comap_lmul'_of_bijective_of_bijective.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R]\n  [CommRing S] [Algebra R S] (hf : Function.Bijective (PrimeSpectrum.comap (algebraMap R S)))\n  (h :\n    ∀ (p : Ideal R) [inst : p.IsPrime] (q : Ideal S) [inst_1 : q.IsPrime] [inst_2 : q.LiesOver p],\n      Function.Bijective ⇑(IsLocalRing.ResidueField.map (Localization.localRingHom p q (algebraMap R S) ⋯))) :\n  Function.Bijective (PrimeSpectrum.comap (Algebra.TensorProduct.lmul' R).toRingHom)</code><span class=\"sep\"></span><code class=\"docstring\">If all residue field extensions are trivial and the map on prime spectra is\nbijective, the map `Spec S ⟶ Spec (S ⊗[R] S)` is bijective. </code>",
  "70":
  "<code>Set.image.{u, v} {α : Type u} {β : Type v} (f : α → β) (s : Set α) : Set β</code><span class=\"sep\"></span><code class=\"docstring\">The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that\n`f a = b` for some `a ∈ s`. </code>",
  "7":
  "<code class=\"docstring\">A type universe. `Type ≡ Type 0`, `Type u ≡ Sort (u + 1)`. </code>",
  "699":
- "<code>Algebra.bijective_comap_lmul'_of_bijective_of_bijective.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R]\n  [CommRing S] [Algebra R S] (hf : Function.Bijective (PrimeSpectrum.comap (algebraMap R S)))\n  (h :\n    ∀ (p : Ideal R) [inst : p.IsPrime] (q : Ideal S) [inst_1 : q.IsPrime] [inst_2 : q.LiesOver p],\n      Function.Bijective ⇑(IsLocalRing.ResidueField.map (Localization.localRingHom p q (algebraMap R S) ⋯))) :\n  Function.Bijective (PrimeSpectrum.comap (Algebra.TensorProduct.lmul' R).toRingHom)</code><span class=\"sep\"></span><code class=\"docstring\">If all residue field extensions are trivial and the map on prime spectra is\nbijective, the map `Spec S ⟶ Spec (S ⊗[R] S)` is bijective. </code>",
- "698":
  "<code>Algebra.krullDimLE_zero_tensorProduct_of_krullDimLE_zero.{u_3, u_4} (k : Type u_3) [Field k] (R : Type u_4) [CommRing R]\n  [IsLocalRing R] [Algebra k R] [IsLocalHom (algebraMap k R)] [Ring.KrullDimLE 0 R]\n  (h : Function.Bijective ⇑(algebraMap k (IsLocalRing.ResidueField R))) : Ring.KrullDimLE 0 (TensorProduct k R R)</code>",
- "697":
+ "698":
  "<code>Function.Bijective ⇑(algebraMap k (IsLocalRing.ResidueField R))</code>",
- "696":
+ "697":
  "<code>Algebra.isLocalRing_tensorProduct_of_krullDimLE_zero.{u_3, u_4} (k : Type u_3) [Field k] (R : Type u_4) [CommRing R]\n  [IsLocalRing R] [Algebra k R] [IsLocalHom (algebraMap k R)] [Ring.KrullDimLE 0 R]\n  (h : Function.Bijective ⇑(algebraMap k (IsLocalRing.ResidueField R))) : IsLocalRing (TensorProduct k R R)</code>",
- "695":
+ "696":
  "<code>Algebra.TensorProduct.includeRight.{uR, uA, uB} {R : Type uR} {A : Type uA} {B : Type uB} [CommSemiring R] [Semiring A]\n  [Algebra R A] [Semiring B] [Algebra R B] : B →ₐ[R] TensorProduct R A B</code><span class=\"sep\"></span><code class=\"docstring\">The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. </code>",
- "694":
+ "695":
  "<code>Algebra.TensorProduct.includeLeft.{uR, uS, uA, uB} {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}\n  [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [CommSemiring S] [Algebra S A]\n  [SMulCommClass R S A] : A →ₐ[S] TensorProduct R A B</code><span class=\"sep\"></span><code class=\"docstring\">The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. </code>",
- "693":
+ "694":
  "<code>Algebra.TensorProduct.map.{uR, uS, uA, uB, uC, uD} {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB} {C : Type uC}\n  {D : Type uD} [CommSemiring R] [CommSemiring S] [Algebra R S] [Semiring A] [Algebra R A] [Algebra S A]\n  [IsScalarTower R S A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]\n  [Semiring D] [Algebra R D] (f : A →ₐ[S] C) (g : B →ₐ[R] D) : TensorProduct R A B →ₐ[S] TensorProduct R C D</code><span class=\"sep\"></span><code class=\"docstring\">The tensor product of a pair of algebra morphisms. </code>",
- "692":
+ "693":
  "<code>RingHom.ker.{u, v, u_1} {R : Type u} {S : Type v} {F : Type u_1} [Semiring R] [Semiring S] [FunLike F R S]\n  [rcf : RingHomClass F R S] (f : F) : Ideal R</code><span class=\"sep\"></span><code class=\"docstring\">Kernel of a ring homomorphism as an ideal of the domain. </code>",
- "691": "<code>Function.Surjective ⇑g</code>",
- "690": "<code>C →ₐ[R] D</code>",
+ "692": "<code>Function.Surjective ⇑g</code>",
+ "691": "<code>C →ₐ[R] D</code>",
+ "690": "<code>A →ₐ[S] B</code>",
  "69":
  "<code>Set.preimage.{u, v} {α : Type u} {β : Type v} (f : α → β) (s : Set β) : Set α</code><span class=\"sep\"></span><code class=\"docstring\">The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,\nis the set of `x : α` such that `f x ∈ s`. </code>",
- "689": "<code>A →ₐ[S] B</code>",
- "688":
+ "689":
  "<code>Ring.{u} (R : Type u) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">A `Ring` is a `Semiring` with negation making it an additive group. </code>",
- "687": "<code>Type u_9</code>",
- "686": "<code>Type u_8</code>",
- "685": "<code>Type u_7</code>",
- "684": "<code>Type u_6</code>",
- "683":
+ "688": "<code>Type u_9</code>",
+ "687": "<code>Type u_8</code>",
+ "686": "<code>Type u_7</code>",
+ "685": "<code>Type u_6</code>",
+ "684":
  "<code>Algebra.TensorProduct.map_ker.{u_4, u_5, u_6, u_7, u_8, u_9} {R : Type u_4} {S : Type u_5} [CommRing R] [CommRing S]\n  [Algebra R S] {A : Type u_6} {B : Type u_7} {C : Type u_8} {D : Type u_9} [Ring A] [Ring B] [Ring C] [Ring D]\n  [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D] [Algebra S A] [Algebra S B] [IsScalarTower R S A]\n  [IsScalarTower R S B] (f : A →ₐ[S] B) (g : C →ₐ[R] D) (hf : Function.Surjective ⇑f) (hg : Function.Surjective ⇑g) :\n  RingHom.ker (Algebra.TensorProduct.map f g) =\n    Ideal.map Algebra.TensorProduct.includeLeft (RingHom.ker f) ⊔\n      Ideal.map Algebra.TensorProduct.includeRight (RingHom.ker g)</code><span class=\"sep\"></span><code class=\"docstring\">If `f` and `g` are surjective morphisms of algebras, then\nthe kernel of `Algebra.TensorProduct.map f g` is generated by the kernels of `f` and `g` </code>",
- "682":
+ "683":
  "<code>Subalgebra.FG.{u, v} {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A subalgebra `S` is finitely generated if there exists `t : Finset A` such that\n`Algebra.adjoin R t = S`. </code>",
- "681": "<code>A.FG</code>",
- "680":
+ "682": "<code>A.FG</code>",
+ "681":
  "<code>Subalgebra.{u, v} (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : Type v</code><span class=\"sep\"></span><code class=\"docstring\">A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. </code>",
+ "680": "<code>Subalgebra k R</code>",
  "68":
  "<code>CategoryTheory.NatTrans.app.{v₁, v₂, u₁, u₂} {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂}\n  [CategoryTheory.Category.{v₂, u₂} D] {F G : CategoryTheory.Functor C D} (self : CategoryTheory.NatTrans F G) (X : C) :\n  F.obj X ⟶ G.obj X</code><span class=\"sep\"></span><code class=\"docstring\">The component of a natural transformation. </code>",
- "679": "<code>Subalgebra k R</code>",
- "678":
+ "679":
  "<code>Algebra.WeaklyEtale.etale_of_fg.{u} {k : Type u} [Field k] {R : Type u} [CommRing R] [Algebra k R]\n  [Algebra.WeaklyEtale k R] (A : Subalgebra k R) (hA : A.FG) : Algebra.Etale k ↥A</code><span class=\"sep\"></span><code class=\"docstring\">Any finitely-generated subalgebra of a weakly étale algebra is étale. </code>",
- "677":
+ "678":
  "<code>Algebra.WeaklyEtale.indEtale_field.{u} (k : Type u) [Field k] (R : Type u) [CommRing R] [Algebra k R]\n  [Algebra.WeaklyEtale k R] : Algebra.IndEtale k R</code><span class=\"sep\"></span><code class=\"docstring\">Any weakly étale algebra over a field is ind-étale. </code>",
- "676":
+ "677":
  "<code>Algebra.WeaklyEtale.isAlgebraic.{u, u_1} {k : Type u} [Field k] {L : Type u_1} [Field L] [Algebra k L]\n  [Algebra.WeaklyEtale k L] : Algebra.IsSeparable k L</code><span class=\"sep\"></span><code class=\"docstring\">Any weakly étale extension of fields is algebraic separable </code>",
- "675":
+ "676":
  "<code>IsIntegrallyClosedIn.{u_1, u_2} (R : Type u_1) (A : Type u_2) [CommRing R] [CommRing A] [Algebra R A] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`R` is integrally closed in `A` if all integral elements of `A` are also elements of `R`.\n</code>",
- "674":
+ "675":
  "<code>Algebra.IsEpi.{u_1, u_2} (R : Type u_1) (A : Type u_2) [CommSemiring R] [Semiring A] [Algebra R A] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A commutative `R`-algebra `A` is epi, if the multiplication map `A ⊗[R] A → A` is injective. </code>",
- "673":
+ "674":
  "<code>FaithfulSMul.{u_4, u_5} (M : Type u_4) (α : Type u_5) [SMul M α] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Typeclass for faithful actions. </code>",
- "672":
+ "673":
  "<code>Ring.WeakDimensionLEOne.isIntegrallyClosedIn_of_isEpi.{u_1, u_2} (R : Type u_1) [CommRing R] {S : Type u_2} [CommRing S]\n  [Algebra R S] [Ring.WeakDimensionLEOne R] [Module.Flat R S] [FaithfulSMul R S] [Algebra.IsEpi R S] :\n  IsIntegrallyClosedIn R S</code><span class=\"sep\"></span><code class=\"docstring\">If `R` is of weak dimension `≤ 1`, it is integrally closed in any flat extension `S` such\nthat `R → S` is an epi. </code>",
- "671":
+ "672":
  "<code>ValuationRing.{u} (A : Type u) [CommRing A] [IsDomain A] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An integral domain is called a `ValuationRing` provided that for any pair\nof elements `a b : A`, either `a` divides `b` or vice versa. </code>",
- "670": "<code>ι → Type u_4</code>",
+ "671": "<code>ι → Type u_4</code>",
+ "670":
+ "<code>Ring.WeakDimensionLEOne.pi_of_isValuationRing.{u_3, u_4} {ι : Type u_3} (R : ι → Type u_4) [(i : ι) → CommRing (R i)]\n  [∀ (i : ι), IsDomain (R i)] [∀ (i : ι), ValuationRing (R i)] : Ring.WeakDimensionLEOne ((i : ι) → R i)</code><span class=\"sep\"></span><code class=\"docstring\">The product of valuation rings is of weak dimension `≤ 1`. </code>",
  "67":
  "<code>CategoryTheory.Limits.Cone.π.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] {F : CategoryTheory.Functor J C} (self : CategoryTheory.Limits.Cone F) :\n  (CategoryTheory.Functor.const J).obj self.pt ⟶ F</code><span class=\"sep\"></span><code class=\"docstring\">A natural transformation from the constant functor at `X` to `F` </code>",
- "669":
- "<code>Ring.WeakDimensionLEOne.pi_of_isValuationRing.{u_3, u_4} {ι : Type u_3} (R : ι → Type u_4) [(i : ι) → CommRing (R i)]\n  [∀ (i : ι), IsDomain (R i)] [∀ (i : ι), ValuationRing (R i)] : Ring.WeakDimensionLEOne ((i : ι) → R i)</code><span class=\"sep\"></span><code class=\"docstring\">The product of valuation rings is of weak dimension `≤ 1`. </code>",
- "668": "<code>∀ (i : ι), ∃ z ∈ N, z i = y i</code>",
- "667": "<code>(i : ι) → M i</code>",
- "666":
+ "669": "<code>∀ (i : ι), ∃ z ∈ N, z i = y i</code>",
+ "668": "<code>(i : ι) → M i</code>",
+ "667":
  "<code>Submodule.FG.{u_1, u_2} {R : Type u_1} {M : Type u_2} [Semiring R] [AddCommMonoid M] [Module R M] (N : Submodule R M) :\n  Prop</code><span class=\"sep\"></span><code class=\"docstring\">A submodule of `M` is finitely generated if it is the span of a finite subset of `M`. </code>",
- "665": "<code>N.FG</code>",
- "664": "<code>Submodule ((i : ι) → A i) ((i : ι) → M i)</code>",
- "663": "<code>ι → Type u_3</code>",
- "662":
+ "666": "<code>N.FG</code>",
+ "665": "<code>Submodule ((i : ι) → A i) ((i : ι) → M i)</code>",
+ "664": "<code>ι → Type u_3</code>",
+ "663":
  "<code>Semiring.{u} (α : Type u) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is\ncommutative and associative, multiplication is associative and left and right distributive over\naddition, and `0` and `1` are additive and multiplicative identities. </code>",
- "661": "<code>ι → Type u_2</code>",
- "660":
+ "662": "<code>ι → Type u_2</code>",
+ "661":
  "<code>Submodule.FG.mem_pi.{u_1, u_2, u_3} {ι : Type u_1} {A : ι → Type u_2} [(i : ι) → Semiring (A i)] {M : ι → Type u_3}\n  [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module (A i) (M i)] {N : Submodule ((i : ι) → A i) ((i : ι) → M i)}\n  (hN : N.FG) {y : (i : ι) → M i} (hy : ∀ (i : ι), ∃ z ∈ N, z i = y i) : y ∈ N</code><span class=\"sep\"></span><code class=\"docstring\">A finitely generated `Π i, A i`-submodule `N` of a product `Π i, M i` is the product of its\ncomponentwise images: if every component `y i` of `y` lies in the image of `N` under the `i`-th\nprojection, then `y ∈ N`. </code>",
+ "660":
+ "<code>Ring.WeakDimensionLEOne.of_weaklyEtale.{u_1, u_2} (R : Type u_1) [CommRing R] {S : Type u_2} [CommRing S] [Algebra R S]\n  [Ring.WeakDimensionLEOne R] [Algebra.WeaklyEtale R S] : Ring.WeakDimensionLEOne S</code><span class=\"sep\"></span><code class=\"docstring\">If `R` is of weak dimension `≤ 1` and `S` is weakly étale over `R`, then the same holds for\n`S`. </code>",
  "66":
  "<code>CategoryTheory.ConcreteCategory.hom.{w, v, u, u_1} {C : Type u} {inst✝ : CategoryTheory.Category.{v, u} C}\n  {FC : outParam (C → C → Type u_1)} {CC : outParam (C → Type w)}\n  {inst✝¹ : outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))} [self : CategoryTheory.ConcreteCategory C FC]\n  {X Y : C} : (X ⟶ Y) → FC X Y</code><span class=\"sep\"></span><code class=\"docstring\">Convert a morphism of `C` to a bundled function. </code>",
  "659":
- "<code>Ring.WeakDimensionLEOne.of_weaklyEtale.{u_1, u_2} (R : Type u_1) [CommRing R] {S : Type u_2} [CommRing S] [Algebra R S]\n  [Ring.WeakDimensionLEOne R] [Algebra.WeaklyEtale R S] : Ring.WeakDimensionLEOne S</code><span class=\"sep\"></span><code class=\"docstring\">If `R` is of weak dimension `≤ 1` and `S` is weakly étale over `R`, then the same holds for\n`S`. </code>",
- "658":
  "<code>Ring.WeakDimensionLEOne.flat_ideal.{u_1} (R : Type u_1) [CommRing R] [Ring.WeakDimensionLEOne R] (I : Ideal R) :\n  Module.Flat R ↥I</code>",
- "657":
+ "658":
  "<code>Submodule.{u, v} (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v</code><span class=\"sep\"></span><code class=\"docstring\">A submodule of a module is one which is closed under vector operations.\nThis is a sufficient condition for the subset of vectors in the submodule\nto themselves form a module. </code>",
- "656": "<code>Submodule R M</code>",
- "655":
+ "657": "<code>Submodule R M</code>",
+ "656":
  "<code>Ring.WeakDimensionLEOne.flat_submodule.{u_1, u_3} (R : Type u_1) [CommRing R] [Ring.WeakDimensionLEOne R] {M : Type u_3}\n  [AddCommGroup M] [Module R M] (N : Submodule R M) [Module.Flat R M] : Module.Flat R ↥N</code><span class=\"sep\"></span><code class=\"docstring\">If `R` is of weak dimension `≤ 1`, then any submodule of a flat module is flat. </code>",
- "654":
+ "655":
  "<code>Ring.WeakDimensionLEOne.{u_1} (R : Type u_1) [CommRing R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring `R` is of weak dimension `≤ 1` if any finitely generated ideal is flat. </code>",
- "653":
+ "654":
  "<code>Ideal.FG.{u_1} {R : Type u_1} [Semiring R] (I : Ideal R) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.\n\nThis is defeq to `Submodule.FG`, but unfolds more nicely. </code>",
- "652": "<code>∀ (I : Ideal R), I.FG → Module.Flat R ↥I</code>",
- "651":
+ "653": "<code>∀ (I : Ideal R), I.FG → Module.Flat R ↥I</code>",
+ "652":
  "<code>List.TFAE (l : List Prop) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">TFAE: The Following (propositions) Are Equivalent.\n\nThe `tfae_have` and `tfae_finish` tactics can be useful in proofs with `TFAE` goals.\n</code>",
- "650": "<code>P.IsPrime</code>",
+ "651": "<code>P.IsPrime</code>",
+ "650":
+ "<code>Ring.KrullDimLE.{u_1} (n : ℕ) (R : Type u_1) [CommSemiring R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Type class for rings with krull dimension at most `n`. </code>",
  "65": "<code>I</code>",
  "649":
- "<code>Ring.KrullDimLE.{u_1} (n : ℕ) (R : Type u_1) [CommSemiring R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Type class for rings with krull dimension at most `n`. </code>",
- "648":
  "<code>IsReduced.{u_5} (R : Type u_5) [Zero R] [Pow R ℕ] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. </code>",
- "647":
+ "648":
  "<code>List.cons.{u} {α : Type u} (head : α) (tail : List α) : List α</code><span class=\"sep\"></span><code class=\"docstring\">The list whose first element is `head`, where `tail` is the rest of the list.\nUsually written `head :: tail`.\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `::` in identifiers is `cons`.\n\n * The recommended spelling of `[a]` in identifiers is `singleton`.</code>",
- "646":
+ "647":
  "<code>Ring.AbsolutelyFlat.tfae.{u_1} (R : Type u_1) [CommRing R] :\n  [Ring.AbsolutelyFlat R, IsReduced R ∧ ∀ (P : Ideal R), P.IsPrime → P.IsMaximal, IsReduced R ∧ Ring.KrullDimLE 0 R,\n      ∀ (P : Ideal R) [inst : P.IsPrime], IsField (Localization.AtPrime P)].TFAE</code>",
- "645":
+ "646":
  "<code>Ring.AbsolutelyFlat.of_flat_lmul'.{u_3, u_4} (R : Type u_3) (S : Type u_4) [CommRing R] [CommRing S] [Algebra R S]\n  (h : (Algebra.TensorProduct.lmul' R).Flat) [Ring.AbsolutelyFlat R] : Ring.AbsolutelyFlat S</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 092I](https://stacks.math.columbia.edu/tag/092I) ((1))</code>",
- "644": "<code>Type u_5</code>",
- "643":
+ "645": "<code>Type u_5</code>",
+ "644":
  "<code>Module.Flat.of_flat_lmul'_of_flat.{u_3, u_4, u_5} (R : Type u_3) (S : Type u_4) (M : Type u_5) [CommRing R] [CommRing S]\n  [Algebra R S] [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]\n  (h : (Algebra.TensorProduct.lmul' R).Flat) [Module.Flat R M] : Module.Flat S M</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 092C](https://stacks.math.columbia.edu/tag/092C)</code>",
- "642":
+ "643":
  "<code>Algebra.WeaklyEtale.of_isLocalization.{u_1, u_2} (R : Type u_1) [CommRing R] (S : Submonoid R) (T : Type u_2)\n  [CommRing T] [Algebra R T] [IsLocalization S T] : Algebra.WeaklyEtale R T</code><span class=\"sep\"></span><code class=\"docstring\">**Stacks [092J], localization clause.**\n\nIf `T` is the localization of `R` at a submonoid `S`, then `T` is weakly étale over `R`. </code>",
- "641": "<code>Type u₃</code>",
- "640": "<code>Type u₂</code>",
+ "642": "<code>Type u₃</code>",
+ "641": "<code>Type u₂</code>",
+ "640": "<code>Type u₁</code>",
  "64":
  "<code>CategoryTheory.Limits.Cone.pt.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] {F : CategoryTheory.Functor J C} (self : CategoryTheory.Limits.Cone F) : C</code><span class=\"sep\"></span><code class=\"docstring\">An object of `C` </code>",
- "639": "<code>Type u₁</code>",
- "638":
+ "639":
  "<code>Algebra.WeaklyEtale.trans.{u₁, u₂, u₃} (R : Type u₁) (S : Type u₂) [CommRing R] [CommRing S] [Algebra R S] (T : Type u₃)\n  [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] [Algebra.WeaklyEtale R S] [Algebra.WeaklyEtale S T] :\n  Algebra.WeaklyEtale R T</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 092J](https://stacks.math.columbia.edu/tag/092J) ((2))</code>",
- "637": "<code>g.WeaklyEtale</code>",
- "636":
+ "638": "<code>g.WeaklyEtale</code>",
+ "637":
  "<code>RingHom.WeaklyEtale.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R] [CommRing S] (f : R →+* S) : Prop</code>",
- "635": "<code>f.WeaklyEtale</code>",
- "634":
+ "636": "<code>f.WeaklyEtale</code>",
+ "635":
  "<code>RingHom.WeaklyEtale.comp.{u_1, u_2, u_3} {R : Type u_1} {S : Type u_2} [CommRing R] [CommRing S] {f : R →+* S}\n  {T : Type u_3} [CommRing T] {g : S →+* T} (hf : f.WeaklyEtale) (hg : g.WeaklyEtale) : (g.comp f).WeaklyEtale</code>",
- "633":
+ "634":
  "<code>IsField.{u} (R : Type u) [Semiring R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A predicate to express that a (semi)ring is a (semi)field.\n\nThis is mainly useful because such a predicate does not contain data,\nand can therefore be easily transported along ring isomorphisms.\nAdditionally, this is useful when trying to prove that\na particular ring structure extends to a (semi)field. </code>",
- "632": "<code>IsField R</code>",
- "631":
+ "633": "<code>IsField R</code>",
+ "632":
  "<code>Ring.AbsolutelyFlat.of_isField.{u_1} (R : Type u_1) [CommRing R] (h : IsField R) : Ring.AbsolutelyFlat R</code>",
- "630":
+ "631":
  "<code>Ring.AbsolutelyFlat.of_field.{u_1} (R : Type u_1) [Field R] : Ring.AbsolutelyFlat R</code>",
+ "630":
+ "<code>Ring.AbsolutelyFlat.instFlat.{u_1, u_2} (R : Type u_1) [CommRing R] (M : Type u_2) [AddCommGroup M] [Module R M]\n  [Ring.AbsolutelyFlat R] : Module.Flat R M</code>",
  "63": "<code>Set ↑C.pt</code>",
  "629":
- "<code>Ring.AbsolutelyFlat.instFlat.{u_1, u_2} (R : Type u_1) [CommRing R] (M : Type u_2) [AddCommGroup M] [Module R M]\n  [Ring.AbsolutelyFlat R] : Module.Flat R M</code>",
- "628":
  "<code>Ring.AbsolutelyFlat.{u_1} (R : Type u_1) [CommRing R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring `R` is absolutely flat if every ideal of `R` is pure, i.e. `R ⧸ I` is flat. </code>",
- "627":
+ "628":
  "<code>HasQuotient.Quotient.{u, v} (A : outParam (Type u)) {B : Type v} [self : HasQuotient A B] : B → Type (max u v)</code><span class=\"sep\"></span><code class=\"docstring\">`HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`. </code>",
- "626": "<code>∀ (I : Ideal R), Module.Flat R (R ⧸ I)</code>",
- "625":
+ "627": "<code>∀ (I : Ideal R), Module.Flat R (R ⧸ I)</code>",
+ "626":
  "<code>Algebra.WeaklyEtale.{u_3, u_4} (R : Type u_3) (S : Type u_4) [CommRing R] [CommRing S] [Algebra R S] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`S` is a weakly-étale `R`-algebra if both `R → S` and `S ⊗[R] S → R` are flat.\nThis is also called absolutely flat. </code>",
- "624":
+ "625":
  "<code>Algebra.TensorProduct.lmul'.{uR, uS} (R : Type uR) {S : Type uS} [CommSemiring R] [CommSemiring S] [Algebra R S] :\n  TensorProduct R S S →ₐ[R] S</code><span class=\"sep\"></span><code class=\"docstring\">`LinearMap.mul'` as an `AlgHom` over the base ring. </code>",
- "623": "<code>(Algebra.TensorProduct.lmul' R).Flat</code>",
- "622": "<code>Module.Flat R S</code>",
- "621":
+ "624": "<code>(Algebra.TensorProduct.lmul' R).Flat</code>",
+ "623": "<code>Module.Flat R S</code>",
+ "622":
  "<code>TensorProduct.{u_1, u_7, u_8} (R : Type u_1) [CommSemiring R] (M : Type u_7) (N : Type u_8) [AddCommMonoid M]\n  [AddCommMonoid N] [Module R M] [Module R N] : Type (max u_7 u_8)</code><span class=\"sep\"></span><code class=\"docstring\">The tensor product of two modules `M` and `N` over the same commutative semiring `R`.\nThe localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. </code>",
- "620":
+ "621":
  "<code>Or (a b : Prop) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`Or a b`, or `a ∨ b`, is the disjunction of propositions. There are two\nconstructors for `Or`, called `Or.inl : a → a ∨ b` and `Or.inr : b → a ∨ b`,\nand you can use `match` or `cases` to destruct an `Or` assumption into the\ntwo cases.\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `∨` in identifiers is `or`.</code>",
+ "620":
+ "<code>IsPurelyInseparable.{u_1, u_2} (F : Type u_1) (E : Type u_2) [CommRing F] [Ring E] [Algebra F E] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Typeclass for purely inseparable field extensions: an algebraic extension `E / F` is purely\ninseparable if and only if the minimal polynomial of every element of `E ∖ F` is not separable.\n\nWe define this for general (commutative) rings and only assume `F` and `E` are fields\nif this is needed for a proof. </code>",
  "62":
  "<code>CategoryTheory.Limits.IsLimit.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] {F : CategoryTheory.Functor J C} (t : CategoryTheory.Limits.Cone F) :\n  Type (max (max u₁ u₃) v₃)</code><span class=\"sep\"></span><code class=\"docstring\">A cone `t` on `F` is a limit cone if each cone on `F` admits a unique\ncone morphism to `t`. </code>",
  "619":
- "<code>IsPurelyInseparable.{u_1, u_2} (F : Type u_1) (E : Type u_2) [CommRing F] [Ring E] [Algebra F E] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Typeclass for purely inseparable field extensions: an algebraic extension `E / F` is purely\ninseparable if and only if the minimal polynomial of every element of `E ∖ F` is not separable.\n\nWe define this for general (commutative) rings and only assume `F` and `E` are fields\nif this is needed for a proof. </code>",
- "618":
  "<code>IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) ∨\n  IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField T)</code>",
- "617":
+ "618":
  "<code>Algebra.isLocalRing_tensorProduct_of_isPurelyInseparable_residueField.{u} (R S : Type u) [CommRing R] [CommRing S]\n  [Algebra R S] [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] (T : Type u) [CommRing T] [Algebra R T]\n  [IsLocalRing T] [IsLocalHom (algebraMap R T)] [Algebra.IsIntegral R S]\n  (h :\n    IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) ∨\n      IsPurelyInseparable (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField T)) :\n  IsLocalRing (TensorProduct R S T)</code><span class=\"sep\"></span><code class=\"docstring\">Let `R → S` and `R → T` be local ring homomorphisms of local rings, with `R → S`\nintegral.  If `κ(S)/κ(R)` or `κ(T)/κ(R)` is purely inseparable, the tensor product\n`S ⊗[R] T` is a local ring.\n\n[Stacks 092Y](https://stacks.math.columbia.edu/tag/092Y). </code>",
- "616":
+ "617":
  "<code>Algebra.IsAlgebraic.residueField_of_isIntegral.{u} {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]\n  [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] [Algebra.IsIntegral R S] :\n  Algebra.IsAlgebraic (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)</code><span class=\"sep\"></span><code class=\"docstring\">The residue field extension induced by a local integral homomorphism of local rings is\nalgebraic. </code>",
- "615":
+ "616":
  "<code>RingHom.IsIntegral.{u_1, u_3} {R : Type u_1} {A : Type u_3} [CommRing R] [Ring A] (f : R →+* A) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring homomorphism `f : R →+* A` is said to be integral\nif every element `A` is integral with respect to the map `f` </code>",
- "614": "<code>f.IsIntegral</code>",
- "613":
+ "615": "<code>f.IsIntegral</code>",
+ "614":
  "<code>RingHom.IsIntegral.isLocalHom_of_isLocalRing.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R] [IsLocalRing R]\n  [CommRing S] [IsLocalRing S] {f : R →+* S} (hf : f.IsIntegral) : IsLocalHom f</code><span class=\"sep\"></span><code class=\"docstring\">An integral ring homomorphism between local rings is a local ring homomorphism.\n\nNote that, unlike `RingHom.IsIntegral.isLocalHom`, this does not require injectivity of `f`. </code>",
- "612":
+ "613":
  "<code>IsDomain.{u} (α : Type u) [Semiring α] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A domain is a nontrivial semiring such that multiplication by a nonzero element\nis cancellative on both sides. In other words, a nontrivial semiring `R` satisfying\n`∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and\n`∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.\n\nThis is implemented as a mixin for `Semiring α`.\nTo obtain an integral domain use `[CommRing α] [IsDomain α]`. </code>",
- "611":
+ "612":
  "<code>Algebra.IsIntegral.{u_1, u_3} (R : Type u_1) (A : Type u_3) [CommRing R] [Ring A] [Algebra R A] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An algebra is integral if every element of the extension is integral over the base ring. </code>",
- "610":
+ "611":
  "<code>IsLocalRing.of_henselianLocalRing_of_isIntegral_of_isDomain.{u} {R S : Type u} [CommRing R] [CommRing S]\n  [HenselianLocalRing R] [Algebra R S] [Algebra.IsIntegral R S] [IsDomain S] : IsLocalRing S</code><span class=\"sep\"></span><code class=\"docstring\">An integral algebra over a Henselian local ring that is an integral domain is local. </code>",
+ "610": "<code>CategoryTheory.Limits.IsColimit c</code>",
  "61": "<code>CategoryTheory.Limits.IsLimit C</code>",
- "609": "<code>CategoryTheory.Limits.IsColimit c</code>",
- "608":
+ "609":
  "<code>IsLocalHom.{u_2, u_3, u_5} {R : Type u_2} {S : Type u_3} {F : Type u_5} [Monoid R] [Monoid S] [FunLike F R S] (f : F) :\n  Prop</code><span class=\"sep\"></span><code class=\"docstring\">A map `f` between monoids is *local* if any `a` in the domain is a unit\nwhenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent\ndefinitions in the local ring case - from where this concept originates, but it is useful in\nother contexts, so we allow this generalisation in mathlib. </code>",
- "607": "<code>j ⟶ j'</code>",
- "606":
+ "608": "<code>j ⟶ j'</code>",
+ "607":
  "<code>∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (CommRingCat.Hom.hom (F.map f))</code>",
- "605": "<code>∀ (j : J), IsLocalRing ↑(F.obj j)</code>",
- "604":
+ "606": "<code>∀ (j : J), IsLocalRing ↑(F.obj j)</code>",
+ "605":
  "<code>CommRingCat.FilteredColimits.isLocalRing_of_isColimit.{u} {J : Type u} [CategoryTheory.SmallCategory J]\n  [CategoryTheory.IsFiltered J] (F : CategoryTheory.Functor J CommRingCat) {c : CategoryTheory.Limits.Cocone F}\n  [h_obj : ∀ (j : J), IsLocalRing ↑(F.obj j)]\n  [h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (CommRingCat.Hom.hom (F.map f))]\n  (hc : CategoryTheory.Limits.IsColimit c) : IsLocalRing ↑c.pt</code>",
- "603":
+ "604":
  "<code>AlgEquiv.{u, v, w} (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]\n  [Algebra R B] : Type (max v w)</code><span class=\"sep\"></span><code class=\"docstring\">An equivalence of algebras (denoted as `A ≃ₐ[R] B`)\nis an equivalence of rings commuting with the actions of scalars. </code>",
- "602":
+ "603":
  "<code>Nonempty.{u} (α : Sort u) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`Nonempty α` is a typeclass that says that `α` is not an empty type,\nthat is, there exists an element in the type. It differs from `Inhabited α`\nin that `Nonempty α` is a `Prop`, which means that it does not actually carry\nan element of `α`, only a proof that *there exists* such an element.\nGiven `Nonempty α`, you can construct an element of `α` *nonconstructively*\nusing `Classical.choice`.\n</code>",
- "601": "<code>(i : ι) → Algebra R (B i)</code>",
- "600": "<code>(i : ι) → CommRing (B i)</code>",
+ "602": "<code>(i : ι) → Algebra R (B i)</code>",
+ "601": "<code>(i : ι) → CommRing (B i)</code>",
+ "600": "<code>Fintype ι</code>",
  "60":
  "<code>CategoryTheory.Limits.Cone.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] (F : CategoryTheory.Functor J C) : Type (max (max u₁ u₃) v₃)</code><span class=\"sep\"></span><code class=\"docstring\">A `c : Cone F` is:\n* an object `c.pt` and\n* a natural transformation `c.π : c.pt ⟶ F` from the constant `c.pt` functor to `F`.\n\nExample: if `J` is a category coming from a poset then the data required to make\na term of type `Cone F` is morphisms `πⱼ : c.pt ⟶ F j` for all `j : J` and,\nfor all `i ≤ j` in `J`, morphisms `πᵢⱼ : F i ⟶ F j` such that `πᵢ ≫ πᵢⱼ = πⱼ`.\n\n`Cone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cones.obj X`.\n</code>",
  "6":
  "<code>ExtremallyDisconnected.{u} (X : Type u) [TopologicalSpace X] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An extremally disconnected topological space is a space\nin which the closure of every open set is open. </code>",
- "599": "<code>Fintype ι</code>",
- "598":
+ "599":
  "<code>HenselianLocalRing.exists_pi_of_finite.{u} (R : Type u) [CommRing R] [HenselianLocalRing R] (S : Type u) [CommRing S]\n  [Algebra R S] [Module.Finite R S] :\n  ∃ ι x B x,\n    ∃ (_ : ∀ (i : ι), IsLocalRing (B i)) (_ : ∀ (i : ι), HenselianLocalRing (B i)),\n      ∃ x_3, ∃ (_ : ∀ (i : ι), Module.Finite R (B i)), Nonempty (S ≃ₐ[R] (i : ι) → B i)</code><span class=\"sep\"></span><code class=\"docstring\">A finite algebra over a Henselian local ring is, as a ring, a finite product of\nHenselian local rings, each finite over the base.\n\n[Stacks 04GH (1)](https://stacks.math.columbia.edu/tag/04GH).\n\nThis is destined to go directly to Mathlib, so it should not be worked on here. </code>",
- "597": "<code>T →+* S</code>",
- "596": "<code>Algebra S T</code>",
- "595": "<code>CommRing T</code>",
- "594":
+ "598": "<code>T →+* S</code>",
+ "597": "<code>Algebra S T</code>",
+ "596": "<code>CommRing T</code>",
+ "595":
  "<code>exists_forall_exists_retraction.{u} (R : Type u) [CommRing R] :\n  ∃ S x x_1,\n    Algebra.IndEtale R S ∧\n      Module.FaithfullyFlat R S ∧\n        ∀ (T : Type u) [inst : CommRing T] [inst_1 : Algebra S T] [Algebra.IndEtale S T] [Module.FaithfullyFlat S T],\n          ∃ f, f.comp (algebraMap S T) = RingHom.id S</code><span class=\"sep\"></span><code class=\"docstring\">Any ring has an ind-étale, faithfully flat cover for which every ind-étale\nfaithfully flat cover splits. </code>",
- "593":
+ "594":
  "<code>exists_isWContractibleRing.{u} (R : Type u) [CommRing R] :\n  ∃ S x x_1, Algebra.IndEtale R S ∧ Module.FaithfullyFlat R S ∧ IsWContractibleRing S</code><span class=\"sep\"></span><code class=\"docstring\">Any ring has an ind-étale, faithfully flat cover that is w-contractible. </code>",
- "592": "<code>Algebra R S</code>",
- "591": "<code>CommRing S</code>",
- "590":
+ "593": "<code>Algebra R S</code>",
+ "592": "<code>CommRing S</code>",
+ "591":
  "<code>exists_isWContractibleRing_of_isWStrictlyLocal.{u} (R : Type u) [CommRing R] [IsWStrictlyLocalRing R] :\n  ∃ S x x_1, Algebra.IndZariski R S ∧ Module.FaithfullyFlat R S ∧ IsWContractibleRing S</code><span class=\"sep\"></span><code class=\"docstring\">Any w-strictly-local ring has an ind-Zariski, faithfully flat cover that is w-contractible. </code>",
- "59": "<code>CategoryTheory.Limits.Cone F</code>",
- "589":
+ "590":
  "<code>IsWContractibleRing.exists_retraction.{u} (R : Type u) [CommRing R] [IsWContractibleRing R] (S : Type u) [CommRing S]\n  [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] : ∃ f, f.comp (algebraMap R S) = RingHom.id R</code><span class=\"sep\"></span><code class=\"docstring\">If `R` is w-contractible, every faithfully flat, ind-étale map `R →+* S` has a retraction. </code>",
- "588": "<code>S →+* R</code>",
- "587":
+ "59": "<code>CategoryTheory.Limits.Cone F</code>",
+ "589": "<code>S →+* R</code>",
+ "588":
  "<code>PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap R S) I) = closedPoints (PrimeSpectrum S)</code>",
- "586":
+ "587":
  "<code>PrimeSpectrum.zeroLocus ↑I = closedPoints (PrimeSpectrum R)</code>",
- "585":
+ "586":
  "<code>IsWContractibleRing.exists_retraction_of_zeroLocus_map_eq_closedPoints.{u} {R : Type u} [CommRing R]\n  [IsWContractibleRing R] {I : Ideal R} (hI : PrimeSpectrum.zeroLocus ↑I = closedPoints (PrimeSpectrum R)) {S : Type u}\n  [CommRing S] [Algebra R S] [Algebra.IndEtale R S] [Module.FaithfullyFlat R S] [IsWLocalRing S]\n  (hS : PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap R S) I) = closedPoints (PrimeSpectrum S)) :\n  ∃ f, f.comp (algebraMap R S) = RingHom.id R</code><span class=\"sep\"></span><code class=\"docstring\">Let `R` be a w-contractible ring and `I` an ideal of `R` cutting out the set `X^c` of closed\npoints in `Spec R`. Then every faithfully flat ind-étale map `R →+* S` with `S` w-local and\nwhose closed points of `Spec S` are exactly `V(IB)` has a retraction.\n</code>",
- "584":
+ "585":
  "<code>IsWContractibleRing.{u_1} (R : Type u_1) [CommRing R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring `R` is w-contractible if it is w-strictly-local and the space of connected components\nof `Spec R` is extremally disconnected. </code>",
- "583":
+ "584":
  "<code>ExtremallyDisconnected (ConnectedComponents (PrimeSpectrum R))</code>",
- "582":
+ "583":
  "<code>WContractification.Pullback.bijectiveOnStalks_algebraMap.{u} {A : Type u} [CommRing A] {T : Type u} [TopologicalSpace T]\n  [CompactSpace T] (S : DiscreteQuotient T) (f : C(T, ConnectedComponents (PrimeSpectrum A))) :\n  (algebraMap A (WContractification.Pullback S f)).BijectiveOnStalks</code>",
- "581":
+ "582":
  "<code>WContractification.Pullback.indZariski.{u} {A : Type u} [CommRing A] {T : Type u} [TopologicalSpace T] [CompactSpace T]\n  (S : DiscreteQuotient T) (f : C(T, ConnectedComponents (PrimeSpectrum A))) :\n  Algebra.IndZariski A (WContractification.Pullback S f)</code>",
- "580": "<code>C(T, ConnectedComponents (PrimeSpectrum A))</code>",
+ "581": "<code>C(T, ConnectedComponents (PrimeSpectrum A))</code>",
+ "580":
+ "<code>DiscreteQuotient.{u_5} (X : Type u_5) [TopologicalSpace X] : Type u_5</code><span class=\"sep\"></span><code class=\"docstring\">The type of discrete quotients of a topological space. </code>",
  "58":
  "<code>TopCat.{u} : Type (u + 1)</code><span class=\"sep\"></span><code class=\"docstring\">The category of topological spaces. </code>",
- "579":
- "<code>DiscreteQuotient.{u_5} (X : Type u_5) [TopologicalSpace X] : Type u_5</code><span class=\"sep\"></span><code class=\"docstring\">The type of discrete quotients of a topological space. </code>",
- "578": "<code>DiscreteQuotient T</code>",
- "577":
+ "579": "<code>DiscreteQuotient T</code>",
+ "578":
  "<code>WContractification.Pullback.{u, u_1} {A : Type u} [CommRing A] {T : Type u_1} [TopologicalSpace T] [CompactSpace T]\n  (S : DiscreteQuotient T) (f : C(T, ConnectedComponents (PrimeSpectrum A))) : Type (max u u_1)</code>",
- "576":
+ "577":
  "<code>WContractification.Restriction.isClosedEmbedding_algebraMap_specComap.{u} {A : Type u} [CommRing A]\n  {T : Set (ConnectedComponents (PrimeSpectrum A))} :\n  Topology.IsClosedEmbedding (PrimeSpectrum.comap (algebraMap A (WContractification.Restriction T)))</code><span class=\"sep\"></span><code class=\"docstring\">The map `Spec(Restriction T) → Spec A` is a closed embedding. </code>",
- "575": "<code>IsClosed T</code>",
- "574":
+ "576": "<code>IsClosed T</code>",
+ "575":
  "<code>WContractification.Restriction.range_algebraMap_specComap.{u} {A : Type u} [CommRing A]\n  {T : Set (ConnectedComponents (PrimeSpectrum A))} (h : IsClosed T) :\n  Set.range (PrimeSpectrum.comap (algebraMap A (WContractification.Restriction T))) = ConnectedComponents.mk ⁻¹' T</code><span class=\"sep\"></span><code class=\"docstring\">The image of `Spec(Restriction T) → Spec A` is the preimage of `T` under the projection\n`Spec A → π₀(Spec A)`, whenever `T` is closed. </code>",
- "573":
+ "574":
  "<code>WContractification.Restriction.algebraMap_surjective.{u} {A : Type u} [CommRing A]\n  (T : Set (ConnectedComponents (PrimeSpectrum A))) :\n  Function.Surjective ⇑(algebraMap A (WContractification.Restriction T))</code>",
- "572":
+ "573":
  "<code>WContractification.Restriction.indZariski.{u} {A : Type u} [CommRing A]\n  (T : Set (ConnectedComponents (PrimeSpectrum A))) : Algebra.IndZariski A (WContractification.Restriction T)</code>",
- "571":
+ "572":
  "<code>WContractification.Restriction.{u} {A : Type u} [CommRing A] (T : Set (ConnectedComponents (PrimeSpectrum A))) : Type u</code>",
- "570":
+ "571":
  "<code>Opposite.{u} (α : Sort u) : Sort (max 1 u)</code><span class=\"sep\"></span><code class=\"docstring\">The type of objects of the opposite of `α`; used to define the opposite category.\n\nNow that Lean 4 supports definitional eta equality for records,\nboth `unop (op X) = X` and `op (unop X) = X` are definitional equalities.\n</code>",
+ "570": "<code>Set (ConnectedComponents (PrimeSpectrum A))</code>",
  "57":
  "<code>CategoryTheory.Functor.{v₁, v₂, u₁, u₂} (C : Type u₁) [CategoryTheory.Category.{v₁, u₁} C] (D : Type u₂)\n  [CategoryTheory.Category.{v₂, u₂} D] : Type (max v₁ v₂ u₁ u₂)</code><span class=\"sep\"></span><code class=\"docstring\">`Functor C D` represents a functor between categories `C` and `D`.\n\nTo apply a functor `F` to an object use `F.obj X`, and to a morphism use `F.map f`.\n\nThe axiom `map_id` expresses preservation of identities, and\n`map_comp` expresses functoriality. </code>",
- "569": "<code>Set (ConnectedComponents (PrimeSpectrum A))</code>",
- "568":
+ "569":
  "<code>WContractification.Restriction.diag.{u} {A : Type u} [CommRing A] (T : Set (ConnectedComponents (PrimeSpectrum A))) :\n  CategoryTheory.Functor { W // ConnectedComponents.mk ⁻¹' T ≤ ↑W }ᵒᵖ (CommAlgCat A)</code>",
- "567":
+ "568":
  "<code>WContractification.RestrictClopen.{u} {A : Type u} [CommRing A] (W : TopologicalSpace.Clopens (PrimeSpectrum A)) :\n  Type u</code>",
- "566": "<code>W₁ ≤ W₂</code>",
- "565":
+ "567": "<code>W₁ ≤ W₂</code>",
+ "566":
  "<code>TopologicalSpace.Clopens.{u_4} (α : Type u_4) [TopologicalSpace α] : Type u_4</code><span class=\"sep\"></span><code class=\"docstring\">The type of clopen sets of a topological space. </code>",
- "564": "<code>TopologicalSpace.Clopens (PrimeSpectrum A)</code>",
- "563":
+ "565": "<code>TopologicalSpace.Clopens (PrimeSpectrum A)</code>",
+ "564":
  "<code>WContractification.RestrictClopen.map.{u} {A : Type u} [CommRing A] {W₁ W₂ : TopologicalSpace.Clopens (PrimeSpectrum A)}\n  (h : W₁ ≤ W₂) : WContractification.RestrictClopen W₂ →ₐ[A] WContractification.RestrictClopen W₁</code>",
- "562":
+ "563":
  "<code>Algebra.IndEtale.isSeparable_residueField.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]\n  [Algebra.IndEtale R S] (p : Ideal R) (q : Ideal S) [q.LiesOver p] [p.IsPrime] [q.IsPrime]\n  [Algebra (Localization.AtPrime p) (Localization.AtPrime q)] [Localization.AtPrime.IsLiesOverAlgebra p q] :\n  Algebra.IsSeparable p.ResidueField q.ResidueField</code><span class=\"sep\"></span><code class=\"docstring\">An ind-étale ring extension `R → S` induces a separable extension `κ(p) → κ(q)` on\nresidue fields, for any pair of primes `q ∈ Spec S` lying over `p ∈ Spec R`. </code>",
- "561":
+ "562":
  "<code>Algebra.IsSeparable.{u_1, u_3} (F : Type u_1) (K : Type u_3) [CommRing F] [Ring K] [Algebra F K] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Typeclass for separable field extension: `K` is a separable field extension of `F` iff\nthe minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic\nextension, because the minimal polynomial of a non-integral element is `0`, which is not\nseparable.\n\nWe define this for general (commutative) rings and only assume `F` and `K` are fields if this\nis needed for a proof. </code>",
- "560":
+ "561":
  "<code>Field.{u} (K : Type u) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.\n\nAn instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.\nThose two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need\nto control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself).\nSee also note [forgetful inheritance].\n\nIf the field has positive characteristic `p`, our division by zero convention forces\n`ratCast (1 / p) = 1 / 0 = 0`. </code>",
+ "560":
+ "<code>Algebra.IndEtale.isSeparable.{u} (R : Type u) [CommRing R] (k : Type u) [Field k] [Algebra k R] [Algebra.IndEtale k R]\n  [IsLocalRing R] : Algebra.IsSeparable k R</code>",
  "56": "<code>CategoryTheory.Functor I TopCat</code>",
  "559":
- "<code>Algebra.IndEtale.isSeparable.{u} (R : Type u) [CommRing R] (k : Type u) [Field k] [Algebra k R] [Algebra.IndEtale k R]\n  [IsLocalRing R] : Algebra.IsSeparable k R</code>",
- "558":
  "<code>RingHom.id.{u_5} (α : Type u_5) [NonAssocSemiring α] : α →+* α</code><span class=\"sep\"></span><code class=\"docstring\">The identity ring homomorphism from a semiring to itself. </code>",
- "557": "<code>S →+* IndEtaleContraction R</code>",
- "556": "<code>Function.Surjective (PrimeSpectrum.comap f)</code>",
- "555":
+ "558": "<code>S →+* IndEtaleContraction R</code>",
+ "557": "<code>Function.Surjective (PrimeSpectrum.comap f)</code>",
+ "556":
  "<code>RingHom.Etale.{u_3, u_4} {R : Type u_3} {S : Type u_4} [CommRing R] [CommRing S] (f : R →+* S) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring hom `R →+* S` is étale, if `S` is an étale `R`-algebra. </code>",
- "554": "<code>f.Etale</code>",
- "553": "<code>IndEtaleContraction R →+* S</code>",
- "552":
+ "555": "<code>f.Etale</code>",
+ "554": "<code>IndEtaleContraction R →+* S</code>",
+ "553":
  "<code>RingHom.Etale.exists_comp_eq_id_indContraction.{u} {R : Type u} [CommRing R] {S : Type u} [CommRing S]\n  (f : IndEtaleContraction R →+* S) (hf : f.Etale) (hf' : Function.Surjective (PrimeSpectrum.comap f)) :\n  ∃ g, g.comp f = RingHom.id (IndEtaleContraction R)</code><span class=\"sep\"></span><code class=\"docstring\">Any étale ring homomorphism `IndEtaleContraction R →+* S` has a retraction. </code>",
- "551":
+ "552":
  "<code>indEtale_indEtaleContraction.{u} {R : Type u} [CommRing R] : Algebra.IndEtale R (IndEtaleContraction R)</code><span class=\"sep\"></span><code class=\"docstring\">The ind-contraction of `R` is ind-étale over `R`. </code>",
- "550":
+ "551":
  "<code>faithfullyFlat_indEtaleContraction.{u} {R : Type u} [CommRing R] : Module.FaithfullyFlat R (IndEtaleContraction R)</code>",
+ "550":
+ "<code>IndEtaleContraction.{u} (R : Type u) [CommRing R] : Type u</code><span class=\"sep\"></span><code class=\"docstring\">The étale ind-contraction of a ring. This is defined\nto be the contraction wrt. to the morphism property of étale ring homomorphisms. </code>",
  "55":
  "<code>CategoryTheory.IsCofiltered.{v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category `IsCofiltered` if\n1. for every pair of objects there exists another object \"to the left\",\n2. for every pair of parallel morphisms there exists a morphism to the left so the compositions\n   are equal, and\n3. there exists some object. </code>",
  "549":
- "<code>IndEtaleContraction.{u} (R : Type u) [CommRing R] : Type u</code><span class=\"sep\"></span><code class=\"docstring\">The étale ind-contraction of a ring. This is defined\nto be the contraction wrt. to the morphism property of étale ring homomorphisms. </code>",
- "548":
  "<code>CategoryTheory.Over.hom.{v₁, u₁} {T : Type u₁} [CategoryTheory.Category.{v₁, u₁} T] {X : T}\n  (f : CategoryTheory.Over X) : f.left ⟶ X</code><span class=\"sep\"></span><code class=\"docstring\">The morphism that is part of an object in `Over X`. </code>",
- "547":
+ "548":
  "<code>CategoryTheory.MorphismProperty.pro.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (P : CategoryTheory.MorphismProperty C) : CategoryTheory.MorphismProperty C</code><span class=\"sep\"></span><code class=\"docstring\">Let `P` be a property of morphisms. `P.Pro` is satisfied for `f : X ⟶ Y`\nif there exists a family of natural maps `tᵢ : Xᵢ ⟶ Y` and `sᵢ : X ⟶ Xᵢ` indexed by `J`\nsuch that\n- `J` is cofiltered\n- `X = lim Xᵢ` via `{sᵢ}ᵢ`\n- `tᵢ` satisfies `P` for all `i`\n- `f = sᵢ ≫ tᵢ` for all `i`.\n</code>",
- "546":
+ "547":
  "<code>CategoryTheory.MorphismProperty.IsStableUnderBaseChange.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (P : CategoryTheory.MorphismProperty C) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism property is `IsStableUnderBaseChange` if the base change of such a morphism\nstill falls in the class. </code>",
- "545":
+ "546":
  "<code>CategoryTheory.MorphismProperty.IsMultiplicative.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (W : CategoryTheory.MorphismProperty C) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism property is multiplicative if it contains identities and is stable by\ncomposition. </code>",
- "544":
+ "545":
  "<code>CategoryTheory.MorphismProperty.pro_precontraction_hom.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (P : CategoryTheory.MorphismProperty C) (X : C) [CategoryTheory.EssentiallySmall.{w, v, max u v} (P.Over ⊤ X)]\n  [CategoryTheory.Limits.HasFiniteWidePullbacks C]\n  [CategoryTheory.Limits.HasLimit (CategoryTheory.FiniteFamilies.diag P X)] [P.IsMultiplicative]\n  [P.IsStableUnderBaseChange] : P.pro (P.precontraction X).hom</code>",
- "543":
+ "544":
  "<code>∀ (i : J), (CommRingCat.Hom.hom (t.app i)).FaithfullyFlat ∧ CategoryTheory.CategoryStruct.comp (t.app i) (c.app i) = f</code>",
- "542":
+ "543":
  "<code>RingHom.FaithfullyFlat.of_isColimit.{u} {R S : CommRingCat} (f : R ⟶ S) (J : Type u) [CategoryTheory.SmallCategory J]\n  [CategoryTheory.IsFiltered J] (D : CategoryTheory.Functor J CommRingCat)\n  {t : (CategoryTheory.Functor.const J).obj R ⟶ D} {c : D ⟶ (CategoryTheory.Functor.const J).obj S}\n  (hc : CategoryTheory.Limits.IsColimit { pt := S, ι := c })\n  (htc :\n    ∀ (i : J),\n      (CommRingCat.Hom.hom (t.app i)).FaithfullyFlat ∧ CategoryTheory.CategoryStruct.comp (t.app i) (c.app i) = f) :\n  (CommRingCat.Hom.hom f).FaithfullyFlat</code><span class=\"sep\"></span><code class=\"docstring\">A ring hom is faithfully flat if it can be written as a colimit of faithfully flat ring maps. </code>",
- "541":
+ "542":
  "<code>∀ (i : J), (CommRingCat.Hom.hom (t.app i)).Flat ∧ CategoryTheory.CategoryStruct.comp (t.app i) (c.app i) = f</code>",
- "540":
+ "541":
  "<code>RingHom.Flat.of_isColimit.{u} {R S : CommRingCat} (f : R ⟶ S) (J : Type u) [CategoryTheory.SmallCategory J]\n  [CategoryTheory.IsFiltered J] (D : CategoryTheory.Functor J CommRingCat)\n  {t : (CategoryTheory.Functor.const J).obj R ⟶ D} {c : D ⟶ (CategoryTheory.Functor.const J).obj S}\n  (hc : CategoryTheory.Limits.IsColimit { pt := S, ι := c })\n  (htc : ∀ (i : J), (CommRingCat.Hom.hom (t.app i)).Flat ∧ CategoryTheory.CategoryStruct.comp (t.app i) (c.app i) = f) :\n  (CommRingCat.Hom.hom f).Flat</code><span class=\"sep\"></span><code class=\"docstring\">A ring map is flat if it can be written as a filtered colimit of flat ring maps. </code>",
+ "540":
+ "<code>CommRingCat.faithfullyFlat.{u} : CategoryTheory.MorphismProperty CommRingCat</code><span class=\"sep\"></span><code class=\"docstring\">The morphism property of faithfully flat ring maps. </code>",
  "54":
  "<code>CategoryTheory.Category.{v, u} (obj : Type u) : Type (max u (v + 1))</code><span class=\"sep\"></span><code class=\"docstring\">The typeclass `Category C` describes morphisms associated to objects of type `C`.\nThe universe levels of the objects and morphisms are unconstrained, and will often need to be\nspecified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) </code>",
  "539":
- "<code>CommRingCat.faithfullyFlat.{u} : CategoryTheory.MorphismProperty CommRingCat</code><span class=\"sep\"></span><code class=\"docstring\">The morphism property of faithfully flat ring maps. </code>",
- "538":
  "<code>RingHom.FaithfullyFlat.{u_3, u_4} {R : Type u_3} {S : Type u_4} [CommRing R] [CommRing S] (f : R →+* S) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring map `f : R →+* S` is faithfully flat if `S` is faithfully flat as an `R`-algebra. </code>",
- "537":
+ "538":
  "<code>RingHom.FaithfullyFlat.iff_ind_faithfullyFlat.{u} {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :\n  f.FaithfullyFlat ↔ CommRingCat.faithfullyFlat.ind (CommRingCat.ofHom f)</code><span class=\"sep\"></span><code class=\"docstring\">Faithfully flat is equivalent to ind-(faithfully flat). </code>",
- "536":
+ "537":
  "<code>CommRingCat.flat.{u} : CategoryTheory.MorphismProperty CommRingCat</code><span class=\"sep\"></span><code class=\"docstring\">The morphism property of flat ring maps. </code>",
- "535":
+ "536":
  "<code>RingHom.Flat.iff_ind_flat.{u} {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :\n  f.Flat ↔ CommRingCat.flat.ind (CommRingCat.ofHom f)</code><span class=\"sep\"></span><code class=\"docstring\">Flat is equivalent to ind-flat. </code>",
- "534":
+ "535":
  "<code>CommAlgCat.faithfullyFlat.{w, u} (R : Type u) [CommRing R] : CategoryTheory.ObjectProperty (CommAlgCat R)</code><span class=\"sep\"></span><code class=\"docstring\">The object property of faithfully-flat `R`-algebras. </code>",
- "533":
+ "534":
  "<code>Module.FaithfullyFlat.iff_ind_faithfullyFlat.{u} {R : Type u} [CommRing R] {S : Type u} [CommRing S] [Algebra R S] :\n  Module.FaithfullyFlat R S ↔ (CommAlgCat.faithfullyFlat R).ind (CommAlgCat.of R S)</code>",
- "532":
+ "533":
  "<code>CommAlgCat.flat.{w, u} (R : Type u) [CommRing R] : CategoryTheory.ObjectProperty (CommAlgCat R)</code><span class=\"sep\"></span><code class=\"docstring\">The object property of flat `R`-algebras. </code>",
- "531":
+ "532":
  "<code>Module.Flat.iff_ind_flat.{u} {R : Type u} [CommRing R] {S : Type u} [CommRing S] [Algebra R S] :\n  Module.Flat R S ↔ (CommAlgCat.flat R).ind (CommAlgCat.of R S)</code><span class=\"sep\"></span><code class=\"docstring\">Flat is equivalent to ind-flat. </code>",
- "530": "<code>∀ (i : ι), Module.FaithfullyFlat R ↑(P.diag.obj i)</code>",
- "53": "<code>Type v</code>",
- "529":
+ "531": "<code>∀ (i : ι), Module.FaithfullyFlat R ↑(P.diag.obj i)</code>",
+ "530":
  "<code>Module.FaithfullyFlat.of_colimitPresentation.{u} {R : Type u} [CommRing R] {S : Type u} [CommRing S] [Algebra R S]\n  {ι : Type u} [CategoryTheory.SmallCategory ι] [CategoryTheory.IsFiltered ι]\n  (P : CategoryTheory.Limits.ColimitPresentation ι (CommAlgCat.of R S))\n  (h : ∀ (i : ι), Module.FaithfullyFlat R ↑(P.diag.obj i)) : Module.FaithfullyFlat R S</code>",
- "528": "<code>∀ (i : ι), Module.Flat R ↑(P.diag.obj i)</code>",
- "527":
+ "53": "<code>Type v</code>",
+ "529": "<code>∀ (i : ι), Module.Flat R ↑(P.diag.obj i)</code>",
+ "528":
  "<code>ModuleCat.of.{v, u} (R : Type u) [Ring R] (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat R</code><span class=\"sep\"></span><code class=\"docstring\">The object in the category of R-algebras associated to a type equipped with the appropriate\ntypeclasses. This is the preferred way to construct a term of `ModuleCat R`. </code>",
- "526":
+ "527":
  "<code>CategoryTheory.Limits.ColimitPresentation ι (ModuleCat.of R M)</code>",
- "525":
+ "526":
  "<code>AddCommGroup.{u} (G : Type u) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">An additive commutative group is an additive group with commutative `(+)`. </code>",
- "524":
+ "525":
  "<code>Module.Flat.of_colimitPresentation.{u} {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] {ι : Type u}\n  [CategoryTheory.SmallCategory ι] [CategoryTheory.IsFiltered ι]\n  (P : CategoryTheory.Limits.ColimitPresentation ι (ModuleCat.of R M)) (h : ∀ (i : ι), Module.Flat R ↑(P.diag.obj i)) :\n  Module.Flat R M</code><span class=\"sep\"></span><code class=\"docstring\">A module is flat if it can be written as a filtered colimit of flat modules. </code>",
- "523":
+ "524":
  "<code>ModuleCat.{v, u} (R : Type u) [Ring R] : Type (max u (v + 1))</code><span class=\"sep\"></span><code class=\"docstring\">The category of R-modules and their morphisms.\n\nNote that in the case of `R = ℤ`, we cannot\nimpose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming\nfrom the `isAddCommGroup` structure (contrary to what we do for all module structures in\nmathlib), which creates some difficulties down the road. </code>",
- "522":
+ "523":
  "<code>AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat.{u} (R : Type u) [CommRing R] :\n  CategoryTheory.Limits.PreservesFilteredColimitsOfSize.{u, u, u, u, u + 1, u + 1}\n    (CategoryTheory.forget₂ (AlgCat R) (ModuleCat R))</code>",
- "521":
+ "522":
  "<code>AlgCat.{v, u} (R : Type u) [CommRing R] : Type (max u (v + 1))</code><span class=\"sep\"></span><code class=\"docstring\">The category of R-algebras and their morphisms. </code>",
- "520":
+ "521":
  "<code>CommAlgCat.preservesFilteredColimitsOfSize_forget_algCat.{u} (R : Type u) [CommRing R] :\n  CategoryTheory.Limits.PreservesFilteredColimitsOfSize.{u, u, u, u, u + 1, u + 1}\n    (CategoryTheory.forget₂ (CommAlgCat R) (AlgCat R))</code>",
+ "520":
+ "<code>CategoryTheory.forget₂.{w, v_1, u_1, u_2, v_2, u_3, u_4} (C : Type u_1) [CategoryTheory.Category.{v_1, u_1} C]\n  {FC : outParam (C → C → Type u_2)} {CC : outParam (C → Type w)}\n  [outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))] [CategoryTheory.ConcreteCategory C FC] (D : Type u_3)\n  [CategoryTheory.Category.{v_2, u_3} D] {FD : outParam (D → D → Type u_4)} {CD : outParam (D → Type w)}\n  [outParam ((X Y : D) → FunLike (FD X Y) (CD X) (CD Y))] [CategoryTheory.ConcreteCategory D FD]\n  [CategoryTheory.HasForget₂ C D] : CategoryTheory.Functor C D</code><span class=\"sep\"></span><code class=\"docstring\">The forgetful functor `C ⥤ D` between concrete categories for which we have an instance\n`HasForget₂ C`. </code>",
  "52":
  "<code>TopCat.closure_eq_iInter_preimage_closure_image.{u, v, w} {I : Type v} [CategoryTheory.Category.{w, v} I]\n  [CategoryTheory.IsCofiltered I] {F : CategoryTheory.Functor I TopCat} {C : CategoryTheory.Limits.Cone F}\n  (hC : CategoryTheory.Limits.IsLimit C) (s : Set ↑C.pt) :\n  closure s =\n    ⋂ i,\n      ⇑(CategoryTheory.ConcreteCategory.hom (C.π.app i)) ⁻¹'\n        closure (⇑(CategoryTheory.ConcreteCategory.hom (C.π.app i)) '' s)</code>",
  "519":
- "<code>CategoryTheory.forget₂.{w, v_1, u_1, u_2, v_2, u_3, u_4} (C : Type u_1) [CategoryTheory.Category.{v_1, u_1} C]\n  {FC : outParam (C → C → Type u_2)} {CC : outParam (C → Type w)}\n  [outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))] [CategoryTheory.ConcreteCategory C FC] (D : Type u_3)\n  [CategoryTheory.Category.{v_2, u_3} D] {FD : outParam (D → D → Type u_4)} {CD : outParam (D → Type w)}\n  [outParam ((X Y : D) → FunLike (FD X Y) (CD X) (CD Y))] [CategoryTheory.ConcreteCategory D FD]\n  [CategoryTheory.HasForget₂ C D] : CategoryTheory.Functor C D</code><span class=\"sep\"></span><code class=\"docstring\">The forgetful functor `C ⥤ D` between concrete categories for which we have an instance\n`HasForget₂ C`. </code>",
- "518":
  "<code>CategoryTheory.Limits.PreservesFilteredColimitsOfSize.{w', w, v₁, v₂, u₁, u₂} {C : Type u₁}\n  [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D]\n  (F : CategoryTheory.Functor C D) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`PreservesFilteredColimitsOfSize.{w', w} F` means that `F` sends all colimit cocones over any\nfiltered diagram `J ⥤ C` to colimit cocones, where `J : Type w` with `[Category.{w'} J]`. </code>",
- "517":
+ "518":
  "<code>CommAlgCat.preservesFilteredColimitsOfSize_forget_commRingCat.{u} {R : Type u} [CommRing R] :\n  CategoryTheory.Limits.PreservesFilteredColimitsOfSize.{u, u, u, u, u + 1, u + 1}\n    (CategoryTheory.forget₂ (CommAlgCat R) CommRingCat)</code>",
- "516":
+ "517":
  "<code>CategoryTheory.MonoidalCategory.tensorLeft.{v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  [CategoryTheory.MonoidalCategory C] (X : C) : CategoryTheory.Functor C C</code><span class=\"sep\"></span><code class=\"docstring\">Tensoring on the left with a fixed object, as a functor. </code>",
- "515":
+ "516":
  "<code>CategoryTheory.Limits.PreservesColimitsOfShape.{w', w, v₁, v₂, u₁, u₂} {C : Type u₁}\n  [CategoryTheory.Category.{v₁, u₁} C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D] (J : Type w)\n  [CategoryTheory.Category.{w', w} J] (F : CategoryTheory.Functor C D) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">We say that `F` preserves colimits of shape `J` if `F` preserves colimits for every diagram\n`K : J ⥤ C`, i.e., `F` maps colimit cocones over `K` to colimit cocones. </code>",
- "514": "<code>CommAlgCat R</code>",
- "513":
+ "515": "<code>CommAlgCat R</code>",
+ "514":
  "<code>CommAlgCat.preservesColimitsOfShape_tensorLeft.{u, u_1, u_2} {R : Type u} [CommRing R] {J : Type u_1}\n  [CategoryTheory.Category.{u_2, u_1} J] [CategoryTheory.IsFiltered J] (M : CommAlgCat R) :\n  CategoryTheory.Limits.PreservesColimitsOfShape J (CategoryTheory.MonoidalCategory.tensorLeft M)</code>",
- "512":
+ "513":
  "<code>CategoryTheory.Over.mk.{v₁, u₁} {T : Type u₁} [CategoryTheory.Category.{v₁, u₁} T] {X Y : T} (f : Y ⟶ X) :\n  CategoryTheory.Over X</code><span class=\"sep\"></span><code class=\"docstring\">To give an object in the over category, it suffices to give a morphism with codomain `X`. </code>",
- "511": "<code>P f</code>",
- "510": "<code>Y ⟶ X</code>",
+ "512": "<code>P f</code>",
+ "511": "<code>Y ⟶ X</code>",
+ "510":
+ "<code>CategoryTheory.MorphismProperty.Precontraction.π.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (P : CategoryTheory.MorphismProperty C) (X : C) [CategoryTheory.EssentiallySmall.{w, v, max u v} (P.Over ⊤ X)]\n  [CategoryTheory.Limits.HasFiniteWidePullbacks C]\n  [CategoryTheory.Limits.HasLimit (CategoryTheory.FiniteFamilies.diag P X)] {Y : C} (f : Y ⟶ X) (hf : P f) :\n  P.precontraction X ⟶ CategoryTheory.Over.mk f</code>",
  "51":
  "<code>TotallyDisconnectedSpace.{u} (α : Type u) [TopologicalSpace α] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A space is totally disconnected if all of its connected components are singletons. </code>",
  "509":
- "<code>CategoryTheory.MorphismProperty.Precontraction.π.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (P : CategoryTheory.MorphismProperty C) (X : C) [CategoryTheory.EssentiallySmall.{w, v, max u v} (P.Over ⊤ X)]\n  [CategoryTheory.Limits.HasFiniteWidePullbacks C]\n  [CategoryTheory.Limits.HasLimit (CategoryTheory.FiniteFamilies.diag P X)] {Y : C} (f : Y ⟶ X) (hf : P f) :\n  P.precontraction X ⟶ CategoryTheory.Over.mk f</code>",
- "508":
  "<code>CategoryTheory.Over.{v₁, u₁} {T : Type u₁} [CategoryTheory.Category.{v₁, u₁} T] (X : T) : Type (max u₁ v₁)</code><span class=\"sep\"></span><code class=\"docstring\">The over category has as objects arrows in `T` with codomain `X` and as morphisms commutative\ntriangles. </code>",
- "507":
+ "508":
  "<code>CategoryTheory.FiniteFamilies.diag.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (P : CategoryTheory.MorphismProperty C) (X : C) [CategoryTheory.EssentiallySmall.{w, v, max u v} (P.Over ⊤ X)]\n  [CategoryTheory.Limits.HasFiniteWidePullbacks C] :\n  CategoryTheory.Functor (CategoryTheory.FiniteFamilies (CategoryTheory.SmallModel.{w, v, max u v} (P.Over ⊤ X)))ᵒᵖ\n    (CategoryTheory.Over X)</code>",
- "506":
+ "507":
  "<code>CategoryTheory.Limits.HasLimit.{v₁, u₁, v, u} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u}\n  [CategoryTheory.Category.{v, u} C] (F : CategoryTheory.Functor J C) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`HasLimit F` represents the mere existence of a limit for `F`. </code>",
- "505":
+ "506":
  "<code>CategoryTheory.Limits.HasFiniteWidePullbacks.{v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for\nfinite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same\ncodomain. </code>",
- "504":
+ "505":
  "<code>Top.top.{u_1} {α : Type u_1} [self : Top α] : α</code><span class=\"sep\"></span><code class=\"docstring\">The top (`⊤`, `\\top`) element \n\nConventions for notations in identifiers:\n\n * The recommended spelling of `⊤` in identifiers is `top`.</code>",
- "503":
+ "504":
  "<code>CategoryTheory.MorphismProperty.Over.{v_1, u_1} {T : Type u_1} [CategoryTheory.Category.{v_1, u_1} T]\n  (P Q : CategoryTheory.MorphismProperty T) (X : T) : Type (max v_1 u_1)</code><span class=\"sep\"></span><code class=\"docstring\">Given a morphism property `P` on a category `T` and an object `X : T`, this is the\nsubcategory of `Over X` defined by `P` where morphisms satisfy `Q`. </code>",
- "502":
+ "503":
  "<code>CategoryTheory.EssentiallySmall.{w, v, u} (C : Type u) [CategoryTheory.Category.{v, u} C] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A category is `EssentiallySmall.{w}` if there exists\nan equivalence to some `S : Type w` with `[SmallCategory S]`. </code>",
- "501": "<code>C</code>",
- "500":
+ "502": "<code>C</code>",
+ "501":
  "<code>CategoryTheory.MorphismProperty.{v, u} (C : Type u) [CategoryTheory.CategoryStruct.{v, u} C] : Type (max u v)</code><span class=\"sep\"></span><code class=\"docstring\">A `MorphismProperty C` is a class of morphisms between objects in `C`. </code>",
+ "500": "<code>CategoryTheory.MorphismProperty C</code>",
  "50":
  "<code>ConnectedComponents.mkHomeomorph.{u_2} (S : Type u_2) [TopologicalSpace S] [TotallyDisconnectedSpace S] :\n  S ≃ₜ ConnectedComponents S</code>",
  "5":
  "<code>closure.{u} {X : Type u} [TopologicalSpace X] (s : Set X) : Set X</code><span class=\"sep\"></span><code class=\"docstring\">The closure of `s` is the smallest closed set containing `s`. </code>",
- "499": "<code>CategoryTheory.MorphismProperty C</code>",
- "498":
+ "499":
  "<code>CategoryTheory.MorphismProperty.precontraction.{w, v, u} {C : Type u} [CategoryTheory.Category.{v, u} C]\n  (P : CategoryTheory.MorphismProperty C) (X : C) [CategoryTheory.EssentiallySmall.{w, v, max u v} (P.Over ⊤ X)]\n  [CategoryTheory.Limits.HasFiniteWidePullbacks C]\n  [CategoryTheory.Limits.HasLimit (CategoryTheory.FiniteFamilies.diag P X)] : CategoryTheory.Over X</code>",
- "497":
+ "498":
  "<code>IsWStrictlyLocalRing.{u_3} (R : Type u_3) [CommRing R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A w-strictly-local ring is a w-local ring whose stalks at maximal ideals are strictly Henselian\nlocal rings. </code>",
- "496":
+ "497":
  "<code>∀ (m : Ideal R) [inst : m.IsMaximal], IsStrictlyHenselianLocalRing (Localization.AtPrime m)</code>",
- "495":
+ "496":
  "<code>Ideal.WLocalization.faithfullyFlat_map_algebraMap.{u} {A B : Type u} [CommRing A] [CommRing B] {I : Ideal A}\n  [IsWLocalRing A] [Algebra A B] [Module.FaithfullyFlat A B]\n  (hI : PrimeSpectrum.zeroLocus ↑I = closedPoints (PrimeSpectrum A))\n  (h :\n    ∀ (m : Ideal A) (q : Ideal B) [inst : q.LiesOver m] [inst_1 : m.IsMaximal] [inst_2 : q.IsPrime]\n      [inst_3 : Algebra (Localization.AtPrime m) (Localization.AtPrime q)]\n      [inst_4 : Localization.AtPrime.IsLiesOverAlgebra m q], Algebra.IsAlgebraic m.ResidueField q.ResidueField) :\n  Module.FaithfullyFlat A (Ideal.map (algebraMap A B) I).WLocalization</code>",
- "494":
+ "495":
  "<code>PrimeSpectrum.zeroLocus ↑I = closedPoints (PrimeSpectrum A)</code>",
- "493":
+ "494":
  "<code>Ideal.WLocalization.algebraMap_specComap_preimage_closedPoints_eq.{u} {A B : Type u} [CommRing A] [CommRing B]\n  {I : Ideal A} [IsWLocalRing A] [Algebra A B] (hI : PrimeSpectrum.zeroLocus ↑I = closedPoints (PrimeSpectrum A))\n  (h :\n    ∀ (m : Ideal A) (q : Ideal B) [inst : q.LiesOver m] [inst_1 : m.IsMaximal] [inst_2 : q.IsPrime]\n      [inst_3 : Algebra (Localization.AtPrime m) (Localization.AtPrime q)]\n      [inst_4 : Localization.AtPrime.IsLiesOverAlgebra m q], Algebra.IsAlgebraic m.ResidueField q.ResidueField) :\n  PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap A (Ideal.map (algebraMap A B) I).WLocalization) I) =\n    closedPoints (PrimeSpectrum (Ideal.map (algebraMap A B) I).WLocalization)</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 097A](https://stacks.math.columbia.edu/tag/097A) ((2)(d))</code>",
- "492":
+ "493":
  "<code>Ideal.WLocalization.bijOn_zeroLocus_map.{u} {A : Type u} [CommRing A] (I : Ideal A)\n  (hI : PrimeSpectrum.zeroLocus ↑I ⊆ closedPoints (PrimeSpectrum A)) :\n  Set.BijOn (PrimeSpectrum.comap (algebraMap A I.WLocalization))\n    (PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap A I.WLocalization) I)) (PrimeSpectrum.zeroLocus ↑I)</code>",
- "491":
+ "492":
  "<code>Ideal.quotientMap.{u, v} {R : Type u} [Ring R] {S : Type v} [Ring S] {I : Ideal R} (J : Ideal S) [I.IsTwoSided]\n  [J.IsTwoSided] (f : R →+* S) (hIJ : I ≤ Ideal.comap f J) : R ⧸ I →+* S ⧸ J</code><span class=\"sep\"></span><code class=\"docstring\">The ring hom `R/I →+* S/J` induced by a ring hom `f : R →+* S` with `I ≤ f⁻¹(J)` </code>",
- "490":
+ "491":
  "<code>Ideal.WLocalization.quotientMap_algebraMap_bijective.{u} {A : Type u} [CommRing A] (I : Ideal A)\n  (hI : PrimeSpectrum.zeroLocus ↑I ⊆ closedPoints (PrimeSpectrum A)) :\n  Function.Bijective ⇑(Ideal.quotientMap (Ideal.map (algebraMap A I.WLocalization) I) (algebraMap A I.WLocalization) ⋯)</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 097A](https://stacks.math.columbia.edu/tag/097A) ((2)(a))</code>",
+ "490":
+ "<code>Ideal.WLocalization.zeroLocus_map_algebraMap_eq_closedPoints.{u} {A : Type u} [CommRing A] {I : Ideal A}\n  (hI : PrimeSpectrum.zeroLocus ↑I ⊆ closedPoints (PrimeSpectrum A)) :\n  PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap A I.WLocalization) I) = closedPoints (PrimeSpectrum I.WLocalization)</code>",
  "49":
  "<code>Homeomorph.{u_5, u_6} (X : Type u_5) (Y : Type u_6) [TopologicalSpace X] [TopologicalSpace Y] : Type (max u_5 u_6)</code><span class=\"sep\"></span><code class=\"docstring\">Homeomorphism between `X` and `Y`, also called topological isomorphism </code>",
  "489":
- "<code>Ideal.WLocalization.zeroLocus_map_algebraMap_eq_closedPoints.{u} {A : Type u} [CommRing A] {I : Ideal A}\n  (hI : PrimeSpectrum.zeroLocus ↑I ⊆ closedPoints (PrimeSpectrum A)) :\n  PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap A I.WLocalization) I) = closedPoints (PrimeSpectrum I.WLocalization)</code>",
- "488":
  "<code>Ideal.WLocalization.indZariski.{u} {A : Type u} [CommRing A] {I : Ideal A} : Algebra.IndZariski A I.WLocalization</code>",
- "487":
+ "488":
  "<code>Ideal.WLocalization.isWLocalRing.{u} {A : Type u} [CommRing A] {I : Ideal A} : IsWLocalRing I.WLocalization</code>",
- "486":
+ "487":
  "<code>Ideal.WLocalization.{u} {A : Type u} [CommRing A] (I : Ideal A) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">The w-localization with respect to an ideal `I`.\n</code>",
- "485":
+ "486":
  "<code>closedPoints (PrimeSpectrum R) ⊆ Set.range (PrimeSpectrum.comap (algebraMap R S))</code>",
- "484":
+ "485":
  "<code>Algebra.HasGoingDown.specComap_surjective_of_closedPoints_subset_preimage.{u_1, u_2} {R : Type u_1} {S : Type u_2}\n  [CommRing R] [CommRing S] [Algebra R S] [Algebra.HasGoingDown R S]\n  (h : closedPoints (PrimeSpectrum R) ⊆ Set.range (PrimeSpectrum.comap (algebraMap R S))) :\n  Function.Surjective (PrimeSpectrum.comap (algebraMap R S))</code>",
- "483": "<code>Localization.AtPrime.IsLiesOverAlgebra m q</code>",
- "482":
+ "484": "<code>Localization.AtPrime.IsLiesOverAlgebra m q</code>",
+ "483":
  "<code>Algebra (Localization.AtPrime m) (Localization.AtPrime q)</code>",
- "481": "<code>q.IsPrime</code>",
- "480": "<code>m.IsMaximal</code>",
+ "482": "<code>q.IsPrime</code>",
+ "481": "<code>m.IsMaximal</code>",
+ "480": "<code>q.LiesOver m</code>",
  "48":
  "<code>Prod.{u, v} (α : Type u) (β : Type v) : Type (max u v)</code><span class=\"sep\"></span><code class=\"docstring\">The product type, usually written `α × β`. Product types are also called pair or tuple types.\nElements of this type are pairs in which the first element is an `α` and the second element is a\n`β`.\n\nProducts nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `×` in identifiers is `Prod`.</code>",
- "479": "<code>q.LiesOver m</code>",
- "478":
+ "479":
  "<code>∀ (m : Ideal A) (q : Ideal B) [inst : q.LiesOver m] [inst_1 : m.IsMaximal] [inst_2 : q.IsPrime]\n  [inst_3 : Algebra (Localization.AtPrime m) (Localization.AtPrime q)]\n  [inst_4 : Localization.AtPrime.IsLiesOverAlgebra m q], Algebra.IsAlgebraic m.ResidueField q.ResidueField</code>",
- "477":
+ "478":
  "<code>zeroLocus_map_algebraMap_subset_closedPoints.{u} {A B : Type u} [CommRing A] [CommRing B] {I : Ideal A} [Algebra A B]\n  (h :\n    ∀ (m : Ideal A) (q : Ideal B) [inst : q.LiesOver m] [inst_1 : m.IsMaximal] [inst_2 : q.IsPrime]\n      [inst_3 : Algebra (Localization.AtPrime m) (Localization.AtPrime q)]\n      [inst_4 : Localization.AtPrime.IsLiesOverAlgebra m q], Algebra.IsAlgebraic m.ResidueField q.ResidueField)\n  (hI : PrimeSpectrum.zeroLocus ↑I ⊆ closedPoints (PrimeSpectrum A)) :\n  PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap A B) I) ⊆ closedPoints (PrimeSpectrum B)</code>",
- "476":
+ "477":
  "<code>PrimeSpectrum.zeroLocus ↑I ⊆ closedPoints (PrimeSpectrum A)</code>",
- "475":
+ "476":
  "<code>IsWLocalRing.zeroLocus_map_algebraMap_generalization_one_eq.{u} {A : Type u} [CommRing A] {I : Ideal A} [IsWLocalRing A]\n  (hI : PrimeSpectrum.zeroLocus ↑I ⊆ closedPoints (PrimeSpectrum A)) :\n  PrimeSpectrum.zeroLocus ↑(Ideal.map (algebraMap A (WLocalization.Generalization 1 I)) I) =\n    closedPoints (PrimeSpectrum (WLocalization.Generalization 1 I))</code>",
- "474":
+ "475":
  "<code>isWLocalRing_generalization_one.{u} {A : Type u} [CommRing A] (I : Ideal A) [IsWLocalRing A] :\n  IsWLocalRing (WLocalization.Generalization 1 I)</code>",
- "473":
+ "474":
  "<code>Algebra.IsAlgebraic.{u, v} (R : Type u) (A : Type v) [CommRing R] [Ring A] [Algebra R A] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An algebra is algebraic if all its elements are algebraic. </code>",
- "472":
+ "473":
  "<code>Localization.AtPrime.IsLiesOverAlgebra.{u_4, u_5} {A : Type u_4} {B : Type u_5} [CommRing A] [CommRing B] [Algebra A B]\n  (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]\n  [Algebra (Localization.AtPrime p) (Localization.AtPrime P)] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A predicate expressing that `Localization.AtPrime P` is an algebra over `Localization.AtPrime p`\nin the natural way when `P` lies over `p`. </code>",
- "471": "<code>Ideal B</code>",
- "470":
+ "472": "<code>Ideal B</code>",
+ "471":
  "<code>Ideal.IsMaximal.{u} {α : Type u} [Semiring α] (I : Ideal α) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An ideal is maximal if it is maximal in the collection of proper ideals. </code>",
+ "470":
+ "<code>Ideal.IsMaximal.of_isAlgebraic.{u_1, u_2} {A : Type u_1} {B : Type u_2} [CommRing A] [CommRing B] [Algebra A B]\n  (m : Ideal A) [m.IsMaximal] (q : Ideal B) [q.IsPrime] [q.LiesOver m]\n  [Algebra (Localization.AtPrime m) (Localization.AtPrime q)] [Localization.AtPrime.IsLiesOverAlgebra m q]\n  [Algebra.IsAlgebraic m.ResidueField q.ResidueField] : q.IsMaximal</code><span class=\"sep\"></span><code class=\"docstring\">If `q` lies over a maximal ideal `m` and the residue field extension is algebraic, `q`\nis maximal. </code>",
  "47":
  "<code>ConnectedComponents.{u} (α : Type u) [TopologicalSpace α] : Type u</code><span class=\"sep\"></span><code class=\"docstring\">The quotient of a space by its connected components </code>",
  "469":
- "<code>Ideal.IsMaximal.of_isAlgebraic.{u_1, u_2} {A : Type u_1} {B : Type u_2} [CommRing A] [CommRing B] [Algebra A B]\n  (m : Ideal A) [m.IsMaximal] (q : Ideal B) [q.IsPrime] [q.LiesOver m]\n  [Algebra (Localization.AtPrime m) (Localization.AtPrime q)] [Localization.AtPrime.IsLiesOverAlgebra m q]\n  [Algebra.IsAlgebraic m.ResidueField q.ResidueField] : q.IsMaximal</code><span class=\"sep\"></span><code class=\"docstring\">If `q` lies over a maximal ideal `m` and the residue field extension is algebraic, `q`\nis maximal. </code>",
- "468":
  "<code>Module.FaithfullyFlat.{u, v} (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,\nfor all `R`-linear maps `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.\n</code>",
- "467":
+ "468":
  "<code>WLocalization.faithfullyFlat.{u} (A : Type u) [CommRing A] : Module.FaithfullyFlat A (WLocalization A)</code>",
- "466":
+ "467":
  "<code>WLocalization.isWLocalRing.{u} (A : Type u) [CommRing A] : IsWLocalRing (WLocalization A)</code>",
- "465":
+ "466":
  "<code>WLocalization.zeroLocus_ideal_eq.{u} (A : Type u) [CommRing A] :\n  PrimeSpectrum.zeroLocus ↑(WLocalization.ideal A) = closedPoints (PrimeSpectrum (WLocalization A))</code>",
- "464": "<code>PrimeSpectrum (WLocalization A)</code>",
- "463":
+ "465": "<code>PrimeSpectrum (WLocalization A)</code>",
+ "464":
  "<code>WLocalization.exists_mem_zeroLocus_ideal_specializes.{u} (A : Type u) [CommRing A]\n  (x : PrimeSpectrum (WLocalization A)) : ∃ y ∈ PrimeSpectrum.zeroLocus ↑(WLocalization.ideal A), x ⤳ y</code>",
- "462":
+ "463":
  "<code>WLocalization.bijOn_algebraMap_specComap_zeroLocus_ideal.{u} (A : Type u) [CommRing A] :\n  Set.BijOn (PrimeSpectrum.comap (algebraMap A (WLocalization A))) (PrimeSpectrum.zeroLocus ↑(WLocalization.ideal A))\n    Set.univ</code><span class=\"sep\"></span><code class=\"docstring\">The composition `V(ideal A) ↪ Spec (WLocalization A) → Spec A` is a bijection. </code>",
- "461":
+ "462":
  "<code>WLocalization.indZariski.{u} (A : Type u) [CommRing A] : Algebra.IndZariski A (WLocalization A)</code>",
- "460": "<code>Iι j ≤ Ideal.map (CommRingCat.Hom.hom (F.map f)) (Iι i)</code>",
+ "461": "<code>Iι j ≤ Ideal.map (CommRingCat.Hom.hom (F.map f)) (Iι i)</code>",
+ "460":
+ "<code>specComap_preimage_zeroLocus_subset.{u_1, u_2, u_3} {ι : Type u_1} [CategoryTheory.Category.{u_2, u_1} ι]\n  {F : CategoryTheory.Functor ι CommRingCat} (C : CategoryTheory.Limits.Cocone F) {i j : ι} (f : i ⟶ j)\n  {Iι : (i : ι) → Ideal ↑(F.obj i)} (h : Iι j ≤ Ideal.map (CommRingCat.Hom.hom (F.map f)) (Iι i)) :\n  PrimeSpectrum.comap (CommRingCat.Hom.hom (C.ι.app i)) ⁻¹' PrimeSpectrum.zeroLocus ↑(Iι i) ⊆\n    PrimeSpectrum.comap (CommRingCat.Hom.hom (C.ι.app j)) ⁻¹' PrimeSpectrum.zeroLocus ↑(Iι j)</code>",
  "46":
  "<code>ConnectedComponents.prodMap.{u_2, u_3} {S : Type u_2} {T : Type u_3} [TopologicalSpace S] [TopologicalSpace T] :\n  ConnectedComponents (S × T) ≃ₜ ConnectedComponents S × ConnectedComponents T</code>",
  "459":
- "<code>specComap_preimage_zeroLocus_subset.{u_1, u_2, u_3} {ι : Type u_1} [CategoryTheory.Category.{u_2, u_1} ι]\n  {F : CategoryTheory.Functor ι CommRingCat} (C : CategoryTheory.Limits.Cocone F) {i j : ι} (f : i ⟶ j)\n  {Iι : (i : ι) → Ideal ↑(F.obj i)} (h : Iι j ≤ Ideal.map (CommRingCat.Hom.hom (F.map f)) (Iι i)) :\n  PrimeSpectrum.comap (CommRingCat.Hom.hom (C.ι.app i)) ⁻¹' PrimeSpectrum.zeroLocus ↑(Iι i) ⊆\n    PrimeSpectrum.comap (CommRingCat.Hom.hom (C.ι.app j)) ⁻¹' PrimeSpectrum.zeroLocus ↑(Iι j)</code>",
- "458":
  "<code>CategoryTheory.Limits.Cocone.ι.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] {F : CategoryTheory.Functor J C} (self : CategoryTheory.Limits.Cocone F) :\n  F ⟶ (CategoryTheory.Functor.const J).obj self.pt</code><span class=\"sep\"></span><code class=\"docstring\">A natural transformation from `F` to the constant functor at `pt` </code>",
- "457":
+ "458":
  "<code>Ideal.map.{u, v, u_1} {R : Type u} {S : Type v} {F : Type u_1} [Semiring R] [Semiring S] [FunLike F R S] (f : F)\n  (I : Ideal R) : Ideal S</code><span class=\"sep\"></span><code class=\"docstring\">`I.map f` is the span of the image of the ideal `I` under `f`, which may be bigger than\nthe image itself. </code>",
- "456":
+ "457":
  "<code>I = ⨆ i, Ideal.map (CommRingCat.Hom.hom (C.ι.app i)) (Iι i)</code>",
- "455":
+ "456":
  "<code>CategoryTheory.Limits.Cocone.pt.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] {F : CategoryTheory.Functor J C} (self : CategoryTheory.Limits.Cocone F) : C</code><span class=\"sep\"></span><code class=\"docstring\">An object of `C` </code>",
- "454": "<code>Ideal ↑C.pt</code>",
- "453": "<code>(i : ι) → Ideal ↑(F.obj i)</code>",
- "452":
+ "455": "<code>Ideal ↑C.pt</code>",
+ "454": "<code>(i : ι) → Ideal ↑(F.obj i)</code>",
+ "453":
  "<code>CategoryTheory.Limits.Cocone.{v₁, v₃, u₁, u₃} {J : Type u₁} [CategoryTheory.Category.{v₁, u₁} J] {C : Type u₃}\n  [CategoryTheory.Category.{v₃, u₃} C] (F : CategoryTheory.Functor J C) : Type (max (max u₁ u₃) v₃)</code><span class=\"sep\"></span><code class=\"docstring\">A `c : Cocone F` is\n* an object `c.pt` and\n* a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.\n\nFor example, if the source `J` of `F` is a partially ordered set, then to give\n`c : Cocone F` is to give a collection of morphisms `ιⱼ : F j ⟶ c.pt` and, for\nall `j ≤ k` in `J`, morphisms `ιⱼₖ : F j ⟶ F k` such that `Fⱼₖ ≫ Fₖ = Fⱼ` for all `j ≤ k`.\n\n`Cocone F` is equivalent, via `Cone.equiv` below, to `Σ X, F.cocones.obj X`.\n</code>",
- "451": "<code>CategoryTheory.Limits.Cocone F</code>",
- "450": "<code>CategoryTheory.Functor ι CommRingCat</code>",
+ "452": "<code>CategoryTheory.Limits.Cocone F</code>",
+ "451": "<code>CategoryTheory.Functor ι CommRingCat</code>",
+ "450":
+ "<code>zeroLocus_eq_iInter_specComap_preimage.{u_1, u_2, u_3} {ι : Type u_1} [CategoryTheory.Category.{u_2, u_1} ι]\n  {F : CategoryTheory.Functor ι CommRingCat} {C : CategoryTheory.Limits.Cocone F} {Iι : (i : ι) → Ideal ↑(F.obj i)}\n  (I : Ideal ↑C.pt) (h : I = ⨆ i, Ideal.map (CommRingCat.Hom.hom (C.ι.app i)) (Iι i)) :\n  PrimeSpectrum.zeroLocus ↑I =\n    ⋂ i, PrimeSpectrum.comap (CommRingCat.Hom.hom (C.ι.app i)) ⁻¹' PrimeSpectrum.zeroLocus ↑(Iι i)</code>",
  "45":
  "<code>IsHomeomorph.{u_1, u_2} {X : Type u_1} {Y : Type u_2} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Predicate saying that `f` is a homeomorphism.\n\nThis should be used only when `f` is a concrete function whose continuous inverse is not easy to\nwrite down. Otherwise, `Homeomorph` should be preferred as it bundles the continuous inverse.\n\nHaving both `Homeomorph` and `IsHomeomorph` is justified by the fact that so many function\nproperties are unbundled in the topology part of the library, and by the fact that a homeomorphism\nis not merely a continuous bijection, that is `IsHomeomorph f` is not equivalent to\n`Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`. </code>",
  "449":
- "<code>zeroLocus_eq_iInter_specComap_preimage.{u_1, u_2, u_3} {ι : Type u_1} [CategoryTheory.Category.{u_2, u_1} ι]\n  {F : CategoryTheory.Functor ι CommRingCat} {C : CategoryTheory.Limits.Cocone F} {Iι : (i : ι) → Ideal ↑(F.obj i)}\n  (I : Ideal ↑C.pt) (h : I = ⨆ i, Ideal.map (CommRingCat.Hom.hom (C.ι.app i)) (Iι i)) :\n  PrimeSpectrum.zeroLocus ↑I =\n    ⋂ i, PrimeSpectrum.comap (CommRingCat.Hom.hom (C.ι.app i)) ⁻¹' PrimeSpectrum.zeroLocus ↑(Iι i)</code>",
- "448":
  "<code>WLocalization.ideal.{u} (A : Type u) [CommRing A] : Ideal (WLocalization A)</code>",
- "447":
+ "448":
  "<code>WLocalization.{u} (A : Type u) [CommRing A] : Type u</code><span class=\"sep\"></span><code class=\"docstring\">The w-localization of a ring. </code>",
- "446":
+ "447":
  "<code>CommAlgCat.{v, u} (R : Type u) [CommRing R] : Type (max u (v + 1))</code><span class=\"sep\"></span><code class=\"docstring\">The category of R-algebras and their morphisms. </code>",
- "445":
+ "446":
  "<code>WLocalization.commAlgCat.{u_1} (A : Type u_1) [CommRing A] : CommAlgCat A</code><span class=\"sep\"></span><code class=\"docstring\">The w-localization of a ring as an object of `CommAlgCat A` is the colimit over\nthe rings `A_E`. </code>",
- "444":
+ "445":
  "<code>AlgHom.toRingHom.{u, v, w} {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [Semiring A] [Semiring B]\n  [Algebra R A] [Algebra R B] (self : A →ₐ[R] B) : A →+* B</code><span class=\"sep\"></span><code class=\"docstring\">Reinterpret an `AlgHom` as a `RingHom` </code>",
- "443":
+ "444":
  "<code>WLocalization.ProdStrata.map.{u_1} {A : Type u_1} [CommRing A] {E F : Finset A} (h : E ⊆ F) :\n  WLocalization.ProdStrata E →ₐ[A] WLocalization.ProdStrata F</code><span class=\"sep\"></span><code class=\"docstring\">If `E ⊆ F`, this is the canonical map `A_E → A_F`. </code>",
- "442":
+ "443":
  "<code>Set.MapsTo.{u, v} {α : Type u} {β : Type v} (f : α → β) (s : Set α) (t : Set β) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`MapsTo f s t` means that the image of `s` is contained in `t`. </code>",
- "441": "<code>E ⊆ F</code>",
- "440":
+ "442": "<code>E ⊆ F</code>",
+ "441":
  "<code>WLocalization.ProdStrata.mapsTo_map_specComap.{u_1} {A : Type u_1} [CommRing A] {E F : Finset A} (h : E ⊆ F) :\n  Set.MapsTo (PrimeSpectrum.comap (WLocalization.ProdStrata.map h).toRingHom)\n    (PrimeSpectrum.zeroLocus ↑(WLocalization.ProdStrata.ideal F))\n    (PrimeSpectrum.zeroLocus ↑(WLocalization.ProdStrata.ideal E))</code>",
+ "440": "<code>IsClosed {x}</code>",
  "44":
  "<code>ConnectedComponents.isHomeomorph_connectedComponentsLift_prod.{u_2, u_3} (S : Type u_2) (T : Type u_3)\n  [TopologicalSpace S] [TopologicalSpace T] : IsHomeomorph ⋯.connectedComponentsLift</code>",
- "439": "<code>IsClosed {x}</code>",
- "438":
+ "439":
  "<code>WLocalization.ProdStrata.mem_zeroLocus_ideal_of_isClosed.{u_1} {A : Type u_1} [CommRing A] {E : Finset A}\n  {x : PrimeSpectrum (WLocalization.ProdStrata E)} (hx : IsClosed {x}) :\n  x ∈ PrimeSpectrum.zeroLocus ↑(WLocalization.ProdStrata.ideal E)</code>",
- "437": "<code>PrimeSpectrum (WLocalization.ProdStrata E)</code>",
- "436":
+ "438": "<code>PrimeSpectrum (WLocalization.ProdStrata E)</code>",
+ "437":
  "<code>WLocalization.ProdStrata.exists_specializes_zeroLocus_ideal.{u_1} {A : Type u_1} [CommRing A] {E : Finset A}\n  (x : PrimeSpectrum (WLocalization.ProdStrata E)) :\n  ∃ y ∈ PrimeSpectrum.zeroLocus ↑(WLocalization.ProdStrata.ideal E), x ⤳ y</code>",
- "435":
+ "436":
  "<code>WLocalization.ProdStrata.bijOn_algebraMap_specComap_zeroLocus_ideal.{u_1} {A : Type u_1} [CommRing A] (E : Finset A) :\n  Set.BijOn (PrimeSpectrum.comap (algebraMap A (WLocalization.ProdStrata E)))\n    (PrimeSpectrum.zeroLocus ↑(WLocalization.ProdStrata.ideal E)) Set.univ</code>",
- "434":
+ "435":
  "<code>WLocalization.ProdStrata.ideal.{u_1} {A : Type u_1} [CommRing A] (E : Finset A) : Ideal (WLocalization.ProdStrata E)</code><span class=\"sep\"></span><code class=\"docstring\">The ideal of the stratification product, given by the product of the ideals defining\n`Z(E', E'')` in its generalization. </code>",
- "433":
+ "434":
  "<code>WLocalization.ProdStrata.{u_1} {A : Type u_1} [CommRing A] (E : Finset A) : Type u_1</code><span class=\"sep\"></span><code class=\"docstring\">The product of the generalizations of `Z(E', E'')` indexed by all disjoint union decompositions\n`E = E' ⨿ E''`. </code>",
- "432":
+ "433":
  "<code>WLocalization.Stratification.Index.right.{u_1} {A : Type u_1} {E : Finset A}\n  (self : WLocalization.Stratification.Index E) : Finset A</code>",
- "431":
+ "432":
  "<code>WLocalization.Stratification.Index.left.{u_1} {A : Type u_1} {E : Finset A}\n  (self : WLocalization.Stratification.Index E) : Finset A</code>",
- "430": "<code>WLocalization.Stratification.Index E</code>",
+ "431": "<code>WLocalization.Stratification.Index E</code>",
+ "430":
+ "<code>WLocalization.Stratification.Index.iUnion_stratum.{u_1} {A : Type u_1} [CommRing A] (E : Finset A) :\n  ⋃ i, WLocalization.stratum i.left i.right = Set.univ</code>",
  "43":
  "<code>Continuous.connectedComponentsLift.{u, v} {α : Type u} {β : Type v} [TopologicalSpace α] [TopologicalSpace β]\n  [TotallyDisconnectedSpace β] {f : α → β} (h : Continuous f) : ConnectedComponents α → β</code><span class=\"sep\"></span><code class=\"docstring\">The lift to `connectedComponents α` of a continuous map from `α` to a totally disconnected space\n</code>",
- "429":
- "<code>WLocalization.Stratification.Index.iUnion_stratum.{u_1} {A : Type u_1} [CommRing A] (E : Finset A) :\n  ⋃ i, WLocalization.stratum i.left i.right = Set.univ</code>",
- "428": "<code>F ⊆ F'</code>",
- "427": "<code>E ⊆ E'</code>",
- "426":
+ "429": "<code>F ⊆ F'</code>",
+ "428": "<code>E ⊆ E'</code>",
+ "427":
  "<code>WLocalization.stratum_anti.{u_1} {A : Type u_1} [CommRing A] {E F E' F' : Finset A} (hEE' : E ⊆ E') (hFF' : F ⊆ F') :\n  WLocalization.stratum E' F' ⊆ WLocalization.stratum E F</code>",
- "425":
+ "426":
  "<code>Ideal.span.{u} {α : Type u} [Semiring α] (s : Set α) : Ideal α</code><span class=\"sep\"></span><code class=\"docstring\">The ideal generated by a subset of a ring </code>",
- "424":
+ "425":
  "<code>PrimeSpectrum.basicOpen.{u} {R : Type u} [CommSemiring R] (r : R) : TopologicalSpace.Opens (PrimeSpectrum R)</code><span class=\"sep\"></span><code class=\"docstring\">`basicOpen r` is the open subset containing all prime ideals not containing `r`. </code>",
- "423":
+ "424":
  "<code>WLocalization.stratum_eq_basicOpen_inter_zeroLocus.{u_1} {A : Type u_1} [CommRing A] (E F : Finset A) :\n  WLocalization.stratum E F = ↑(PrimeSpectrum.basicOpen (∏ f ∈ E, f)) ∩ PrimeSpectrum.zeroLocus ↑(Ideal.span ↑F)</code>",
- "422":
+ "423":
  "<code>Finset.{u_4} (α : Type u_4) : Type u_4</code><span class=\"sep\"></span><code class=\"docstring\">`Finset α` is the type of finite sets of elements of `α`. It is implemented\nas a multiset (a list up to permutation) which has no duplicate elements. </code>",
- "421": "<code>Finset A</code>",
- "420":
+ "422": "<code>Finset A</code>",
+ "421":
  "<code>WLocalization.stratum.{u_1} {A : Type u_1} [CommRing A] (E F : Finset A) : Set (PrimeSpectrum A)</code><span class=\"sep\"></span><code class=\"docstring\">The single stratum `Z(E, F)` in `Spec A`. </code>",
+ "420":
+ "<code>WLocalization.Generalization.indZariski.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) :\n  Algebra.IndZariski A (WLocalization.Generalization f I)</code>",
  "42":
  "<code>Function.Bijective.{u₁, u₂} {α : Sort u₁} {β : Sort u₂} (f : α → β) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A function is called bijective if it is both injective and surjective. </code>",
- "419":
- "<code>WLocalization.Generalization.indZariski.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) :\n  Algebra.IndZariski A (WLocalization.Generalization f I)</code>",
- "418": "<code>PrimeSpectrum (WLocalization.Generalization f I)</code>",
- "417":
+ "419": "<code>PrimeSpectrum (WLocalization.Generalization f I)</code>",
+ "418":
  "<code>WLocalization.Generalization.exists_specializes_zeroLocus_ideal.{u_1} {A : Type u_1} [CommRing A] {f : A} (I : Ideal A)\n  (x : PrimeSpectrum (WLocalization.Generalization f I)) :\n  ∃ y ∈ PrimeSpectrum.zeroLocus ↑(WLocalization.Generalization.ideal f I), x ⤳ y</code>",
- "416":
+ "417":
  "<code>WLocalization.Generalization.map.{u_1} {A : Type u_1} [CommRing A] {f f' : A} {I I' : Ideal A}\n  (h : WLocalization.Generalization.locClosedSubset f' I' ⊆ WLocalization.Generalization.locClosedSubset f I) :\n  WLocalization.Generalization f I →ₐ[A] WLocalization.Generalization f' I'</code>",
- "415":
+ "416":
  "<code>LE.le.{u} {α : Type u} [self : LE α] : α → α → Prop</code><span class=\"sep\"></span><code class=\"docstring\">The less-equal relation: `x ≤ y` \n\nConventions for notations in identifiers:\n\n * The recommended spelling of `≤` in identifiers is `le`.</code>",
- "414":
+ "415":
  "<code>WLocalization.Generalization.locClosedSubset f' I' ⊆ WLocalization.Generalization.locClosedSubset f I</code>",
- "413":
+ "414":
  "<code>WLocalization.Generalization.submonoid_le.{u_1} {A : Type u_1} [CommRing A] {f f' : A} {I I' : Ideal A}\n  (h : WLocalization.Generalization.locClosedSubset f' I' ⊆ WLocalization.Generalization.locClosedSubset f I) :\n  WLocalization.Generalization.submonoid f I ≤ WLocalization.Generalization.submonoid f' I'</code>",
- "412":
+ "413":
  "<code>PrimeSpectrum.zeroLocus.{u} {R : Type u} [CommSemiring R] (s : Set R) : Set (PrimeSpectrum R)</code><span class=\"sep\"></span><code class=\"docstring\">The zero locus of a set `s` of elements of a commutative (semi)ring `R` is the set of all\nprime ideals of the ring that contain the set `s`.\n\nAn element `f` of `R` can be thought of as a dependent function on the prime spectrum of `R`.\nAt a point `x` (a prime ideal) the function (i.e., element) `f` takes values in the quotient ring\n`R` modulo the prime ideal `x`. In this manner, `zeroLocus s` is exactly the subset of\n`PrimeSpectrum R` where all \"functions\" in `s` vanish simultaneously.\n</code>",
- "411":
+ "412":
  "<code>Set.BijOn.{u, v} {α : Type u} {β : Type v} (f : α → β) (s : Set α) (t : Set β) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`f` is bijective from `s` to `t` if `f` is injective on `s` and `f '' s = t`. </code>",
- "410":
+ "411":
  "<code>WLocalization.Generalization.bijOn_algebraMap_generalization_specComap_zeroLocus_ideal.{u_1} {A : Type u_1} [CommRing A]\n  (f : A) (I : Ideal A) :\n  Set.BijOn (PrimeSpectrum.comap (algebraMap A (WLocalization.Generalization f I)))\n    (PrimeSpectrum.zeroLocus ↑(WLocalization.Generalization.ideal f I))\n    (WLocalization.Generalization.locClosedSubset f I)</code>",
+ "410":
+ "<code>WLocalization.Generalization.locClosedSubset.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) :\n  Set (PrimeSpectrum A)</code><span class=\"sep\"></span><code class=\"docstring\">The locally closed subset `D(f) ∩ V(I)` of `Spec A`. </code>",
  "41":
  "<code>ConnectedComponents.bijective_connectedComponentsLift_prod.{u_2, u_3} (S : Type u_2) (T : Type u_3) [TopologicalSpace S]\n  [TopologicalSpace T] : Function.Bijective ⋯.connectedComponentsLift</code>",
  "409":
- "<code>WLocalization.Generalization.locClosedSubset.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) :\n  Set (PrimeSpectrum A)</code><span class=\"sep\"></span><code class=\"docstring\">The locally closed subset `D(f) ∩ V(I)` of `Spec A`. </code>",
- "408":
  "<code>WLocalization.Generalization.range_algebraMap_generalization.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) :\n  Set.range (PrimeSpectrum.comap (algebraMap A (WLocalization.Generalization f I))) =\n    generalizationHull (WLocalization.Generalization.locClosedSubset f I)</code><span class=\"sep\"></span><code class=\"docstring\">The image of `Spec (Generalization f I)` in `Spec A` is equal to\nthe generalization hull of `D(f) ∩ V(I)`. </code>",
- "407":
+ "408":
  "<code>WLocalization.Generalization.ideal.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) :\n  Ideal (WLocalization.Generalization f I)</code><span class=\"sep\"></span><code class=\"docstring\">The kernel of the canonical map from the generalization at `(f, I)` to `(A ⧸ I)_f`.\nThis ideal defines a closed subset of the prime spectrum of the generalization at `(f, I)` that\nmaps homeomorphically to `D(f) ∩ V(I)`.\n</code>",
- "406":
+ "407":
  "<code>WLocalization.Generalization.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) : Type u_1</code><span class=\"sep\"></span><code class=\"docstring\">The localization of `A` at all elements invertible in `(A / I)_f`. </code>",
- "405": "<code>Ideal A</code>",
- "404": "<code>A</code>",
- "403":
+ "406": "<code>Ideal A</code>",
+ "405": "<code>A</code>",
+ "404":
  "<code>WLocalization.Generalization.submonoid.{u_1} {A : Type u_1} [CommRing A] (f : A) (I : Ideal A) : Submonoid A</code><span class=\"sep\"></span><code class=\"docstring\">The submonoid of `A` consisting of elements that become invertible in `(A / I)_f`. </code>",
- "402":
+ "403":
  "<code>Continuous.connectedComponentsMap.{u, u_3} {α : Type u} [TopologicalSpace α] {β : Type u_3} [TopologicalSpace β]\n  {f : α → β} (h : Continuous f) : ConnectedComponents α → ConnectedComponents β</code><span class=\"sep\"></span><code class=\"docstring\">Functoriality of `connectedComponents` </code>",
- "401": "<code>Function.Bijective ⋯.connectedComponentsMap</code>",
- "400":
+ "402": "<code>Function.Bijective ⋯.connectedComponentsMap</code>",
+ "401":
  "<code>RingHom.IsWLocal.{u_3, u_4} {R : Type u_3} {S : Type u_4} [CommSemiring R] [CommSemiring S] (f : R →+* S) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring homomorphism is w-local if the induced map on spectra is w-local. </code>",
+ "400": "<code>f.IsWLocal</code>",
  "40":
  "<code>SProd.sprod.{u, v, w} {α : Type u} {β : Type v} {γ : outParam (Type w)} [self : SProd α β γ] : α → β → γ</code><span class=\"sep\"></span><code class=\"docstring\">The Cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. </code>",
  "4":
  "<code>IsOpen.{u} {X : Type u} [TopologicalSpace X] : Set X → Prop</code><span class=\"sep\"></span><code class=\"docstring\">`IsOpen s` means that `s` is open in the ambient topological space on `X` </code>",
- "399": "<code>f.IsWLocal</code>",
- "398":
+ "399":
  "<code>RingHom.IsWLocal.bijective_of_bijective.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R] [CommRing S]\n  [IsWLocalRing R] [IsWLocalRing S] {f : R →+* S} (hw : f.IsWLocal) (hs : f.BijectiveOnStalks)\n  (hb : Function.Bijective ⋯.connectedComponentsMap) : Function.Bijective ⇑f</code><span class=\"sep\"></span><code class=\"docstring\">A w-local ring map between w-local rings that is bijective on stalks and\nbijective on connected components is bijective. </code>",
- "397":
+ "398":
  "<code>PrimeSpectrum.comap.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommSemiring R] [CommSemiring S] (f : R →+* S)\n  (p : PrimeSpectrum S) : PrimeSpectrum R</code><span class=\"sep\"></span><code class=\"docstring\">The pullback of an element of `PrimeSpectrum S` along a ring homomorphism `f : R →+* S`.\nThe bundled continuous version is `PrimeSpectrum.comap`. </code>",
- "396": "<code>Function.Bijective (PrimeSpectrum.comap f)</code>",
- "395":
+ "397": "<code>Function.Bijective (PrimeSpectrum.comap f)</code>",
+ "396":
  "<code>RingHom.BijectiveOnStalks.bijective_of_bijective.{u, v} {R : Type u} {S : Type v} [CommRing R] [CommRing S]\n  {f : R →+* S} (hf : f.BijectiveOnStalks) (hb : Function.Bijective (PrimeSpectrum.comap f)) : Function.Bijective ⇑f</code><span class=\"sep\"></span><code class=\"docstring\">A ring homomorphism that is bijective on stalks and induces a bijection on prime spectra\nis itself bijective. </code>",
- "394":
+ "395":
  "<code>Function.Surjective.{u_1, u_2} {α : Sort u_1} {β : Sort u_2} (f : α → β) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A function `f : α → β` is called surjective if every `b : β` is equal to `f a`\nfor some `a : α`. </code>",
- "393": "<code>Function.Surjective ⇑f</code>",
- "392":
+ "394": "<code>Function.Surjective ⇑f</code>",
+ "393":
  "<code>IsWLocalRing.of_surjective.{u_1, u_2} {R : Type u_1} {S : Type u_2} [CommRing R] [CommRing S] {f : R →+* S}\n  (hf : Function.Surjective ⇑f) [IsWLocalRing R] : IsWLocalRing S</code>",
- "391":
+ "392":
  "<code>IsWLocalRing.{u_1} (R : Type u_1) [CommSemiring R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring is w-local if it has a w-local prime spectrum. </code>",
- "390":
+ "391":
  "<code>PrimeSpectrum.{u_1} (R : Type u_1) [CommSemiring R] : Type u_1</code><span class=\"sep\"></span><code class=\"docstring\">The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.\n\nIt is naturally endowed with a topology (the Zariski topology),\nand a sheaf of commutative rings (see `Mathlib/AlgebraicGeometry/StructureSheaf.lean`).\nIt is a fundamental building block in algebraic geometry. </code>",
+ "390": "<code>WLocalSpace (PrimeSpectrum R)</code>",
  "39":
  "<code>Eq.{u_1} {α : Sort u_1} : α → α → Prop</code><span class=\"sep\"></span><code class=\"docstring\">The equality relation. It has one introduction rule, `Eq.refl`.\nWe use `a = b` as notation for `Eq a b`.\nA fundamental property of equality is that it is an equivalence relation.\n```\nvariable (α : Type) (a b c d : α)\nvariable (hab : a = b) (hcb : c = b) (hcd : c = d)\n\nexample : a = d :=\n  Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd\n```\nEquality is much more than an equivalence relation, however. It has the important property that every assertion\nrespects the equivalence, in the sense that we can substitute equal expressions without changing the truth value.\nThat is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`.\nExample:\n```\nexample (α : Type) (a b : α) (p : α → Prop)\n        (h1 : a = b) (h2 : p a) : p b :=\n  Eq.subst h1 h2\n\nexample (α : Type) (a b : α) (p : α → Prop)\n    (h1 : a = b) (h2 : p a) : p b :=\n  h1 ▸ h2\n```\nThe triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\\t`.\nFor more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `=` in identifiers is `eq`.</code>",
- "389": "<code>WLocalSpace (PrimeSpectrum R)</code>",
- "388":
+ "389":
  "<code>ConnectedComponents.preimage_closedPoints_eq_closedPoints_of_isPullback.{u} {X Y T : Type u} [TopologicalSpace X]\n  [WLocalSpace X] [TopologicalSpace Y] [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T]\n  {f : C(Y, X)} {g : C(Y, T)} {i : C(T, ConnectedComponents X)}\n  (pb :\n    CategoryTheory.IsPullback (TopCat.ofHom g) (TopCat.ofHom f) (TopCat.ofHom i)\n      (TopCat.ofHom { toFun := ConnectedComponents.mk, continuous_toFun := ⋯ })) :\n  ⇑f ⁻¹' closedPoints X = closedPoints Y</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 096C](https://stacks.math.columbia.edu/tag/096C) (second part)</code>",
- "387":
+ "388":
  "<code>ConnectedComponents.isWLocalMap_of_isPullback.{u} {X Y T : Type u} [TopologicalSpace X] [WLocalSpace X]\n  [TopologicalSpace Y] [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T] {f : C(Y, X)}\n  {g : C(Y, T)} {i : C(T, ConnectedComponents X)}\n  (pb :\n    CategoryTheory.IsPullback (TopCat.ofHom g) (TopCat.ofHom f) (TopCat.ofHom i)\n      (TopCat.ofHom { toFun := ConnectedComponents.mk, continuous_toFun := ⋯ })) :\n  IsWLocalMap ⇑f</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 096C](https://stacks.math.columbia.edu/tag/096C) (second part)</code>",
- "386":
+ "387":
  "<code>ConnectedComponents.wlocalSpace_of_isPullback.{u} {X Y T : Type u} [TopologicalSpace X] [WLocalSpace X]\n  [TopologicalSpace Y] [TopologicalSpace T] [CompactSpace T] [T2Space T] [TotallyDisconnectedSpace T] {f : C(Y, X)}\n  {g : C(Y, T)} {i : C(T, ConnectedComponents X)}\n  (pb :\n    CategoryTheory.IsPullback (TopCat.ofHom g) (TopCat.ofHom f) (TopCat.ofHom i)\n      (TopCat.ofHom { toFun := ConnectedComponents.mk, continuous_toFun := ⋯ })) :\n  WLocalSpace Y</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 096C](https://stacks.math.columbia.edu/tag/096C) (second part)</code>",
- "385":
+ "386":
  "<code>Subtype.val.{u} {α : Sort u} {p : α → Prop} (self : Subtype p) : α</code><span class=\"sep\"></span><code class=\"docstring\">The value in the underlying type that satisfies the predicate.\n</code>",
- "384":
+ "385":
  "<code>WLocalSpace.isHomeomorph_connectedComponents_closedPoints.{u_1} (X : Type u_1) [TopologicalSpace X] [WLocalSpace X] :\n  IsHomeomorph (ConnectedComponents.mk ∘ Subtype.val)</code><span class=\"sep\"></span><code class=\"docstring\">If `X` is w-local, the composition `closedPoints X → X → ConnectedComponents X` is\na homeomorphism. </code>",
- "383":
+ "384":
  "<code>isClosed_generalizationHull_of_wLocalSpace.{u_1} {X : Type u_1} [TopologicalSpace X] [WLocalSpace X] {s : Set X}\n  (hs : IsClosed s) : IsClosed (generalizationHull s)</code>",
- "382":
+ "383":
  "<code>IsClosed.of_isClosed_constructibleTopology.{u_1} {X : Type u_1} [TopologicalSpace X] [SpectralSpace X] {s : Set X}\n  (hs : IsClosed s) (h : StableUnderSpecialization s) : IsClosed s</code><span class=\"sep\"></span><code class=\"docstring\">If `s` is closed in the constructible topology and stable under specialization, it is closed. </code>",
- "381":
+ "382":
  "<code>Membership.mem.{u, v} {α : outParam (Type u)} {γ : Type v} [self : Membership α γ] : γ → α → Prop</code><span class=\"sep\"></span><code class=\"docstring\">The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`. \n\nConventions for notations in identifiers:\n\n * The recommended spelling of `∈` in identifiers is `mem`.</code>",
- "380": "<code>x ∈ closure s</code>",
+ "381": "<code>x ∈ closure s</code>",
+ "380": "<code>IsClosed s</code>",
  "38":
  "<code>Prod.mk.{u, v} {α : Type u} {β : Type v} (fst : α) (snd : β) : α × β</code><span class=\"sep\"></span><code class=\"docstring\">Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.\n\n\nConventions for notations in identifiers:\n\n * The recommended spelling of `(a, b)` in identifiers is `mk`.</code>",
- "379": "<code>IsClosed s</code>",
- "378":
+ "379":
  "<code>exists_specializes_of_isClosed_constructibleTopology_of_mem_closure.{u_1} {X : Type u_1} [TopologicalSpace X]\n  [SpectralSpace X] {s : Set X} (hs : IsClosed s) {x : X} (hx : x ∈ closure s) : ∃ y ∈ s, y ⤳ x</code><span class=\"sep\"></span><code class=\"docstring\">If `s` is closed in the constructible topology and `x` is in the closure of `s`, then\nit is the specialization of a point in `s`. </code>",
- "377":
+ "378":
  "<code>WithConstructibleTopology.{u_2} (X : Type u_2) [TopologicalSpace X] : Type u_2</code><span class=\"sep\"></span><code class=\"docstring\">A type synonym for `X` that is equipped with the constructible topology of `X`. </code>",
- "376":
+ "377":
  "<code>compactSpace_withConstructibleTopology.{u_1} {X : Type u_1} [TopologicalSpace X] [CompactSpace X] [QuasiSober X]\n  [PrespectralSpace X] [QuasiSeparatedSpace X] : CompactSpace (WithConstructibleTopology X)</code><span class=\"sep\"></span><code class=\"docstring\">If `X` is quasi-separated, quasi-sober, prespectral and quasi-compact, then `X`\nis still quasi-compact in the constructible topology. This holds in particular for spectral\nspaces. </code>",
- "375":
+ "376":
  "<code>constructibleTopology.{u_2} (X : Type u_2) [TopologicalSpace X] : TopologicalSpace X</code><span class=\"sep\"></span><code class=\"docstring\">The constructible topology on a topological space `X` has as a subbasis\nthe open and compact sets of `X` and their complements. </code>",
- "374":
+ "375":
  "<code>Set.sInter.{u} {α : Type u} (S : Set (Set α)) : Set α</code><span class=\"sep\"></span><code class=\"docstring\">Intersection of a set of sets. </code>",
- "373": "<code>Set (Set X)</code>",
- "372": "<code>IsCompact s</code>",
- "371":
+ "374": "<code>Set (Set X)</code>",
+ "373": "<code>IsCompact s</code>",
+ "372":
  "<code>generalizationHull.eq_sInter_of_isCompact.{u_1} {X : Type u_1} [TopologicalSpace X] [SpectralSpace X] {s : Set X}\n  (hs : IsCompact s) : ∃ S ⊆ {U | IsOpen U ∧ IsCompact U}, generalizationHull s = ⋂₀ S</code>",
- "370":
+ "371":
  "<code>WLocalSpace.CompactSpace_closedPoints.{u_1} {X : Type u_1} [TopologicalSpace X] [WLocalSpace X] :\n  CompactSpace ↑(closedPoints X)</code>",
+ "370":
+ "<code>T1Space.{u} (X : Type u) [TopologicalSpace X] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A T₁ space, also known as a Fréchet space, is a topological space\nwhere every singleton set is closed. Equivalently, for every pair\n`x ≠ y`, there is an open set containing `x` and not `y`. </code>",
  "37":
  "<code>connectedComponent.{u} {α : Type u} [TopologicalSpace α] (x : α) : Set α</code><span class=\"sep\"></span><code class=\"docstring\">The connected component of a point is the maximal connected set\nthat contains this point. </code>",
  "369":
- "<code>T1Space.{u} (X : Type u) [TopologicalSpace X] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A T₁ space, also known as a Fréchet space, is a topological space\nwhere every singleton set is closed. Equivalently, for every pair\n`x ≠ y`, there is an open set containing `x` and not `y`. </code>",
- "368":
  "<code>SpectralSpace.totallySeparatedSpace.{u_1} {X : Type u_1} [TopologicalSpace X] [SpectralSpace X] [T1Space X] :\n  TotallySeparatedSpace X</code><span class=\"sep\"></span><code class=\"docstring\">[Stacks Tag 0905](https://stacks.math.columbia.edu/tag/0905) ((6) → (1))</code>",
- "367":
+ "368":
  "<code>TotallySeparatedSpace.{u} (α : Type u) [TopologicalSpace α] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A space is totally separated if any two points can be separated by two disjoint open sets\ncovering the whole space. </code>",
- "366":
+ "367":
  "<code>LocallyCompactSpace.{u_3} (X : Type u_3) [TopologicalSpace X] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">There are various definitions of \"locally compact space\" in the literature,\nwhich agree for Hausdorff spaces but not in general.\nThis one is the precise condition on X needed\nfor the evaluation map `C(X, Y) × X → Y` to be continuous for all `Y`\nwhen `C(X, Y)` is given the compact-open topology.\n\nSee also `WeaklyLocallyCompactSpace`, a typeclass that only assumes\nthat each point has a compact neighborhood. </code>",
- "365":
+ "366":
  "<code>instTotallySeparatedSpaceOfTotallyDisconnectedSpace.{u_3} {H : Type u_3} [TopologicalSpace H] [LocallyCompactSpace H]\n  [T2Space H] [TotallyDisconnectedSpace H] : TotallySeparatedSpace H</code><span class=\"sep\"></span><code class=\"docstring\">A totally disconnected compact Hausdorff space is totally separated. </code>",
- "364":
+ "365":
  "<code>Topology.IsClosedEmbedding.wLocalSpace.{u_1, u_2} {X : Type u_1} {Y : Type u_2} [TopologicalSpace X]\n  [TopologicalSpace Y] {f : X → Y} (hf : Topology.IsClosedEmbedding f) [WLocalSpace Y] : WLocalSpace X</code>",
- "363": "<code>StableUnderSpecialization (Set.range f)</code>",
- "362":
+ "364": "<code>StableUnderSpecialization (Set.range f)</code>",
+ "363":
  "<code>Topology.IsEmbedding.wLocalSpace_of_stableUnderSpecialization_range.{u_1, u_2} {X : Type u_1} {Y : Type u_2}\n  [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} (hf : Topology.IsEmbedding f)\n  (h : StableUnderSpecialization (Set.range f)) [SpectralSpace X] [WLocalSpace Y] : WLocalSpace X</code>",
- "361":
+ "362":
  "<code>StableUnderSpecialization.{u_1} {X : Type u_1} [TopologicalSpace X] (s : Set X) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A subset `S` of a topological space is stable under specialization\nif `x ∈ S → y ∈ S` for all `x ⤳ y`. </code>",
- "360": "<code>StableUnderSpecialization s</code>",
- "36": "<code>T</code>",
- "359":
+ "361": "<code>StableUnderSpecialization s</code>",
+ "360":
  "<code>StableUnderSpecialization.generalizationHull_of_wLocalSpace.{u_1} {X : Type u_1} [TopologicalSpace X] [WLocalSpace X]\n  {s : Set X} (hs : StableUnderSpecialization s) : StableUnderSpecialization (generalizationHull s)</code>",
- "358": "<code>IsWLocalMap g</code>",
- "357": "<code>IsWLocalMap f</code>",
- "356": "<code>Y → Z</code>",
- "355":
+ "36": "<code>T</code>",
+ "359": "<code>IsWLocalMap g</code>",
+ "358": "<code>IsWLocalMap f</code>",
+ "357": "<code>Y → Z</code>",
+ "356":
  "<code>IsWLocalMap.comp.{u_1, u_2, u_3} {X : Type u_1} {Y : Type u_2} [TopologicalSpace X] [TopologicalSpace Y] {Z : Type u_3}\n  [TopologicalSpace Z] {f : X → Y} {g : Y → Z} (hf : IsWLocalMap f) (hg : IsWLocalMap g) : IsWLocalMap (g ∘ f)</code>",
- "354":
+ "355":
  "<code>IsWLocalMap.{u_1, u_2} {X : Type u_1} {Y : Type u_2} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A w-local map is a spectral map that maps closed points to closed points. </code>",
- "353":
+ "354":
  "<code>IsSpectralMap.{u_2, u_3} {α : Type u_2} {β : Type u_3} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A function between topological spaces is spectral if it is continuous and the preimage of every\ncompact open set is compact open. </code>",
- "352": "<code>closedPoints X ⊆ f ⁻¹' closedPoints Y</code>",
- "351":
+ "353": "<code>closedPoints X ⊆ f ⁻¹' closedPoints Y</code>",
+ "352":
  "<code>WLocalSpace.{u_1} (X : Type u_1) [TopologicalSpace X] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A spectral space is w-local if every point specializes to a unique closed point\nand the set of closed points is closed.\nNote: In a spectral space, every point specializes to a closed point, so we only require\nthe uniqueness.\n</code>",
- "350":
+ "351":
  "<code>closedPoints.{u_1} (X : Type u_1) [TopologicalSpace X] : Set X</code><span class=\"sep\"></span><code class=\"docstring\">The set of closed points. </code>",
+ "350":
+ "<code>IsClosed (closedPoints X)</code><span class=\"sep\"></span><code class=\"docstring\">The set of closed points is closed. </code>",
  "35": "<code>S</code>",
  "349":
- "<code>IsClosed (closedPoints X)</code><span class=\"sep\"></span><code class=\"docstring\">The set of closed points is closed. </code>",
- "348":
  "<code>∀ {x c c' : X}, IsClosed {c} → IsClosed {c'} → x ⤳ c → x ⤳ c' → c = c'</code><span class=\"sep\"></span><code class=\"docstring\">Any two closed specializations of a point are equal. </code>",
- "347":
+ "348":
  "<code>setOf.{u} {α : Type u} (p : α → Prop) : Set α</code><span class=\"sep\"></span><code class=\"docstring\">Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` </code>",
- "346":
+ "347":
  "<code>TopologicalSpace.IsTopologicalBasis.{u} {α : Type u} [t : TopologicalSpace α] (s : Set (Set α)) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A topological basis is one that satisfies the necessary conditions so that\nit suffices to take unions of the basis sets to get a topology (without taking\nfinite intersections as well). </code>",
- "345":
+ "346":
  "<code>Inter.inter.{u} {α : Type u} [self : Inter α] : α → α → α</code><span class=\"sep\"></span><code class=\"docstring\">`a ∩ b` is the intersection of `a` and `b`. \n\nConventions for notations in identifiers:\n\n * The recommended spelling of `∩` in identifiers is `inter`.</code>",
- "344":
+ "345":
  "<code>IsGenericPoint.{u_1} {α : Type u_1} [TopologicalSpace α] (x : α) (S : Set α) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">`x` is a generic point of `S` if `S` is the closure of `x`. </code>",
- "343":
+ "344":
  "<code>IsIrreducible.{u_1} {X : Type u_1} [TopologicalSpace X] (s : Set X) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An irreducible set `s` is one that is nonempty and\nwhere there is no non-trivial pair of disjoint opens on `s`. </code>",
- "342":
+ "343":
  "<code>Set.univ.{u} {α : Type u} : Set α</code><span class=\"sep\"></span><code class=\"docstring\">The universal set on a type `α` is the set containing all elements of `α`.\n\nThis is conceptually the \"same as\" `α` (in set theory, it is actually the same), but type theory\nmakes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can\nitself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. </code>",
- "341":
+ "342":
  "<code>Inseparable.{u_1} {X : Type u_1} [TopologicalSpace X] (x y : X) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Two points `x` and `y` in a topological space are `Inseparable`, or *topologically\nindistinguishable*, if any of the following equivalent properties hold:\n\n- `𝓝 x = 𝓝 y`; we use this property as the definition;\n- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isOpen`;\n- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isClosed`;\n- `x ∈ closure {y}` and `y ∈ closure {x}`, see `inseparable_iff_mem_closure`;\n- `closure {x} = closure {y}`, see `inseparable_iff_closure_eq`.\n</code>",
- "340":
+ "341":
  "<code>RingHom.IndZariski.indEtale.{u} {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S} (hf : f.IndZariski) : f.IndEtale</code>",
+ "340":
+ "<code>Algebra.IndEtale.of_indZariski.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] [Algebra.IndZariski R S] :\n  Algebra.IndEtale R S</code><span class=\"sep\"></span><code class=\"docstring\">An ind-Zariski algebra is ind-étale, since localizations are étale. </code>",
  "34": "<code>Type u_3</code>",
  "339":
- "<code>Algebra.IndEtale.of_indZariski.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] [Algebra.IndZariski R S] :\n  Algebra.IndEtale R S</code><span class=\"sep\"></span><code class=\"docstring\">An ind-Zariski algebra is ind-étale, since localizations are étale. </code>",
- "338":
  "<code>Algebra.IndEtale.iff_ind_indEtale.{u} {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] :\n  Algebra.IndEtale R S ↔\n    (RingHom.toObjectProperty (fun {R S} [CommRing R] [CommRing S] =&gt; RingHom.IndEtale) R).ind (CommAlgCat.of R S)</code><span class=\"sep\"></span><code class=\"docstring\">Ind-étale algebras are equivalent to ind-ind-étale algebras. </code>",
- "337":
+ "338":
  "<code>∀ (i : J), (CommRingCat.Hom.hom (t.app i)).IndEtale ∧ CategoryTheory.CategoryStruct.comp (t.app i) (c.app i) = f</code>",
- "336":
+ "337":
  "<code>RingHom.IndEtale.of_isColimit.{u} {R S : CommRingCat} (f : R ⟶ S) (J : Type u) [CategoryTheory.SmallCategory J]\n  [CategoryTheory.IsFiltered J] (D : CategoryTheory.Functor J CommRingCat)\n  {t : (CategoryTheory.Functor.const J).obj R ⟶ D} {c : D ⟶ (CategoryTheory.Functor.const J).obj S}\n  (hc : CategoryTheory.Limits.IsColimit { pt := S, ι := c })\n  (htc :\n    ∀ (i : J), (CommRingCat.Hom.hom (t.app i)).IndEtale ∧ CategoryTheory.CategoryStruct.comp (t.app i) (c.app i) = f) :\n  (CommRingCat.Hom.hom f).IndEtale</code><span class=\"sep\"></span><code class=\"docstring\">A ring hom is ind-étale if it can be written as a filtered colimit of ind-étale maps. </code>",
- "335":
+ "336":
  "<code>RingHom.IndEtale.iff_ind_indEtale.{u} {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :\n  f.IndEtale ↔\n    (RingHom.toMorphismProperty fun {R S} [CommRing R] [CommRing S] =&gt; RingHom.IndEtale).ind (CommRingCat.ofHom f)</code><span class=\"sep\"></span><code class=\"docstring\">Ind-étale is equivalent to ind-ind-étale. </code>",
- "334": "<code>∀ (i : ι), Algebra.IndEtale R ↑(P.diag.obj i)</code>",
- "333":
+ "335": "<code>∀ (i : ι), Algebra.IndEtale R ↑(P.diag.obj i)</code>",
+ "334":
  "<code>Algebra.IndEtale.of_colimitPresentation.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] {ι : Type u}\n  [CategoryTheory.SmallCategory ι] [CategoryTheory.IsFiltered ι]\n  (P : CategoryTheory.Limits.ColimitPresentation ι (CommAlgCat.of R S))\n  (h : ∀ (i : ι), Algebra.IndEtale R ↑(P.diag.obj i)) : Algebra.IndEtale R S</code><span class=\"sep\"></span><code class=\"docstring\">If every stage of a filtered colimit presentation of `S` over `R` is ind-étale,\nthen `S` is ind-étale over `R`. </code>",
- "332":
+ "333":
  "<code>RingHom.IsStableUnderBaseChange.{u}\n  (P : {R S : Type u} → [inst : CommRing R] → [inst_1 : CommRing S] → (R →+* S) → Prop) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A morphism property `P` is `IsStableUnderBaseChange` if `P(S →+* A)` implies\n`P(B →+* A ⊗[S] B)`. </code>",
- "331":
+ "332":
  "<code>RingHom.IndEtale.isStableUnderBaseChange.{u_1} :\n  RingHom.IsStableUnderBaseChange fun {R S} [CommRing R] [CommRing S] =&gt; RingHom.IndEtale</code><span class=\"sep\"></span><code class=\"docstring\">Ind-étale ring homomorphisms are stable under base change. </code>",
- "330": "<code>f.IndEtale</code>",
+ "331": "<code>f.IndEtale</code>",
+ "330": "<code>g.IndEtale</code>",
  "33": "<code>Type u_2</code>",
- "329": "<code>g.IndEtale</code>",
- "328":
+ "329":
  "<code>RingHom.IndEtale.comp.{u} {R S : Type u} [CommRing R] [CommRing S] {T : Type u} [CommRing T] {g : S →+* T} {f : R →+* S}\n  (hg : g.IndEtale) (hf : f.IndEtale) : (g.comp f).IndEtale</code>",
- "327":
+ "328":
  "<code>Algebra.IndEtale.trans.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] (T : Type u) [CommRing T]\n  [Algebra R T] [Algebra S T] [IsScalarTower R S T] [Algebra.IndEtale R S] [Algebra.IndEtale S T] : Algebra.IndEtale R T</code>",
- "326":
+ "327":
  "<code>RingHom.IndEtale.{u} {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A ring hom is ind-étale if and only if it is an ind-étale algebra. </code>",
- "325":
+ "326":
  "<code>Algebra.IndEtale.{u} (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">An algebra is ind-étale if it can be written as the filtered colimit of étale\nalgebras. </code>",
- "324":
+ "325":
  "<code>∃ ι x, ∃ (_ : CategoryTheory.IsFiltered ι), ∃ P, ∀ (i : ι), Algebra.Etale R ↑(P.diag.obj i)</code>",
- "323":
+ "324":
  "<code>IsLocalRing.ResidueField.{u_1} (R : Type u_1) [CommRing R] [IsLocalRing R] : Type u_1</code><span class=\"sep\"></span><code class=\"docstring\">The residue field of a local ring is the quotient of the ring by its maximal ideal. </code>",
- "322":
+ "323":
  "<code>IsSepClosed.{u} (k : Type u) [Field k] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">Typeclass for separably closed fields.\n\nTo show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,\nsee `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.\n</code>",
- "321":
+ "322":
  "<code>IsStrictlyHenselianLocalRing.{u_1} (R : Type u_1) [CommRing R] : Prop</code>",
- "320":
+ "321":
  "<code>IsLocalRing.{u_1} (R : Type u_1) [Semiring R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.\nNote that `IsLocalRing` is a predicate. </code>",
+ "320":
+ "<code>isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed.{u_1} (R : Type u_1) [CommRing R] [IsLocalRing R] :\n  IsStrictlyHenselianLocalRing R ↔ HenselianLocalRing R ∧ IsSepClosed (IsLocalRing.ResidueField R)</code><span class=\"sep\"></span><code class=\"docstring\">A local ring is strictly Henselian if and only if it is Henselian and its residue\nfield is separably closed. </code>",
  "32":
  "<code>connectedComponent.prod.{u_2, u_3} (S : Type u_2) (T : Type u_3) [TopologicalSpace S] [TopologicalSpace T] (s : S)\n  (t : T) : connectedComponent (s, t) = connectedComponent s ×ˢ connectedComponent t</code>",
  "319":
- "<code>isStrictlyHenselianLocalRing_iff_henselianLocalRing_and_isSepClosed.{u_1} (R : Type u_1) [CommRing R] [IsLocalRing R] :\n  IsStrictlyHenselianLocalRing R ↔ HenselianLocalRing R ∧ IsSepClosed (IsLocalRing.ResidueField R)</code><span class=\"sep\"></span><code class=\"docstring\">A local ring is strictly Henselian if and only if it is Henselian and its residue\nfield is separably closed. </code>",
- "318":
  "<code>IsCoprime.{u} {R : Type u} [CommSemiring R] (x y : R) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">The proposition that `x` and `y` are coprime, defined to be the existence of `a` and `b` such\nthat `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,\ne.g., the multivariate polynomials `x₁` and `x₂` are not coprime. </code>",
- "317": "<code>IsCoprime f g</code>",
- "316":
+ "318": "<code>IsCoprime f g</code>",
+ "317":
  "<code>HMul.hMul.{u, v, w} {α : Type u} {β : Type v} {γ : outParam (Type w)} [self : HMul α β γ] : α → β → γ</code><span class=\"sep\"></span><code class=\"docstring\">`a * b` computes the product of `a` and `b`.\nThe meaning of this notation is type-dependent. \n\nConventions for notations in identifiers:\n\n * The recommended spelling of `*` in identifiers is `mul`.</code>",
- "315":
+ "316":
  "<code>Polynomial.map.{u, v} {R : Type u} {S : Type v} [Semiring R] [Semiring S] (f : R →+* S) : Polynomial R → Polynomial S</code><span class=\"sep\"></span><code class=\"docstring\">`map f p` maps a polynomial `p` across a ring hom `f` </code>",
- "314":
+ "315":
  "<code>Polynomial.map (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) p = f * g</code>",
- "313": "<code>g.Monic</code>",
- "312": "<code>f.Monic</code>",
- "311": "<code>Polynomial (IsLocalRing.maximalIdeal R).ResidueField</code>",
- "310":
+ "314": "<code>g.Monic</code>",
+ "313": "<code>f.Monic</code>",
+ "312": "<code>Polynomial (IsLocalRing.maximalIdeal R).ResidueField</code>",
+ "311":
  "<code>Polynomial.Monic.{u} {R : Type u} [Semiring R] (p : Polynomial R) : Prop</code><span class=\"sep\"></span><code class=\"docstring\">a polynomial is `Monic` if its leading coefficient is 1 </code>",
+ "310": "<code>p.Monic</code>",
  "31": "<code>X ⟶ Y</code>",
- "309": "<code>p.Monic</code>",
- "308":
+ "309":
  "<code>Polynomial.{u_1} (R : Type u_1) [Semiring R] : Type u_1</code><span class=\"sep\"></span><code class=\"docstring\">`Polynomial R` is the type of univariate polynomials over `R`,\ndenoted as `R[X]` within the `Polynomial` namespace.\n\nPolynomials should be seen as (semi-)rings with the additional constructor `X`.\nThe embedding from `R` is called `C`. </code>",
- "307": "<code>Polynomial R</code>",
- "306":
+ "308": "<code>Polynomial R</code>",
+ "307":
  "<code>HenselianLocalRing.exists_monic_mul_of_map_eq_mul.{u} {R : Type u} [CommRing R] [HenselianLocalRing R]\n  {p : Polynomial R} (hp : p.Monic) {f g : Polynomial (IsLocalRing.maximalIdeal R).ResidueField} (hf : f.Monic)\n  (hg : g.Monic) (H : Polynomial.map (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) p = f * g)\n  (hco : IsCoprime f g) :\n  ∃ p₁ p₂,\n    p₁.Monic ∧\n      p₂.Monic ∧\n        p = p₁ * p₂ ∧\n          Polynomial.map (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) p₁ = f ∧\n            Polynomial.map (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) p₂ = g</code><span class=\"sep\"></span><code class=\"docstring\">**Hensel's lemma for coprime factorizations.**  Over a Henselian local ring, a\nfactorization of a monic polynomial into coprime monic factors over the residue field\nlifts to a factorization into monic factors.\n\nThis is one implication of [Stacks 04GG (3)](https://stacks.math.columbia.edu/tag/04GG). </code>",
- "305": "<code>R'</code>",
+ "306":
+ "<code>AlgHom.comp.{u, v, w, u₁} {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} [CommSemiring R] [Semiring A]\n  [Semiring B] [Semiring C] [Algebra R A] [Algebra R B] [Algebra R C] (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C</code><span class=\"sep\"></span><code class=\"docstring\">If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the\ndomain of `φ₁` equal to the codomain of `φ₂`, then\n`φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.\n</code>",
+ "305":
+ "<code>IsScalarTower.toAlgHom.{u_1, u_2, u_3} (R : Type u_1) (S : Type u_2) (A : Type u_3) [CommSemiring R] [CommSemiring S]\n  [Semiring A] [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] : S →ₐ[R] A</code><span class=\"sep\"></span><code class=\"docstring\">In a tower, the canonical map from the middle element to the top element is an\nalgebra homomorphism over the bottom element. </code>",
  "304": "<code>R' →ₐ[R] R</code>",
  "303":
  "<code>Ideal.ResidueField.{u_1} {R : Type u_1} [CommRing R] (I : Ideal R) [I.IsPrime] : Type u_1</code><span class=\"sep\"></span><code class=\"docstring\">The residue field at a prime ideal, defined to be the residue field of the local ring\n`Localization.Prime I`.\nWe also provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.\n</code>",
@@ -1067,7 +1070,7 @@
  "298":
  "<code>HenselianLocalRing.{u_1} (R : Type u_1) [CommRing R] : Prop</code><span class=\"sep\"></span><code class=\"docstring\">A local ring `R` is *Henselian* if the following condition holds:\nfor every polynomial `f` over `R`, with a *simple* root `a₀` over the residue field,\nthere exists a lift `a : R` of `a₀` that is a root of `f`.\n(Recall that a root `b` of a polynomial `g` is *simple* if it is not a double root, so if\n`g.derivative.eval b ≠ 0`.)\n\nIn other words, `R` is local Henselian if it is Henselian at the ideal `I`,\nin the sense of `HenselianRing`. </code>",
  "297":
- "<code>HenselianLocalRing.exists_algHom_section.{u} {R : Type u} [CommRing R] [HenselianLocalRing R] {R' : Type u}\n  [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (χ : R' →ₐ[R] (IsLocalRing.maximalIdeal R).ResidueField) :\n  ∃ σ, ∀ (y : R'), (algebraMap R (IsLocalRing.maximalIdeal R).ResidueField) (σ y) = χ y</code><span class=\"sep\"></span><code class=\"docstring\">A Henselian local ring admits sections of étale algebras pointed over the residue\nfield. This is one implication of [Stacks 04GG (7)]\n(https://stacks.math.columbia.edu/tag/04GG). </code>",
+ "<code>HenselianLocalRing.exists_algHom_section.{u} {R : Type u} [CommRing R] [HenselianLocalRing R] {R' : Type u}\n  [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (χ : R' →ₐ[R] (IsLocalRing.maximalIdeal R).ResidueField) :\n  ∃ σ, (IsScalarTower.toAlgHom R R (IsLocalRing.maximalIdeal R).ResidueField).comp σ = χ</code><span class=\"sep\"></span><code class=\"docstring\">A Henselian local ring admits sections of étale algebras pointed over the residue\nfield. This is one implication of [Stacks 04GG (7)]\n(https://stacks.math.columbia.edu/tag/04GG). </code>",
  "296":
  "<code>Algebra.IndZariski.of_isLocalization.{u} {R : Type u} (S : Type u) [CommRing R] [CommRing S] [Algebra R S]\n  (M : Submonoid R) [IsLocalization M S] : Algebra.IndZariski R S</code>",
  "295":
