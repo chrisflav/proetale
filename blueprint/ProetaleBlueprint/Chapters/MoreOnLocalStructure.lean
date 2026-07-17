@@ -454,6 +454,10 @@ $$`\begin{CD} A @>>> L \\ @VVV @VVV \\ S @>>> T \end{CD}`
 with $`S` of weak dimension $`\le 1` and $`S \to T` a flat, injective
 epimorphism of rings.
 (Stacks Project, [Tag 092U](https://stacks.math.columbia.edu/tag/092U))
+
+Note that the algebraicity of $`L` over $`\mathrm{Frac}(A)` is not needed for this
+particular lemma; the formalised statement only assumes that $`A` is integrally
+closed in the field $`L`.
 :::
 
 :::proof "lemma:integrally-closed-cartesian-weak-dim" (uses := "lemma:prod-valuation-ring-weak-dim-integrally-closed")

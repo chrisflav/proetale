@@ -31,6 +31,7 @@ import Proetale.Mathlib.Algebra.Category.AlgCat.FilteredColimits
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Basic
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
 import Proetale.Mathlib.Algebra.Category.Ring.FilteredColimits
+import Proetale.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Proetale.Mathlib.Algebra.Homology.ShortComplex.Exact
 import Proetale.Mathlib.Algebra.Module.LocalizedModule.Finiteness
 import Proetale.Mathlib.AlgebraicGeometry.AffineTransitionLimit
@@ -94,6 +95,8 @@ import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 import Proetale.Mathlib.RingTheory.Ideal.GoingUp
 import Proetale.Mathlib.RingTheory.Ideal.Pure
 import Proetale.Mathlib.RingTheory.Idempotents
+import Proetale.Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Proetale.Mathlib.RingTheory.Localization.Pi
 import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
