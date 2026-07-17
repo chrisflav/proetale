@@ -629,6 +629,37 @@ $`R \to S \to \kappa(\mathfrak{q}) = \kappa` is a factorisation of
 $`R \to \kappa`. Thus $`R \to S` has a retraction.
 :::
 
+:::lemma_ "lem:henselian-etale-section" (parent := "local-structure") (lean := "HenselianLocalRing.exists_algHom_section")
+Let $`(R, \mathfrak{m}, \kappa)` be a Henselian local ring, let $`R \to R'` be an
+étale ring map and let $`\chi \colon R' \to \kappa` be an $`R`-algebra map. Then
+there exists an $`R`-algebra section $`\sigma \colon R' \to R` such that
+$`R \to \kappa` postcomposed with $`\sigma` equals $`\chi`.
+(Stacks Project, [Tag 04GG](https://stacks.math.columbia.edu/tag/04GG), (7))
+:::
+
+:::proof "lem:henselian-etale-section"
+Localising at the prime $`\mathfrak{q} = \ker(\chi)` we may assume that $`R'` is
+standard étale, hence presented by a standard étale pair $`P`. The point of $`P`
+with values in $`\kappa` induced by $`\chi` lifts, by the Hensel property, to a
+point with values in $`R`. This lift is precisely the desired section $`\sigma`.
+:::
+
+:::lemma_ "lem:henselian-coprime-factorization" (parent := "local-structure") (lean := "HenselianLocalRing.exists_monic_mul_of_map_eq_mul")
+Let $`(R, \mathfrak{m}, \kappa)` be a Henselian local ring and let $`p \in R[X]`
+be monic. If the reduction $`\bar p` of $`p` over $`\kappa` factors as a product
+$`\bar p = f \cdot g` of coprime monic polynomials, then $`p = p_1 \cdot p_2` for
+monic $`p_1, p_2 \in R[X]` reducing to $`f` and $`g` respectively.
+(Stacks Project, [Tag 04GG](https://stacks.math.columbia.edu/tag/04GG), (3))
+:::
+
+:::proof "lem:henselian-coprime-factorization" (uses := "lem:henselian-etale-section")
+The universal factorisation ring $`R'` of $`p` along the factorisation
+$`\bar p = f \cdot g` is étale over $`R` and its residue field agrees with
+$`\kappa`. The section provided by {bpref "lem:henselian-etale-section"}[]
+transports the tautological factorisation of $`p` over $`R'` back to a monic
+factorisation over $`R`.
+:::
+
 :::definition "def:strictly-henselian-local-ring" (parent := "local-structure") (uses := "def:p-henselian")
 A local ring $`(R, \mathfrak{m}, \kappa)` is *strictly henselian* if the
 composition $`R \to \kappa \to \kappa^{\mathrm{sep}}` is étale-Henselian for a
