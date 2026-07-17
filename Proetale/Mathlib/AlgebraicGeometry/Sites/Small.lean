@@ -1,27 +1,11 @@
 import Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
 import Proetale.Mathlib.CategoryTheory.Sites.Continuous
+import Proetale.Mathlib.CategoryTheory.Sites.Grothendieck
 
 universe u
 
 open CategoryTheory MorphismProperty Limits
-
-namespace CategoryTheory.GrothendieckTopology
-
-/-- Membership of pushforward sieves in a Grothendieck topology only depends on the
-functor up to natural isomorphism. -/
-lemma functorPushforward_mem_of_iso {C : Type*} [Category* C] {D : Type*} [Category* D]
-    (K : GrothendieckTopology D) {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {U : C} (R : Sieve U)
-    (h : R.functorPushforward F₁ ∈ K (F₁.obj U)) :
-    R.functorPushforward F₂ ∈ K (F₂.obj U) := by
-  refine K.superset_covering ?_ (K.pullback_stable (e.inv.app U) h)
-  rintro Z g ⟨V, a, h', ha, hfac⟩
-  refine ⟨V, a, h' ≫ e.hom.app V, ha, ?_⟩
-  have hg : g = (g ≫ e.inv.app U) ≫ e.hom.app U := by
-    rw [Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
-  rw [hg, hfac, Category.assoc, Category.assoc, NatTrans.naturality]
-
-end CategoryTheory.GrothendieckTopology
 
 namespace AlgebraicGeometry.Scheme
 
@@ -29,7 +13,7 @@ variable (S : Scheme.{u}) {P Q : MorphismProperty Scheme.{u}}
   [P.IsMultiplicative] [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
   [Q.IsMultiplicative] [Q.IsStableUnderBaseChange] [IsJointlySurjectivePreserving Q]
 
-instance (hPQ : P ≤ Q) [P.HasOfPostcompProperty P] [Q.HasOfPostcompProperty Q] :
+instance (hPQ : P ≤ Q) [P.HasOfPostcompProperty P] :
     (Over.changeProp S hPQ le_rfl).IsContinuous
     (smallGrothendieckTopology P) (smallGrothendieckTopology Q) := by
   have : PreservesFiniteLimits
@@ -45,10 +29,7 @@ instance (hPQ : P ≤ Q) [P.HasOfPostcompProperty P] [Q.HasOfPostcompProperty Q]
   refine Functor.isContinuous_of_coverPreserving
     (compatiblePreservingOfFlat _ _) ⟨fun {U R} hR ↦ ?_⟩
   rw [Functor.mem_inducedTopology_sieves_iff, ← Sieve.functorPushforward_comp]
-  have heq : R.functorPushforward (Over.changeProp S hPQ le_rfl ⋙
-        MorphismProperty.Over.forget Q ⊤ S) =
-      R.functorPushforward (MorphismProperty.Over.forget P ⊤ S) := rfl
-  rw [heq]
+  -- `Over.changeProp S hPQ le_rfl ⋙ forget Q = forget P` definitionally
   have hmono : S.overGrothendieckTopology P ≤ S.overGrothendieckTopology Q := by
     intro Z T hT
     rw [GrothendieckTopology.mem_over_iff] at hT ⊢
@@ -63,9 +44,7 @@ variable {S T : Scheme.{u}} (f : S ⟶ T)
 variable (A : Type*) [Category* A]
 
 /-- The base change functor along `f : S ⟶ T` is continuous for the small
-Grothendieck topologies: it is flat (it preserves finite limits) and it preserves
-covers, because the corresponding statements hold for the base change functor on the
-big over-categories. -/
+Grothendieck topologies. -/
 instance :
     (Over.pullback P ⊤ f).IsContinuous
       (T.smallGrothendieckTopology P)
@@ -105,10 +84,7 @@ def smallPullbackPushforwardAdj :
   (Over.pullback P ⊤ f).sheafAdjunctionContinuous A _ _
 
 /-- The functor `X/S ⥤ X/T` induced by postcomposition with `f : S ⟶ T` satisfying `P`
-is continuous for the small Grothendieck topologies: this is the analogue for the
-small sites of the continuity of `Over.map` for the big over-categories
-(`CategoryTheory.GrothendieckTopology.over_map_compatiblePreserving` and
-`CategoryTheory.GrothendieckTopology.over_map_coverPreserving`). -/
+is continuous for the small Grothendieck topologies. -/
 instance (hf : P f) :
     (Over.map ⊤ hf).IsContinuous (smallGrothendieckTopology P) (smallGrothendieckTopology P) := by
   refine Functor.isContinuous_of_coverPreserving ⟨?_⟩ ⟨fun {U R} hR ↦ ?_⟩
