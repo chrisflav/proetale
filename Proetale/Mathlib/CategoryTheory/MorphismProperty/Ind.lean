@@ -142,15 +142,37 @@ lemma le_pro : P ≤ pro.{w} P := by
 instance [P.ContainsIdentities] : (pro.{w} P).ContainsIdentities where
   id_mem X := le_pro _ _ (P.id_mem X)
 
-lemma op_isFinitelyPresentable :
-    (isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ :=
-  sorry
+/-- Presentability of a morphism (as an object of `Under X`) transports along an
+equivalence `F`: if `f` is `κ`-presentable, then so is its image `F.map f`.
 
-lemma pro_pro [LocallySmall.{w} C] (H : P ≤ isFinitelyPresentable.{w} C) :
+This is the reusable content behind `le_isFinitelyPresentable_op_op`; it holds for an
+arbitrary regular cardinal `κ`. -/
+lemma isCardinalPresentable_underMk_map {D : Type*} [Category D] (F : C ⥤ D) [F.IsEquivalence]
+    {κ : Cardinal.{w}} [Fact κ.IsRegular] {X Y : C} (f : X ⟶ Y)
+    [IsCardinalPresentable (CategoryTheory.Under.mk f) κ] :
+    IsCardinalPresentable (CategoryTheory.Under.mk (F.map f)) κ :=
+  isCardinalPresentable_of_iso
+    (X := (CategoryTheory.Under.post F).obj (CategoryTheory.Under.mk f))
+    (CategoryTheory.Under.isoMk (Iso.refl _) (by simp)) κ
+
+attribute [local instance] Cardinal.fact_isRegular_aleph0 in
+/-- If every morphism in `P` is finitely presentable, then every morphism in `P.op.op`
+is finitely presentable in `Cᵒᵖᵒᵖ`.
+
+Note that the naive equality `(isFinitelyPresentable.{w} C).op = isFinitelyPresentable.{w} Cᵒᵖ`
+is false in general categories, hence hypotheses about pro-properties are stated in the form
+`P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ` and transported along the equivalence `Cᵒᵖᵒᵖ ≌ C`
+(which, unlike a single `op`, does preserve presentability) with this lemma. -/
+lemma le_isFinitelyPresentable_op_op {P : MorphismProperty C}
+    (H : P ≤ isFinitelyPresentable.{w} C) :
+    P.op.op ≤ isFinitelyPresentable.{w} Cᵒᵖᵒᵖ := by
+  intro X Y f hf
+  have : IsCardinalPresentable (CategoryTheory.Under.mk f.unop.unop) Cardinal.aleph0.{w} := H _ hf
+  exact isCardinalPresentable_underMk_map (opOp C) f.unop.unop
+
+lemma pro_pro [LocallySmall.{w} C] (H : P.op ≤ isFinitelyPresentable.{w} Cᵒᵖ) :
     pro.{w} (pro.{w} P) = pro.{w} P := by
-  rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind]
-  rw [← op_isFinitelyPresentable]
-  exact P.op_mono H
+  rw [pro_eq_unop_ind_op, pro_eq_unop_ind_op, op_unop, ind_ind H]
 
 lemma pro_of_univLE [UnivLE.{w', w}] :
     pro.{w'} P ≤ pro.{w} P := by
