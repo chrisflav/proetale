@@ -448,7 +448,7 @@ on stalks.
 Holds because the same holds for bijective maps of sets.
 :::
 
-:::definition "def:identifies-local-ring-to-top" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-rings-composition")
+:::definition "def:identifies-local-ring-to-top" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-rings-composition") (lean := "Algebra.BijectiveOnStalks.continuousMapOfAlgHom")
 Let $`A` be a ring and $`X = \Spec(A)`. Let $`\operatorname{ILR}_A` denote the
 category of $`A`-algebras $`B` for which $`A \to B` identifies local rings, and
 let $`\operatorname{Top}_X` denote the category of topological spaces over $`X`.
@@ -459,33 +459,47 @@ by sending $`B` to $`\Spec(B)`.
 (Stacks Project, [Tag 096L](https://stacks.math.columbia.edu/tag/096L))
 :::
 
-:::lemma_ "thm:identifies-local-ring-to-top-fully-faithful" (parent := "local-structure") (uses := "def:identifies-local-ring-to-top")
-Let $`A` be a ring. Set $`X = \Spec (A)`. The functor $`F` constructed in
-{bpref "def:identifies-local-ring-to-top"}[],
-$$`B \longmapsto \Spec (B),`
-from the category of $`A`-algebras $`B` such that $`A \to B` identifies local
-rings to the category of topological spaces over $`X` is fully faithful.
+:::lemma_ "thm:identifies-local-ring-to-top-fully-faithful" (parent := "local-structure") (uses := "def:identifies-local-ring-to-top") (lean := "Algebra.BijectiveOnStalks.continuousMapOfAlgHom_bijective")
+Let $`A` be a ring. Set $`X = \Spec (A)`. Let $`B` be an $`A`-algebra such that
+$`A \to B` identifies local rings, and let $`C` be an arbitrary $`A`-algebra. Then
+the map
+$$`\Hom_{A\text{-alg}}(B, C) \longrightarrow \Hom_{\mathrm{Top}_X}(\Spec (C), \Spec (B))`
+sending $`f \colon B \to C` to $`\Spec (f)` is a bijection. In particular, taking
+$`C` to also identify local rings, the functor $`F` of
+{bpref "def:identifies-local-ring-to-top"}[] is fully faithful.
 (Stacks Project, [Tag 096L](https://stacks.math.columbia.edu/tag/096L))
 :::
 
 :::proof "thm:identifies-local-ring-to-top-fully-faithful"
-The functor $`F` is a composition of two functors:
+We construct the inverse map directly; note that only $`A \to B` is assumed to
+identify local rings.
 
-1. The fully faithful functor from the category of $`A`-algebras $`B` for which
-   $`A \to B` identifies local rings to the category of ringed spaces
-   $`(Y, \mathcal{O}_Y)` over $`X = \Spec(A)` satisfying
-   $`\mathcal{O}_Y = p^{-1}\mathcal{O}_X`, where $`p \colon Y \to X` is the
-   structure map.
-2. The functor sending a ringed space to its underlying topological space, and
-   a morphism $`(f, f^\#)` to $`f`.
+For injectivity, an $`A`-algebra map $`B \to C` is determined by its
+localizations $`B_{\mathfrak q \cap B} \to C_{\mathfrak q}` at all primes
+$`\mathfrak q` of $`C`. If two maps $`f_1, f_2` induce the same
+$`\Spec (f_i)`, then for each prime $`\mathfrak q` of $`C` the two localized maps
+$`B_{\mathfrak p} \to C_{\mathfrak q}` (where $`\mathfrak p = \mathfrak q \cap B`)
+agree after precomposing with the bijection
+$`A_{\mathfrak p \cap A} \xrightarrow{\;\sim\;} B_{\mathfrak p}` coming from
+$`A \to B` identifying local rings, hence agree; so $`f_1 = f_2`.
 
-The second functor is fully faithful because $`f^\#` is always an isomorphism,
-being given by the canonical identification
-$`f^{-1}\mathcal{O}_Y \cong f^{-1}p^{-1}\mathcal{O}_X = q^{-1}\mathcal{O}_X \cong \mathcal{O}_Z`,
-where $`p \colon Y \to X` and $`q \colon Z \to X` are the structure maps.
+For surjectivity, given a continuous map $`\varphi \colon \Spec (C) \to \Spec (B)`
+over $`X`, we build a ring map $`B \to C` prime by prime. For each prime
+$`\mathfrak q` of $`C`, the localized map
+$`A_{\mathfrak q \cap A} \to B_{\varphi(\mathfrak q)}` is bijective (using that
+$`A \to B` identifies local rings and $`\varphi(\mathfrak q) \cap A = \mathfrak q \cap A`
+since $`\varphi` lies over $`X`), so we obtain a per-prime map
+$`B \to B_{\varphi(\mathfrak q)} \xrightarrow{\;\sim\;} A_{\mathfrak q \cap A} \to C_{\mathfrak q}`.
+For fixed $`b \in B`, the family $`\mathfrak q \mapsto (\text{image of } b)` is a
+section of the structure sheaf of $`\Spec (C)` over $`X`: locally around
+$`\mathfrak q` it is the constant fraction $`a/t` with $`a, t \in A`, where
+$`b = a/t` in $`B_{\varphi(\mathfrak q)}`, and continuity of $`\varphi` provides the
+neighbourhood. Since $`\Gamma(\Spec (C), \mathcal{O}) = C`, this section glues to an
+element of $`C`, giving a ring map $`B \to C` which is $`A`-linear and induces
+$`\varphi` on spectra.
 :::
 
-:::definition "def:identifies-local-ring-hom-set-bijection" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-ring-to-top-fully-faithful")
+:::definition "def:identifies-local-ring-hom-set-bijection" (parent := "local-structure") (uses := "def:identify-local-rings, thm:identifies-local-ring-to-top-fully-faithful") (lean := "Algebra.BijectiveOnStalks.algHomEquivContinuousMap")
 Let $`A` be a ring and $`X = \Spec(A)`. Let $`A \to B` and $`A \to C` be two
 $`A`-algebras that identify local rings. As a consequence of
 {bpref "thm:identifies-local-ring-to-top-fully-faithful"}[], we have a bijective

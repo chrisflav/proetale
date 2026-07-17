@@ -5,6 +5,7 @@ import Proetale.Algebra.Etale
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.HenselianLocalRing
+import Proetale.Algebra.IdentifiesLocalRings
 import Proetale.Algebra.Ind
 import Proetale.Algebra.IndBijectiveOnStalks
 import Proetale.Algebra.IndEtale
@@ -94,8 +95,10 @@ import Proetale.Mathlib.RingTheory.Ideal.GoingDown
 import Proetale.Mathlib.RingTheory.Ideal.GoingUp
 import Proetale.Mathlib.RingTheory.Ideal.Pure
 import Proetale.Mathlib.RingTheory.Idempotents
+import Proetale.Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Proetale.Mathlib.RingTheory.RingHom.Flat
 import Proetale.Mathlib.RingTheory.RingHom.OpenImmersion
+import Proetale.Mathlib.RingTheory.Spectrum.Prime.Localization
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Proetale.Mathlib.RingTheory.Spectrum.Prime.Topology
 import Proetale.Mathlib.RingTheory.TensorProduct.Maps
