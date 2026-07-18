@@ -142,3 +142,6 @@ import Proetale.Topology.SpectralSpace.WLocal.Basic
 import Proetale.Topology.SpectralSpace.WLocal.ClosedPoints
 import Proetale.Topology.SpectralSpace.WLocal.ConnectedComponents
 import Proetale.Topology.SpectralSpace.WLocal.Pullback
+import Proetale.WeilConjectures.Statement
+import Proetale.WeilConjectures.ZetaFunction
+import Proetale.WeilConjectures.ZetaSeries
