@@ -94,16 +94,15 @@ def WeilRiemannHypothesis (q d : ℕ) (P : Fin (2 * d + 1) → Polynomial ℤ) :
 
 namespace Scheme
 
-variable (k : Type u) [Field k] [Finite k]
-variable (X : Scheme.{u}) [X.Over (Spec (.of k))]
+variable {k : Type u} [Field k] [Finite k]
+variable {X : Scheme.{u}} (f : X ⟶ Spec (.of k))
 
 /-- **Dwork's theorem**: the zeta function of a scheme of finite type over a finite field
 is a rational function with integer coefficients. This is the first Weil conjecture, which
 holds without any smoothness or properness hypotheses. -/
-theorem zetaSeries_rational [LocallyOfFiniteType (X ↘ Spec (.of k))]
-    [QuasiCompact (X ↘ Spec (.of k))] :
+theorem zetaSeries_rational [LocallyOfFiniteType f] [QuasiCompact f] :
     ∃ P Q : Polynomial ℤ, Q.coeff 0 = 1 ∧
-      X.zetaSeries k * (Q.map (Int.castRingHom ℚ) : PowerSeries ℚ) =
+      f.zetaSeries * (Q.map (Int.castRingHom ℚ) : PowerSeries ℚ) =
         (P.map (Int.castRingHom ℚ) : PowerSeries ℚ) :=
   sorry
 
@@ -113,10 +112,10 @@ smooth, proper, geometrically integral scheme `X` of dimension `d` over a finite
 `Pᵢ ∈ ℤ[t]`, `Pᵢ(0) = 1`, `P₀ = 1 - t`, `P_{2d} = 1 - qᵈ t`, satisfying the functional
 equation and the Riemann hypothesis: all inverse roots of `Pᵢ` have absolute value
 `q^{i/2}`, and `α ↦ qᵈ / α` matches the inverse roots of `Pᵢ` with those of `P_{2d-i}`. -/
-theorem weil_conjectures (d : ℕ) [SmoothOfRelativeDimension d (X ↘ Spec (.of k))]
-    [IsProper (X ↘ Spec (.of k))] [GeometricallyIntegral (X ↘ Spec (.of k))] :
+theorem weil_conjectures (d : ℕ) [SmoothOfRelativeDimension d f] [IsProper f]
+    [GeometricallyIntegral f] :
     ∃ P : Fin (2 * d + 1) → Polynomial ℤ,
-      IsWeilFactorization (Nat.card k) d (X.zetaSeries k) P ∧
+      IsWeilFactorization (Nat.card k) d f.zetaSeries P ∧
       WeilFunctionalEquation (Nat.card k) d P ∧
       WeilRiemannHypothesis (Nat.card k) d P :=
   sorry
