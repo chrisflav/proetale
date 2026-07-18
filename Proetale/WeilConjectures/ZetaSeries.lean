@@ -39,9 +39,9 @@ formal substitution `ζ_X(s) = Z(X, q ^ (-s))`.
   of `Z(X, t)` is the generating series of the point counts, i.e.
   `t * Z'(X, t) = (∑ N_n t ^ n) * Z(X, t)`. Together with
   `constantCoeff_zetaSeries` this characterizes `Z(X, t)` uniquely.
-- `AlgebraicGeometry.Scheme.Hom.zetaSeries_eq_tprod`: the Euler product expansion
-  `Z(X, t) = ∏ (1 - t ^ deg x)⁻¹` over the closed points of `X`, converging in the
-  `t`-adic sense.
+
+The Euler product expansion `Z(X, t) = ∏ (1 - t ^ deg x)⁻¹` over the closed points of
+`X` is proved in `Proetale.WeilConjectures.EulerProduct`.
 -/
 
 universe u
@@ -236,27 +236,18 @@ theorem Hom.X_mul_derivative_zetaSeries :
     mul_comm (PowerSeries.subst _ (PowerSeries.exp ℚ)), ← mul_assoc, hXF]
 
 /-- The canonical embedding of the base field of `X` into the residue field of a point,
-obtained by evaluating global sections. -/
+induced by the structure morphism via functoriality of residue fields. See
+`AlgebraicGeometry.Scheme.Hom.specMap_residueFieldAlgebraMap` for its geometric
+characterization. -/
 noncomputable def Hom.residueFieldAlgebraMap (f : X.Hom (Spec (.of k))) (x : X) :
     k →+* X.residueField x :=
-  ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop ≫ X.evaluation ⊤ x trivial).hom
+  (CommRingCat.ofHom (algebraMap (CommRingCat.of k) (f.base x).asIdeal.ResidueField) ≫
+    (Spec.residueFieldIso (.of k) (f.base x)).inv ≫ f.residueFieldMap x).hom
 
 /-- The degree `[κ(x) : k]` of a point `x` of a scheme `X` over a field `k`, with junk
 value `0` if the residue field extension is infinite. -/
 noncomputable def Hom.degreeOver (f : X.Hom (Spec (.of k))) (x : X) : ℕ :=
   letI := (f.residueFieldAlgebraMap x).toAlgebra
   Module.finrank k (X.residueField x)
-
-open scoped PowerSeries.WithPiTopology in
-/-- The Euler product expansion of the zeta function of a variety over a finite field:
-`Z(X, t) = ∏ (1 - t ^ deg x)⁻¹`, the product running over the closed points of `X` and
-converging coefficientwise (there are only finitely many closed points of each degree).
-
-Substituting `t = q ^ (-s)` and comparing factors with `#κ(x) = q ^ deg x` shows that
-this is the Euler product defining `Scheme.zeta`. -/
-theorem Hom.zetaSeries_eq_tprod [Finite k] [LocallyOfFiniteType f] :
-    f.zetaSeries =
-      ∏' x : X.finitePoints, (1 - PowerSeries.X ^ f.degreeOver x.1 : PowerSeries ℚ)⁻¹ :=
-  sorry
 
 end AlgebraicGeometry.Scheme
