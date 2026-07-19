@@ -143,10 +143,13 @@ import Proetale.Topology.SpectralSpace.WLocal.ClosedPoints
 import Proetale.Topology.SpectralSpace.WLocal.ConnectedComponents
 import Proetale.Topology.SpectralSpace.WLocal.Pullback
 import Proetale.WeilConjectures.AnalyticAux
+import Proetale.WeilConjectures.ClosedPoints
+import Proetale.WeilConjectures.Convergence
 import Proetale.WeilConjectures.EulerProduct
 import Proetale.WeilConjectures.EulerProductAux
 import Proetale.WeilConjectures.Evaluation
 import Proetale.WeilConjectures.PointCount
+import Proetale.WeilConjectures.SpecialValues
 import Proetale.WeilConjectures.Statement
 import Proetale.WeilConjectures.ZetaFunction
 import Proetale.WeilConjectures.ZetaSeries

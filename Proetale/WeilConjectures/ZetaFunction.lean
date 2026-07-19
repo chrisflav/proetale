@@ -34,10 +34,12 @@ the classical arithmetic zeta function; in this case it converges for `re s` lar
 
 ## Main statements
 
-- `AlgebraicGeometry.Scheme.multipliable_eulerFactor_of_finiteType`: for a scheme of finite
-  type over `ℤ`, the Euler product converges on a right half-plane.
-- `AlgebraicGeometry.Scheme.zeta_specInt_eq_riemannZeta`: the zeta function of `Spec ℤ`
-  is the Riemann zeta function.
+Basic properties of `finitePoints` and `pointNorm` are proved here. See
+`Proetale.WeilConjectures.ClosedPoints` for the identification of the finite-residue
+points with the closed points, `Proetale.WeilConjectures.Convergence` for the
+convergence of the Euler product on a right half-plane for schemes of finite type over
+`ℤ`, and `Proetale.WeilConjectures.SpecialValues` for the computation of the zeta
+functions of `Spec 𝔽_q` and `Spec ℤ` (the latter being the Riemann zeta function).
 
 ## References
 
@@ -60,18 +62,6 @@ def finitePoints : Set X :=
 
 lemma mem_finitePoints {x : X} : x ∈ X.finitePoints ↔ Finite (X.residueField x) :=
   Iff.rfl
-
-/-- A point with finite residue field is a closed point. -/
-lemma isClosed_singleton_of_mem_finitePoints {x : X} (hx : x ∈ X.finitePoints) :
-    IsClosed ({x} : Set X) :=
-  sorry
-
-/-- If `X` is locally of finite type over `ℤ`, the points with finite residue field are
-exactly the closed points. This is a consequence of the general Nullstellensatz. -/
-theorem finitePoints_eq_closedPoints (f : X ⟶ Spec (.of (ULift.{u} ℤ)))
-    [LocallyOfFiniteType f] :
-    X.finitePoints = {x | IsClosed ({x} : Set X)} :=
-  sorry
 
 /-- The norm of a point `x` of a scheme is the cardinality of its residue field,
 with junk value `0` if the residue field is infinite. -/
@@ -104,25 +94,5 @@ noncomputable def zeta (s : ℂ) : ℂ :=
 lemma zeta_of_isEmpty [IsEmpty X] (s : ℂ) : X.zeta s = 1 := by
   have : IsEmpty X.finitePoints := ⟨fun x ↦ IsEmpty.false x.1⟩
   rw [zeta, tprod_empty]
-
-/-- For a scheme of finite type over `ℤ`, the Euler product defining the zeta function
-converges on a right half-plane. (For `X` of dimension `d` one can take `a = d`, but we
-do not state this.) -/
-theorem multipliable_eulerFactor_of_finiteType (f : X ⟶ Spec (.of (ULift.{u} ℤ)))
-    [LocallyOfFiniteType f] [QuasiCompact f] :
-    ∃ a : ℝ, ∀ s : ℂ, a < s.re →
-      Multipliable fun x : X.finitePoints ↦ X.eulerFactor x.1 s :=
-  sorry
-
-/-- The zeta function of the spectrum of a finite field `k` is `(1 - #k ^ (-s))⁻¹`. -/
-theorem zeta_spec_eq_of_finite (k : Type u) [Field k] [Finite k] (s : ℂ) :
-    (Spec (.of k)).zeta s = (1 - (Nat.card k : ℂ) ^ (-s))⁻¹ :=
-  sorry
-
-/-- The zeta function of `Spec ℤ` is the Riemann zeta function (on the half-plane of
-absolute convergence, hence everywhere by analytic continuation of the right hand side). -/
-theorem zeta_specInt_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) :
-    (Spec (.of ℤ)).zeta s = riemannZeta s :=
-  sorry
 
 end AlgebraicGeometry.Scheme
