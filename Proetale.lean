@@ -47,6 +47,7 @@ import Proetale.Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Proetale.Mathlib.AlgebraicGeometry.Sites.Small
 import Proetale.Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Proetale.Mathlib.CategoryTheory.Filtered.Basic
+import Proetale.Mathlib.CategoryTheory.Functor.Flat
 import Proetale.Mathlib.CategoryTheory.Limits.Comma
 import Proetale.Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 import Proetale.Mathlib.CategoryTheory.Limits.FunctorToTypes
