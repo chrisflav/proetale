@@ -629,11 +629,11 @@ $`R \to S \to \kappa(\mathfrak{q}) = \kappa` is a factorisation of
 $`R \to \kappa`. Thus $`R \to S` has a retraction.
 :::
 
-:::lemma_ "lem:henselian-etale-section" (parent := "local-structure") (lean := "HenselianLocalRing.exists_algHom_section")
+:::lemma_ "lem:henselian-etale-section" (parent := "local-structure") (lean := "HenselianLocalRing.existsUnique_algHom_section")
 Let $`(R, \mathfrak{m}, \kappa)` be a Henselian local ring, let $`R \to R'` be an
 étale ring map and let $`\chi \colon R' \to \kappa` be an $`R`-algebra map. Then
-there exists an $`R`-algebra section $`\sigma \colon R' \to R` such that
-$`R \to \kappa` postcomposed with $`\sigma` equals $`\chi`.
+there exists a unique $`R`-algebra section $`\sigma \colon R' \to R` such that
+the composite $`R' \xrightarrow{\sigma} R \to \kappa` equals $`\chi`.
 (Stacks Project, [Tag 04GG](https://stacks.math.columbia.edu/tag/04GG), (7))
 :::
 
@@ -644,7 +644,7 @@ with values in $`\kappa` induced by $`\chi` lifts, by the Hensel property, to a
 point with values in $`R`. This lift is precisely the desired section $`\sigma`.
 :::
 
-:::lemma_ "lem:henselian-coprime-factorization" (parent := "local-structure") (lean := "HenselianLocalRing.exists_monic_mul_of_map_eq_mul")
+:::lemma_ "lem:henselian-coprime-factorization" (parent := "local-structure") (lean := "HenselianLocalRing.exists_monic_mul_of_map_eq_mul_of_isCoprime")
 Let $`(R, \mathfrak{m}, \kappa)` be a Henselian local ring and let $`p \in R[X]`
 be monic. If the reduction $`\bar p` of $`p` over $`\kappa` factors as a product
 $`\bar p = f \cdot g` of coprime monic polynomials, then $`p = p_1 \cdot p_2` for
