@@ -86,6 +86,7 @@ import Proetale.Mathlib.CategoryTheory.Sites.Sieves
 import Proetale.Mathlib.FieldTheory.IsSepClosed
 import Proetale.Mathlib.Order.BooleanAlgebra.Set
 import Proetale.Mathlib.RingTheory.Etale.Field
+import Proetale.Mathlib.RingTheory.Etale.Henselian
 import Proetale.Mathlib.RingTheory.Etale.Prod
 import Proetale.Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Proetale.Mathlib.RingTheory.Flat.Pi
