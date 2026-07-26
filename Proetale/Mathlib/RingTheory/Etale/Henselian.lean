@@ -67,7 +67,7 @@ theorem existsUnique_hasMap_of_hasMap_residueField (P : StandardEtalePair R)
   rintro b ⟨hb, hbres⟩
   have hsub : b - a ∈ maximalIdeal R := by
     rw [← Ideal.algebraMap_residueField_eq_zero, map_sub, hbres, ha, sub_self]
-  refine IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub ?_ ?_
+  refine IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub (f := P.f) ?_ ?_
     (fun hu ↦ notMem_maximalIdeal.mpr hu hsub) ?_
   · rw [← coe_aeval_eq_eval]
     exact hb.1
@@ -111,7 +111,7 @@ theorem existsUnique_algHom_section_of_isEtaleAt {R' : Type*} [CommRing R'] [Alg
     refine Pres.hom_ext ?_
     rw [AlgHom.comp_apply, hx, IsScalarTower.coe_toAlgHom', hares]
   refine ⟨σ₀.comp (IsScalarTower.toAlgHom R R' (Localization.Away h)), ?_, ?_⟩
-  · show (IsScalarTower.toAlgHom R R (maximalIdeal R).ResidueField).comp _ = χ
+  · change (IsScalarTower.toAlgHom R R (maximalIdeal R).ResidueField).comp _ = χ
     rw [← AlgHom.comp_assoc, key]
     ext y
     exact hχₗ y
