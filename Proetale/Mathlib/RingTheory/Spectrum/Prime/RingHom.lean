@@ -24,6 +24,17 @@ In this file we show:
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
+/-- A prime ideal of a finite product of fields is the kernel of one of the evaluation maps. -/
+lemma Ideal.exists_eq_ker_evalRingHom {ι : Type*} [Finite ι] {A : ι → Type*}
+    [∀ i, Field (A i)] (p : Ideal (∀ i, A i)) [p.IsPrime] :
+    ∃ j, p = RingHom.ker (Pi.evalRingHom A j) := by
+  obtain ⟨j, q, hq⟩ := PrimeSpectrum.exists_comap_evalRingHom_eq ⟨p, ‹p.IsPrime›⟩
+  refine ⟨j, ?_⟩
+  have hq' : (PrimeSpectrum.comap (Pi.evalRingHom A j) q).asIdeal = p :=
+    congrArg PrimeSpectrum.asIdeal hq
+  rwa [PrimeSpectrum.comap_asIdeal, Subsingleton.elim q ⊥, PrimeSpectrum.asIdeal_bot,
+    ← RingHom.ker_eq_comap_bot, eq_comm] at hq'
+
 /-- A ring homomorphism is injective if all stalk maps at maximal ideals are injective and
 `PrimeSpectrum.comap f` is surjective. -/
 lemma RingHom.injective_of_localRingHom_injective {f : R →+* S}

@@ -634,14 +634,17 @@ different prime ideals $`q_1` and $`q_2` in $`B`, then $`B` has a nontrivial
 idempotent element $`e` (i.e. $`e^2 = e`).
 :::
 
-:::proof "lem:idempotent-in-ind-etale-of-primes" (uses := "lem:totally-disconnected-inverse-limit")
-Write $`B` as a filtered colimit $`\colim B_i` of étale algebras over $`K`.
-Each $`B_i` is a product of separable field extensions of $`K`. In particular,
-the spectra of the $`B_i` are totally disconnected. By
-{bpref "lem:totally-disconnected-inverse-limit"}[], the spectrum of $`B` is
-again totally disconnected. Thus the different prime ideals $`q_1` and $`q_2`
-live in different connected components. This gives the desired nontrivial
-idempotent element.
+:::proof "lem:idempotent-in-ind-etale-of-primes" (uses := "def:ind-etale")
+Write $`B = \colim_i B_i` as a filtered colimit of étale $`K`-algebras and pick
+an element $`x \in B` lying in exactly one of $`q_1` and $`q_2`. Since $`B` is
+the filtered colimit of the $`B_i`, the element $`x` is the image of some
+$`x_i` in an étale stage $`B_i`. The contractions of $`q_1` and $`q_2` to
+$`B_i` are then two distinct prime ideals, as they are separated by $`x_i`. Now
+$`B_i` is étale over the field $`K`, hence a finite product of separable field
+extensions of $`K`; in particular every prime ideal of $`B_i` is the kernel of
+one of the projections onto a factor. The idempotent of $`B_i` projecting onto
+the factor corresponding to the contraction of $`q_1` separates the two primes,
+and its image in $`B` is the desired nontrivial idempotent.
 :::
 
 :::lemma_ "lem:idempotent-in-ind-etale-of-field-ext" (parent := "more-on-local-structure") (uses := "def:ind-etale") (lean := "Algebra.IndEtale.exists_isIdempotentElem_tensorProduct_of_residueField_ne")
@@ -650,14 +653,21 @@ ideal $`q` of $`B`, such that the residue field of $`q` is not $`K`, then
 $`\kappa(q) \otimes_K B` has a nontrivial idempotent element.
 :::
 
-:::proof "lem:idempotent-in-ind-etale-of-field-ext"
-Write $`B` as a filtered colimit $`\colim B_i` of étale algebras over $`K`.
-(Each $`B_i` is a product of separable field extensions of $`K`.) Let $`q_i` be
-the inverse image of $`q` in $`B_i` and $`\kappa(q_i)` be the residue field of
-$`q_i`, then $`\kappa(q_i)` is a separable field extension of $`K`. Now
-$`\kappa(q) = \colim \kappa(q_i)` is again a separable extension of $`K`. Then
-$`\kappa(q) \otimes_K B \supseteq \kappa(q) \otimes_K \kappa(q)` splits. The
-conclusion follows.
+:::proof "lem:idempotent-in-ind-etale-of-field-ext" (uses := "lem:idempotent-in-ind-etale-of-primes, prop:ind-etale-residue-fields")
+Since $`\kappa(q) \neq K`, choose an element $`y \in \kappa(q)` not in the image
+of $`K`. The residue field $`\kappa(q)` is separable over $`K` by
+{bpref "prop:ind-etale-residue-fields"}[], so the minimal polynomial of $`y`
+over $`K` is separable of degree $`\geq 2` and thus has a second root $`y'` in
+an algebraic closure $`\Omega` of $`\kappa(q)`. This produces a $`K`-embedding
+$`\sigma \colon \kappa(q) \to \Omega` with $`\sigma(y) = y' \neq y`, different
+from the canonical inclusion $`\kappa(q) \hookrightarrow \Omega`. Composing
+each of these two embeddings with the map $`B \to \kappa(q) \to \Omega` yields
+two $`K`-algebra homomorphisms
+$`\Phi_1, \Phi_2 \colon \kappa(q) \otimes_K B \to \Omega` that differ on the
+left tensor factor; in particular their kernels are two distinct prime ideals
+of $`\kappa(q) \otimes_K B`. Since $`\kappa(q) \otimes_K B` is ind-étale over
+$`\kappa(q)` by base change, it has a nontrivial idempotent by
+{bpref "lem:idempotent-in-ind-etale-of-primes"}[].
 :::
 
 :::lemma_ "lemma:weakly-etale-over-sh-aux" (parent := "more-on-local-structure") (lean := "Algebra.WeaklyEtale.eq_of_isIdempotentElem")
