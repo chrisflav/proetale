@@ -132,6 +132,20 @@ $`S \otimes_{R} S \cong S \times T` for some ring $`T`, in particular
 $`\spec{S \otimes_{R} S} \to \spec{S}` is an open immersion, hence flat.
 :::
 
+:::lemma_ "lemma:ind-etale-weakly-etale-algebra" (parent := "more-on-local-structure") (uses := "def:ind-etale, def:weakly-etale-algebra, lemma:etale-weakly-etale-algebra") (lean := "Algebra.IndEtale.weaklyEtale, RingHom.IndEtale.weaklyEtale")
+Every ind-étale algebra is weakly étale.
+:::
+
+:::proof "lemma:ind-etale-weakly-etale-algebra"
+Write the ind-étale $`R`-algebra $`S` as a filtered colimit $`S = \colim_{i} S_{i}` of étale
+$`R`-algebras. Each $`S_{i}` is weakly étale by {bpref "lemma:etale-weakly-etale-algebra"}[], so
+each $`S_{i}` is $`R`-flat and each multiplication map $`S_{i} \otimes_{R} S_{i} \to S_{i}` is
+flat. Flatness of $`S` over $`R` follows since flat modules are closed under filtered colimits. For
+the multiplication map, $`S \otimes_{R} S \to S` is the filtered colimit of the maps
+$`S \otimes_{S_{i}} S \to S` over $`i`, each of which is flat because it is the base change of the
+flat map $`S_{i} \otimes_{R} S_{i} \to S_{i}` along $`S_{i} \to S`; hence it is flat as well.
+:::
+
 :::lemma_ "lem:field-absolutely-flat" (parent := "more-on-local-structure") (uses := "def:absolutely-flat") (lean := "Ring.AbsolutelyFlat.of_field, Ring.AbsolutelyFlat.of_isField")
 A field is absolutely flat.
 :::

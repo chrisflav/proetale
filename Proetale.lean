@@ -3,6 +3,7 @@ import Proetale.Algebra.Contraction.Covers
 import Proetale.Algebra.Contraction.IndContraction
 import Proetale.Algebra.Etale
 import Proetale.Algebra.FaithfullyFlat
+import Proetale.Algebra.FilteredColimitLmul
 import Proetale.Algebra.FilteredLocalColimit
 import Proetale.Algebra.HenselianLocalRing
 import Proetale.Algebra.Ind
