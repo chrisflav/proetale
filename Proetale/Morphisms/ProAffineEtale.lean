@@ -3,6 +3,7 @@ Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.AlgebraicGeometry.AffineTransitionLimit
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 import Proetale.Algebra.IndEtale
@@ -53,9 +54,6 @@ instance : proAffineEtale.RespectsIso := by
   rw [proAffineEtale, pro_eq_unop_ind_op]
   infer_instance
 
-instance : proAffineEtale.HasOfPostcompProperty proAffineEtale :=
-  sorry
-
 /-- The property `Etale ⊓ ofObjectProperty (IsAffine ·) ⊤` pre-pro-spreads.
 This is needed to show that `proAffineEtale` is stable under composition. -/
 instance : MorphismProperty.PreProSpreads.{u}
@@ -79,17 +77,6 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffineHom f] :
     rw [ofObjectProperty_top_right_iff]
     exact isAffine_of_isAffineHom f'
   infer_instance
-
-/-- `proAffineEtale.overObj S` is closed under cospan limits in `Over S`: a pullback of a
-cospan whose three legs have `proAffineEtale` structural maps again has
-`proAffineEtale` structural map. -/
-instance {S : Scheme.{u}} :
-    (proAffineEtale.overObj (X := S)).IsClosedUnderLimitsOfShape WalkingCospan :=
-  Over.closedUnderLimitsOfShape_walkingCospan_of_baseChangeAlong (P := proAffineEtale)
-    fun h₁ h₂ _ ↦ by
-      have : IsAffine _ := h₁.isAffine
-      have : IsAffine _ := h₂.isAffine
-      infer_instance
 
 /-- For any `MorphismProperty Scheme` `P` coming from a ring-hom property `Q` via
 `HasRingHomProperty`, a morphism `Spec.map f` between affine schemes lies in
@@ -236,5 +223,97 @@ lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
     proAffineEtale (Spec.map f) ↔ f.hom.IndEtale := by
   rw [proAffineEtale, pro_inf_isAffine_Spec_iff (P := @Etale) f, RingHom.IndEtale.iff_ind_etale]
   rfl
+
+/-- A morphism between affine schemes is pro-affine étale if and only if the induced map
+on global sections is ind-étale. -/
+lemma proAffineEtale_iff_appTop {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y] {f : X ⟶ Y} :
+    proAffineEtale f ↔ f.appTop.hom.IndEtale := by
+  have h : Spec.map f.appTop = X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom := by
+    rw [← Scheme.isoSpec_hom_naturality, Iso.inv_hom_id_assoc]
+  rw [← proAffineEtale_Spec_iff, h,
+    MorphismProperty.cancel_left_of_respectsIso (P := proAffineEtale.{u}),
+    MorphismProperty.cancel_right_of_respectsIso (P := proAffineEtale.{u})]
+
+/-- The projection from a pro-affine-étale presentation to any of its stages is
+pro-affine-étale. -/
+lemma proAffineEtale.app_mem {J : Type u} [SmallCategory J] [IsCofiltered J]
+    {D : J ⥤ Scheme.{u}} {S X : Scheme.{u}} {t : D ⟶ (Functor.const J).obj S}
+    {s : (Functor.const J).obj X ⟶ D} (hs : IsLimit (Cone.mk X s))
+    (ht : ∀ j, (@Etale ⊓ ofObjectProperty (IsAffine ·) ⊤ :
+      MorphismProperty Scheme.{u}) (t.app j)) (j₀ : J) :
+    proAffineEtale (s.app j₀) := by
+  refine MorphismProperty.pro_coneπ hs j₀ fun {i} u ↦ ⟨?_, ?_⟩
+  · have h1 : D.map u ≫ t.app j₀ = t.app i := by simp
+    exact MorphismProperty.of_postcomp (W := @Etale) (W' := @Etale) _ (t.app j₀)
+      (ht j₀).1 (by rw [h1]; exact (ht i).1)
+  · exact ofObjectProperty_top_right_iff.mpr (ofObjectProperty_top_right_iff.mp (ht i).2)
+
+/-- Pro-affine-étale morphisms cancel from the right: if `g` and `f ≫ g` are
+pro-affine-étale, then so is `f`. -/
+instance : proAffineEtale.HasOfPostcompProperty proAffineEtale where
+  of_postcomp {X Y Z} f g hg hfg := by
+    haveI : IsAffine X := hfg.isAffine
+    haveI hY : IsAffine Y := hg.isAffine
+    obtain ⟨J, _, _, D, t, s, hs, hts⟩ := hg
+    obtain ⟨j₀⟩ : Nonempty J := IsCofiltered.nonempty
+    haveI : IsAffine (D.obj j₀) := ofObjectProperty_top_right_iff.mp (hts j₀).1.2
+    have hπ : proAffineEtale (s.app j₀) :=
+      proAffineEtale.app_mem hs (fun j ↦ (hts j).1) j₀
+    -- The composite `X ⟶ Y ⟶ D.obj j₀` is pro-affine-étale: it descends to a finite
+    -- stage of the presentation of `f ≫ g` since `D.obj j₀` is locally of finite
+    -- presentation over `Z`.
+    have hfπ : proAffineEtale (f ≫ s.app j₀) := by
+      obtain ⟨K, _, _, E, u, r, hr, hur⟩ := hfg
+      have hAffE (k : K) : IsAffine (E.obj k) := ofObjectProperty_top_right_iff.mp (hur k).1.2
+      haveI : ∀ {i j : K} (a : i ⟶ j), IsAffineHom (E.map a) := fun {i j} a ↦ by
+        haveI := hAffE i; haveI := hAffE j; infer_instance
+      haveI : ∀ k : K, CompactSpace (E.obj k) := fun k ↦ by
+        haveI := hAffE k; infer_instance
+      haveI : ∀ k : K, QuasiSeparatedSpace (E.obj k) := fun k ↦ by
+        haveI := hAffE k; infer_instance
+      haveI : Etale (t.app j₀) := (hts j₀).1.1
+      have hcomm : (Cone.mk X r).π ≫ u =
+          (Functor.const K).map ((f ≫ s.app j₀) ≫ t.app j₀) := by
+        ext k
+        dsimp
+        rw [(hur k).2, Category.assoc, (hts j₀).2]
+      obtain ⟨k₀, q, hq1, hq2⟩ := Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
+        E u (t.app j₀) (Cone.mk X r) hr (f ≫ s.app j₀) hcomm
+      refine ⟨Over k₀, inferInstance, inferInstance, CategoryTheory.Over.forget k₀ ⋙ E,
+        { app l := E.map l.hom ≫ q
+          naturality {l l'} a := by
+            dsimp
+            rw [Category.comp_id, ← Category.assoc, ← Functor.map_comp,
+              CategoryTheory.Over.w a] },
+        ((Cone.mk X r).whisker (CategoryTheory.Over.forget k₀)).π,
+        (Functor.Initial.isLimitWhiskerEquiv (CategoryTheory.Over.forget k₀)
+          (Cone.mk X r)).symm hr,
+        fun l ↦ ⟨⟨?_, ?_⟩, ?_⟩⟩
+      · -- `E.map l.hom ≫ q` is étale by cancellation along the étale map `t.app j₀`
+        have h1 : (E.map l.hom ≫ q) ≫ t.app j₀ = u.app l.left := by
+          rw [Category.assoc, hq2]
+          simp
+        exact MorphismProperty.of_postcomp (W := @Etale) (W' := @Etale) _ (t.app j₀)
+          (hts j₀).1.1 (by rw [h1]; exact (hur l.left).1.1)
+      · exact ofObjectProperty_top_right_iff.mpr (hAffE l.left)
+      · change r.app l.left ≫ E.map l.hom ≫ q = f ≫ s.app j₀
+        rw [← Category.assoc, show r.app l.left ≫ E.map l.hom = r.app k₀ from by
+          simpa using (r.naturality l.hom).symm]
+        exact hq1
+    haveI : IsAffine (((Functor.const J).obj Y).obj j₀) := hY
+    rw [proAffineEtale_iff_appTop] at hπ hfπ ⊢
+    rw [Scheme.Hom.comp_appTop, CommRingCat.hom_comp] at hfπ
+    exact RingHom.IndEtale.of_comp hπ hfπ
+
+/-- `proAffineEtale.overObj S` is closed under cospan limits in `Over S`: a pullback of a
+cospan whose three legs have `proAffineEtale` structural maps again has
+`proAffineEtale` structural map. -/
+instance {S : Scheme.{u}} :
+    (proAffineEtale.overObj (X := S)).IsClosedUnderLimitsOfShape WalkingCospan :=
+  Over.closedUnderLimitsOfShape_walkingCospan_of_baseChangeAlong (P := proAffineEtale)
+    fun h₁ h₂ _ ↦ by
+      have : IsAffine _ := h₁.isAffine
+      have : IsAffine _ := h₂.isAffine
+      infer_instance
 
 end AlgebraicGeometry

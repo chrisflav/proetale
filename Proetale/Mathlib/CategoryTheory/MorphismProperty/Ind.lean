@@ -93,6 +93,113 @@ lemma ind_coconeι {J : Type w} [SmallCategory J] [IsFiltered J]
 
 variable {P}
 
+/-- If `P`-morphisms are finitely presentable and `P` cancels from the left, then `ind P`
+cancels `P`-morphisms from the left: if `f` satisfies `P` and `f ≫ g` satisfies `ind P`,
+then `g` satisfies `ind P`. -/
+lemma ind_hasOfPrecompProperty [P.HasOfPrecompProperty P]
+    (hP : P ≤ isFinitelyPresentable.{w} C) :
+    (ind.{w} P).HasOfPrecompProperty P where
+  of_precomp {X Y Z} f g hf hfg := by
+    obtain ⟨J, _, _, D, t, s, hs, hts⟩ := hfg
+    obtain ⟨j₀, q, hq1, hq2⟩ := exists_hom_of_isFinitelyPresentable hs (hP _ hf) t g
+      fun j ↦ (hts j).2
+    refine ⟨CategoryTheory.Under j₀, inferInstance, inferInstance,
+      CategoryTheory.Under.post D ⋙ CategoryTheory.Under.forget _,
+      { app k := q ≫ D.map k.hom
+        naturality {k l} a := by
+          dsimp
+          rw [Category.id_comp, Category.assoc, ← Functor.map_comp, CategoryTheory.Under.w a] },
+      ((CategoryTheory.Under.forget _).mapCocone ((Cocone.mk _ s).underPost j₀)).ι,
+      isColimitOfPreserves (CategoryTheory.Under.forget _) (hs.underPost j₀),
+      fun k ↦ ⟨?_, ?_⟩⟩
+    · have ht : f ≫ q ≫ D.map k.hom = t.app k.right := by
+        rw [← Category.assoc, hq1]
+        simpa using (t.naturality k.hom).symm
+      exact MorphismProperty.of_precomp (W := P) (W' := P) f _ hf
+        (by rw [ht]; exact (hts k.right).1)
+    · change (q ≫ D.map k.hom) ≫ s.app k.right = g
+      rw [Category.assoc, show D.map k.hom ≫ s.app k.right = s.app j₀ from by simp]
+      exact hq2
+
+/-- Cancellation for ind-`P`-morphisms: if `f` and `f ≫ g` satisfy `ind P`, then so does `g`,
+provided `P`-morphisms are finitely presentable, `P` is stable under cobase change and `P`
+cancels from the left. -/
+lemma ind_hasOfPrecompProperty_ind [HasPushouts C] [P.IsStableUnderCobaseChange]
+    [P.HasOfPrecompProperty P] [LocallySmall.{w} C]
+    (hP : P ≤ isFinitelyPresentable.{w} C) :
+    (ind.{w} P).HasOfPrecompProperty (ind.{w} P) where
+  of_precomp {X Y Z} f g hf hfg := by
+    haveI : (ind.{w} P).HasOfPrecompProperty P := ind_hasOfPrecompProperty hP
+    rw [← ind_ind hP]
+    obtain ⟨I, _, _, B, t, c, hc, htc⟩ := hf
+    -- Each composite `Bᵢ ⟶ Y ⟶ Z` is ind-`P`.
+    have hind (i : I) : ind.{w} P (c.app i ≫ g) := by
+      refine MorphismProperty.of_precomp (W := ind.{w} P) (W' := P) (t.app i) _ (htc i).1 ?_
+      rw [← Category.assoc, (htc i).2]
+      exact hfg
+    -- The filtered diagram of pushouts `Y ⨿_{Bᵢ} Z`.
+    let E : I ⥤ C :=
+      { obj i := pushout (c.app i) (c.app i ≫ g)
+        map {i i'} a := pushout.desc (pushout.inl _ _) (pushout.inr _ _) (by
+          have hnat : c.app i = B.map a ≫ c.app i' := by simp
+          rw [hnat]
+          simp only [Category.assoc, pushout.condition])
+        map_id i := by apply pushout.hom_ext <;> simp
+        map_comp {i i' i''} a b := by apply pushout.hom_ext <;> simp }
+    have hinl {i i' : I} (a : i ⟶ i') :
+        pushout.inl (c.app i) (c.app i ≫ g) ≫ E.map a =
+          pushout.inl (c.app i') (c.app i' ≫ g) := by
+      simp [E]
+    have hinr {i i' : I} (a : i ⟶ i') :
+        pushout.inr (c.app i) (c.app i ≫ g) ≫ E.map a =
+          pushout.inr (c.app i') (c.app i' ≫ g) := by
+      simp [E]
+    have hinlw : ∀ (w : Cocone E) {i i' : I} (a : i ⟶ i'),
+        pushout.inl (c.app i) (c.app i ≫ g) ≫ w.ι.app i =
+          pushout.inl (c.app i') (c.app i' ≫ g) ≫ w.ι.app i' := fun w i i' a ↦ by
+      rw [← w.w a, ← Category.assoc, hinl a]
+    have hinrw : ∀ (w : Cocone E) (i i' : I),
+        pushout.inr (c.app i) (c.app i ≫ g) ≫ w.ι.app i =
+          pushout.inr (c.app i') (c.app i' ≫ g) ≫ w.ι.app i' := by
+      have h1 : ∀ (w : Cocone E) {i i' : I} (a : i ⟶ i'),
+          pushout.inr (c.app i) (c.app i ≫ g) ≫ w.ι.app i =
+            pushout.inr (c.app i') (c.app i' ≫ g) ≫ w.ι.app i' := fun w i i' a ↦ by
+        rw [← w.w a, ← Category.assoc, hinr a]
+      intro w i i'
+      exact (h1 w (IsFiltered.leftToMax i i')).trans (h1 w (IsFiltered.rightToMax i i')).symm
+    obtain ⟨i₀⟩ : Nonempty I := IsFiltered.nonempty
+    refine ⟨I, ‹_›, ‹_›, E,
+      { app i := pushout.inl _ _
+        naturality {i i'} a := by
+          dsimp
+          rw [Category.id_comp, hinl a] },
+      { app i := pushout.desc (f := c.app i) (g := c.app i ≫ g) g (𝟙 Z) (by simp)
+        naturality {i i'} a := by
+          apply pushout.hom_ext <;> simp [E] },
+      ?_, fun i ↦ ⟨(ind.{w} P).pushout_inl _ _ (hind i), by simp⟩⟩
+    -- `Z` is the colimit of the pushout diagram.
+    refine
+      { desc := fun w ↦ pushout.inr (c.app i₀) (c.app i₀ ≫ g) ≫ w.ι.app i₀
+        fac := fun w i ↦ ?_
+        uniq := fun w m hm ↦ ?_ }
+    · dsimp only
+      rw [hinrw w i₀ i]
+      apply pushout.hom_ext
+      · -- check on `Y` using that `Y = colim Bᵢ`
+        rw [pushout.inl_desc_assoc]
+        refine hc.hom_ext fun j ↦ ?_
+        have hwk := hinrw w i (IsFiltered.max i j)
+        have hil := hinlw w (IsFiltered.leftToMax i j)
+        have hcb : B.map (IsFiltered.rightToMax i j) ≫ c.app (IsFiltered.max i j) =
+            c.app j := by simp
+        dsimp only
+        rw [hwk, hil, ← hcb]
+        simp only [Category.assoc, pushout.condition_assoc]
+      · rw [pushout.inr_desc_assoc, Category.id_comp]
+    · rw [← hm i₀]
+      dsimp only
+      rw [← Category.assoc, pushout.inr_desc, Category.id_comp]
+
 /--
 Let `P` be a property of morphisms. `P.Pro` is satisfied for `f : X ⟶ Y`
 if there exists a family of natural maps `tᵢ : Xᵢ ⟶ Y` and `sᵢ : X ⟶ Xᵢ` indexed by `J`

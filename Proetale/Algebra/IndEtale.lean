@@ -182,6 +182,19 @@ lemma comp {T : Type u} [CommRing T] {g : S →+* T} {f : R →+* S} (hg : g.Ind
   rw [CommRingCat.ofHom_comp]
   exact (MorphismProperty.ind.{u} CommRingCat.etale).comp_mem _ _ hf hg
 
+/-- Cancellation for ind-étale ring maps: if `f : R →+* S` and `g ∘ f : R →+* T` are
+ind-étale, then so is `g : S →+* T`. -/
+lemma of_comp {T : Type u} [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.IndEtale)
+    (hgf : (g.comp f).IndEtale) : g.IndEtale := by
+  haveI : (MorphismProperty.ind.{u} CommRingCat.etale.{u}).HasOfPrecompProperty
+      (MorphismProperty.ind.{u} CommRingCat.etale.{u}) :=
+    MorphismProperty.ind_hasOfPrecompProperty_ind CommRingCat.etale_le_isFinitelyPresentable.{u}
+  rw [iff_ind_etale] at hf hgf ⊢
+  rw [CommRingCat.ofHom_comp] at hgf
+  exact MorphismProperty.of_precomp (W := MorphismProperty.ind.{u} CommRingCat.etale.{u})
+    (W' := MorphismProperty.ind.{u} CommRingCat.etale.{u})
+    (CommRingCat.ofHom f) (CommRingCat.ofHom g) hf hgf
+
 /-- Ind-étale ring homomorphisms are stable under base change. -/
 lemma isStableUnderBaseChange : IsStableUnderBaseChange IndEtale := by
   intro R S R' S' _ _ _ _ _ _ _ _ _ _ _ hpush hRS

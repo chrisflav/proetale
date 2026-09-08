@@ -12,6 +12,7 @@ import Mathlib.RingTheory.Smooth.NoetherianDescent
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.Comma
 import Proetale.Mathlib.CategoryTheory.MorphismProperty.IndSpreads
+import Proetale.Mathlib.RingTheory.RingHom.Etale
 
 /-!
 # Etale ind-spreads
@@ -98,6 +99,9 @@ lemma etale_le_isFinitelyPresentable :
 instance : etale.IsStableUnderCobaseChange := by
   rw [etale, RingHom.isStableUnderCobaseChange_toMorphismProperty_iff]
   exact RingHom.Etale.isStableUnderBaseChange
+
+instance : etale.HasOfPrecompProperty etale where
+  of_precomp f g hf hfg := RingHom.Etale.of_comp hf (by rwa [← CommRingCat.hom_comp])
 
 instance : etale.IsMultiplicative where
   id_mem R := .of_bijective Function.bijective_id
