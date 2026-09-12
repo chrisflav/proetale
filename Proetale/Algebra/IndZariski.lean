@@ -9,6 +9,7 @@ import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.Flat
 import Proetale.Algebra.FaithfullyFlat
 import Proetale.Algebra.Ind
+import Proetale.Algebra.LocalizationColimit
 import Proetale.Algebra.StalkIso
 import Proetale.Mathlib.Algebra.Algebra.Pi
 import Proetale.Mathlib.Algebra.Category.CommAlgCat.Limits
@@ -295,8 +296,16 @@ instance (priority := 100) _root_.Module.Flat.of_indZariski [Algebra.IndZariski 
 
 @[stacks 096T]
 theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
-    (algebraMap R S).BijectiveOnStalks :=
-  sorry
+    (algebraMap R S).BijectiveOnStalks := by
+  obtain ⟨ι, _, _, P, h⟩ := IndZariski.exists_colimitPresentation (R := R) (S := S)
+  exact RingHom.bijectiveOnStalks_algebraMap.mpr
+    (Algebra.BijectiveOnStalks.of_colimitPresentation P fun i ↦
+      RingHom.bijectiveOnStalks_algebraMap.mp
+        (RingHom.IsLocalIso.bijectiveOnStalks (RingHom.isLocalIso_algebraMap.mpr (h i))))
+
+instance (priority := 100) bijectiveOnStalks [Algebra.IndZariski R S] :
+    Algebra.BijectiveOnStalks R S :=
+  RingHom.bijectiveOnStalks_algebraMap.mp (bijectiveOnStalks_algebraMap R S)
 
 theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))

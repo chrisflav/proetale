@@ -2,6 +2,7 @@ import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Presentation
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Proetale.Mathlib.Algebra.Category.AlgCat.FilteredColimits
@@ -264,7 +265,6 @@ def isLimitPiFan : IsLimit (piFan S) where
 
 end Pi
 
-end CommAlgCat
 
 instance AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat (R : Type u) [CommRing R] :
     PreservesFilteredColimitsOfSize.{u, u} (forget₂ (AlgCat.{u} R) (ModuleCat.{u} R)) where
@@ -282,3 +282,35 @@ instance AlgCat.preservesFilteredColimitsOfSize_forget_moduleCat (R : Type u) [C
       h.symm ▸ hpres
     exact preservesColimitsOfShape_of_reflects_of_preserves
       (forget₂ (AlgCat.{u} R) (ModuleCat.{u} R)) (forget (ModuleCat.{u} R))
+
+end CommAlgCat
+
+namespace CategoryTheory.Limits.ColimitPresentation
+
+variable {R : Type u} [CommRing R] {X : CommAlgCat.{u} R} {ι : Type u} [SmallCategory ι]
+
+/-- For a colimit presentation in `CommAlgCat R`, the colimit injection at the target of a
+transition map, applied to the image of an element under that transition map, agrees with the
+colimit injection at the source. -/
+@[simp]
+lemma ι_app_diag_map_apply (P : ColimitPresentation ι X) {i j : ι} (f : i ⟶ j) (x : P.diag.obj i) :
+    (P.ι.app j).hom ((P.diag.map f).hom x) = (P.ι.app i).hom x :=
+  DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.w f)) x
+
+lemma diag_map_id_apply (P : ColimitPresentation ι X) (i : ι) (x : P.diag.obj i) :
+    (P.diag.map (𝟙 i)).hom x = x :=
+  DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.diag.map_id i)) x
+
+lemma diag_map_comp_apply (P : ColimitPresentation ι X) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
+    (x : P.diag.obj i) :
+    (P.diag.map (f ≫ g)).hom x = (P.diag.map g).hom ((P.diag.map f).hom x) :=
+  DFunLike.congr_fun (congrArg CommAlgCat.Hom.hom (P.diag.map_comp f g)) x
+
+variable {S : Type u} [CommRing S] [Algebra R S] in
+/-- For a colimit presentation of `S` as a colimit of `R`-algebras, the colimit injection at `i`
+sends the image of `r : R` in the `i`-th object of the diagram to the image of `r` in `S`. -/
+lemma ι_app_algebraMap_apply (P : ColimitPresentation ι (CommAlgCat.of R S)) (i : ι) (r : R) :
+    (P.ι.app i).hom (algebraMap R (P.diag.obj i) r) = algebraMap R S r :=
+  (P.ι.app i).hom.commutes r
+
+end CategoryTheory.Limits.ColimitPresentation

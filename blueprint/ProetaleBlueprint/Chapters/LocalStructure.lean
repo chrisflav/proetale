@@ -540,6 +540,16 @@ $`A_{\varphi^{-1}(\mathfrak{q})} \to B_{\mathfrak{q}}` is an isomorphism.
 (Stacks Project, [Tag 096T](https://stacks.math.columbia.edu/tag/096T))
 :::
 
+:::proof "thm:ind-Zariski-identifies-local-rings"
+Write $`B = \colim_i B_i` as a filtered colimit of local isomorphisms
+$`A \to B_i`. Let $`\q \subset B` be a prime and let $`\q_i \subset B_i` be
+its contraction. Localisation at a prime commutes with filtered colimits, so
+$`B_{\q} = \colim_i (B_i)_{\q_i}`. Each map
+$`A_{\q \cap A} \to (B_i)_{\q_i}` is an isomorphism, because a local
+isomorphism identifies local rings. Passing to the colimit shows that
+$`A_{\q \cap A} \to B_{\q}` is an isomorphism.
+:::
+
 :::lemma_ "thm:ind-Zariski-is-flat" (parent := "local-structure") (uses := "def:ind-Zariski") (lean := "Module.Flat.of_indZariski, RingHom.IndZariski.flat")
 Let $`A \to B` be an ind-Zariski ring map. Then $`A \to B` is flat.
 :::

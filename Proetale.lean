@@ -12,6 +12,7 @@ import Proetale.Algebra.IndWeaklyEtale
 import Proetale.Algebra.IndZariski
 import Proetale.Algebra.IntegralLocal
 import Proetale.Algebra.LocalIso
+import Proetale.Algebra.LocalizationColimit
 import Proetale.Algebra.Preliminaries.Ideal
 import Proetale.Algebra.ProEtaleContraction
 import Proetale.Algebra.StalkAlgebraic
