@@ -567,8 +567,90 @@ noncomputable
 abbrev toScheme : AffineProEt S ⥤ Scheme.{u} :=
   toProEt S ⋙ ProEt.forget _ ⋙ Over.forget _
 
-instance : PreservesCofilteredLimitsOfSize.{u, u} (toProEt S) :=
-  sorry
+variable {S} in
+/-- The composition `S.AffineProEt ⥤ Scheme` of the inclusion into the pro-étale site with
+the forgetful functors preserves cofiltered limits: the candidate limit is the `Spec` of the
+filtered colimit of global sections, which is pro-affine-étale over `S` since each transition
+map is ind-étale on global sections. -/
+noncomputable def isLimitMapConeToSchemeOfIsLimit {J : Type u} [SmallCategory J] [IsCofiltered J]
+    {D : J ⥤ S.AffineProEt} (c : Cone D) (hc : IsLimit c) :
+    IsLimit ((toScheme S).mapCone c) := by
+  -- The diagram of (affine) schemes underlying `D`.
+  let Dl : J ⥤ Scheme.{u} := D ⋙ toScheme S
+  have hAff (j : J) : IsAffine (Dl.obj j) := inferInstanceAs (IsAffine (D.obj j).left)
+  -- The corresponding diagram of rings of global sections.
+  let Φ : J ⥤ CommRingCat.{u}ᵒᵖ := Dl ⋙ Scheme.Γ.rightOp
+  -- A limit cone of `Dl` in `Scheme`, given by `Spec` of the (co)limit of `Φ`.
+  let e : Dl ≅ Φ ⋙ Scheme.Spec :=
+    NatIso.ofComponents (fun j ↦ (Dl.obj j).isoSpec)
+      (fun {i j} u ↦ (Scheme.isoSpec_hom_naturality (Dl.map u)).symm)
+  let cL : Cone Dl := (Cone.postcompose e.inv).obj (Scheme.Spec.mapCone (limit.cone Φ))
+  have hL : IsLimit cL := (IsLimit.postcomposeInvEquiv e _).symm
+    (isLimitOfPreserves Scheme.Spec (limit.isLimit Φ))
+  let j₀ : J := IsCofiltered.nonempty.some
+  -- The ring of global sections of the limit is the filtered colimit of the global
+  -- sections over the objects mapping to `j₀`.
+  have hcK : IsLimit ((limit.cone Φ).whisker (Over.forget j₀)) :=
+    (Functor.Initial.isLimitWhiskerEquiv (Over.forget j₀) (limit.cone Φ)).symm
+      (limit.isLimit Φ)
+  have hcolim : IsColimit (coconeLeftOpOfCone ((limit.cone Φ).whisker (Over.forget j₀))) :=
+    isColimitCoconeLeftOpOfCone _ hcK
+  -- The transition maps out of `j₀`, as a natural transformation of ring diagrams.
+  let t : (Functor.const (Over j₀)ᵒᵖ).obj ((Φ.obj j₀).unop) ⟶
+      (Over.forget j₀ ⋙ Φ).leftOp :=
+    { app k := (Φ.map k.unop.hom).unop
+      naturality {k k'} u := by
+        dsimp
+        rw [Category.id_comp, ← unop_comp, ← Φ.map_comp, Over.w u.unop] }
+  -- The projection to `Dl.obj j₀` is ind-étale on global sections.
+  have hπ₀ : (limit.π Φ j₀).unop.hom.IndEtale := by
+    refine RingHom.IndEtale.of_isColimit _ (Over j₀)ᵒᵖ _ (t := t) hcolim fun k ↦ ⟨?_, ?_⟩
+    · exact proAffineEtale_iff_indEtale_appTop.mp (proAffineEtale_hom (D.map k.unop.hom))
+    · dsimp [t]
+      rw [← unop_comp, limit.w]
+  -- Hence the projection to `Dl.obj j₀` is pro-affine-étale.
+  have hπ : proAffineEtale (cL.π.app j₀) := by
+    have heq : cL.π.app j₀ = Spec.map ((limit.π Φ j₀).unop) ≫ (Dl.obj j₀).isoSpec.inv := rfl
+    rwa [heq, proAffineEtale.cancel_right_of_respectsIso, proAffineEtale_Spec_iff]
+  -- The structure morphism to `S` is independent of the choice of `j₀`.
+  have hw (j : J) : cL.π.app j ≫ (D.obj j).hom = cL.π.app j₀ ≫ (D.obj j₀).hom := by
+    obtain ⟨k, f₁, f₂, -⟩ := IsCofilteredOrEmpty.cone_objs j j₀
+    have h₁ : cL.π.app k ≫ Dl.map f₁ = cL.π.app j := cL.w f₁
+    have h₂ : cL.π.app k ≫ Dl.map f₂ = cL.π.app j₀ := cL.w f₂
+    have w₁ : Dl.map f₁ ≫ (D.obj j).hom = (D.obj k).hom := MorphismProperty.Over.w (D.map f₁)
+    have w₂ : Dl.map f₂ ≫ (D.obj j₀).hom = (D.obj k).hom := MorphismProperty.Over.w (D.map f₂)
+    rw [← h₁, ← h₂, Category.assoc, Category.assoc, w₁, w₂]
+  -- Assemble the limit cone in the affine pro-étale site.
+  have hℓ : proAffineEtale (cL.π.app j₀ ≫ (D.obj j₀).hom) :=
+    proAffineEtale.comp_mem _ _ hπ (D.obj j₀).prop
+  let cA : Cone D :=
+    { pt := AffineProEt.mk (cL.π.app j₀ ≫ (D.obj j₀).hom) hℓ
+      π :=
+        { app j := MorphismProperty.Over.homMk (cL.π.app j) (hw j)
+          naturality {i j} u := by
+            refine MorphismProperty.Over.Hom.ext ?_
+            dsimp
+            rw [Category.id_comp]
+            exact (cL.w u).symm } }
+  have hmapA : IsLimit ((toScheme S).mapCone cA) :=
+    hL.ofIsoLimit (Cone.ext (Iso.refl _) (fun j ↦ (Category.id_comp _).symm))
+  have hcA : IsLimit cA := isLimitOfReflects (toScheme S) hmapA
+  exact hmapA.ofIsoLimit ((Cone.functoriality D (toScheme S)).mapIso (hcA.uniqueUpToIso hc))
+
+/-- The underlying scheme of a cofiltered limit in `S.AffineProEt` is the limit of the
+underlying schemes. -/
+instance : PreservesCofilteredLimitsOfSize.{u, u} (toScheme S) where
+  preserves_cofiltered_limits _ _ _ :=
+    { preservesLimit :=
+        { preserves := fun {c} hc ↦ ⟨isLimitMapConeToSchemeOfIsLimit c hc⟩ } }
+
+instance : PreservesCofilteredLimitsOfSize.{u, u} (toProEt S) where
+  preserves_cofiltered_limits _ _ _ :=
+    { preservesLimit :=
+        { preserves := fun {c} hc ↦
+            ⟨isLimitOfReflects (ProEt.forget S ⋙ CategoryTheory.Over.forget S)
+              ((isLimitMapConeToSchemeOfIsLimit c hc).ofIsoLimit
+                (Functor.mapConeMapCone c).symm)⟩ } }
 
 instance : PreservesCofilteredLimitsOfSize.{u, u} (ProEt.forget S) :=
   sorry

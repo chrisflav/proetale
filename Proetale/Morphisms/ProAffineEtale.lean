@@ -237,4 +237,12 @@ lemma proAffineEtale_Spec_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
   rw [proAffineEtale, pro_inf_isAffine_Spec_iff (P := @Etale) f, RingHom.IndEtale.iff_ind_etale]
   rfl
 
+/-- A morphism between affine schemes is pro-affine étale if and only if it is ind-étale on
+global sections. -/
+lemma proAffineEtale_iff_indEtale_appTop {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y]
+    {f : X ⟶ Y} : proAffineEtale f ↔ f.appTop.hom.IndEtale := by
+  rw [← proAffineEtale_Spec_iff, ← Iso.inv_hom_id_assoc X.isoSpec (Spec.map f.appTop),
+    Scheme.isoSpec_hom_naturality, proAffineEtale.cancel_left_of_respectsIso,
+    proAffineEtale.cancel_right_of_respectsIso]
+
 end AlgebraicGeometry
