@@ -103,6 +103,16 @@ lemma CommAlgCat.isLocalIso_le_isFinitelyPresentable :
   CommAlgCat.finitePresentation_le_isFinitelyPresentable R S
     (RingHom.finitePresentation_algebraMap.mpr ‹_›)
 
+/-- Local isomorphisms are finitely presentable morphisms in `CommRingCat`. -/
+lemma CommRingCat.isLocalIso_le_isFinitelyPresentable :
+    RingHom.toMorphismProperty RingHom.IsLocalIso ≤
+      MorphismProperty.isFinitelyPresentable.{u} CommRingCat.{u} := by
+  intro X Y f (hf : f.hom.IsLocalIso)
+  algebraize [f.hom]
+  have := Algebra.IsLocalIso.finitePresentation X Y
+  exact CommRingCat.isFinitelyPresentable_under _ _
+    (RingHom.finitePresentation_algebraMap.mpr ‹_›)
+
 /-- An algebra is ind-Zariski if it can be written as the filtered colimit of locally isomorphic
 algebras. -/
 @[stacks 096N, mk_iff]
@@ -300,7 +310,10 @@ theorem bijectiveOnStalks_algebraMap [Algebra.IndZariski R S] :
 
 theorem of_colimitPresentation {ι : Type u} [SmallCategory ι] [IsFiltered ι]
     (P : ColimitPresentation ι (CommAlgCat.of R S))
-    (h : ∀ (i : ι), Algebra.IndZariski R (P.diag.obj i)) : Algebra.IndZariski R S := sorry
+    (h : ∀ (i : ι), Algebra.IndZariski R (P.diag.obj i)) : Algebra.IndZariski R S := by
+  rw [iff_ind_isLocalIso,
+    ← ObjectProperty.ind_ind (CommAlgCat.isLocalIso_le_isFinitelyPresentable R)]
+  exact ⟨ι, ‹_›, ‹_›, P, fun i ↦ (iff_ind_isLocalIso R _).mp (h i)⟩
 
 end Algebra.IndZariski
 
@@ -367,12 +380,25 @@ theorem bijectiveOnStalks (h : f.IndZariski) : f.BijectiveOnStalks := by
   algebraize [f]
   exact Algebra.IndZariski.bijectiveOnStalks_algebraMap R S
 
+/-- A ring homomorphism is ind-Zariski if and only if it is ind-(local isomorphism). -/
+lemma toMorphismProperty_eq :
+    (RingHom.toMorphismProperty RingHom.IndZariski : MorphismProperty CommRingCat.{u}) =
+      MorphismProperty.ind.{u} (RingHom.toMorphismProperty RingHom.IsLocalIso) := by
+  ext X Y g
+  exact iff_ind_isLocalIso g.hom
+
+/-- Being ind-Zariski is preserved under composition with isomorphisms. -/
+lemma respectsIso : RingHom.RespectsIso RingHom.IndZariski.{u} := by
+  rw [RingHom.toMorphismProperty_respectsIso_iff, toMorphismProperty_eq.{u}]
+  have := RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.IsLocalIso.respectsIso
+  infer_instance
+
 /-- Ind-Zariski is equivalent to ind-ind-Zariski. -/
 lemma iff_ind_indZariski (f : R →+* S) :
     f.IndZariski ↔ MorphismProperty.ind.{u}
       (RingHom.toMorphismProperty RingHom.IndZariski) (CommRingCat.ofHom f) := by
-  algebraize [f]
-  sorry
+  rw [iff_ind_isLocalIso, toMorphismProperty_eq,
+    MorphismProperty.ind_ind CommRingCat.isLocalIso_le_isFinitelyPresentable.{u}]
 
 /-- A ring hom is ind-Zariski if it can be written as a filtered colimit of ind-Zariski maps. -/
 lemma of_isColimit {R S : CommRingCat.{u}} (f : R ⟶ S) (J : Type u) [SmallCategory J]
@@ -383,8 +409,9 @@ lemma of_isColimit {R S : CommRingCat.{u}} (f : R ⟶ S) (J : Type u) [SmallCate
 
 theorem _root_.Algebra.IndZariski.iff_ind_indZariksi [Algebra R S] :
     Algebra.IndZariski R S ↔ ObjectProperty.ind.{u}
-      (RingHom.toObjectProperty RingHom.IndZariski R) (.of R S) := by
-  sorry
+      (RingHom.toObjectProperty RingHom.IndZariski R) (.of R S) :=
+  (algebraMap_iff R S).symm.trans
+    ((iff_ind_indZariski _).trans respectsIso.ind_toMorphismProperty_iff_ind_toObjectProperty)
 
 end RingHom.IndZariski
 
